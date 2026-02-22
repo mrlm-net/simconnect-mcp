@@ -28,5 +28,10 @@ go.work.sum
 .env
 
 # Editor/IDE
-# .idea/
-# .vscode/
+.idea/
+.vscode/
+.mrlm/
+.playwright-mcp/
+
+# Claude Code tooling
+.claude/

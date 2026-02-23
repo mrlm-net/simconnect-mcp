@@ -1,0 +1,170 @@
+// Package mcpadapter implements a minimal MCP server over HTTP and SSE.
+// It is the only package in this module that may expose MCP transport and
+// protocol logic — other packages interact through Server exclusively.
+package mcpadapter
+
+import (
+	"crypto/rand"
+	"encoding/json"
+	"fmt"
+	"net/http"
+	"sync"
+
+	"github.com/gin-gonic/gin"
+)
+
+// Server implements an MCP server over the streamable HTTP and SSE transports.
+// Create one with NewServer, register tools with AddTool, then mount it onto a
+// Gin router with MountStreamableHTTP and/or MountSSE.
+type Server struct {
+	name    string
+	version string
+
+	mu       sync.RWMutex
+	tools    []Tool
+	handlers map[string]ToolHandlerFunc
+
+	sessions sync.Map // sessionID → *sseSession
+}
+
+// NewServer creates a new MCP server with the given name and version.
+func NewServer(name, version string) *Server {
+	return &Server{
+		name:     name,
+		version:  version,
+		handlers: make(map[string]ToolHandlerFunc),
+	}
+}
+
+// AddTool registers a tool and its handler with the server.
+func (s *Server) AddTool(tool Tool, handler ToolHandlerFunc) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.tools = append(s.tools, tool)
+	s.handlers[tool.Name] = handler
+}
+
+// MountStreamableHTTP mounts the MCP 2025-11-25 streamable HTTP transport at
+// path (e.g. "/mcp"). POST requests are handled statelessly with inline JSON
+// responses — no long-lived connection required.
+func (s *Server) MountStreamableHTTP(r gin.IRouter, path string) {
+	r.POST(path, s.serveStreamable)
+}
+
+// MountSSE mounts the legacy MCP 2024-11-05 SSE transport.
+// ssePath (e.g. "/sse") streams server-sent events; msgPath (e.g. "/message")
+// receives client POST messages.
+func (s *Server) MountSSE(r gin.IRouter, ssePath, msgPath string) {
+	r.GET(ssePath, func(c *gin.Context) { s.serveSSE(c, msgPath) })
+	r.POST(msgPath, s.serveMessage)
+}
+
+// ── Streamable HTTP ──────────────────────────────────────────────────────────
+
+func (s *Server) serveStreamable(c *gin.Context) {
+	var req rpcRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusOK, errResp(nil, -32700, "parse error"))
+		return
+	}
+	if req.isNotification() {
+		s.handleNotif(req.Method)
+		c.Status(http.StatusAccepted)
+		return
+	}
+	c.JSON(http.StatusOK, s.dispatch(c.Request.Context(), &req))
+}
+
+// ── SSE transport ────────────────────────────────────────────────────────────
+
+type sseSession struct {
+	events chan string // JSON-encoded rpcResponse values
+	done   chan struct{}
+}
+
+func newSessionID() string {
+	b := make([]byte, 16)
+	if _, err := rand.Read(b); err != nil {
+		panic(fmt.Sprintf("mcpadapter: crypto/rand failed: %v", err))
+	}
+	return fmt.Sprintf("%x", b)
+}
+
+func (s *Server) serveSSE(c *gin.Context, msgPath string) {
+	id := newSessionID()
+	sess := &sseSession{
+		events: make(chan string, 32),
+		done:   make(chan struct{}),
+	}
+	s.sessions.Store(id, sess)
+	defer func() {
+		s.sessions.Delete(id)
+		close(sess.done)
+	}()
+
+	h := c.Writer.Header()
+	h.Set("Content-Type", "text/event-stream")
+	h.Set("Cache-Control", "no-cache")
+	h.Set("Connection", "keep-alive")
+	h.Set("X-Accel-Buffering", "no")
+	c.Writer.WriteHeader(http.StatusOK)
+
+	// Send the endpoint URL the client should POST messages to.
+	fmt.Fprintf(c.Writer, "event: endpoint\ndata: %s?sessionId=%s\n\n", msgPath, id)
+	c.Writer.Flush()
+
+	for {
+		select {
+		case msg := <-sess.events:
+			fmt.Fprintf(c.Writer, "event: message\ndata: %s\n\n", msg)
+			c.Writer.Flush()
+		case <-c.Request.Context().Done():
+			return
+		}
+	}
+}
+
+func (s *Server) serveMessage(c *gin.Context) {
+	id := c.Query("sessionId")
+	if id == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "missing sessionId"})
+		return
+	}
+	val, ok := s.sessions.Load(id)
+	if !ok {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "unknown session"})
+		return
+	}
+	sess := val.(*sseSession)
+
+	var req rpcRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "parse error"})
+		return
+	}
+	if req.isNotification() {
+		s.handleNotif(req.Method)
+		c.Status(http.StatusAccepted)
+		return
+	}
+
+	resp := s.dispatch(c.Request.Context(), &req)
+	b, err := json.Marshal(resp)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal error"})
+		return
+	}
+
+	select {
+	case sess.events <- string(b):
+		c.Status(http.StatusAccepted)
+	case <-sess.done:
+		c.JSON(http.StatusGone, gin.H{"error": "session closed"})
+	case <-c.Request.Context().Done():
+		c.JSON(http.StatusRequestTimeout, gin.H{"error": "request timeout"})
+	}
+}
+
+func (s *Server) handleNotif(_ string) {
+	// Notifications (e.g. "notifications/initialized") require no response.
+}

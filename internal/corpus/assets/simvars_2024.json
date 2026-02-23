@@ -1,0 +1,57 @@
+{
+  "scraped_at": "2025-01-01T00:00:00Z",
+  "sdk_version": "1.2.0",
+  "simvars": [
+    {
+      "name": "PLANE ALTITUDE",
+      "description": "The altitude of the aircraft above mean sea level. This value is referenced against the standard WGS84 ellipsoid and is the primary altitude reading used for navigation and autopilot operations.",
+      "units": ["feet", "meters"],
+      "settable": true,
+      "category": "Aircraft Position and Speed",
+      "versions": ["2024"],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Position_And_Speed_Variables.htm"
+    },
+    {
+      "name": "GROUND ALTITUDE",
+      "description": "The altitude of the terrain directly beneath the aircraft above mean sea level. This reflects the ground elevation at the aircraft's current horizontal position and is independent of aircraft altitude.",
+      "units": ["meters"],
+      "settable": false,
+      "category": "Miscellaneous Variables",
+      "versions": ["2024"],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Miscellaneous_Variables.htm"
+    },
+    {
+      "name": "ENGINE RPM",
+      "description": "The revolutions per minute of the indexed engine. For piston engines this reflects crankshaft speed; for turbine engines this reflects the N2 shaft speed unless otherwise specified.",
+      "units": ["rpm"],
+      "settable": false,
+      "category": "Engine",
+      "versions": ["2024"],
+      "indexed_by": "Engine number, 1 or 2",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "AIRSPEED TRUE CALIBRATE",
+      "description": "The calibration offset applied to the true airspeed indicator, expressed as a delta from the computed true airspeed. This value allows instrument calibration corrections to be applied to the true airspeed readout.",
+      "units": ["knots"],
+      "settable": true,
+      "category": "Aircraft Position and Speed",
+      "versions": ["2024"],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Position_And_Speed_Variables.htm"
+    },
+    {
+      "name": "ENG COMBUSTION",
+      "description": "Indicates whether combustion is occurring in the indexed engine. Returns 1 if the engine is currently producing combustion (i.e., the engine is running and fuel is igniting), and 0 otherwise.",
+      "units": ["bool"],
+      "settable": false,
+      "category": "Engine",
+      "versions": ["2024"],
+      "indexed_by": "Engine number, 1 or 2",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    }
+  ],
+  "events": [],
+  "functions": [],
+  "structures": [],
+  "error_codes": []
+}

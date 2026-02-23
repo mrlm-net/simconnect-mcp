@@ -1,0 +1,40 @@
+{
+  "scraped_at": "2025-01-01T00:00:00Z",
+  "sdk_version": "0.21.1",
+  "simvars": [],
+  "events": [],
+  "functions": [],
+  "structures": [],
+  "error_codes": [
+    {
+      "name": "SIMCONNECT_EXCEPTION_NONE",
+      "value": 0,
+      "description": "No error has occurred. This value is sent in a SIMCONNECT_RECV_EXCEPTION packet when the server wants to indicate successful processing of a request that would otherwise generate no acknowledgement.",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_EXCEPTION.htm"
+    },
+    {
+      "name": "SIMCONNECT_EXCEPTION_ERROR",
+      "value": 1,
+      "description": "An unspecified error has occurred in the SimConnect server while processing the client request. No further detail is available. The client should log the request context and retry or abort the affected operation.",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_EXCEPTION.htm"
+    },
+    {
+      "name": "SIMCONNECT_EXCEPTION_SIZE_MISMATCH",
+      "value": 2,
+      "description": "The size of the data definition does not match the size of the data structure supplied by the client. This typically occurs when the client passes a struct that does not match the AddToDataDefinition calls made for the associated definition ID.",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_EXCEPTION.htm"
+    },
+    {
+      "name": "SIMCONNECT_EXCEPTION_UNRECOGNIZED_ID",
+      "value": 3,
+      "description": "A client-defined identifier (such as a request ID, data definition ID, or object ID) supplied in the request is not recognised by the server. The ID has not been registered or has already been released.",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_EXCEPTION.htm"
+    },
+    {
+      "name": "SIMCONNECT_EXCEPTION_UNOPENED",
+      "value": 4,
+      "description": "The client attempted to call a SimConnect function before successfully opening a connection with SimConnect_Open, or after the connection was closed. All SimConnect calls except SimConnect_Open require a valid open connection.",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_EXCEPTION.htm"
+    }
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "scraped_at": "2025-01-01T00:00:00Z",
+  "sdk_version": "0.21.1",
+  "simvars": [],
+  "events": [
+    {
+      "name": "BRAKES",
+      "description": "Applies maximum braking to all wheel brakes simultaneously. This is equivalent to pressing both left and right brake pedals to full deflection. The brakes are applied for as long as the event is held active.",
+      "versions": ["2020"],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Misc_Events.htm"
+    },
+    {
+      "name": "LANDING_LIGHTS_TOGGLE",
+      "description": "Toggles the landing lights on or off. If the landing lights are currently off they will be switched on, and vice versa. Applies to all landing light units simultaneously on aircraft that have more than one.",
+      "versions": ["2020"],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Misc_Events.htm"
+    },
+    {
+      "name": "THROTTLE_SET",
+      "description": "Sets the throttle position for all engines to the value specified in the parameter. The parameter value ranges from 0 (full idle) to 16383 (full throttle). Negative values select reverse thrust where the powerplant supports it.",
+      "parameters": [
+        {
+          "index": 0,
+          "name": "value",
+          "description": "Target throttle position. Range 0 (idle) to 16383 (full throttle). Negative values activate reverse thrust where supported.",
+          "type": "DWORD"
+        }
+      ],
+      "versions": ["2020"],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Engine_Events.htm"
+    },
+    {
+      "name": "PARKING_BRAKES",
+      "description": "Toggles the parking brake on or off. When engaged the parking brake holds the aircraft stationary on the ground by locking all wheel brakes. The current state toggles with each transmission of this event.",
+      "versions": ["2020"],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Misc_Events.htm"
+    },
+    {
+      "name": "GEAR_DOWN",
+      "description": "Commands the landing gear to extend to the down and locked position. If the gear is already down no action is taken. The gear transition animation plays when this event is sent while gear is retracted.",
+      "versions": ["2020"],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Misc_Events.htm"
+    }
+  ],
+  "functions": [],
+  "structures": [],
+  "error_codes": []
+}

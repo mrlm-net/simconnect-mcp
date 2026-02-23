@@ -1,0 +1,48 @@
+{
+  "scraped_at": "2025-01-01T00:00:00Z",
+  "sdk_version": "1.2.0",
+  "simvars": [],
+  "events": [
+    {
+      "name": "BRAKES",
+      "description": "Applies maximum braking to all wheel brakes simultaneously. This is equivalent to pressing both left and right brake pedals to full deflection. The brakes are applied for as long as the event is held active.",
+      "versions": ["2024"],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Misc_Events.htm"
+    },
+    {
+      "name": "LANDING_LIGHTS_TOGGLE",
+      "description": "Toggles the landing lights on or off. If the landing lights are currently off they will be switched on, and vice versa. Applies to all landing light units simultaneously on aircraft that have more than one.",
+      "versions": ["2024"],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Misc_Events.htm"
+    },
+    {
+      "name": "TOGGLE_MASTER_ALTERNATOR",
+      "description": "Toggles the master alternator switch on or off. The alternator is responsible for charging the aircraft battery and supplying electrical power to avionics and systems while the engine is running.",
+      "versions": ["2024"],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Electrical_Events.htm"
+    },
+    {
+      "name": "AXIS_THROTTLE_SET",
+      "description": "Sets the throttle axis position for all engines using a signed floating-point value. This event is intended for use with analogue axis inputs such as throttle levers on joysticks or dedicated throttle quadrants.",
+      "parameters": [
+        {
+          "index": 0,
+          "name": "value",
+          "description": "Normalised throttle axis value. Range -16383 (full reverse) to +16383 (full throttle). A value of 0 corresponds to idle.",
+          "type": "float"
+        }
+      ],
+      "versions": ["2024"],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Engine_Events.htm"
+    },
+    {
+      "name": "GEAR_UP",
+      "description": "Commands the landing gear to retract to the up and locked position. If the gear is already retracted no action is taken. The gear transition animation plays when this event is sent while gear is extended.",
+      "versions": ["2024"],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Misc_Events.htm"
+    }
+  ],
+  "functions": [],
+  "structures": [],
+  "error_codes": []
+}

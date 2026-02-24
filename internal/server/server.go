@@ -1,8 +1,28 @@
 package server
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+	"github.com/mrlm-net/simconnect-mcp/internal/server/middleware"
+)
 
-// New returns a configured Gin router.
+// New returns a configured Gin router with the standard middleware stack:
+//   - RecoveryHandler — converts panics to structured JSON 500 responses
+//   - gin.Logger      — request/response logging to stdout
+//   - RequestID       — ensures every request carries an X-Request-ID header
+//   - CORS            — enforces cross-origin policy (localhost-only in release mode)
+//
+// NoRoute and NoMethod handlers are also registered to produce structured JSON
+// errors instead of Gin's default plain-text responses.
 func New() *gin.Engine {
-	return gin.Default()
+	engine := gin.New()
+
+	engine.Use(middleware.RecoveryHandler())
+	engine.Use(gin.Logger())
+	engine.Use(middleware.RequestID())
+	engine.Use(middleware.CORS())
+
+	engine.NoRoute(middleware.NoRouteHandler())
+	engine.NoMethod(middleware.NoMethodHandler())
+
+	return engine
 }

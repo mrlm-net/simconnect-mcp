@@ -110,13 +110,17 @@ func (s *Server) serveSSE(c *gin.Context, msgPath string) {
 	c.Writer.WriteHeader(http.StatusOK)
 
 	// Send the endpoint URL the client should POST messages to.
-	fmt.Fprintf(c.Writer, "event: endpoint\ndata: %s?sessionId=%s\n\n", msgPath, id)
+	if _, err := fmt.Fprintf(c.Writer, "event: endpoint\ndata: %s?sessionId=%s\n\n", msgPath, id); err != nil {
+		return
+	}
 	c.Writer.Flush()
 
 	for {
 		select {
 		case msg := <-sess.events:
-			fmt.Fprintf(c.Writer, "event: message\ndata: %s\n\n", msg)
+			if _, err := fmt.Fprintf(c.Writer, "event: message\ndata: %s\n\n", msg); err != nil {
+				return
+			}
 			c.Writer.Flush()
 		case <-c.Request.Context().Done():
 			return

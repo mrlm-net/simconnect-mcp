@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>SimConnect API Reference - SimConnect SDK</title>
+</head>
+<body>
+  <h1>SimConnect_Open</h1>
+  <p>Opens a new connection between the client application and the Flight Simulator server.</p>
+
+  <h2>Syntax</h2>
+  <pre><code>SIMCONNECTAPI SimConnect_Open(HANDLE * phSimConnect, LPCSTR szName, HWND hWnd, DWORD UserEventWin32, HANDLE hEventHandle, DWORD ConfigIndex)</code></pre>
+
+  <h2>Parameters</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Parameter</th>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>phSimConnect</td>
+        <td>HANDLE *</td>
+        <td>Address of a variable that receives the SimConnect connection handle.</td>
+      </tr>
+      <tr>
+        <td>szName</td>
+        <td>LPCSTR</td>
+        <td>Null-terminated string containing the name of the client application.</td>
+      </tr>
+      <tr>
+        <td>hWnd</td>
+        <td>HWND</td>
+        <td>Handle to the application window.</td>
+      </tr>
+      <tr>
+        <td>UserEventWin32</td>
+        <td>DWORD</td>
+        <td>A Win32 user-defined message identifier.</td>
+      </tr>
+      <tr>
+        <td>hEventHandle</td>
+        <td>HANDLE</td>
+        <td>A Win32 event handle created with CreateEvent.</td>
+      </tr>
+      <tr>
+        <td>ConfigIndex</td>
+        <td>DWORD</td>
+        <td>Zero-based index into the SimConnect.cfg configuration blocks.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>Return value</h2>
+  <p>Returns HRESULT. Use SUCCEEDED() or FAILED() macros to test.</p>
+
+  <h2>Remarks</h2>
+  <p>SimConnect_Open must be called before any other SimConnect function.</p>
+</body>
+</html>

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Aircraft Position and Speed Variables - SimConnect SDK</title>
+</head>
+<body>
+  <h1>Aircraft Position and Speed Variables</h1>
+  <p>The following simulation variables relate to aircraft position and speed.</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Variable name</th>
+        <th>Description</th>
+        <th>Units</th>
+        <th>Settable</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>PLANE ALTITUDE</td>
+        <td>The altitude of the aircraft above mean sea level.</td>
+        <td>feet, meters</td>
+        <td>Yes</td>
+      </tr>
+      <tr>
+        <td>AIRSPEED INDICATED</td>
+        <td>The indicated airspeed of the aircraft.</td>
+        <td>knots, feet per second, meters per second</td>
+        <td>No</td>
+      </tr>
+      <tr>
+        <td>ENGINE RPM:index</td>
+        <td>The RPM of the indexed engine.</td>
+        <td>rpm</td>
+        <td>No</td>
+      </tr>
+      <tr>
+        <td>PLANE HEADING DEGREES MAGNETIC</td>
+        <td><span class="deprecated">Deprecated: Use PLANE HEADING DEGREES TRUE</span> The heading of the aircraft in degrees from magnetic north.</td>
+        <td>degrees, radians</td>
+        <td>Yes</td>
+      </tr>
+      <tr>
+        <td>GROUND ALTITUDE</td>
+        <td>The altitude of the terrain beneath the aircraft.</td>
+        <td>meters</td>
+        <td>No</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>Additional Notes</h2>
+  <p>All altitude values are referenced against WGS84 unless otherwise stated.</p>
+</body>
+</html>

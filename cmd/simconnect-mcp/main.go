@@ -4,7 +4,8 @@ import (
 	"log"
 	"os"
 
-	"github.com/gin-gonic/gin"
+	"github.com/mrlm-net/simconnect-mcp/internal/modes/docs"
+	"github.com/mrlm-net/simconnect-mcp/internal/server"
 )
 
 func main() {
@@ -13,14 +14,24 @@ func main() {
 		mode = "docs"
 	}
 
-	log.Printf("Starting SimConnect MCP in mode: %s", mode)
+	r := server.New()
 
-	r := gin.Default()
-	r.GET("/health", func(c *gin.Context) {
-		c.JSON(200, gin.H{"status": "ok", "mode": mode})
-	})
+	switch mode {
+	case "docs":
+		cfg := docs.ConfigFromEnv()
+		m := docs.New(cfg)
+		if err := m.Mount(r); err != nil {
+			log.Fatalf("failed to start docs mode: %v", err)
+		}
+	default:
+		log.Fatalf("unknown MCP_MODE: %q (supported: docs)", mode)
+	}
 
-	if err := r.Run(":8080"); err != nil {
+	addr := os.Getenv("PORT")
+	if addr == "" {
+		addr = "8080"
+	}
+	if err := r.Run(":" + addr); err != nil {
 		log.Fatalf("server error: %v", err)
 	}
 }

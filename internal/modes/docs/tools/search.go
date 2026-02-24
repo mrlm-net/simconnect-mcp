@@ -9,9 +9,12 @@ import (
 	"github.com/mrlm-net/simconnect-mcp/internal/mcpadapter"
 )
 
-var validSearchTypes = map[string]bool{
-	"simvar": true, "event": true, "function": true,
-	"structure": true, "error_code": true, "all": true, "": true,
+func isValidSearchType(t string) bool {
+	switch t {
+	case "simvar", "event", "function", "structure", "error_code", "all", "":
+		return true
+	}
+	return false
 }
 
 // RegisterSearchTool registers search_docs on s.
@@ -31,7 +34,7 @@ func RegisterSearchTool(s *mcpadapter.Server, store corpus.DocStore) {
 			}
 
 			typeFilter, _ := args["type"].(string)
-			if !validSearchTypes[typeFilter] {
+			if !isValidSearchType(typeFilter) {
 				return mcpadapter.ErrorResult(fmt.Sprintf(
 					"INVALID_ARGUMENT: unknown type %q — must be one of simvar, event, function, structure, error_code, all",
 					typeFilter,

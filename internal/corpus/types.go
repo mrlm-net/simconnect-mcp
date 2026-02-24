@@ -268,7 +268,7 @@ type Corpus struct {
 // directly in search results without a follow-up Get* call.
 type SearchResult struct {
 	// Type identifies the corpus category of this hit.
-	// Valid values: "simvar", "event", "function", "structure", "errorcode".
+	// Valid values: "simvar", "event", "function", "structure", "error_code".
 	Type string `json:"type"`
 
 	// Name is the item's canonical name as it appears in the SDK.

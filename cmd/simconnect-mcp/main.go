@@ -16,9 +16,11 @@ func main() {
 
 	r := server.New()
 
+	var listenAddr string
 	switch mode {
 	case "docs":
 		cfg := docs.ConfigFromEnv()
+		listenAddr = cfg.ListenAddr
 		m := docs.New(cfg)
 		if err := m.Mount(r); err != nil {
 			log.Fatalf("failed to start docs mode: %v", err)
@@ -27,11 +29,7 @@ func main() {
 		log.Fatalf("unknown MCP_MODE: %q (supported: docs)", mode)
 	}
 
-	addr := os.Getenv("PORT")
-	if addr == "" {
-		addr = "8080"
-	}
-	if err := r.Run(":" + addr); err != nil {
+	if err := r.Run(listenAddr); err != nil {
 		log.Fatalf("server error: %v", err)
 	}
 }

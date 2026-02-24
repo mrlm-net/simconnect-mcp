@@ -21,35 +21,50 @@ type DocLoader interface {
 }
 
 // embeddedLoader reads JSON assets from the package-embedded FS.
-type embeddedLoader struct{}
+// version is the SDK version to load; empty string falls back to DOCS_MSFS_VERSION env var.
+type embeddedLoader struct{ version string }
 
 // pathLoader reads JSON assets from a directory path on disk.
+// version is the SDK version to load; empty string falls back to DOCS_MSFS_VERSION env var.
 type pathLoader struct {
-	path string
+	path    string
+	version string
 }
 
-// LoadEmbedded returns a DocLoader that sources JSON from the embedded assets
-// compiled into the binary via the //go:embed directive in embed.go.
-// No network or disk access is performed at load time.
+// LoadEmbedded returns a DocLoader backed by the compiled-in embedded assets.
+// The version to serve is read from the DOCS_MSFS_VERSION environment variable
+// at each Load() call. Use LoadEmbeddedVersion to supply the version explicitly.
 func LoadEmbedded() DocLoader {
 	return embeddedLoader{}
 }
 
-// LoadFromPath returns a DocLoader that sources JSON from the given directory
-// path. os.DirFS scopes all reads inside path, preventing traversal outside
-// the specified root. The directory must be readable at Load call time.
+// LoadEmbeddedVersion returns a DocLoader backed by the embedded assets that
+// serves the specified version without reading the environment.
+func LoadEmbeddedVersion(version string) DocLoader {
+	return embeddedLoader{version: version}
+}
+
+// LoadFromPath returns a DocLoader that reads JSON assets from the given
+// directory path. os.DirFS constrains reads inside path (no traversal).
+// The version is read from DOCS_MSFS_VERSION at each Load() call.
 func LoadFromPath(path string) DocLoader {
 	return pathLoader{path: path}
 }
 
+// LoadFromPathVersion returns a DocLoader that reads from path with an
+// explicit version, bypassing the environment variable.
+func LoadFromPathVersion(path, version string) DocLoader {
+	return pathLoader{path: path, version: version}
+}
+
 // Load implements DocLoader for the embedded filesystem.
 func (e embeddedLoader) Load() (Corpus, error) {
-	return load(assetsFS)
+	return load(assetsFS, e.version)
 }
 
 // Load implements DocLoader for the on-disk filesystem.
 func (p pathLoader) Load() (Corpus, error) {
-	return load(os.DirFS(p.path))
+	return load(os.DirFS(p.path), p.version)
 }
 
 // rawCorpus mirrors the JSON envelope used by every asset file.
@@ -120,8 +135,10 @@ func latestTime(timestamps ...string) (time.Time, error) {
 //	"both"/"" — all four versioned files, deduplicated by canonical name;
 //	             shared entries get Versions: ["2020","2024"]
 //	anything else — error
-func load(fsys fs.FS) (Corpus, error) {
-	version := os.Getenv("DOCS_MSFS_VERSION")
+func load(fsys fs.FS, version string) (Corpus, error) {
+	if version == "" {
+		version = os.Getenv("DOCS_MSFS_VERSION")
+	}
 
 	switch version {
 	case "2020", "2024":

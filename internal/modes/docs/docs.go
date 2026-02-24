@@ -36,11 +36,13 @@ func New(cfg Config) modes.Mode {
 // no routes are registered and the caller must handle the failure.
 func (m *docsMode) Mount(r *gin.Engine) error {
 	// 1. Select loader based on whether an override path is configured.
+	// Pass MSFSVersion explicitly so the corpus respects the config value
+	// rather than re-reading the env var independently.
 	var loader corpus.DocLoader
 	if m.cfg.OverridePath != "" {
-		loader = corpus.LoadFromPath(m.cfg.OverridePath)
+		loader = corpus.LoadFromPathVersion(m.cfg.OverridePath, m.cfg.MSFSVersion)
 	} else {
-		loader = corpus.LoadEmbedded()
+		loader = corpus.LoadEmbeddedVersion(m.cfg.MSFSVersion)
 	}
 
 	// 2. Load the corpus; fail fast so the caller receives a clear error.

@@ -107,8 +107,8 @@ func newDisconnectedServer(t *testing.T) (*httptest.Server, *bridge.MockBridge) 
 	}
 
 	// Open() in MountWithBridge sets MockState = StateConnected.
-	// Force it back to StateDisconnected to simulate a lost connection.
-	mock.MockState = bridge.StateDisconnected
+	// Use Close() to transition to StateDisconnected via the mutex-safe path.
+	_ = mock.Close()
 
 	srv := httptest.NewServer(r)
 	t.Cleanup(srv.Close)

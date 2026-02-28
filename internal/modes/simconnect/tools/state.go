@@ -31,7 +31,7 @@ func RegisterStateTools(mcp *mcpadapter.Server, b bridge.Bridge) {
 
 		state, err := b.GetSimState(ctx)
 		if err != nil {
-			return nil, fmt.Errorf("INTERNAL_ERROR: %w", err)
+			return mcpadapter.ErrorResult(fmt.Sprintf("INTERNAL_ERROR: %v", err)), nil
 		}
 
 		return mcpadapter.JSONResult(map[string]any{

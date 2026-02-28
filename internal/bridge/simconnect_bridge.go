@@ -89,9 +89,10 @@ func (b *simconnectBridge) Open(ctx context.Context, appName string) error {
 		return nil
 	}
 
-	// Derive a child context so Stop() can cancel the manager independently of
-	// the caller's context.
-	mgrCtx, cancel := context.WithCancel(ctx)
+	// Use context.Background() so the manager's lifetime is independent of the
+	// caller's context. The caller's context (e.g. a 10-second startup timeout)
+	// must not cancel the manager's background goroutines when it expires.
+	mgrCtx, cancel := context.WithCancel(context.Background())
 	b.cancelMgr = cancel
 
 	mgr := manager.New(

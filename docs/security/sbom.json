@@ -3,7 +3,17 @@
 	"Main": true,
 	"Dir": "C:\\WORKLOAD\\simconnect-mcp",
 	"GoMod": "C:\\WORKLOAD\\simconnect-mcp\\go.mod",
-	"GoVersion": "1.24.0"
+	"GoVersion": "1.25"
+}
+{
+	"Path": "github.com/mrlm-net/simconnect",
+	"Version": "v0.3.7",
+	"Time": "2026-02-22T23:43:49Z",
+	"Dir": "C:\\Users\\marti\\go\\pkg\\mod\\github.com\\mrlm-net\\simconnect@v0.3.7",
+	"GoMod": "C:\\Users\\marti\\go\\pkg\\mod\\cache\\download\\github.com\\mrlm-net\\simconnect\\@v\\v0.3.7.mod",
+	"GoVersion": "1.25",
+	"Sum": "h1:kxaQlhg8f4iSSJj7tjXC4uUVPMUSvs9ysVSWrIYaAWM=",
+	"GoModSum": "h1:3TGqZYOT51/TDEvEvja8EvD+Ouo3bcfI5j90rK/f43U="
 }
 {
 	"Path": "github.com/bytedance/sonic",

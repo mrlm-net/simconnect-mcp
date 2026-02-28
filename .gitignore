@@ -35,3 +35,8 @@ go.work.sum
 
 # Claude Code tooling
 .claude/
+
+# Website (Milestone 3)
+website/node_modules/
+website/build/
+website/.svelte-kit/

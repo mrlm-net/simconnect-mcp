@@ -4,7 +4,6 @@ import (
 	"log"
 	"os"
 
-	"github.com/mrlm-net/simconnect-mcp/internal/modes/docs"
 	"github.com/mrlm-net/simconnect-mcp/internal/server"
 )
 
@@ -14,19 +13,19 @@ func main() {
 		mode = "docs"
 	}
 
-	r := server.New()
+	factory, ok := modeRegistry[mode]
+	if !ok {
+		log.Fatalf("unknown MCP_MODE: %q (available on this platform: %v)", mode, availableModes())
+	}
 
-	var listenAddr string
-	switch mode {
-	case "docs":
-		cfg := docs.ConfigFromEnv()
-		listenAddr = cfg.ListenAddr
-		m := docs.New(cfg)
-		if err := m.Mount(r); err != nil {
-			log.Fatalf("failed to start docs mode: %v", err)
-		}
-	default:
-		log.Fatalf("unknown MCP_MODE: %q (supported: docs)", mode)
+	m, listenAddr, err := factory()
+	if err != nil {
+		log.Fatalf("failed to configure %s mode: %v", mode, err)
+	}
+
+	r := server.New()
+	if err := m.Mount(r); err != nil {
+		log.Fatalf("failed to mount %s mode: %v", mode, err)
 	}
 
 	if err := r.Run(listenAddr); err != nil {

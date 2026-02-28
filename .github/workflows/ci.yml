@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [milestone/1-docs, main]
+    branches: [milestone/1-docs, milestone/2-simconnect, main]
   pull_request:
-    branches: [milestone/1-docs, main]
+    branches: [milestone/1-docs, milestone/2-simconnect, main]
 
 jobs:
   test:
@@ -47,3 +47,22 @@ jobs:
           GOOS: ${{ matrix.goos }}
           GOARCH: amd64
         run: go build ./cmd/simconnect-mcp/
+
+  test-windows:
+    name: Test (windows/amd64)
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - name: Vet (windows)
+        run: go vet -tags windows ./...
+
+      - name: Test (windows)
+        run: go test -tags windows -race ./...
+
+      - name: Build binary (windows)
+        run: go build -tags windows ./cmd/simconnect-mcp/

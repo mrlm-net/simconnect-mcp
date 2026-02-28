@@ -1,12 +1,13 @@
 module github.com/mrlm-net/simconnect-mcp
 
-go 1.24.0
+go 1.25.0
 
-toolchain go1.24.13
+toolchain go1.25.7
 
 require (
 	github.com/gin-gonic/gin v1.10.0
-	golang.org/x/net v0.50.0
+	github.com/mrlm-net/simconnect v0.3.7
+	golang.org/x/net v0.51.0
 )
 
 require (

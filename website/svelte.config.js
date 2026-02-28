@@ -1,15 +1,14 @@
 import adapter from '@sveltejs/adapter-static';
 import { mdsvex } from 'mdsvex';
-
-// TODO(#67): import rehypeSlug from './src/lib/plugins/rehype-slug.js';
-// TODO(#67): import rehypeRewriteLinks from './src/lib/plugins/rehype-rewrite-links.js';
+import rehypeSlug from './src/lib/plugins/rehype-slug.js';
+import rehypeRewriteLinks from './src/lib/plugins/rehype-rewrite-links.js';
 
 const config = {
   extensions: ['.svelte', '.svx', '.md'],
   preprocess: [
     mdsvex({
-      extensions: ['.svx', '.md']
-      // TODO(#67): add rehypePlugins: [rehypeSlug, rehypeRewriteLinks]
+      extensions: ['.svx', '.md'],
+      rehypePlugins: [rehypeSlug, rehypeRewriteLinks]
     })
   ],
   kit: {

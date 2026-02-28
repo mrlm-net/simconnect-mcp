@@ -1,0 +1,49 @@
+name: CI
+
+on:
+  push:
+    branches: [milestone/1-docs, main]
+  pull_request:
+    branches: [milestone/1-docs, main]
+
+jobs:
+  test:
+    name: Test (linux/amd64)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      - name: Vet
+        run: go vet ./...
+
+      - name: Test (race)
+        run: go test -race ./...
+
+      - name: Build (linux)
+        run: CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build ./cmd/simconnect-mcp/
+
+  cross-compile:
+    name: Cross-compile (${{ matrix.goos }}/amd64)
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        goos: [darwin, windows]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      - name: Build
+        env:
+          CGO_ENABLED: "0"
+          GOOS: ${{ matrix.goos }}
+          GOARCH: amd64
+        run: go build ./cmd/simconnect-mcp/

@@ -1,0 +1,58 @@
+{
+  "scraped_at": "2025-01-01T00:00:00Z",
+  "sdk_version": "0.21.1",
+  "simvars": [
+    {
+      "name": "PLANE ALTITUDE",
+      "description": "The altitude of the aircraft above mean sea level. This value is referenced against the standard WGS84 ellipsoid and is the primary altitude reading used for navigation and autopilot operations.",
+      "units": ["feet", "meters"],
+      "settable": true,
+      "category": "Aircraft Position and Speed",
+      "versions": ["2020"],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Position_And_Speed_Variables.htm"
+    },
+    {
+      "name": "GROUND ALTITUDE",
+      "description": "The altitude of the terrain directly beneath the aircraft above mean sea level. This reflects the ground elevation at the aircraft's current horizontal position and is independent of aircraft altitude.",
+      "units": ["meters"],
+      "settable": false,
+      "category": "Miscellaneous Variables",
+      "versions": ["2020"],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Miscellaneous_Variables.htm"
+    },
+    {
+      "name": "ENGINE RPM",
+      "description": "The revolutions per minute of the indexed engine. For piston engines this reflects crankshaft speed; for turbine engines this reflects the N2 shaft speed unless otherwise specified.",
+      "units": ["rpm"],
+      "settable": false,
+      "category": "Engine",
+      "versions": ["2020"],
+      "indexed_by": "Engine number, 1 or 2",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "AIRSPEED INDICATED",
+      "description": "The indicated airspeed of the aircraft as displayed on the airspeed indicator. This value accounts for instrument error and position error but not for compressibility effects at high speeds.",
+      "units": ["knots", "feet/second", "meters/second"],
+      "settable": false,
+      "category": "Aircraft Position and Speed",
+      "versions": ["2020"],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Position_And_Speed_Variables.htm"
+    },
+    {
+      "name": "PLANE HEADING DEGREES MAGNETIC",
+      "description": "The heading of the aircraft measured in degrees from magnetic north. Magnetic heading differs from true heading by the local magnetic variation (declination) at the aircraft's current position.",
+      "units": ["degrees", "radians"],
+      "settable": true,
+      "category": "Aircraft Position and Speed",
+      "versions": ["2020"],
+      "deprecated": true,
+      "deprecated_reason": "Use PLANE HEADING DEGREES TRUE",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Position_And_Speed_Variables.htm"
+    }
+  ],
+  "events": [],
+  "functions": [],
+  "structures": [],
+  "error_codes": []
+}

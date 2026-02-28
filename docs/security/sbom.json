@@ -1,0 +1,442 @@
+{
+	"Path": "github.com/mrlm-net/simconnect-mcp",
+	"Main": true,
+	"Dir": "C:\\WORKLOAD\\simconnect-mcp",
+	"GoMod": "C:\\WORKLOAD\\simconnect-mcp\\go.mod",
+	"GoVersion": "1.24.0"
+}
+{
+	"Path": "github.com/bytedance/sonic",
+	"Version": "v1.11.6",
+	"Time": "2024-04-24T10:51:52Z",
+	"Indirect": true,
+	"Dir": "C:\\Users\\marti\\go\\pkg\\mod\\github.com\\bytedance\\sonic@v1.11.6",
+	"GoMod": "C:\\Users\\marti\\go\\pkg\\mod\\cache\\download\\github.com\\bytedance\\sonic\\@v\\v1.11.6.mod",
+	"GoVersion": "1.16",
+	"Sum": "h1:oUp34TzMlL+OY1OUWxHqsdkgC/Zfc85zGqw9siXjrc0=",
+	"GoModSum": "h1:LysEHSvpvDySVdC2f87zGWf6CIKJcAvqab1ZaiQtds4="
+}
+{
+	"Path": "github.com/bytedance/sonic/loader",
+	"Version": "v0.1.1",
+	"Time": "2024-04-18T06:00:41Z",
+	"Indirect": true,
+	"Dir": "C:\\Users\\marti\\go\\pkg\\mod\\github.com\\bytedance\\sonic\\loader@v0.1.1",
+	"GoMod": "C:\\Users\\marti\\go\\pkg\\mod\\cache\\download\\github.com\\bytedance\\sonic\\loader\\@v\\v0.1.1.mod",
+	"GoVersion": "1.16",
+	"Sum": "h1:c+e5Pt1k/cy5wMveRDyk2X4B9hF4g7an8N3zCYjJFNM=",
+	"GoModSum": "h1:ncP89zfokxS5LZrJxl5z0UJcsk4M4yY2JpfqGeCtNLU="
+}
+{
+	"Path": "github.com/cloudwego/base64x",
+	"Version": "v0.1.4",
+	"Time": "2024-04-24T09:25:40Z",
+	"Indirect": true,
+	"Dir": "C:\\Users\\marti\\go\\pkg\\mod\\github.com\\cloudwego\\base64x@v0.1.4",
+	"GoMod": "C:\\Users\\marti\\go\\pkg\\mod\\cache\\download\\github.com\\cloudwego\\base64x\\@v\\v0.1.4.mod",
+	"GoVersion": "1.16",
+	"Sum": "h1:jwCgWpFanWmN8xoIUHa2rtzmkd5J2plF/dnLS6Xd/0Y=",
+	"GoModSum": "h1:0zlkT4Wn5C6NdauXdJRhSKRlJvmclQ1hhJgA0rcu/8w="
+}
+{
+	"Path": "github.com/cloudwego/iasm",
+	"Version": "v0.2.0",
+	"Time": "2024-04-17T09:52:06Z",
+	"Indirect": true,
+	"Dir": "C:\\Users\\marti\\go\\pkg\\mod\\github.com\\cloudwego\\iasm@v0.2.0",
+	"GoMod": "C:\\Users\\marti\\go\\pkg\\mod\\cache\\download\\github.com\\cloudwego\\iasm\\@v\\v0.2.0.mod",
+	"GoVersion": "1.16",
+	"Sum": "h1:1KNIy1I1H9hNNFEEH3DVnI4UujN+1zjpuk6gwHLTssg=",
+	"GoModSum": "h1:8rXZaNYT2n95jn+zTI1sDr+IgcD2GVs0nlbbQPiEFhY="
+}
+{
+	"Path": "github.com/davecgh/go-spew",
+	"Version": "v1.1.1",
+	"Time": "2018-02-21T23:26:28Z",
+	"Indirect": true,
+	"Dir": "C:\\Users\\marti\\go\\pkg\\mod\\github.com\\davecgh\\go-spew@v1.1.1",
+	"GoMod": "C:\\Users\\marti\\go\\pkg\\mod\\cache\\download\\github.com\\davecgh\\go-spew\\@v\\v1.1.1.mod",
+	"Sum": "h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=",
+	"GoModSum": "h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38="
+}
+{
+	"Path": "github.com/gabriel-vasile/mimetype",
+	"Version": "v1.4.3",
+	"Time": "2023-10-12T13:58:32Z",
+	"Indirect": true,
+	"Dir": "C:\\Users\\marti\\go\\pkg\\mod\\github.com\\gabriel-vasile\\mimetype@v1.4.3",
+	"GoMod": "C:\\Users\\marti\\go\\pkg\\mod\\cache\\download\\github.com\\gabriel-vasile\\mimetype\\@v\\v1.4.3.mod",
+	"GoVersion": "1.20",
+	"Sum": "h1:in2uUcidCuFcDKtdcBxlR0rJ1+fsokWf+uqxgUFjbI0=",
+	"GoModSum": "h1:d8uq/6HKRL6CGdk+aubisF/M5GcPfT7nKyLpA0lbSSk="
+}
+{
+	"Path": "github.com/gin-contrib/sse",
+	"Version": "v0.1.0",
+	"Time": "2019-06-02T15:02:53Z",
+	"Indirect": true,
+	"Dir": "C:\\Users\\marti\\go\\pkg\\mod\\github.com\\gin-contrib\\sse@v0.1.0",
+	"GoMod": "C:\\Users\\marti\\go\\pkg\\mod\\cache\\download\\github.com\\gin-contrib\\sse\\@v\\v0.1.0.mod",
+	"GoVersion": "1.12",
+	"Sum": "h1:Y/yl/+YNO8GZSjAhjMsSuLt29uWRFHdHYUb5lYOV9qE=",
+	"GoModSum": "h1:RHrZQHXnP2xjPF+u1gW/2HnVO7nvIa9PG3Gm+fLHvGI="
+}
+{
+	"Path": "github.com/gin-gonic/gin",
+	"Version": "v1.10.0",
+	"Time": "2024-05-07T03:23:42Z",
+	"Dir": "C:\\Users\\marti\\go\\pkg\\mod\\github.com\\gin-gonic\\gin@v1.10.0",
+	"GoMod": "C:\\Users\\marti\\go\\pkg\\mod\\cache\\download\\github.com\\gin-gonic\\gin\\@v\\v1.10.0.mod",
+	"GoVersion": "1.20",
+	"Sum": "h1:nTuyha1TYqgedzytsKYqna+DfLos46nTv2ygFy86HFU=",
+	"GoModSum": "h1:4PMNQiOhvDRa013RKVbsiNwoyezlm2rm0uX/T7kzp5Y="
+}
+{
+	"Path": "github.com/go-playground/assert/v2",
+	"Version": "v2.2.0",
+	"Time": "2022-09-06T03:32:22Z",
+	"Indirect": true,
+	"Dir": "C:\\Users\\marti\\go\\pkg\\mod\\github.com\\go-playground\\assert\\v2@v2.2.0",
+	"GoMod": "C:\\Users\\marti\\go\\pkg\\mod\\cache\\download\\github.com\\go-playground\\assert\\v2\\@v\\v2.2.0.mod",
+	"GoVersion": "1.13",
+	"Sum": "h1:JvknZsQTYeFEAhQwI4qEt9cyV5ONwRHC+lYKSsYSR8s=",
+	"GoModSum": "h1:VDjEfimB/XKnb+ZQfWdccd7VUvScMdVu0Titje2rxJ4="
+}
+{
+	"Path": "github.com/go-playground/locales",
+	"Version": "v0.14.1",
+	"Time": "2023-01-05T16:04:36Z",
+	"Indirect": true,
+	"Dir": "C:\\Users\\marti\\go\\pkg\\mod\\github.com\\go-playground\\locales@v0.14.1",
+	"GoMod": "C:\\Users\\marti\\go\\pkg\\mod\\cache\\download\\github.com\\go-playground\\locales\\@v\\v0.14.1.mod",
+	"GoVersion": "1.17",
+	"Sum": "h1:EWaQ/wswjilfKLTECiXz7Rh+3BjFhfDFKv/oXslEjJA=",
+	"GoModSum": "h1:hxrqLVvrK65+Rwrd5Fc6F2O76J/NuW9t0sjnWqG1slY="
+}
+{
+	"Path": "github.com/go-playground/universal-translator",
+	"Version": "v0.18.1",
+	"Time": "2023-01-30T04:27:26Z",
+	"Indirect": true,
+	"Dir": "C:\\Users\\marti\\go\\pkg\\mod\\github.com\\go-playground\\universal-translator@v0.18.1",
+	"GoMod": "C:\\Users\\marti\\go\\pkg\\mod\\cache\\download\\github.com\\go-playground\\universal-translator\\@v\\v0.18.1.mod",
+	"GoVersion": "1.18",
+	"Sum": "h1:Bcnm0ZwsGyWbCzImXv+pAJnYK9S473LQFuzCbDbfSFY=",
+	"GoModSum": "h1:xekY+UJKNuX9WP91TpwSH2VMlDf28Uj24BCp08ZFTUY="
+}
+{
+	"Path": "github.com/go-playground/validator/v10",
+	"Version": "v10.20.0",
+	"Time": "2024-04-30T04:08:48Z",
+	"Indirect": true,
+	"Dir": "C:\\Users\\marti\\go\\pkg\\mod\\github.com\\go-playground\\validator\\v10@v10.20.0",
+	"GoMod": "C:\\Users\\marti\\go\\pkg\\mod\\cache\\download\\github.com\\go-playground\\validator\\v10\\@v\\v10.20.0.mod",
+	"GoVersion": "1.18",
+	"Sum": "h1:K9ISHbSaI0lyB2eWMPJo+kOS/FBExVwjEviJTixqxL8=",
+	"GoModSum": "h1:dbuPbCMFw/DrkbEynArYaCwl3amGuJotoKCe95atGMM="
+}
+{
+	"Path": "github.com/goccy/go-json",
+	"Version": "v0.10.2",
+	"Time": "2023-03-19T20:01:20Z",
+	"Indirect": true,
+	"Dir": "C:\\Users\\marti\\go\\pkg\\mod\\github.com\\goccy\\go-json@v0.10.2",
+	"GoMod": "C:\\Users\\marti\\go\\pkg\\mod\\cache\\download\\github.com\\goccy\\go-json\\@v\\v0.10.2.mod",
+	"GoVersion": "1.12",
+	"Sum": "h1:CrxCmQqYDkv1z7lO7Wbh2HN93uovUHgrECaO5ZrCXAU=",
+	"GoModSum": "h1:6MelG93GURQebXPDq3khkgXZkazVtN9CRI+MGFi0w8I="
+}
+{
+	"Path": "github.com/golang/protobuf",
+	"Version": "v1.5.0",
+	"Time": "2021-03-18T00:15:31Z",
+	"Indirect": true
+}
+{
+	"Path": "github.com/google/go-cmp",
+	"Version": "v0.5.9",
+	"Time": "2022-09-02T22:41:56Z",
+	"Indirect": true,
+	"Dir": "C:\\Users\\marti\\go\\pkg\\mod\\github.com\\google\\go-cmp@v0.5.9",
+	"GoMod": "C:\\Users\\marti\\go\\pkg\\mod\\cache\\download\\github.com\\google\\go-cmp\\@v\\v0.5.9.mod",
+	"GoVersion": "1.13",
+	"Sum": "h1:O2Tfq5qg4qc4AmwVlvv0oLiVAGB7enBSJ2x2DqQFi38=",
+	"GoModSum": "h1:17dUlkBOakJ0+DkrSSNjCkIjxS6bF9zb3elmeNGIjoY="
+}
+{
+	"Path": "github.com/google/gofuzz",
+	"Version": "v1.0.0",
+	"Time": "2019-04-08T17:44:45Z",
+	"Indirect": true,
+	"GoMod": "C:\\Users\\marti\\go\\pkg\\mod\\cache\\download\\github.com\\google\\gofuzz\\@v\\v1.0.0.mod",
+	"GoVersion": "1.12",
+	"GoModSum": "h1:dBl0BpW6vV/+mYPU4Po3pmUjxk6FQPldtuIdl/M65Eg="
+}
+{
+	"Path": "github.com/json-iterator/go",
+	"Version": "v1.1.12",
+	"Time": "2021-09-11T02:17:26Z",
+	"Indirect": true,
+	"Dir": "C:\\Users\\marti\\go\\pkg\\mod\\github.com\\json-iterator\\go@v1.1.12",
+	"GoMod": "C:\\Users\\marti\\go\\pkg\\mod\\cache\\download\\github.com\\json-iterator\\go\\@v\\v1.1.12.mod",
+	"GoVersion": "1.12",
+	"Sum": "h1:PV8peI4a0ysnczrg+LtxykD8LfKY9ML6u2jnxaEnrnM=",
+	"GoModSum": "h1:e30LSqwooZae/UwlEbR2852Gd8hjQvJoHmT4TnhNGBo="
+}
+{
+	"Path": "github.com/klauspost/cpuid/v2",
+	"Version": "v2.2.7",
+	"Time": "2024-02-21T10:21:20Z",
+	"Indirect": true,
+	"Dir": "C:\\Users\\marti\\go\\pkg\\mod\\github.com\\klauspost\\cpuid\\v2@v2.2.7",
+	"GoMod": "C:\\Users\\marti\\go\\pkg\\mod\\cache\\download\\github.com\\klauspost\\cpuid\\v2\\@v\\v2.2.7.mod",
+	"GoVersion": "1.15",
+	"Sum": "h1:ZWSB3igEs+d0qvnxR/ZBzXVmxkgt8DdzP6m9pfuVLDM=",
+	"GoModSum": "h1:Lcz8mBdAVJIBVzewtcLocK12l3Y+JytZYpaMropDUws="
+}
+{
+	"Path": "github.com/knz/go-libedit",
+	"Version": "v1.10.1",
+	"Time": "2019-06-21T19:41:59Z",
+	"Indirect": true,
+	"GoMod": "C:\\Users\\marti\\go\\pkg\\mod\\cache\\download\\github.com\\knz\\go-libedit\\@v\\v1.10.1.mod",
+	"GoModSum": "h1:MZTVkCWyz0oBc7JOWP3wNAzd002ZbM/5hgShxwh4x8M="
+}
+{
+	"Path": "github.com/leodido/go-urn",
+	"Version": "v1.4.0",
+	"Time": "2024-01-31T10:04:06Z",
+	"Indirect": true,
+	"Dir": "C:\\Users\\marti\\go\\pkg\\mod\\github.com\\leodido\\go-urn@v1.4.0",
+	"GoMod": "C:\\Users\\marti\\go\\pkg\\mod\\cache\\download\\github.com\\leodido\\go-urn\\@v\\v1.4.0.mod",
+	"GoVersion": "1.18",
+	"Sum": "h1:WT9HwE9SGECu3lg4d/dIA+jxlljEa1/ffXKmRjqdmIQ=",
+	"GoModSum": "h1:bvxc+MVxLKB4z00jd1z+Dvzr47oO32F/QSNjSBOlFxI="
+}
+{
+	"Path": "github.com/mattn/go-isatty",
+	"Version": "v0.0.20",
+	"Time": "2023-10-17T07:28:21Z",
+	"Indirect": true,
+	"Dir": "C:\\Users\\marti\\go\\pkg\\mod\\github.com\\mattn\\go-isatty@v0.0.20",
+	"GoMod": "C:\\Users\\marti\\go\\pkg\\mod\\cache\\download\\github.com\\mattn\\go-isatty\\@v\\v0.0.20.mod",
+	"GoVersion": "1.15",
+	"Sum": "h1:xfD0iDuEKnDkl03q4limB+vH+GxLEtL/jb4xVJSWWEY=",
+	"GoModSum": "h1:W+V8PltTTMOvKvAeJH7IuucS94S2C6jfK/D7dTCTo3Y="
+}
+{
+	"Path": "github.com/modern-go/concurrent",
+	"Version": "v0.0.0-20180306012644-bacd9c7ef1dd",
+	"Time": "2018-03-06T01:26:44Z",
+	"Indirect": true,
+	"Dir": "C:\\Users\\marti\\go\\pkg\\mod\\github.com\\modern-go\\concurrent@v0.0.0-20180306012644-bacd9c7ef1dd",
+	"GoMod": "C:\\Users\\marti\\go\\pkg\\mod\\cache\\download\\github.com\\modern-go\\concurrent\\@v\\v0.0.0-20180306012644-bacd9c7ef1dd.mod",
+	"Sum": "h1:TRLaZ9cD/w8PVh93nsPXa1VrQ6jlwL5oN8l14QlcNfg=",
+	"GoModSum": "h1:6dJC0mAP4ikYIbvyc7fijjWJddQyLn8Ig3JB5CqoB9Q="
+}
+{
+	"Path": "github.com/modern-go/reflect2",
+	"Version": "v1.0.2",
+	"Time": "2021-09-11T02:10:30Z",
+	"Indirect": true,
+	"Dir": "C:\\Users\\marti\\go\\pkg\\mod\\github.com\\modern-go\\reflect2@v1.0.2",
+	"GoMod": "C:\\Users\\marti\\go\\pkg\\mod\\cache\\download\\github.com\\modern-go\\reflect2\\@v\\v1.0.2.mod",
+	"GoVersion": "1.12",
+	"Sum": "h1:xBagoLtFs94CBntxluKeaWgTMpvLxC4ur3nMaC9Gz0M=",
+	"GoModSum": "h1:yWuevngMOJpCy52FWWMvUC8ws7m/LJsjYzDa0/r8luk="
+}
+{
+	"Path": "github.com/pelletier/go-toml/v2",
+	"Version": "v2.2.2",
+	"Time": "2024-04-29T10:02:54Z",
+	"Indirect": true,
+	"Dir": "C:\\Users\\marti\\go\\pkg\\mod\\github.com\\pelletier\\go-toml\\v2@v2.2.2",
+	"GoMod": "C:\\Users\\marti\\go\\pkg\\mod\\cache\\download\\github.com\\pelletier\\go-toml\\v2\\@v\\v2.2.2.mod",
+	"GoVersion": "1.16",
+	"Sum": "h1:aYUidT7k73Pcl9nb2gScu7NSrKCSHIDE89b3+6Wq+LM=",
+	"GoModSum": "h1:1t835xjRzz80PqgE6HHgN2JOsmgYu/h4qDAS4n929Rs="
+}
+{
+	"Path": "github.com/pmezard/go-difflib",
+	"Version": "v1.0.0",
+	"Time": "2016-01-10T10:55:54Z",
+	"Indirect": true,
+	"Dir": "C:\\Users\\marti\\go\\pkg\\mod\\github.com\\pmezard\\go-difflib@v1.0.0",
+	"GoMod": "C:\\Users\\marti\\go\\pkg\\mod\\cache\\download\\github.com\\pmezard\\go-difflib\\@v\\v1.0.0.mod",
+	"Sum": "h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=",
+	"GoModSum": "h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4="
+}
+{
+	"Path": "github.com/stretchr/objx",
+	"Version": "v0.5.2",
+	"Time": "2024-02-29T09:57:51Z",
+	"Indirect": true,
+	"GoMod": "C:\\Users\\marti\\go\\pkg\\mod\\cache\\download\\github.com\\stretchr\\objx\\@v\\v0.5.2.mod",
+	"GoVersion": "1.20",
+	"GoModSum": "h1:FRsXN1f5AsAjCGJKqEizvkpNtU+EGNCLh3NxZ/8L+MA="
+}
+{
+	"Path": "github.com/stretchr/testify",
+	"Version": "v1.9.0",
+	"Time": "2024-02-29T14:36:18Z",
+	"Indirect": true,
+	"Dir": "C:\\Users\\marti\\go\\pkg\\mod\\github.com\\stretchr\\testify@v1.9.0",
+	"GoMod": "C:\\Users\\marti\\go\\pkg\\mod\\cache\\download\\github.com\\stretchr\\testify\\@v\\v1.9.0.mod",
+	"GoVersion": "1.17",
+	"Sum": "h1:HtqpIVDClZ4nwg75+f6Lvsy/wHu+3BoSGCbBAcpTsTg=",
+	"GoModSum": "h1:r2ic/lqez/lEtzL7wO/rwa5dbSLXVDPFyf8C91i36aY="
+}
+{
+	"Path": "github.com/twitchyliquid64/golang-asm",
+	"Version": "v0.15.1",
+	"Time": "2021-01-12T00:43:21Z",
+	"Indirect": true,
+	"Dir": "C:\\Users\\marti\\go\\pkg\\mod\\github.com\\twitchyliquid64\\golang-asm@v0.15.1",
+	"GoMod": "C:\\Users\\marti\\go\\pkg\\mod\\cache\\download\\github.com\\twitchyliquid64\\golang-asm\\@v\\v0.15.1.mod",
+	"GoVersion": "1.13",
+	"Sum": "h1:SU5vSMR7hnwNxj24w34ZyCi/FmDZTkS4MhqMhdFk5YI=",
+	"GoModSum": "h1:a1lVb/DtPvCB8fslRZhAngC2+aY1QWCk3Cedj/Gdt08="
+}
+{
+	"Path": "github.com/ugorji/go/codec",
+	"Version": "v1.2.12",
+	"Time": "2023-11-28T11:01:21Z",
+	"Indirect": true,
+	"Dir": "C:\\Users\\marti\\go\\pkg\\mod\\github.com\\ugorji\\go\\codec@v1.2.12",
+	"GoMod": "C:\\Users\\marti\\go\\pkg\\mod\\cache\\download\\github.com\\ugorji\\go\\codec\\@v\\v1.2.12.mod",
+	"GoVersion": "1.11",
+	"Sum": "h1:9LC83zGrHhuUA9l16C9AHXAqEV/2wBQ4nkvumAE65EE=",
+	"GoModSum": "h1:UNopzCgEMSXjBc6AOMqYvWC1ktqTAfzJZUZgYf6w6lg="
+}
+{
+	"Path": "golang.org/x/arch",
+	"Version": "v0.8.0",
+	"Time": "2024-04-16T17:16:58Z",
+	"Indirect": true,
+	"Dir": "C:\\Users\\marti\\go\\pkg\\mod\\golang.org\\x\\arch@v0.8.0",
+	"GoMod": "C:\\Users\\marti\\go\\pkg\\mod\\cache\\download\\golang.org\\x\\arch\\@v\\v0.8.0.mod",
+	"GoVersion": "1.18",
+	"Sum": "h1:3wRIsP3pM4yUptoR96otTUOXI367OS0+c9eeRi9doIc=",
+	"GoModSum": "h1:FEVrYAQjsQXMVJ1nsMoVVXPZg6p2JE2mx8psSWTDQys="
+}
+{
+	"Path": "golang.org/x/crypto",
+	"Version": "v0.48.0",
+	"Time": "2026-02-09T16:37:10Z",
+	"Indirect": true,
+	"Dir": "C:\\Users\\marti\\go\\pkg\\mod\\golang.org\\x\\crypto@v0.48.0",
+	"GoMod": "C:\\Users\\marti\\go\\pkg\\mod\\cache\\download\\golang.org\\x\\crypto\\@v\\v0.48.0.mod",
+	"GoVersion": "1.24.0",
+	"Sum": "h1:/VRzVqiRSggnhY7gNRxPauEQ5Drw9haKdM0jqfcCFts=",
+	"GoModSum": "h1:r0kV5h3qnFPlQnBSrULhlsRfryS2pmewsg+XfMgkVos="
+}
+{
+	"Path": "golang.org/x/mod",
+	"Version": "v0.32.0",
+	"Time": "2026-01-09T16:07:51Z",
+	"Indirect": true
+}
+{
+	"Path": "golang.org/x/net",
+	"Version": "v0.50.0",
+	"Time": "2026-02-09T17:11:27Z",
+	"Dir": "C:\\Users\\marti\\go\\pkg\\mod\\golang.org\\x\\net@v0.50.0",
+	"GoMod": "C:\\Users\\marti\\go\\pkg\\mod\\cache\\download\\golang.org\\x\\net\\@v\\v0.50.0.mod",
+	"GoVersion": "1.24.0",
+	"Sum": "h1:ucWh9eiCGyDR3vtzso0WMQinm2Dnt8cFMuQa9K33J60=",
+	"GoModSum": "h1:UgoSli3F/pBgdJBHCTc+tp3gmrU4XswgGRgtnwWTfyM="
+}
+{
+	"Path": "golang.org/x/sync",
+	"Version": "v0.19.0",
+	"Time": "2025-12-04T00:24:39Z",
+	"Indirect": true
+}
+{
+	"Path": "golang.org/x/sys",
+	"Version": "v0.41.0",
+	"Time": "2026-02-08T05:32:41Z",
+	"Indirect": true,
+	"Dir": "C:\\Users\\marti\\go\\pkg\\mod\\golang.org\\x\\sys@v0.41.0",
+	"GoMod": "C:\\Users\\marti\\go\\pkg\\mod\\cache\\download\\golang.org\\x\\sys\\@v\\v0.41.0.mod",
+	"GoVersion": "1.24.0",
+	"Sum": "h1:Ivj+2Cp/ylzLiEU89QhWblYnOE9zerudt9Ftecq2C6k=",
+	"GoModSum": "h1:OgkHotnGiDImocRcuBABYBEXf8A9a87e/uXjp9XT3ks="
+}
+{
+	"Path": "golang.org/x/term",
+	"Version": "v0.40.0",
+	"Time": "2026-02-09T16:13:12Z",
+	"Indirect": true
+}
+{
+	"Path": "golang.org/x/text",
+	"Version": "v0.34.0",
+	"Time": "2026-02-09T16:14:29Z",
+	"Indirect": true,
+	"Dir": "C:\\Users\\marti\\go\\pkg\\mod\\golang.org\\x\\text@v0.34.0",
+	"GoMod": "C:\\Users\\marti\\go\\pkg\\mod\\cache\\download\\golang.org\\x\\text\\@v\\v0.34.0.mod",
+	"GoVersion": "1.24.0",
+	"Sum": "h1:oL/Qq0Kdaqxa1KbNeMKwQq0reLCCaFtqu2eNuSeNHbk=",
+	"GoModSum": "h1:homfLqTYRFyVYemLBFl5GgL/DWEiH5wcsQ5gSh1yziA="
+}
+{
+	"Path": "golang.org/x/tools",
+	"Version": "v0.41.0",
+	"Time": "2026-01-12T17:22:29Z",
+	"Indirect": true
+}
+{
+	"Path": "golang.org/x/xerrors",
+	"Version": "v0.0.0-20191204190536-9bdfabe68543",
+	"Time": "2019-12-04T19:05:36Z",
+	"Indirect": true
+}
+{
+	"Path": "google.golang.org/protobuf",
+	"Version": "v1.34.1",
+	"Time": "2024-05-06T12:17:40Z",
+	"Indirect": true,
+	"Dir": "C:\\Users\\marti\\go\\pkg\\mod\\google.golang.org\\protobuf@v1.34.1",
+	"GoMod": "C:\\Users\\marti\\go\\pkg\\mod\\cache\\download\\google.golang.org\\protobuf\\@v\\v1.34.1.mod",
+	"GoVersion": "1.17",
+	"Sum": "h1:9ddQBjfCyZPOHPUiPxpYESBLc+T8P3E+Vo4IbKZgFWg=",
+	"GoModSum": "h1:c6P6GXX6sHbq/GpV6MGZEdwhWPcYBgnhAHhKbcUYpos="
+}
+{
+	"Path": "gopkg.in/check.v1",
+	"Version": "v0.0.0-20161208181325-20d25e280405",
+	"Time": "2016-12-08T18:13:25Z",
+	"Indirect": true,
+	"Dir": "C:\\Users\\marti\\go\\pkg\\mod\\gopkg.in\\check.v1@v0.0.0-20161208181325-20d25e280405",
+	"GoMod": "C:\\Users\\marti\\go\\pkg\\mod\\cache\\download\\gopkg.in\\check.v1\\@v\\v0.0.0-20161208181325-20d25e280405.mod",
+	"Sum": "h1:yhCVgyC4o1eVCa2tZl7eS0r+SDo693bJlVdllGtEeKM=",
+	"GoModSum": "h1:Co6ibVJAznAaIkqp8huTwlJQCZ016jof/cbN4VW5Yz0="
+}
+{
+	"Path": "gopkg.in/yaml.v3",
+	"Version": "v3.0.1",
+	"Time": "2022-05-27T08:35:30Z",
+	"Indirect": true,
+	"Dir": "C:\\Users\\marti\\go\\pkg\\mod\\gopkg.in\\yaml.v3@v3.0.1",
+	"GoMod": "C:\\Users\\marti\\go\\pkg\\mod\\cache\\download\\gopkg.in\\yaml.v3\\@v\\v3.0.1.mod",
+	"Sum": "h1:fxVm/GzAzEWqLHuvctI91KS9hhNmmWOoWu0XTYJS7CA=",
+	"GoModSum": "h1:K4uyk7z7BCEPqu6E+C64Yfv1cQ7kz7rIZviUmN+EgEM="
+}
+{
+	"Path": "nullprogram.com/x/optparse",
+	"Version": "v1.0.0",
+	"Time": "2020-01-19T17:51:40Z",
+	"Indirect": true,
+	"GoMod": "C:\\Users\\marti\\go\\pkg\\mod\\cache\\download\\nullprogram.com\\x\\optparse\\@v\\v1.0.0.mod",
+	"GoVersion": "1.13",
+	"GoModSum": "h1:KdyPE+Igbe0jQUrVfMqDMeJQIJZEuyV7pjYmp6pbG50="
+}
+{
+	"Path": "rsc.io/pdf",
+	"Version": "v0.1.1",
+	"Time": "2018-04-11T19:01:10Z",
+	"Indirect": true,
+	"GoMod": "C:\\Users\\marti\\go\\pkg\\mod\\cache\\download\\rsc.io\\pdf\\@v\\v0.1.1.mod",
+	"GoModSum": "h1:n8OzWcQ6Sp37PL01nO98y4iUCRdTGarVfzxY20ICaU4="
+}

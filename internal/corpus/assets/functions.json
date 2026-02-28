@@ -1,0 +1,140 @@
+{
+  "scraped_at": "2025-01-01T00:00:00Z",
+  "sdk_version": "0.21.1",
+  "simvars": [],
+  "events": [],
+  "functions": [
+    {
+      "name": "SimConnect_Open",
+      "description": "Opens a new connection between the client application and the Flight Simulator server. This function must be called successfully before any other SimConnect function is used. The returned handle is passed to all subsequent SimConnect calls.",
+      "signature": "SIMCONNECTAPI SimConnect_Open(HANDLE * phSimConnect, LPCSTR szName, HWND hWnd, DWORD UserEventWin32, HANDLE hEventHandle, DWORD ConfigIndex)",
+      "parameters": [
+        {
+          "name": "phSimConnect",
+          "type": "HANDLE *",
+          "direction": "out",
+          "description": "Address of a variable that receives the SimConnect connection handle. This handle must be saved and passed to all subsequent SimConnect API calls."
+        },
+        {
+          "name": "szName",
+          "type": "LPCSTR",
+          "direction": "in",
+          "description": "Null-terminated string containing the name of the client application. This name is used for identification in the SimConnect debug console and log output."
+        },
+        {
+          "name": "hWnd",
+          "type": "HWND",
+          "direction": "in",
+          "description": "Handle to the application window. When UserEventWin32 is non-zero, SimConnect posts messages to this window. Set to NULL when using an event handle for notification instead."
+        },
+        {
+          "name": "UserEventWin32",
+          "type": "DWORD",
+          "direction": "in",
+          "description": "A Win32 user-defined message identifier in the range WM_USER (0x0400) through 0x7FFF. SimConnect posts this message to hWnd when new data is available. Set to 0 when using hEventHandle or polling instead."
+        },
+        {
+          "name": "hEventHandle",
+          "type": "HANDLE",
+          "direction": "in",
+          "description": "A Win32 event handle created with CreateEvent. SimConnect signals this event when new data is available. Set to NULL when using Win32 messages or polling instead."
+        },
+        {
+          "name": "ConfigIndex",
+          "type": "DWORD",
+          "direction": "in",
+          "description": "Zero-based index into the [SimConnect.N] sections of SimConnect.cfg to select the connection parameters. Defaults to 0 which selects the first configuration block.",
+          "optional": true
+        }
+      ],
+      "return_type": "HRESULT",
+      "remarks": "SimConnect_Open must be called before any other SimConnect function. A non-zero HRESULT indicates failure; use SUCCEEDED() or FAILED() macros to test the return value. The connection remains open until SimConnect_Close is called or the simulator exits.",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/General/SimConnect_Open.htm"
+    },
+    {
+      "name": "SimConnect_Close",
+      "description": "Closes an open SimConnect connection. All pending requests and registered data definitions associated with the handle are cancelled. After this call the handle is invalid and must not be used again.",
+      "signature": "SIMCONNECTAPI SimConnect_Close(HANDLE hSimConnect)",
+      "parameters": [
+        {
+          "name": "hSimConnect",
+          "type": "HANDLE",
+          "direction": "in",
+          "description": "Handle to a SimConnect connection previously returned by SimConnect_Open."
+        }
+      ],
+      "return_type": "HRESULT",
+      "remarks": "Calling SimConnect_Close with an invalid or already-closed handle results in an error HRESULT. Always check the return value. Resources allocated within the simulator for this client are released when the connection closes.",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/General/SimConnect_Close.htm"
+    },
+    {
+      "name": "SimConnect_RequestDataOnSimObject",
+      "description": "Requests that simulation variable data for a specific simulation object be sent to the client application. The data is returned using the data definition specified by DefineID and will be delivered in SIMCONNECT_RECV_SIMOBJECT_DATA packets.",
+      "signature": "SIMCONNECTAPI SimConnect_RequestDataOnSimObject(HANDLE hSimConnect, SIMCONNECT_DATA_REQUEST_ID RequestID, SIMCONNECT_DATA_DEFINITION_ID DefineID, SIMCONNECT_OBJECT_ID ObjectID, SIMCONNECT_PERIOD Period, SIMCONNECT_DATA_REQUEST_FLAG Flags, DWORD origin, DWORD interval, DWORD limit)",
+      "parameters": [
+        {
+          "name": "hSimConnect",
+          "type": "HANDLE",
+          "direction": "in",
+          "description": "Handle to a SimConnect connection previously returned by SimConnect_Open."
+        },
+        {
+          "name": "RequestID",
+          "type": "SIMCONNECT_DATA_REQUEST_ID",
+          "direction": "in",
+          "description": "Client-defined request identifier. This value is returned in the SIMCONNECT_RECV_SIMOBJECT_DATA packet so the client can match responses to requests. Must be unique among active requests on this connection."
+        },
+        {
+          "name": "DefineID",
+          "type": "SIMCONNECT_DATA_DEFINITION_ID",
+          "direction": "in",
+          "description": "Identifier of the data definition that specifies which simulation variables are requested. The definition must have been previously created using SimConnect_AddToDataDefinition."
+        },
+        {
+          "name": "ObjectID",
+          "type": "SIMCONNECT_OBJECT_ID",
+          "direction": "in",
+          "description": "Identifier of the simulation object for which data is requested. Use SIMCONNECT_OBJECT_ID_USER (0) to request data for the user aircraft."
+        },
+        {
+          "name": "Period",
+          "type": "SIMCONNECT_PERIOD",
+          "direction": "in",
+          "description": "One of the SIMCONNECT_PERIOD enumeration values specifying how often the data should be sent. For example, SIMCONNECT_PERIOD_SIM_FRAME sends data every simulation frame; SIMCONNECT_PERIOD_ONCE sends it a single time."
+        },
+        {
+          "name": "Flags",
+          "type": "SIMCONNECT_DATA_REQUEST_FLAG",
+          "direction": "in",
+          "description": "One or more SIMCONNECT_DATA_REQUEST_FLAG values combined with bitwise OR. Use SIMCONNECT_DATA_REQUEST_FLAG_DEFAULT (0) for standard behaviour, or SIMCONNECT_DATA_REQUEST_FLAG_CHANGED to receive data only when values have changed."
+        },
+        {
+          "name": "origin",
+          "type": "DWORD",
+          "direction": "in",
+          "description": "Number of Period units to wait before sending the first data packet. Set to 0 to begin immediately.",
+          "optional": true
+        },
+        {
+          "name": "interval",
+          "type": "DWORD",
+          "direction": "in",
+          "description": "Number of Period units between successive data transmissions. Set to 0 to send every period.",
+          "optional": true
+        },
+        {
+          "name": "limit",
+          "type": "DWORD",
+          "direction": "in",
+          "description": "Maximum number of data packets to send before the request is automatically cancelled. Set to 0 for an unlimited number of transmissions.",
+          "optional": true
+        }
+      ],
+      "return_type": "HRESULT",
+      "remarks": "Cancel an active request by calling this function again with the same RequestID and Period set to SIMCONNECT_PERIOD_NEVER. The data definition must already exist before making this call. Requesting data for an object that does not exist results in a SIMCONNECT_EXCEPTION_OBJECT_ID exception.",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Simulation_Variables/SimConnect_RequestDataOnSimObject.htm"
+    }
+  ],
+  "structures": [],
+  "error_codes": []
+}

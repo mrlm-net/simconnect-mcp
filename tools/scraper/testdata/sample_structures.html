@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>SIMCONNECT_DATA_INITPOSITION - SimConnect SDK</title>
+</head>
+<body>
+  <h1>SIMCONNECT_DATA_INITPOSITION</h1>
+  <p>Defines the initial position and orientation used to place an aircraft in the simulation world.</p>
+
+  <h2>Syntax</h2>
+  <pre><code>struct SIMCONNECT_DATA_INITPOSITION {
+  double Latitude;
+  double Longitude;
+  double Altitude;
+  double Pitch;
+  double Bank;
+  double Heading;
+  DWORD  OnGround;
+  DWORD  Airspeed;
+};</code></pre>
+
+  <h2>Members</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Member</th>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Latitude</td>
+        <td>double</td>
+        <td>Latitude in decimal degrees. Positive values are north of the equator.</td>
+      </tr>
+      <tr>
+        <td>Longitude</td>
+        <td>double</td>
+        <td>Longitude in decimal degrees. Positive values are east of the prime meridian.</td>
+      </tr>
+      <tr>
+        <td>Altitude</td>
+        <td>double</td>
+        <td>Altitude above mean sea level in feet.</td>
+      </tr>
+      <tr>
+        <td>Pitch</td>
+        <td>double</td>
+        <td>Pitch angle in degrees. Positive values represent nose-up pitch.</td>
+      </tr>
+      <tr>
+        <td>Bank</td>
+        <td>double</td>
+        <td>Bank (roll) angle in degrees.</td>
+      </tr>
+      <tr>
+        <td>Heading</td>
+        <td>double</td>
+        <td>True heading in degrees, measured clockwise from true north.</td>
+      </tr>
+      <tr>
+        <td>OnGround</td>
+        <td>DWORD</td>
+        <td>Set to 1 to place the aircraft on the ground surface.</td>
+      </tr>
+      <tr>
+        <td>Airspeed</td>
+        <td>DWORD</td>
+        <td>Initial indicated airspeed in knots.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>Remarks</h2>
+  <p>When OnGround is set to 1 the Altitude field is ignored.</p>
+</body>
+</html>

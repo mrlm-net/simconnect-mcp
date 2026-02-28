@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>SIMCONNECT_EXCEPTION - SimConnect SDK</title>
+</head>
+<body>
+  <h1>SIMCONNECT_EXCEPTION</h1>
+  <p>Exception codes sent in SIMCONNECT_RECV_EXCEPTION packets to indicate which client request triggered an error.</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Value</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>SIMCONNECT_EXCEPTION_NONE</td>
+        <td>0</td>
+        <td>No error has occurred.</td>
+      </tr>
+      <tr>
+        <td>SIMCONNECT_EXCEPTION_ERROR</td>
+        <td>1</td>
+        <td>An unspecified error has occurred in the SimConnect server.</td>
+      </tr>
+      <tr>
+        <td>SIMCONNECT_EXCEPTION_SIZE_MISMATCH</td>
+        <td>2</td>
+        <td>The size of the data definition does not match the size of the data structure supplied by the client.</td>
+      </tr>
+      <tr>
+        <td>SIMCONNECT_EXCEPTION_UNRECOGNIZED_ID</td>
+        <td>3</td>
+        <td>A client-defined identifier supplied in the request is not recognised by the server.</td>
+      </tr>
+      <tr>
+        <td>SIMCONNECT_EXCEPTION_UNOPENED</td>
+        <td>4</td>
+        <td>The client attempted to call a SimConnect function before successfully opening a connection.</td>
+      </tr>
+    </tbody>
+  </table>
+</body>
+</html>

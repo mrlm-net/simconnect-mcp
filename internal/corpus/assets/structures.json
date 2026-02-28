@@ -1,0 +1,81 @@
+{
+  "scraped_at": "2025-01-01T00:00:00Z",
+  "sdk_version": "0.21.1",
+  "simvars": [],
+  "events": [],
+  "functions": [],
+  "structures": [
+    {
+      "name": "SIMCONNECT_DATA_INITPOSITION",
+      "description": "Defines the initial position and orientation used to place an aircraft or object in the simulation world. This structure is used with SimConnect_SetDataOnSimObject and AI creation functions to set a complete 6-degree-of-freedom starting state.",
+      "fields": [
+        {
+          "name": "Latitude",
+          "type": "double",
+          "description": "Latitude of the position in decimal degrees. Positive values are north of the equator; negative values are south. Valid range is -90.0 to +90.0."
+        },
+        {
+          "name": "Longitude",
+          "type": "double",
+          "description": "Longitude of the position in decimal degrees. Positive values are east of the prime meridian; negative values are west. Valid range is -180.0 to +180.0."
+        },
+        {
+          "name": "Altitude",
+          "type": "double",
+          "description": "Altitude above mean sea level in feet. The aircraft is placed at this MSL altitude regardless of terrain elevation at the specified latitude and longitude."
+        },
+        {
+          "name": "Pitch",
+          "type": "double",
+          "description": "Pitch angle in degrees. Positive values represent nose-up pitch; negative values represent nose-down pitch. Valid range is -90.0 to +90.0."
+        },
+        {
+          "name": "Bank",
+          "type": "double",
+          "description": "Bank (roll) angle in degrees. Positive values represent a right-wing-down (clockwise when viewed from behind) bank; negative values represent a left-wing-down bank. Valid range is -180.0 to +180.0."
+        },
+        {
+          "name": "Heading",
+          "type": "double",
+          "description": "True heading in degrees. The direction the aircraft nose points, measured clockwise from true north. Valid range is 0.0 to 360.0."
+        },
+        {
+          "name": "OnGround",
+          "type": "DWORD",
+          "description": "Specifies whether the aircraft should be placed on the ground surface. Set to 1 to place on the ground (the simulator will adjust altitude to the ground elevation); set to 0 to use the Altitude field as specified."
+        },
+        {
+          "name": "Airspeed",
+          "type": "DWORD",
+          "description": "Initial indicated airspeed in knots. The aircraft is given this airspeed at placement. Set to 0 to place the aircraft stationary."
+        }
+      ],
+      "remarks": "When OnGround is set to 1 the Altitude field is ignored and the simulator places the aircraft on the terrain surface at the specified latitude and longitude. All angular values use degrees, not radians.",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_DATA_INITPOSITION.htm"
+    },
+    {
+      "name": "SIMCONNECT_RECV",
+      "description": "Base header structure that begins every message packet received from the SimConnect server. All SIMCONNECT_RECV_* structures begin with the fields defined here, allowing the client to determine the message type and size before casting to the appropriate specific type.",
+      "fields": [
+        {
+          "name": "dwSize",
+          "type": "DWORD",
+          "description": "Total size of the complete received structure in bytes, including this header and any variable-length data appended at the end of specific packet types."
+        },
+        {
+          "name": "dwVersion",
+          "type": "DWORD",
+          "description": "SimConnect protocol version number of the server that sent this packet. Clients can use this to detect version mismatches between the client library and the simulator."
+        },
+        {
+          "name": "dwID",
+          "type": "DWORD",
+          "description": "Identifies the type of received message. This value is one of the SIMCONNECT_RECV_ID enumeration values and determines which SIMCONNECT_RECV_* structure the packet should be cast to."
+        }
+      ],
+      "remarks": "All receive packet handlers should begin by reading dwID from this base structure to determine the packet type. The dwSize field must be checked before accessing variable-length fields to avoid buffer overruns.",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_RECV.htm"
+    }
+  ],
+  "error_codes": []
+}

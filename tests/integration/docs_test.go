@@ -238,7 +238,7 @@ func TestGetSimVar_Found(t *testing.T) {
 	srv := newTestServer(t)
 
 	resp := callTool(t, srv.URL, "get_simvar", map[string]any{
-		"name": "PLANE ALTITUDE",
+		"name": "AUTOPILOT AIRSPEED ACQUISITION",
 	})
 
 	if isToolError(t, resp) {
@@ -278,8 +278,8 @@ func TestGetSimVar_NotFound(t *testing.T) {
 func TestGetSimVar_CaseInsensitive(t *testing.T) {
 	srv := newTestServer(t)
 
-	upper := callTool(t, srv.URL, "get_simvar", map[string]any{"name": "PLANE ALTITUDE"})
-	lower := callTool(t, srv.URL, "get_simvar", map[string]any{"name": "plane altitude"})
+	upper := callTool(t, srv.URL, "get_simvar", map[string]any{"name": "AUTOPILOT AIRSPEED ACQUISITION"})
+	lower := callTool(t, srv.URL, "get_simvar", map[string]any{"name": "autopilot airspeed acquisition"})
 
 	if isToolError(t, upper) {
 		t.Fatalf("uppercase lookup failed: %s", contentText(t, upper))

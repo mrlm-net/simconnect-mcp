@@ -1,0 +1,64 @@
+<script lang="ts">
+	import type { TocEntry } from '$lib/types/index.js';
+
+	let { headings }: { headings: TocEntry[] } = $props();
+
+	let activeId = $state('');
+
+	$effect(() => {
+		if (typeof IntersectionObserver === 'undefined') return;
+
+		const elements = headings
+			.map((h) => document.getElementById(h.id))
+			.filter((el): el is HTMLElement => el !== null);
+
+		if (elements.length === 0) return;
+
+		const observer = new IntersectionObserver(
+			(entries) => {
+				for (const entry of entries) {
+					if (entry.isIntersecting) {
+						activeId = entry.target.id;
+					}
+				}
+			},
+			{ rootMargin: '-80px 0px -80% 0px', threshold: 0 }
+		);
+
+		for (const el of elements) {
+			observer.observe(el);
+		}
+
+		return () => observer.disconnect();
+	});
+</script>
+
+{#if headings.length > 0}
+	<nav
+		class="pt-12 pb-6 pr-6"
+		style="min-width: 280px;"
+		aria-label="Table of contents"
+	>
+		<p
+			class="mb-3 text-xs font-semibold uppercase tracking-wider"
+			style="color: var(--color-text-muted);"
+		>
+			On this page
+		</p>
+		<ul class="space-y-1 text-sm">
+			{#each headings as heading (heading.id)}
+				{@const active = activeId === heading.id}
+				{@const indent = heading.depth >= 4 ? 'padding-left: 1.5rem;' : heading.depth === 3 ? 'padding-left: 0.75rem;' : ''}
+				<li>
+					<a
+						href="#{heading.id}"
+						class="block py-0.5 transition-colors"
+						style="color: {active ? 'var(--color-link)' : 'var(--color-text-muted)'}; {indent}"
+					>
+						{heading.text}
+					</a>
+				</li>
+			{/each}
+		</ul>
+	</nav>
+{/if}

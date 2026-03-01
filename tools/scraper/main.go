@@ -17,60 +17,308 @@ import (
 // These are the canonical docs.flightsimulator.com pages for each corpus type
 // and SDK version. Each entry maps to a scrape+parse operation. Only the pages
 // listed here are fetched — the scraper does NOT crawl links.
+//
+// Pages that return 404 are silently skipped (the scraper logs a warning and
+// continues), so it is safe to list candidate pages for both versions even if
+// a page only exists in one of them.
 
 type pageSpec struct {
-	url      string
-	category string
+	url              string
+	category         string
+	deprecated       bool   // mark all items from this page as deprecated
+	deprecatedReason string // reason string set on each item when deprecated=true
+	gpsVar           bool   // use GPS 3-column parser (Name|Units|Settable, no Description)
 }
 
+// ── 2020 base URLs ────────────────────────────────────────────────────────────
+const (
+	base2020SimVars = "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/"
+	base2020Events  = "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/"
+	base2020SimConn = "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/"
+	base2020GPS     = "https://docs.flightsimulator.com/html/Programming_Tools/GPSVars/"
+)
+
+// ── 2024 base URLs ────────────────────────────────────────────────────────────
+const (
+	base2024Root    = "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/"
+	base2024SimVars = "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/SimVars/"
+	base2024Events  = "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/"
+	base2024SimConn = "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/SimConnect/"
+	base2024GPS     = "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/"
+)
+
 var simvarPages2020 = []pageSpec{
-	{
-		url:      "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Position_And_Speed_Variables.htm",
-		category: "Aircraft Position and Speed",
-	},
-	{
-		url:      "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm",
-		category: "Aircraft Engine",
-	},
-	{
-		url:      "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Miscellaneous_Variables.htm",
-		category: "Miscellaneous",
-	},
+	// ── Aircraft SimVars ──────────────────────────────────────────────────────
+	{url: base2020SimVars + "Aircraft_SimVars/Aircraft_AutopilotAssistant_Variables.htm", category: "Autopilot and Assistant"},
+	{url: base2020SimVars + "Aircraft_SimVars/Aircraft_Brake_Landing_Gear_Variables.htm", category: "Brakes and Landing Gear"},
+	{url: base2020SimVars + "Aircraft_SimVars/Aircraft_Control_Variables.htm", category: "Controls"},
+	{url: base2020SimVars + "Aircraft_SimVars/Aircraft_Electrics_Variables.htm", category: "Electrics"},
+	{url: base2020SimVars + "Aircraft_SimVars/Aircraft_Engine_Variables.htm", category: "Engine"},
+	{url: base2020SimVars + "Aircraft_SimVars/Aircraft_FlightModel_Variables.htm", category: "Flight Model"},
+	{url: base2020SimVars + "Aircraft_SimVars/Aircraft_Fuel_Variables.htm", category: "Fuel"},
+	{url: base2020SimVars + "Aircraft_SimVars/Aircraft_Misc_Variables.htm", category: "Miscellaneous"},
+	{url: base2020SimVars + "Aircraft_SimVars/Aircraft_RadioNavigation_Variables.htm", category: "Radio Navigation"},
+	{url: base2020SimVars + "Aircraft_SimVars/Aircraft_System_Variables.htm", category: "System"},
+	// ── Non-aircraft SimVars ──────────────────────────────────────────────────
+	{url: base2020SimVars + "Helicopter_Variables.htm", category: "Helicopter"},
+	{url: base2020SimVars + "Camera_Variables.htm", category: "Camera"},
+	{url: base2020SimVars + "Services_Variables.htm", category: "Services"},
+	{url: base2020SimVars + "Miscellaneous_Variables.htm", category: "Miscellaneous Variables"},
+	{url: base2020SimVars + "RTPC_And_Simulation_Variables.htm", category: "RTPC"},
+	// ── Environment variables ─────────────────────────────────────────────────
+	{url: "https://docs.flightsimulator.com/html/Programming_Tools/Environment_Variables.htm", category: "Environment"},
+	// ── GPS variables ─────────────────────────────────────────────────────────
+	{url: base2020GPS + "Airports.htm", category: "GPS", gpsVar: true},
+	{url: base2020GPS + "Intersections.htm", category: "GPS", gpsVar: true},
+	{url: base2020GPS + "NDB_VOR.htm", category: "GPS", gpsVar: true},
+	{url: base2020GPS + "Flightplans.htm", category: "GPS", gpsVar: true},
+	{url: base2020GPS + "Miscellaneous.htm", category: "GPS", gpsVar: true},
 }
 
 var simvarPages2024 = []pageSpec{
-	{
-		url:      "https://docs.flightsimulator.com/msfs2024/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Position_And_Speed_Variables.htm",
-		category: "Aircraft Position and Speed",
-	},
-	{
-		url:      "https://docs.flightsimulator.com/msfs2024/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm",
-		category: "Aircraft Engine",
-	},
+	// ── Aircraft SimVars ──────────────────────────────────────────────────────
+	{url: base2024SimVars + "Aircraft_SimVars/Aircraft_AutopilotAssistant_Variables.htm", category: "Autopilot and Assistant"},
+	{url: base2024SimVars + "Aircraft_SimVars/Aircraft_Brake_Landing_Gear_Variables.htm", category: "Brakes and Landing Gear"},
+	{url: base2024SimVars + "Aircraft_SimVars/Aircraft_Control_Variables.htm", category: "Controls"},
+	{url: base2024SimVars + "Aircraft_SimVars/Aircraft_Electrics_Variables.htm", category: "Electrics"},
+	{url: base2024SimVars + "Aircraft_SimVars/Aircraft_Engine_Variables.htm", category: "Engine"},
+	{url: base2024SimVars + "Aircraft_SimVars/Aircraft_FlightModel_Variables.htm", category: "Flight Model"},
+	{url: base2024SimVars + "Aircraft_SimVars/Aircraft_Fuel_Variables.htm", category: "Fuel"},
+	{url: base2024SimVars + "Aircraft_SimVars/Aircraft_Misc_Variables.htm", category: "Miscellaneous"},
+	{url: base2024SimVars + "Aircraft_SimVars/Aircraft_RadioNavigation_Variables.htm", category: "Radio Navigation"},
+	{url: base2024SimVars + "Aircraft_SimVars/Aircraft_System_Variables.htm", category: "System"},
+	// ── Non-aircraft SimVars ──────────────────────────────────────────────────
+	{url: base2024SimVars + "Helicopter_Variables.htm", category: "Helicopter"},
+	{url: base2024SimVars + "Camera_Variables.htm", category: "Camera"},
+	{url: base2024SimVars + "Balloon_Variables.htm", category: "Balloon"},
+	{url: base2024SimVars + "Services_Variables.htm", category: "Services"},
+	{url: base2024SimVars + "Miscellaneous_Variables.htm", category: "Miscellaneous Variables"},
+	// ── Environment variables ─────────────────────────────────────────────────
+	{url: base2024Root + "Environment_Variables.htm", category: "Environment"},
+	// ── GPS variables (deprecated in MSFS 2024) ───────────────────────────────
+	{url: base2024GPS + "Airports.htm", category: "GPS", gpsVar: true, deprecated: true, deprecatedReason: "GPS variables are deprecated in MSFS 2024"},
+	{url: base2024GPS + "Intersections.htm", category: "GPS", gpsVar: true, deprecated: true, deprecatedReason: "GPS variables are deprecated in MSFS 2024"},
+	{url: base2024GPS + "NDB_VOR.htm", category: "GPS", gpsVar: true, deprecated: true, deprecatedReason: "GPS variables are deprecated in MSFS 2024"},
+	{url: base2024GPS + "Flightplans.htm", category: "GPS", gpsVar: true, deprecated: true, deprecatedReason: "GPS variables are deprecated in MSFS 2024"},
+	{url: base2024GPS + "Miscellaneous.htm", category: "GPS", gpsVar: true, deprecated: true, deprecatedReason: "GPS variables are deprecated in MSFS 2024"},
 }
 
 var eventPages2020 = []pageSpec{
-	{url: "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"},
-	{url: "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Lighting_Events.htm"},
+	{url: base2020Events + "Aircraft_Autopilot_Flight_Assist_Events.htm"},
+	{url: base2020Events + "Aircraft_Electrical_Events.htm"},
+	{url: base2020Events + "Aircraft_Engine_Events.htm"},
+	{url: base2020Events + "Aircraft_Flight_Control_Events.htm"},
+	{url: base2020Events + "Aircraft_Fuel_System_Events.htm"},
+	{url: base2020Events + "Aircraft_Instrumentation_Events.htm"},
+	{url: base2020Events + "Aircraft_Misc_Events.htm"},
+	{url: base2020Events + "Aircraft_Radio_Navigation_Events.htm"},
+	{url: base2020Events + "Helicopter_Specific_Events.htm"},
+	{url: base2020Events + "Miscellaneous_Events.htm"},
+	{url: base2020Events + "View_Camera_Events.htm"},
 }
 
 var eventPages2024 = []pageSpec{
-	{url: "https://docs.flightsimulator.com/msfs2024/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"},
+	{url: base2024Events + "Aircraft_Autopilot_Flight_Assist_Events.htm"},
+	{url: base2024Events + "Aircraft_Electrical_Events.htm"},
+	{url: base2024Events + "Aircraft_Engine_Events.htm"},
+	{url: base2024Events + "Aircraft_Flight_Control_Events.htm"},
+	{url: base2024Events + "Aircraft_Fuel_System_Events.htm"},
+	{url: base2024Events + "Aircraft_General_Systems.htm"},
+	{url: base2024Events + "Aircraft_Instrumentation_Events.htm"},
+	{url: base2024Events + "Aircraft_Misc_Events.htm"},
+	{url: base2024Events + "Aircraft_Radio_Navigation_Events.htm"},
+	{url: base2024Events + "Helicopter_Specific_Events.htm"},
+	{url: base2024Events + "Balloon_Airship_Events.htm"},
+	{url: base2024Events + "Miscellaneous_Events.htm"},
+	{url: base2024Events + "View_Camera_Events.htm"},
 }
 
+// functionPages lists every SimConnect API function page. Pages are scraped
+// from the 2020 docs by default; 2024-only functions use base2024SimConn.
+// Unknown or 404 pages are silently skipped by the scraper.
 var functionPages = []string{
-	"https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/General/SimConnect_Open.htm",
-	"https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/General/SimConnect_Close.htm",
-	"https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Simulation_Variables/SimConnect_RequestDataOnSimObject.htm",
-	"https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Simulation_Variables/SimConnect_AddToDataDefinition.htm",
+	// ── General ───────────────────────────────────────────────────────────────
+	base2020SimConn + "API_Reference/General/SimConnect_Open.htm",
+	base2020SimConn + "API_Reference/General/SimConnect_Close.htm",
+	base2020SimConn + "API_Reference/General/SimConnect_CallDispatch.htm",
+	base2020SimConn + "API_Reference/General/SimConnect_GetNextDispatch.htm",
+	base2020SimConn + "API_Reference/General/SimConnect_RequestSystemState.htm",
+	base2020SimConn + "API_Reference/General/SimConnect_SetNotificationGroupPriority.htm",
+	base2020SimConn + "API_Reference/General/SimConnect_ExecuteAction.htm",
+
+	// ── Events and Data ───────────────────────────────────────────────────────
+	base2020SimConn + "API_Reference/Events_And_Data/SimConnect_MapClientEventToSimEvent.htm",
+	base2020SimConn + "API_Reference/Events_And_Data/SimConnect_TransmitClientEvent.htm",
+	base2020SimConn + "API_Reference/Events_And_Data/SimConnect_TransmitClientEvent_EX1.htm",
+	base2020SimConn + "API_Reference/Events_And_Data/SimConnect_AddClientEventToNotificationGroup.htm",
+	base2020SimConn + "API_Reference/Events_And_Data/SimConnect_RemoveClientEvent.htm",
+	base2020SimConn + "API_Reference/Events_And_Data/SimConnect_SubscribeToSystemEvent.htm",
+	base2020SimConn + "API_Reference/Events_And_Data/SimConnect_UnsubscribeFromSystemEvent.htm",
+	base2020SimConn + "API_Reference/Events_And_Data/SimConnect_SetSystemEventState.htm",
+	base2020SimConn + "API_Reference/Events_And_Data/SimConnect_RequestDataOnSimObject.htm",
+	base2020SimConn + "API_Reference/Events_And_Data/SimConnect_RequestDataOnSimObjectType.htm",
+	base2020SimConn + "API_Reference/Events_And_Data/SimConnect_AddToDataDefinition.htm",
+	base2020SimConn + "API_Reference/Events_And_Data/SimConnect_ClearDataDefinition.htm",
+	base2020SimConn + "API_Reference/Events_And_Data/SimConnect_SetDataOnSimObject.htm",
+	base2020SimConn + "API_Reference/Events_And_Data/SimConnect_MapClientDataNameToID.htm",
+	base2020SimConn + "API_Reference/Events_And_Data/SimConnect_CreateClientData.htm",
+	base2020SimConn + "API_Reference/Events_And_Data/SimConnect_AddToClientDataDefinition.htm",
+	base2020SimConn + "API_Reference/Events_And_Data/SimConnect_ClearClientDataDefinition.htm",
+	base2020SimConn + "API_Reference/Events_And_Data/SimConnect_RequestClientData.htm",
+	base2020SimConn + "API_Reference/Events_And_Data/SimConnect_SetClientData.htm",
+	base2020SimConn + "API_Reference/Events_And_Data/SimConnect_RequestNotificationGroup.htm",
+	base2020SimConn + "API_Reference/Events_And_Data/SimConnect_ClearNotificationGroup.htm",
+	base2020SimConn + "API_Reference/Events_And_Data/SimConnect_ClearInputGroup.htm",
+	base2020SimConn + "API_Reference/Events_And_Data/SimConnect_SetInputGroupPriority.htm",
+	base2020SimConn + "API_Reference/Events_And_Data/SimConnect_SetInputGroupState.htm",
+	base2020SimConn + "API_Reference/Events_And_Data/SimConnect_RemoveInputEvent.htm",
+	base2020SimConn + "API_Reference/Events_And_Data/SimConnect_RequestReservedKey.htm",
+
+	// ── Flights ───────────────────────────────────────────────────────────────
+	base2020SimConn + "API_Reference/Flights/SimConnect_FlightLoad.htm",
+	base2020SimConn + "API_Reference/Flights/SimConnect_FlightSave.htm",
+	base2020SimConn + "API_Reference/Flights/SimConnect_FlightPlanLoad.htm",
+
+	// ── Debug ─────────────────────────────────────────────────────────────────
+	base2020SimConn + "API_Reference/Debug/SimConnect_GetLastSentPacketID.htm",
+	base2020SimConn + "API_Reference/Debug/SimConnect_RequestResponseTimes.htm",
+	base2020SimConn + "API_Reference/Debug/SimConnect_InsertString.htm",
+	base2020SimConn + "API_Reference/Debug/SimConnect_RetrieveString.htm",
+
+	// ── Facilities ────────────────────────────────────────────────────────────
+	base2020SimConn + "API_Reference/Facilities/SimConnect_AddToFacilityDefinition.htm",
+	base2020SimConn + "API_Reference/Facilities/SimConnect_AddFacilityDataDefinitionFilter.htm",
+	base2020SimConn + "API_Reference/Facilities/SimConnect_ClearAllFacilityDataDefinitionFilters.htm",
+	base2020SimConn + "API_Reference/Facilities/SimConnect_RequestFacilitesList.htm",
+	base2020SimConn + "API_Reference/Facilities/SimConnect_RequestFacilitiesList_EX1.htm",
+	base2020SimConn + "API_Reference/Facilities/SimConnect_RequestFacilityData.htm",
+	base2020SimConn + "API_Reference/Facilities/SimConnect_RequestFacilityData_EX1.htm",
+	base2020SimConn + "API_Reference/Facilities/SimConnect_RequestJetwayData.htm",
+	base2020SimConn + "API_Reference/Facilities/SimConnect_SubscribeToFacilities.htm",
+	base2020SimConn + "API_Reference/Facilities/SimConnect_SubscribeToFacilities_EX1.htm",
+	base2020SimConn + "API_Reference/Facilities/SimConnect_UnsubscribeToFacilities.htm",
+	base2020SimConn + "API_Reference/Facilities/SimConnect_UnsubscribeToFacilities_EX1.htm",
+
+	// ── AI Object (folder is singular: AI_Object/) ────────────────────────────
+	base2020SimConn + "API_Reference/AI_Object/SimConnect_AICreateEnrouteATCAircraft.htm",
+	base2020SimConn + "API_Reference/AI_Object/SimConnect_AICreateNonATCAircraft.htm",
+	base2020SimConn + "API_Reference/AI_Object/SimConnect_AICreateParkedATCAircraft.htm",
+	base2020SimConn + "API_Reference/AI_Object/SimConnect_AICreateSimulatedObject.htm",
+	base2020SimConn + "API_Reference/AI_Object/SimConnect_AIReleaseControl.htm",
+	base2020SimConn + "API_Reference/AI_Object/SimConnect_AIRemoveObject.htm",
+	base2020SimConn + "API_Reference/AI_Object/SimConnect_AISetAircraftFlightPlan.htm",
+	// ── 2024-only: AI Object EX1 variants + SimObjectsAndLiveries ────────────
+	base2024SimConn + "API_Reference/AI_Object/SimConnect_AICreateEnrouteATCAircraft_EX1.htm",
+	base2024SimConn + "API_Reference/AI_Object/SimConnect_AICreateNonATCAircraft_EX1.htm",
+	base2024SimConn + "API_Reference/AI_Object/SimConnect_AICreateParkedATCAircraft_EX1.htm",
+	base2024SimConn + "API_Reference/AI_Object/SimConnect_AICreateSimulatedObject_EX1.htm",
+	base2024SimConn + "API_Reference/AI_Object/SimConnect_EnumerateSimObjectsAndLiveries.htm",
+
+	// ── 2024-only: Input Events (folder name has no underscore: InputEvents/) ──
+	base2024SimConn + "API_Reference/InputEvents/SimConnect_EnumerateControllers.htm",
+	base2024SimConn + "API_Reference/InputEvents/SimConnect_EnumerateInputEvents.htm",
+	base2024SimConn + "API_Reference/InputEvents/SimConnect_EnumerateInputEventParams.htm",
+	base2024SimConn + "API_Reference/InputEvents/SimConnect_GetInputEvent.htm",
+	base2024SimConn + "API_Reference/InputEvents/SimConnect_MapInputEventToClientEvent.htm",
+	base2024SimConn + "API_Reference/InputEvents/SimConnect_MapInputEventToClientEvent_EX1.htm",
+	base2024SimConn + "API_Reference/InputEvents/SimConnect_SetInputEvent.htm",
+	base2024SimConn + "API_Reference/InputEvents/SimConnect_SubscribeInputEvent.htm",
+	base2024SimConn + "API_Reference/InputEvents/SimConnect_UnsubscribeInputEvent.htm",
+
+	// ── 2024-only: Flow API (lives under Events_And_Data/, not a separate folder) ─
+	base2024SimConn + "API_Reference/Events_And_Data/SimConnect_SubscribeToFlowEvent.htm",
+	base2024SimConn + "API_Reference/Events_And_Data/SimConnect_UnsubscribeToFlowEvent.htm",
 }
 
+// structurePages lists every SimConnect structure and enumeration page.
+// Unknown or 404 pages are silently skipped.
 var structurePages = []string{
-	"https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_RECV.htm",
-	"https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_DATA_INITPOSITION.htm",
+	// ── Base structures ───────────────────────────────────────────────────────
+	base2020SimConn + "API_Reference/Structures_And_Enumerations/SIMCONNECT_RECV.htm",
+	base2020SimConn + "API_Reference/Structures_And_Enumerations/SIMCONNECT_RECV_OPEN.htm",
+	base2020SimConn + "API_Reference/Structures_And_Enumerations/SIMCONNECT_RECV_QUIT.htm",
+	base2020SimConn + "API_Reference/Structures_And_Enumerations/SIMCONNECT_RECV_EXCEPTION.htm",
+
+	// ── SimObject data structures ─────────────────────────────────────────────
+	base2020SimConn + "API_Reference/Structures_And_Enumerations/SIMCONNECT_RECV_SIMOBJECT_DATA.htm",
+	base2020SimConn + "API_Reference/Structures_And_Enumerations/SIMCONNECT_RECV_SIMOBJECT_DATA_BYTYPE.htm",
+	base2020SimConn + "API_Reference/Structures_And_Enumerations/SIMCONNECT_RECV_ASSIGNED_OBJECT_ID.htm",
+
+	// ── Event structures ──────────────────────────────────────────────────────
+	base2020SimConn + "API_Reference/Structures_And_Enumerations/SIMCONNECT_RECV_EVENT.htm",
+	base2020SimConn + "API_Reference/Structures_And_Enumerations/SIMCONNECT_RECV_EVENT_FILENAME.htm",
+	base2020SimConn + "API_Reference/Structures_And_Enumerations/SIMCONNECT_RECV_EVENT_FRAME.htm",
+	base2020SimConn + "API_Reference/Structures_And_Enumerations/SIMCONNECT_RECV_EVENT_OBJECT_ADDREMOVE.htm",
+	base2020SimConn + "API_Reference/Structures_And_Enumerations/SIMCONNECT_RECV_EVENT_RACE_END.htm",
+	base2020SimConn + "API_Reference/Structures_And_Enumerations/SIMCONNECT_RECV_EVENT_RACE_LAP.htm",
+	base2020SimConn + "API_Reference/Structures_And_Enumerations/SIMCONNECT_RECV_EVENT_MULTIPLAYER_CLIENT_STARTED.htm",
+	base2020SimConn + "API_Reference/Structures_And_Enumerations/SIMCONNECT_RECV_EVENT_MULTIPLAYER_SERVER_STARTED.htm",
+	base2020SimConn + "API_Reference/Structures_And_Enumerations/SIMCONNECT_RECV_EVENT_MULTIPLAYER_SESSION_ENDED.htm",
+
+	// ── Client data structures ────────────────────────────────────────────────
+	base2020SimConn + "API_Reference/Structures_And_Enumerations/SIMCONNECT_RECV_CLIENT_DATA.htm",
+
+	// ── System state ──────────────────────────────────────────────────────────
+	base2020SimConn + "API_Reference/Structures_And_Enumerations/SIMCONNECT_RECV_SYSTEM_STATE.htm",
+	base2020SimConn + "API_Reference/Structures_And_Enumerations/SIMCONNECT_RECV_RESERVED_KEY.htm",
+
+	// ── Facilities structures ─────────────────────────────────────────────────
+	base2020SimConn + "API_Reference/Structures_And_Enumerations/SIMCONNECT_RECV_FACILITIES_LIST.htm",
+	base2020SimConn + "API_Reference/Structures_And_Enumerations/SIMCONNECT_RECV_AIRPORT_LIST.htm",
+	base2020SimConn + "API_Reference/Structures_And_Enumerations/SIMCONNECT_RECV_NDB_LIST.htm",
+	base2020SimConn + "API_Reference/Structures_And_Enumerations/SIMCONNECT_RECV_VOR_LIST.htm",
+	base2020SimConn + "API_Reference/Structures_And_Enumerations/SIMCONNECT_RECV_WAYPOINT_LIST.htm",
+	base2020SimConn + "API_Reference/Structures_And_Enumerations/SIMCONNECT_RECV_LIST_TEMPLATE.htm",
+	base2020SimConn + "API_Reference/Structures_And_Enumerations/SIMCONNECT_RECV_FACILITY_DATA.htm",
+	base2020SimConn + "API_Reference/Structures_And_Enumerations/SIMCONNECT_RECV_FACILITY_DATA_END.htm",
+	base2020SimConn + "API_Reference/Structures_And_Enumerations/SIMCONNECT_RECV_FACILITY_MINIMAL_LIST.htm",
+	base2020SimConn + "API_Reference/Structures_And_Enumerations/SIMCONNECT_RECV_JETWAY_DATA.htm",
+	base2020SimConn + "API_Reference/Structures_And_Enumerations/SIMCONNECT_DATA_FACILITY_AIRPORT.htm",
+	base2020SimConn + "API_Reference/Structures_And_Enumerations/SIMCONNECT_DATA_FACILITY_NDB.htm",
+	base2020SimConn + "API_Reference/Structures_And_Enumerations/SIMCONNECT_DATA_FACILITY_VOR.htm",
+	base2020SimConn + "API_Reference/Structures_And_Enumerations/SIMCONNECT_DATA_FACILITY_WAYPOINT.htm",
+	base2020SimConn + "API_Reference/Structures_And_Enumerations/SIMCONNECT_FACILITY_MINIMAL.htm",
+	base2020SimConn + "API_Reference/Structures_And_Enumerations/SIMCONNECT_ICAO.htm",
+	base2020SimConn + "API_Reference/Structures_And_Enumerations/SIMCONNECT_JETWAY_DATA.htm",
+
+	// ── Data type structures ──────────────────────────────────────────────────
+	base2020SimConn + "API_Reference/Structures_And_Enumerations/SIMCONNECT_DATA_INITPOSITION.htm",
+	base2020SimConn + "API_Reference/Structures_And_Enumerations/SIMCONNECT_DATA_LATLONALT.htm",
+	base2020SimConn + "API_Reference/Structures_And_Enumerations/SIMCONNECT_DATA_PBH.htm",
+	base2020SimConn + "API_Reference/Structures_And_Enumerations/SIMCONNECT_DATA_XYZ.htm",
+	base2020SimConn + "API_Reference/Structures_And_Enumerations/SIMCONNECT_DATA_WAYPOINT.htm",
+	base2020SimConn + "API_Reference/Structures_And_Enumerations/SIMCONNECT_DATA_MARKERSTATE.htm",
+	base2020SimConn + "API_Reference/Structures_And_Enumerations/SIMCONNECT_DATA_RACE_RESULT.htm",
+	base2020SimConn + "API_Reference/Structures_And_Enumerations/SIMCONNECT_VERSION_BASE_TYPE.htm",
+
+	// ── Enumerations (listed alongside structures in the API reference) ──────
+	base2020SimConn + "API_Reference/Structures_And_Enumerations/SIMCONNECT_CLIENT_DATA_PERIOD.htm",
+	base2020SimConn + "API_Reference/Structures_And_Enumerations/SIMCONNECT_DATATYPE.htm",
+	base2020SimConn + "API_Reference/Structures_And_Enumerations/SIMCONNECT_FACILITY_DATA_TYPE.htm",
+	base2020SimConn + "API_Reference/Structures_And_Enumerations/SIMCONNECT_FACILITY_LIST_TYPE.htm",
+	base2020SimConn + "API_Reference/Structures_And_Enumerations/SIMCONNECT_INPUT_EVENT_TYPE.htm",
+	base2020SimConn + "API_Reference/Structures_And_Enumerations/SIMCONNECT_MISSION_END.htm",
+	base2020SimConn + "API_Reference/Structures_And_Enumerations/SIMCONNECT_PERIOD.htm",
+	base2020SimConn + "API_Reference/Structures_And_Enumerations/SIMCONNECT_RECV_ID.htm",
+	base2020SimConn + "API_Reference/Structures_And_Enumerations/SIMCONNECT_SIMOBJECT_TYPE.htm",
+	base2020SimConn + "API_Reference/Structures_And_Enumerations/SIMCONNECT_STATE.htm",
+	base2020SimConn + "API_Reference/Structures_And_Enumerations/SIMCONNECT_TEXT_RESULT.htm",
+	base2020SimConn + "API_Reference/Structures_And_Enumerations/SIMCONNECT_WAYPOINT_FLAGS.htm",
+
+	// ── 2024-only structures (Input Events, EX1 variants) ─────────────────────
+	base2024SimConn + "API_Reference/Structures_And_Enumerations/SIMCONNECT_RECV_EVENT_EX1.htm",
+	base2024SimConn + "API_Reference/Structures_And_Enumerations/SIMCONNECT_RECV_ENUMERATE_INPUT_EVENTS.htm",
+	base2024SimConn + "API_Reference/Structures_And_Enumerations/SIMCONNECT_RECV_ENUMERATE_INPUT_EVENT_PARAMS.htm",
+	base2024SimConn + "API_Reference/Structures_And_Enumerations/SIMCONNECT_RECV_GET_INPUT_EVENT.htm",
+	base2024SimConn + "API_Reference/Structures_And_Enumerations/SIMCONNECT_RECV_SUBSCRIBE_INPUT_EVENT.htm",
+	base2024SimConn + "API_Reference/Structures_And_Enumerations/SIMCONNECT_RECV_CONTROLLERS_LIST.htm",
+	base2024SimConn + "API_Reference/Structures_And_Enumerations/SIMCONNECT_INPUT_EVENT_DESCRIPTOR.htm",
+	base2024SimConn + "API_Reference/Structures_And_Enumerations/SIMCONNECT_CONTROLLER_ITEM.htm",
+	base2024SimConn + "API_Reference/Structures_And_Enumerations/SIMCONNECT_ENUMERATE_SIMOBJECT_LIVERY.htm",
+	base2024SimConn + "API_Reference/Structures_And_Enumerations/SIMCONNECT_RECV_ENUMERATE_SIMOBJECT_AND_LIVERY_LIST.htm",
 }
 
-var errorCodePage = "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_EXCEPTION.htm"
+var errorCodePage = base2020SimConn + "API_Reference/Structures_And_Enumerations/SIMCONNECT_EXCEPTION.htm"
 
 // ── scrapeResult bundles a file write outcome ─────────────────────────────────
 
@@ -197,7 +445,12 @@ func scrapeSimVars(s *Scraper, pages []pageSpec, ver, outDir string, dryRun bool
 			log.Printf("simvars %s: fetch %s: %v", ver, p.url, err)
 			continue
 		}
-		vars, err := ParseSimVarPage(htmlBytes, ver, p.url)
+		var vars []corpus.SimVar
+		if p.gpsVar {
+			vars, err = ParseGPSVarPage(htmlBytes, ver, p.url, p.deprecated, p.deprecatedReason)
+		} else {
+			vars, err = ParseSimVarPage(htmlBytes, ver, p.url)
+		}
 		if err != nil {
 			log.Printf("simvars %s: parse %s: %v", ver, p.url, err)
 			continue

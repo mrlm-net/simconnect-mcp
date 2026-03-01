@@ -89,6 +89,67 @@ func ParseSimVarPage(htmlBytes []byte, sdkVersion, sourceURL string) ([]corpus.S
 	return simvars, nil
 }
 
+// ParseGPSVarPage parses a GPS variable subpage (Airports.htm, Intersections.htm,
+// NDB_VOR.htm, Flightplans.htm, Miscellaneous.htm) from docs.flightsimulator.com.
+//
+// GPS pages use a 3-column format — "GPS Variable", "Units", "Settable" — with no
+// Description column. Each page may contain multiple tables (one per subsection).
+//
+// pageDeprecated and pageDeprecatedReason are applied to every variable when set.
+// In MSFS 2024 all GPS variables carry a page-level deprecation notice.
+func ParseGPSVarPage(htmlBytes []byte, sdkVersion, sourceURL string, pageDeprecated bool, pageDeprecatedReason string) ([]corpus.SimVar, error) {
+	doc, err := html.Parse(strings.NewReader(string(htmlBytes)))
+	if err != nil {
+		return nil, fmt.Errorf("parse html: %w", err)
+	}
+
+	category := extractH1(doc)
+	tables := findAllTables(doc)
+
+	var simvars []corpus.SimVar
+
+	for _, table := range tables {
+		rows := rowsFromTable(table)
+		for i, row := range rows {
+			if i == 0 {
+				continue // skip header row
+			}
+			cells := extractCells(row)
+			if len(cells) < 2 {
+				log.Printf("gps simvar row %d: expected >=2 cells, got %d — skipping", i, len(cells))
+				continue
+			}
+
+			name := cleanText(cellText(cells[0]))
+			if name == "" {
+				log.Printf("gps simvar row %d: empty name — skipping", i)
+				continue
+			}
+
+			units := parseUnitList(cleanText(cellText(cells[1])))
+
+			settable := false
+			if len(cells) >= 3 {
+				settable = strings.EqualFold(strings.TrimSpace(cellText(cells[2])), "yes")
+			}
+
+			sv := corpus.SimVar{
+				Name:             name,
+				Units:            units,
+				Settable:         settable,
+				Category:         category,
+				Versions:         []string{sdkVersion},
+				Deprecated:       pageDeprecated,
+				DeprecatedReason: pageDeprecatedReason,
+				SourceURL:        sourceURL,
+			}
+			simvars = append(simvars, sv)
+		}
+	}
+
+	return simvars, nil
+}
+
 // ParseEventPage parses an Event (Key Event ID) page from docs.flightsimulator.com.
 // The page is expected to contain an HTML table with at least the columns:
 // "Event name" and "Description".
@@ -179,6 +240,9 @@ func ParseFunctionPage(htmlBytes []byte, sdkVersion, sourceURL string) ([]corpus
 //   - A description paragraph.
 //   - A members table with columns: "Member", "Type", "Description".
 //   - An optional remarks paragraph.
+//
+// Some docs pages have a heading that references a different item (docs bug).
+// In that case the URL filename stem is used as the authoritative name.
 func ParseStructurePage(htmlBytes []byte, sdkVersion, sourceURL string) ([]corpus.Structure, error) {
 	doc, err := html.Parse(strings.NewReader(string(htmlBytes)))
 	if err != nil {
@@ -186,8 +250,19 @@ func ParseStructurePage(htmlBytes []byte, sdkVersion, sourceURL string) ([]corpu
 	}
 
 	name := extractH1(doc)
-	if name == "" {
+	urlName := urlFileStem(sourceURL)
+	switch {
+	case name == "" && urlName == "":
 		return nil, fmt.Errorf("no <h1> found in structure page from %s", sourceURL)
+	case name == "":
+		name = urlName
+	case urlName != "" && !strings.EqualFold(name, urlName) &&
+		strings.HasPrefix(strings.ToUpper(urlName), "SIMCONNECT_"):
+		// URL stem looks like a SimConnect API name but heading disagrees —
+		// docs website bug (e.g. SIMCONNECT_STATE.htm whose h2 says
+		// SIMCONNECT_SIMOBJECT_TYPE). Use the URL name as ground truth.
+		log.Printf("structure page %s: heading %q differs from URL name %q — using URL name", sourceURL, name, urlName)
+		name = urlName
 	}
 
 	description := extractParagraphAfterH1(doc)
@@ -218,13 +293,14 @@ func ParseErrorCodePage(htmlBytes []byte, sdkVersion, sourceURL string) ([]corpu
 
 	var codes []corpus.ErrorCode
 
+	valueCounter := 0
 	for i, row := range rows {
 		if i == 0 {
 			continue
 		}
 		cells := extractCells(row)
-		if len(cells) < 3 {
-			log.Printf("errorcode row %d: expected >=3 cells, got %d — skipping", i, len(cells))
+		if len(cells) < 2 {
+			log.Printf("errorcode row %d: expected >=2 cells, got %d — skipping", i, len(cells))
 			continue
 		}
 
@@ -234,14 +310,26 @@ func ParseErrorCodePage(htmlBytes []byte, sdkVersion, sourceURL string) ([]corpu
 			continue
 		}
 
-		valueStr := cleanText(cellText(cells[1]))
-		value, err := strconv.Atoi(valueStr)
-		if err != nil {
-			log.Printf("errorcode row %d %q: non-integer value %q — skipping", i, name, valueStr)
-			continue
-		}
+		var value int
+		var description string
 
-		description := cleanText(cellText(cells[2]))
+		if len(cells) >= 3 {
+			// Three-column layout: Name | Value | Description
+			valueStr := cleanText(cellText(cells[1]))
+			parsed, err := strconv.Atoi(valueStr)
+			if err != nil {
+				log.Printf("errorcode row %d %q: non-integer value %q — using counter", i, name, valueStr)
+				value = valueCounter
+			} else {
+				value = parsed
+			}
+			description = cleanText(cellText(cells[2]))
+		} else {
+			// Two-column layout: Name | Description — derive value from row order.
+			value = valueCounter
+			description = cleanText(cellText(cells[1]))
+		}
+		valueCounter++
 
 		ec := corpus.ErrorCode{
 			Name:        name,
@@ -257,25 +345,32 @@ func ParseErrorCodePage(htmlBytes []byte, sdkVersion, sourceURL string) ([]corpu
 
 // ── HTML extraction helpers ───────────────────────────────────────────────────
 
-// extractH1 returns the trimmed text content of the first <h1> element found
-// via depth-first traversal. Returns "" if none is found.
+// extractH1 returns the trimmed text content of the first heading element
+// found via depth-first traversal. It tries h1 first, then falls back to h2
+// since some SDK pages use h2 as the primary page title.
+// Returns "" if neither heading tag is found.
 func extractH1(doc *html.Node) string {
-	var text string
-	var walk func(*html.Node)
-	walk = func(n *html.Node) {
+	for _, tag := range []string{"h1", "h2"} {
+		var text string
+		var walk func(*html.Node)
+		walk = func(n *html.Node) {
+			if text != "" {
+				return
+			}
+			if n.Type == html.ElementNode && n.Data == tag {
+				text = cleanText(nodeText(n))
+				return
+			}
+			for c := n.FirstChild; c != nil; c = c.NextSibling {
+				walk(c)
+			}
+		}
+		walk(doc)
 		if text != "" {
-			return
-		}
-		if n.Type == html.ElementNode && n.Data == "h1" {
-			text = cleanText(nodeText(n))
-			return
-		}
-		for c := n.FirstChild; c != nil; c = c.NextSibling {
-			walk(c)
+			return text
 		}
 	}
-	walk(doc)
-	return text
+	return ""
 }
 
 // extractTableRows returns all <tr> nodes found in the first <table> in doc.
@@ -284,6 +379,30 @@ func extractTableRows(doc *html.Node) []*html.Node {
 	if table == nil {
 		return nil
 	}
+	return rowsFromTable(table)
+}
+
+// findAllTables returns every top-level <table> node in doc without recursing
+// into nested tables.
+func findAllTables(doc *html.Node) []*html.Node {
+	var tables []*html.Node
+	var walk func(*html.Node)
+	walk = func(n *html.Node) {
+		if n.Type == html.ElementNode && n.Data == "table" {
+			tables = append(tables, n)
+			return // do not recurse into nested tables
+		}
+		for c := n.FirstChild; c != nil; c = c.NextSibling {
+			walk(c)
+		}
+	}
+	walk(doc)
+	return tables
+}
+
+// rowsFromTable extracts all <tr> nodes from a single <table> node, without
+// recursing into nested tables.
+func rowsFromTable(table *html.Node) []*html.Node {
 	var rows []*html.Node
 	var walk func(*html.Node)
 	walk = func(n *html.Node) {
@@ -570,7 +689,9 @@ func extractFunctionParams(doc *html.Node) []corpus.FunctionParam {
 }
 
 // extractStructFields extracts structure member fields from the members table.
-// Expects columns: Member/Name, Type, Description.
+// Handles two layouts:
+//   - Three-column: Member | Type | Description
+//   - Two-column:   Member | Description  (Type stored as "")
 func extractStructFields(doc *html.Node) []corpus.StructField {
 	rows := extractTableRows(doc)
 	var fields []corpus.StructField
@@ -580,17 +701,22 @@ func extractStructFields(doc *html.Node) []corpus.StructField {
 			continue
 		}
 		cells := extractCells(row)
-		if len(cells) < 3 {
-			log.Printf("struct field row %d: expected >=3 cells, got %d — skipping", i, len(cells))
+		if len(cells) < 2 {
+			log.Printf("struct field row %d: expected >=2 cells, got %d — skipping", i, len(cells))
 			continue
 		}
 
 		name := cleanText(cellText(cells[0]))
-		typ := cleanText(cellText(cells[1]))
-		description := cleanText(cellText(cells[2]))
-
 		if name == "" {
 			continue
+		}
+
+		var typ, description string
+		if len(cells) >= 3 {
+			typ = cleanText(cellText(cells[1]))
+			description = cleanText(cellText(cells[2]))
+		} else {
+			description = cleanText(cellText(cells[1]))
 		}
 
 		fields = append(fields, corpus.StructField{
@@ -638,4 +764,26 @@ func parseUnitList(s string) []string {
 		return nil
 	}
 	return units
+}
+
+// urlFileStem extracts the filename stem (last path segment without extension)
+// from a URL string. Returns "" if the URL has no recognisable last segment.
+// Example: ".../SIMCONNECT_STATE.htm" → "SIMCONNECT_STATE"
+func urlFileStem(u string) string {
+	// Work with the path part only (ignore query/fragment).
+	if idx := strings.Index(u, "?"); idx >= 0 {
+		u = u[:idx]
+	}
+	parts := strings.Split(u, "/")
+	for i := len(parts) - 1; i >= 0; i-- {
+		seg := parts[i]
+		if seg == "" {
+			continue
+		}
+		if idx := strings.LastIndex(seg, "."); idx >= 0 {
+			return seg[:idx]
+		}
+		return seg
+	}
+	return ""
 }

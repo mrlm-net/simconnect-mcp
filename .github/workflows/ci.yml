@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [milestone/1-docs, milestone/2-simconnect, main]
+    branches: [milestone/1-docs, milestone/2-simconnect, milestone/3-website, milestone/4-packaging, main]
   pull_request:
-    branches: [milestone/1-docs, milestone/2-simconnect, main]
+    branches: [milestone/1-docs, milestone/2-simconnect, milestone/3-website, milestone/4-packaging, main]
 
 jobs:
   test:

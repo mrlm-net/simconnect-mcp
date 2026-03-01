@@ -1,45 +1,2367 @@
 {
-  "scraped_at": "2025-01-01T00:00:00Z",
-  "sdk_version": "1.2.0",
+  "scraped_at": "2026-03-01T12:21:09.2138085Z",
+  "sdk_version": "2024",
   "simvars": [],
   "events": [
     {
-      "name": "BRAKES",
-      "description": "Applies maximum braking to all wheel brakes simultaneously. This is equivalent to pressing both left and right brake pedals to full deflection. The brakes are applied for as long as the event is held active.",
-      "versions": ["2024"],
-      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Misc_Events.htm"
-    },
-    {
-      "name": "LANDING_LIGHTS_TOGGLE",
-      "description": "Toggles the landing lights on or off. If the landing lights are currently off they will be switched on, and vice versa. Applies to all landing light units simultaneously on aircraft that have more than one.",
-      "versions": ["2024"],
-      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Misc_Events.htm"
-    },
-    {
-      "name": "TOGGLE_MASTER_ALTERNATOR",
-      "description": "Toggles the master alternator switch on or off. The alternator is responsible for charging the aircraft battery and supplying electrical power to avionics and systems while the engine is running.",
-      "versions": ["2024"],
-      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Electrical_Events.htm"
-    },
-    {
-      "name": "AXIS_THROTTLE_SET",
-      "description": "Sets the throttle axis position for all engines using a signed floating-point value. This event is intended for use with analogue axis inputs such as throttle levers on joysticks or dedicated throttle quadrants.",
-      "parameters": [
-        {
-          "index": 0,
-          "name": "value",
-          "description": "Normalised throttle axis value. Range -16383 (full reverse) to +16383 (full throttle). A value of 0 corresponds to idle.",
-          "type": "float"
-        }
+      "name": "AP_AIRSPEED_HOLD",
+      "description": "KEY_AP_AIRSPEED_HOLD",
+      "versions": [
+        "2024"
       ],
-      "versions": ["2024"],
-      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Engine_Events.htm"
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
     },
     {
-      "name": "GEAR_UP",
-      "description": "Commands the landing gear to retract to the up and locked position. If the gear is already retracted no action is taken. The gear transition animation plays when this event is sent while gear is extended.",
-      "versions": ["2024"],
-      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Misc_Events.htm"
+      "name": "AP_AIRSPEED_OFF",
+      "description": "KEY_AP_AIRSPEED_OFF",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_AIRSPEED_ON",
+      "description": "KEY_AP_AIRSPEED_ON",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_AIRSPEED_SET",
+      "description": "KEY_AP_AIRSPEED_SET",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_ALT_CURRENT_ALT_SET",
+      "description": "AP_ALT_CURRENT_ALT_SET",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_HDG_CURRENT_HDG_SET",
+      "description": "AP_HDG_CURRENT_HDG_SET",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_ALT_VAR_DEC",
+      "description": "KEY_AP_ALT_VAR_DEC",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_ALT_VAR_INC",
+      "description": "KEY_AP_VS_VAR_INC",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_ALT_HOLD",
+      "description": "KEY_AP_ALT_HOLD",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_ALT_HOLD_OFF",
+      "description": "KEY_AP_ALT_HOLD_OFF",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_ALT_HOLD_ON",
+      "description": "KEY_AP_ALT_HOLD_ON",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_ALT_RADIO_MODE_OFF",
+      "description": "KEY_AP_ALT_RADIO_MODE_OFF",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_ALT_RADIO_MODE_ON",
+      "description": "KEY_AP_ALT_RADIO_MODE_ON",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_ALT_RADIO_MODE_SET",
+      "description": "KEY_AP_ALT_RADIO_MODE_SET",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_ALT_RADIO_MODE_TOGGLE",
+      "description": "KEY_AP_ALT_RADIO_MODE_TOGGLE",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_ALT_VAR_SET_ENGLISH",
+      "description": "KEY_AP_ALT_VAR_SET_ENGLISH",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_ALT_VAR_SET_METRIC",
+      "description": "KEY_AP_VS_VAR_SET_METRIC",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_APR_HOLD",
+      "description": "KEY_AP_APR_HOLD",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_APR_HOLD_OFF",
+      "description": "KEY_AP_APR_HOLD_OFF",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_APR_HOLD_ON",
+      "description": "KEY_AP_APR_HOLD_ON",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_ATT_HOLD",
+      "description": "KEY_AP_ATT_HOLD",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_ATT_HOLD_OFF",
+      "description": "KEY_AP_ATT_HOLD_OFF",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_ATT_HOLD_ON",
+      "description": "KEY_AP_ATT_HOLD_ON",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_AVIONICS_MANAGED_OFF",
+      "description": "KEY_AP_AVIONICS_MANAGED_OFF",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_AVIONICS_MANAGED_ON",
+      "description": "KEY_AP_AVIONICS_MANAGED_ON",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_AVIONICS_MANAGED_SET",
+      "description": "KEY_AP_AVIONICS_MANAGED_SET",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_AVIONICS_MANAGED_TOGGLE",
+      "description": "KEY_AP_AVIONICS_MANAGED_TOGGLE",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_BANK_HOLD",
+      "description": "KEY_AP_BANK_HOLD",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_BANK_HOLD_OFF",
+      "description": "KEY_AP_BANK_HOLD_OFF",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_BANK_HOLD_ON",
+      "description": "KEY_AP_BANK_HOLD_ON",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_BC_HOLD",
+      "description": "KEY_AP_BC_HOLD",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_BC_HOLD_OFF",
+      "description": "KEY_AP_BC_HOLD_OFF",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_BC_HOLD_ON",
+      "description": "KEY_AP_BC_HOLD_ON",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_HDG_HOLD",
+      "description": "KEY_AP_HDG_HOLD",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_HDG_HOLD_OFF",
+      "description": "KEY_AP_HDG_HOLD_OFF",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_HDG_HOLD_ON",
+      "description": "KEY_AP_HDG_HOLD_ON",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_LOC_HOLD",
+      "description": "KEY_AP_LOC_HOLD",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_LOC_HOLD_OFF",
+      "description": "KEY_AP_LOC_HOLD_OFF",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_LOC_HOLD_ON",
+      "description": "KEY_AP_LOC_HOLD_ON",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_MACH_VAR_DEC",
+      "description": "KEY_AP_MACH_VAR_DEC",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_MACH_VAR_INC",
+      "description": "KEY_AP_MACH_VAR_INC",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_MACH_HOLD",
+      "description": "KEY_AP_MACH_HOLD",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_MACH_OFF",
+      "description": "KEY_AP_MACH_OFF",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_MACH_ON",
+      "description": "KEY_AP_MACH_ON",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_MACH_SET",
+      "description": "KEY_AP_MACH_SET",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_MACH_VAR_SET",
+      "description": "KEY_AP_MACH_VAR_SET",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_MACH_VAR_SET_EX1",
+      "description": "KEY_AP_MACH_VAR_SET_EX1",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_MANAGED_SPEED_IN_MACH_OFF",
+      "description": "KEY_AP_MANAGED_SPEED_IN_MACH_OFF",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_MANAGED_SPEED_IN_MACH_ON",
+      "description": "KEY_AP_MANAGED_SPEED_IN_MACH_ON",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_MANAGED_SPEED_IN_MACH_SET",
+      "description": "KEY_AP_MANAGED_SPEED_IN_MACH_SET",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_MANAGED_SPEED_IN_MACH_TOGGLE",
+      "description": "KEY_AP_MANAGED_SPEED_IN_MACH_TOGGLE",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_MASTER",
+      "description": "KEY_AP_MASTER",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_MASTER_ALT",
+      "description": "KEY_AP_MASTER_ALT",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_MAX_BANK_ANGLE_SET",
+      "description": "KEY_AP_MAX_BANK_ANGLE_SET",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_MAX_BANK_INC",
+      "description": "KEY_AP_MAX_BANK_INC",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_MAX_BANK_DEC",
+      "description": "KEY_AP_MAX_BANK_DEC",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_MAX_BANK_SET",
+      "description": "KEY_AP_MAX_BANK_SET",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_MAX_BANK_VELOCITY_SET",
+      "description": "KEY_AP_MAX_BANK_VELOCITY_SET",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_N1_HOLD",
+      "description": "KEY_AP_N1_HOLD",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_N1_REF_DEC",
+      "description": "KEY_AP_N1_REF_DEC",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_N1_REF_INC",
+      "description": "KEY_AP_N1_REF_INC",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_N1_REF_SET",
+      "description": "KEY_AP_N1_REF_SET",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_NAV_SELECT_SET",
+      "description": "KEY_AP_NAV_SELECT_SET",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_NAV1_HOLD",
+      "description": "KEY_AP_NAV1_HOLD",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_NAV1_HOLD_OFF",
+      "description": "KEY_AP_NAV1_HOLD_OFF",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_NAV1_HOLD_ON",
+      "description": "KEY_AP_NAV1_HOLD_ON",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_PANEL_ALTITUDE_HOLD",
+      "description": "KEY_AP_PANEL_ALTITUDE_HOLD",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_PANEL_ALTITUDE_OFF",
+      "description": "KEY_AP_PANEL_ALTITUDE_OFF",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_PANEL_ALTITUDE_ON",
+      "description": "KEY_AP_PANEL_ALTITUDE_ON",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_PANEL_ALTITUDE_SET",
+      "description": "KEY_AP_PANEL_ALTITUDE_SET",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_PANEL_HEADING_HOLD",
+      "description": "KEY_AP_PANEL_HEADING_HOLD",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_PANEL_HEADING_OFF",
+      "description": "KEY_AP_PANEL_HEADING_OFF",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_PANEL_HEADING_ON",
+      "description": "KEY_AP_PANEL_HEADING_ON",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_PANEL_HEADING_SET",
+      "description": "KEY_AP_PANEL_HEADING_SET",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_PANEL_MACH_HOLD",
+      "description": "KEY_AP_PANEL_MACH_HOLD",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_PANEL_MACH_OFF",
+      "description": "KEY_AP_PANEL_MACH_OFF",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_PANEL_MACH_ON",
+      "description": "KEY_AP_PANEL_MACH_ON",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_PANEL_MACH_SET",
+      "description": "KEY_AP_PANEL_MACH_SET",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_PANEL_SPEED_HOLD",
+      "description": "KEY_AP_PANEL_SPEED_HOLD",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_PANEL_SPEED_OFF",
+      "description": "KEY_AP_PANEL_SPEED_OFF",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_PANEL_SPEED_ON",
+      "description": "KEY_AP_PANEL_SPEED_ON",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_PANEL_SPEED_SET",
+      "description": "KEY_AP_PANEL_SPEED_SET",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_PANEL_VS_OFF",
+      "description": "KEY_AP_PANEL_VS_OFF",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_PANEL_VS_ON",
+      "description": "KEY_AP_PANEL_VS_ON",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_PANEL_VS_SET",
+      "description": "KEY_AP_PANEL_VS_SET",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_PANEL_VS_HOLD",
+      "description": "KEY_AP_PANEL_VS_HOLD",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_PITCH_LEVELER",
+      "description": "KEY_AP_PITCH_LEVELER",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_PITCH_LEVELER_OFF",
+      "description": "KEY_AP_PITCH_LEVELER_OFF",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_PITCH_LEVELER_ON",
+      "description": "KEY_AP_PITCH_LEVELER_ON",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_PITCH_REF_INC_DN",
+      "description": "KEY_AP_PITCH_REF_INC_DN",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_PITCH_REF_INC_UP",
+      "description": "KEY_AP_PITCH_REF_INC_UP",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_PITCH_REF_SELECT",
+      "description": "KEY_AP_PITCH_REF_SELECT",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_PITCH_REF_SET",
+      "description": "KEY_AP_PITCH_REF_SET",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_SPD_VAR_DEC",
+      "description": "KEY_AP_SPD_VAR_DEC",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_SPD_VAR_INC",
+      "description": "KEY_AP_SPD_VAR_INC",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_SPD_VAR_SET",
+      "description": "KEY_AP_SPD_VAR_SET",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_SPD_VAR_SET_EX1",
+      "description": "KEY_AP_SPD_VAR_SET_EX1",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_VS_HOLD",
+      "description": "KEY_AP_VS_HOLD",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_VS_OFF",
+      "description": "KEY_AP_VS_OFF",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_VS_ON",
+      "description": "KEY_AP_VS_ON",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_VS_SET",
+      "description": "KEY_AP_VS_SET",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_VS_VAR_DEC",
+      "description": "KEY_AP_VS_VAR_DEC",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_VS_VAR_INC",
+      "description": "KEY_AP_VS_VAR_INC",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_VS_VAR_SET_CURRENT",
+      "description": "KEY_AP_VS_VAR_SET_CURRENT",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_VS_VAR_SET_ENGLISH",
+      "description": "KEY_AP_VS_VAR_SET_ENGLISH",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_VS_VAR_SET_METRIC",
+      "description": "KEY_AP_VS_VAR_SET_METRIC",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_WING_LEVELER",
+      "description": "KEY_AP_WING_LEVELER",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_WING_LEVELER_OFF",
+      "description": "KEY_AP_WING_LEVELER_OFF",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_WING_LEVELER_ON",
+      "description": "KEY_AP_WING_LEVELER_ON",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_PANEL_SPEED_HOLD_TOGGLE",
+      "description": "KEY_AUTOPILOT_AIRSPEED_HOLD_CURRENT",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_PANEL_MACH_HOLD_TOGGLE",
+      "description": "KEY_AUTOPILOT_MACH_HOLD_CURRENT",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_PANEL_SPEED_ACQ_TOGGLE",
+      "description": "KEY_AUTOPILOT_AIRSPEED_ACQUIRE",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AUTOPILOT_DISENGAGE_SET",
+      "description": "KEY_AUTOPILOT_DISENGAGE_SET",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AUTOPILOT_DISENGAGE_TOGGLE",
+      "description": "KEY_AUTOPILOT_DISENGAGE_TOGGLE",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AUTOPILOT_OFF",
+      "description": "KEY_AUTOPILOT_OFF",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AUTOPILOT_ON",
+      "description": "KEY_AUTOPILOT_ON",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AUTOPILOT_PANEL_AIRSPEED_SET",
+      "description": "KEY_AP_SPD_VAR_SET",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AUTOPILOT_PANEL_CRUISE_SPEED",
+      "description": "KEY_AUTOPILOT_PANEL_CRUISE_SPEED",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AUTOPILOT_PANEL_MAX_SPEED",
+      "description": "KEY_AUTOPILOT_PANEL_MAX_SPEED",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "ALTITUDE_SLOT_INDEX_SET",
+      "description": "KEY_AP_ALTITUDE_SLOT_INDEX_SET",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "FLIGHT_LEVEL_CHANGE",
+      "description": "KEY_AP_FLIGHT_LEVEL_CHANGE",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "FLIGHT_LEVEL_CHANGE_OFF",
+      "description": "KEY_AP_FLIGHT_LEVEL_CHANGE_OFF",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "FLIGHT_LEVEL_CHANGE_ON",
+      "description": "KEY_AP_FLIGHT_LEVEL_CHANGE_ON",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "HEADING_SLOT_INDEX_SET",
+      "description": "KEY_AP_HEADING_SLOT_INDEX_SET",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "RPM_SLOT_INDEX_SET",
+      "description": "KEY_AP_RPM_SLOT_INDEX_SET",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "SPEED_SLOT_INDEX_SET",
+      "description": "KEY_AP_SPEED_SLOT_INDEX_SET",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "VS_SLOT_INDEX_SET",
+      "description": "KEY_AP_VS_SLOT_INDEX_SET",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "BATTERY1_SET BATTERY2_SET BATTERY3_SET BATTERY4_SET",
+      "description": "KEY_BATTERY1_SET KEY_BATTERY2_SET KEY_BATTERY3_SET KEY_BATTERY4_SET",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Electrical_Events.htm"
+    },
+    {
+      "name": "ELECTRICAL_BATTERY_BREAKER_TOGGLE",
+      "description": "KEY_ELECTRICAL_BATTERY_BREAKER_TOGGLE",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Electrical_Events.htm"
+    },
+    {
+      "name": "MASTER_BATTERY_OFF",
+      "description": "KEY_MASTER_BATTERY_OFF",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Electrical_Events.htm"
+    },
+    {
+      "name": "MASTER_BATTERY_ON",
+      "description": "KEY_MASTER_BATTERY_ON",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Electrical_Events.htm"
+    },
+    {
+      "name": "MASTER_BATTERY_SET",
+      "description": "KEY_MASTER_BATTERY_SET",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Electrical_Events.htm"
+    },
+    {
+      "name": "TOGGLE_MASTER_BATTERY",
+      "description": "KEY_TOGGLE_MASTER_BATTERY",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Electrical_Events.htm"
+    },
+    {
+      "name": "TOGGLE_MASTER_BATTERY_ALTERNATOR",
+      "description": "KEY_TOGGLE_MASTER_BATTERY_ALTERNATOR",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Electrical_Events.htm"
+    },
+    {
+      "name": "ANTI_ICE_GRADUAL_SET",
+      "description": "KEY_ANTI_ICE_GRADUAL_SET",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Engine_Events.htm"
+    },
+    {
+      "name": "ANTI_ICE_GRADUAL_SET_ENG1 ANTI_ICE_GRADUAL_SET_ENG2 ANTI_ICE_GRADUAL_SET_ENG3 ANTI_ICE_GRADUAL_SET_ENG4",
+      "description": "KEY_ANTI_ICE_GRADUAL_SET_ENG1 KEY_ANTI_ICE_GRADUAL_SET_ENG2 KEY_ANTI_ICE_GRADUAL_SET_ENG3 KEY_ANTI_ICE_GRADUAL_SET_ENG4",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Engine_Events.htm"
+    },
+    {
+      "name": "ANTI_ICE_ON",
+      "description": "KEY_ANTI_ICE_ON",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Engine_Events.htm"
+    },
+    {
+      "name": "ANTI_ICE_OFF",
+      "description": "KEY_ANTI_ICE_Off",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Engine_Events.htm"
+    },
+    {
+      "name": "ANTI_ICE_SET",
+      "description": "KEY_ANTI_ICE_SET",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Engine_Events.htm"
+    },
+    {
+      "name": "ANTI_ICE_SET_ENG1 ANTI_ICE_SET_ENG2 ANTI_ICE_SET_ENG3 ANTI_ICE_SET_ENG4",
+      "description": "KEY_ANTI_ICE_SET_ENG1 KEY_ANTI_ICE_SET_ENG2 KEY_ANTI_ICE_SET_ENG3 KEY_ANTI_ICE_SET_ENG4",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Engine_Events.htm"
+    },
+    {
+      "name": "ANTI_ICE_TOGGLE",
+      "description": "KEY_ANTI_ICE_TOGGLE",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Engine_Events.htm"
+    },
+    {
+      "name": "ANTI_ICE_TOGGLE_ENG1 ANTI_ICE_TOGGLE_ENG2 ANTI_ICE_TOGGLE_ENG3 ANTI_ICE_TOGGLE_ENG4",
+      "description": "KEY_ANTI_ICE_TOGGLE_ENG1 KEY_ANTI_ICE_TOGGLE_ENG2 KEY_ANTI_ICE_TOGGLE_ENG3 KEY_ANTI_ICE_TOGGLE_ENG4",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Engine_Events.htm"
+    },
+    {
+      "name": "AILERON_CENTER",
+      "description": "KEY_AILERON_CENTER",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Flight_Control_Events.htm"
+    },
+    {
+      "name": "AILERON_LEFT",
+      "description": "KEY_AILERON_LEFT",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Flight_Control_Events.htm"
+    },
+    {
+      "name": "AILERON_RIGHT",
+      "description": "KEY_AILERON_RIGHT",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Flight_Control_Events.htm"
+    },
+    {
+      "name": "AILERON_SET",
+      "description": "KEY_AILERON_SET",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Flight_Control_Events.htm"
+    },
+    {
+      "name": "AILERON_TRIM_DISABLED_SET",
+      "description": "KEY_AILERON_TRIM_DISABLED_SET",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Flight_Control_Events.htm"
+    },
+    {
+      "name": "AILERON_TRIM_DISABLED_TOGGLE",
+      "description": "KEY_AILERON_TRIM_DISABLED_TOGGLE",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Flight_Control_Events.htm"
+    },
+    {
+      "name": "AILERON_TRIM_LEFT",
+      "description": "KEY_AILERON_TRIM_LEFT",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Flight_Control_Events.htm"
+    },
+    {
+      "name": "AILERON_TRIM_RIGHT",
+      "description": "KEY_AILERON_TRIM_RIGHT",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Flight_Control_Events.htm"
+    },
+    {
+      "name": "AILERON_TRIM_SET",
+      "description": "KEY_AILERON_TRIM_SET",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Flight_Control_Events.htm"
+    },
+    {
+      "name": "AILERON_TRIM_SET_EX1",
+      "description": "KEY_AILERON_TRIM_SET_EX1",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Flight_Control_Events.htm"
+    },
+    {
+      "name": "AILERONS_LEFT",
+      "description": "KEY_AILERONS_LEFT",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Flight_Control_Events.htm"
+    },
+    {
+      "name": "AILERONS_RIGHT",
+      "description": "KEY_AILERONS_RIGHT",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Flight_Control_Events.htm"
+    },
+    {
+      "name": "AXIS_AILERONS_SET",
+      "description": "KEY_AXIS_AILERONS_SET",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Flight_Control_Events.htm"
+    },
+    {
+      "name": "AXIS_SENSOR_AILERONS_SET",
+      "description": "KEY_GYRO_AXIS_AILERONS_SET",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Flight_Control_Events.htm"
+    },
+    {
+      "name": "CENTER_AILER_RUDDER",
+      "description": "KEY_CENTER_AILER_RUDDER",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Flight_Control_Events.htm"
+    },
+    {
+      "name": "CROSS_FEED_OPEN",
+      "description": "KEY_CROSS_FEED_OPEN",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Fuel_System_Events.htm"
+    },
+    {
+      "name": "CROSS_FEED_TOGGLE",
+      "description": "KEY_CROSS_FEED_TOGGLE",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Fuel_System_Events.htm"
+    },
+    {
+      "name": "CROSS_FEED_OFF",
+      "description": "KEY_CROSS_FEED_OFF",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Fuel_System_Events.htm"
+    },
+    {
+      "name": "CROSS_FEED_LEFT_TO_RIGHT",
+      "description": "KEY_CROSS_FEED_LEFT_TO_RIGHT",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Fuel_System_Events.htm"
+    },
+    {
+      "name": "CROSS_FEED_RIGHT_TO_LEFT",
+      "description": "KEY_CROSS_FEED_RIGHT_TO_LEFT",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Fuel_System_Events.htm"
+    },
+    {
+      "name": "LIQUID_DROPPING_SYSTEM_DOOR_CLOSE",
+      "description": "KEY_LIQUID_DROPPING_SYSTEM_DOOR_CLOSE",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_General_Systems.htm"
+    },
+    {
+      "name": "LIQUID_DROPPING_SYSTEM_DOOR_COMMAND_GROUP_CLOSE",
+      "description": "KEY_LIQUID_DROPPING_SYSTEM_DOOR_COMMAND_GROUP_CLOSE",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_General_Systems.htm"
+    },
+    {
+      "name": "LIQUID_DROPPING_SYSTEM_DOOR_COMMAND_GROUP_OPEN",
+      "description": "KEY_LIQUID_DROPPING_SYSTEM_DOOR_COMMAND_GROUP_OPEN",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_General_Systems.htm"
+    },
+    {
+      "name": "LIQUID_DROPPING_SYSTEM_DOOR_COMMAND_GROUP_SET",
+      "description": "KEY_LIQUID_DROPPING_SYSTEM_DOOR_COMMAND_GROUP_SET",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_General_Systems.htm"
+    },
+    {
+      "name": "LIQUID_DROPPING_SYSTEM_DOOR_COMMAND_GROUP_TOGGLE",
+      "description": "KEY_LIQUID_DROPPING_SYSTEM_DOOR_COMMAND_GROUP_TOGGLE",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_General_Systems.htm"
+    },
+    {
+      "name": "LIQUID_DROPPING_SYSTEM_DOOR_OPEN",
+      "description": "KEY_LIQUID_DROPPING_SYSTEM_DOOR_OPEN",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_General_Systems.htm"
+    },
+    {
+      "name": "LIQUID_DROPPING_SYSTEM_DOOR_SET",
+      "description": "KEY_LIQUID_DROPPING_SYSTEM_DOOR_SET",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_General_Systems.htm"
+    },
+    {
+      "name": "LIQUID_DROPPING_SYSTEM_DOOR_TOGGLE",
+      "description": "KEY_LIQUID_DROPPING_SYSTEM_DOOR_TOGGLE",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_General_Systems.htm"
+    },
+    {
+      "name": "LIQUID_DROPPING_SYSTEM_SCOOP_CLOSE",
+      "description": "KEY_LIQUID_DROPPING_SYSTEM_SCOOP_CLOSE",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_General_Systems.htm"
+    },
+    {
+      "name": "LIQUID_DROPPING_SYSTEM_SCOOP_OPEN",
+      "description": "KEY_LIQUID_DROPPING_SYSTEM_SCOOP_OPEN",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_General_Systems.htm"
+    },
+    {
+      "name": "LIQUID_DROPPING_SYSTEM_SCOOP_SET",
+      "description": "KEY_LIQUID_DROPPING_SYSTEM_SCOOP_SET",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_General_Systems.htm"
+    },
+    {
+      "name": "LIQUID_DROPPING_SYSTEM_SCOOP_TOGGLE",
+      "description": "KEY_LIQUID_DROPPING_SYSTEM_SCOOP_TOGGLE",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_General_Systems.htm"
+    },
+    {
+      "name": "FIREFIGHTING_SCOOP_DOORS",
+      "description": "KEY_FIREFIGHTING_SCOOP_DOORS",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_General_Systems.htm"
+    },
+    {
+      "name": "SPRAY_OFF",
+      "description": "KEY_SPRAY_OFF",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_General_Systems.htm"
+    },
+    {
+      "name": "SPRAY_ON",
+      "description": "KEY_SPRAY_ON",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_General_Systems.htm"
+    },
+    {
+      "name": "SPRAY_TOGGLE",
+      "description": "KEY_SPRAY_TOGGLE",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_General_Systems.htm"
+    },
+    {
+      "name": "SPRAY_SET",
+      "description": "KEY_SPRAY_SET",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_General_Systems.htm"
+    },
+    {
+      "name": "ATTITUDE_BARS_POSITION_DOWN",
+      "description": "KEY_ATTITUDE_BARS_POSITION_DEC",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Instrumentation_Events.htm"
+    },
+    {
+      "name": "ATTITUDE_BARS_POSITION_UP",
+      "description": "KEY_ATTITUDE_BARS_POSITION_INC",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Instrumentation_Events.htm"
+    },
+    {
+      "name": "ATTITUDE_BARS_POSITION_SET",
+      "description": "KEY_ATTITUDE_BARS_POSITION_SET",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Instrumentation_Events.htm"
+    },
+    {
+      "name": "BAROMETRIC",
+      "description": "KEY_BAROMETRIC",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Instrumentation_Events.htm"
+    },
+    {
+      "name": "BAROMETRIC_STD_PRESSURE",
+      "description": "KEY_BAROMETRIC_STD_PRESSURE",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Instrumentation_Events.htm"
+    },
+    {
+      "name": "GAUGE_KEYSTROKE",
+      "description": "KEY_GAUGE_KEYSTROKE",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Instrumentation_Events.htm"
+    },
+    {
+      "name": "GYRO_DRIFT_DEC",
+      "description": "KEY_GYRO_DRIFT_DEC",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Instrumentation_Events.htm"
+    },
+    {
+      "name": "GYRO_DRIFT_INC",
+      "description": "KEY_GYRO_DRIFT_INC",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Instrumentation_Events.htm"
+    },
+    {
+      "name": "GYRO_DRIFT_SET",
+      "description": "KEY_GYRO_DRIFT_SET",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Instrumentation_Events.htm"
+    },
+    {
+      "name": "GYRO_DRIFT_SET_EX1",
+      "description": "KEY_GYRO_DRIFT_SET_EX1",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Instrumentation_Events.htm"
+    },
+    {
+      "name": "HEADING_GYRO_SET",
+      "description": "KEY_HEADING_GYRO_SET",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Instrumentation_Events.htm"
+    },
+    {
+      "name": "INDUCTOR_COMPASS_REF_INC",
+      "description": "KEY_INDUCTOR_COMPASS_REF_INC",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Instrumentation_Events.htm"
+    },
+    {
+      "name": "INDUCTOR_COMPASS_REF_DEC",
+      "description": "KEY_INDUCTOR_COMPASS_REF_DEC",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Instrumentation_Events.htm"
+    },
+    {
+      "name": "KOHLSMAN_INC",
+      "description": "KEY_KOHLSMAN_INC",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Instrumentation_Events.htm"
+    },
+    {
+      "name": "KOHLSMAN_DEC",
+      "description": "KEY_KOHLSMAN_DEC",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Instrumentation_Events.htm"
+    },
+    {
+      "name": "KOHLSMAN_SET",
+      "description": "KEY_KOHLSMAN_SET",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Instrumentation_Events.htm"
+    },
+    {
+      "name": "RESET_G_FORCE_INDICATOR",
+      "description": "KEY_RESET_G_FORCE_INDICATOR",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Instrumentation_Events.htm"
+    },
+    {
+      "name": "RESET_MAX_RPM_INDICATOR",
+      "description": "KEY_RESET_MAX_RPM_INDICATOR",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Instrumentation_Events.htm"
+    },
+    {
+      "name": "ATTITUDE_CAGE_BUTTON",
+      "description": "KEY_TOGGLE_ATTITUDE_CAGE",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Instrumentation_Events.htm"
+    },
+    {
+      "name": "TOGGLE_ICS",
+      "description": "KEY_TOGGLE_ICS",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Instrumentation_Events.htm"
+    },
+    {
+      "name": "TOGGLE_SPEAKER",
+      "description": "KEY_TOGGLE_SPEAKER",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Instrumentation_Events.htm"
+    },
+    {
+      "name": "TOGGLE_TURN_INDICATOR_SWITCH",
+      "description": "KEY_TOGGLE_TURN_INDICATOR_SWITCH",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Instrumentation_Events.htm"
+    },
+    {
+      "name": "TOGGLE_VARIOMETER_SWITCH",
+      "description": "KEY_TOGGLE_VARIOMETER_SWITCH",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Instrumentation_Events.htm"
+    },
+    {
+      "name": "TRUE_AIRSPEED_CAL_DEC",
+      "description": "KEY_TRUE_AIRSPEED_CALIBRATE_DEC",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Instrumentation_Events.htm"
+    },
+    {
+      "name": "TRUE_AIRSPEED_CAL_INC",
+      "description": "KEY_TRUE_AIRSPEED_CALIBRATE_INC",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Instrumentation_Events.htm"
+    },
+    {
+      "name": "TRUE_AIRSPEED_CAL_SET",
+      "description": "KEY_TRUE_AIRSPEED_CAL_SET",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Instrumentation_Events.htm"
+    },
+    {
+      "name": "VARIOMETER_SOUND_TOGGLE",
+      "description": "KEY_VARIOMETER_SOUND_TOGGLE",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Instrumentation_Events.htm"
+    },
+    {
+      "name": "LOW_HEIGHT_WARNING_GAUGE_WILL_SET or LOW_HIGHT_WARNING_GAUGE_WILL_SET",
+      "description": "KEY_LOW_HEIGHT_WARNING_GAUGE_WILL_SET or KEY_LOW_HIGHT_WARNING_GAUGE_WILL_SET",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Misc_Events.htm"
+    },
+    {
+      "name": "LOW_HEIGHT_WARNING_SET or LOW_HIGHT_WARNING_SET",
+      "description": "KEY_LOW_HEIGHT_WARNING_SET or KEY_LOW_HIGHT_WARNING_SET",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Misc_Events.htm"
+    },
+    {
+      "name": "MASTER_CAUTION_ACKNOWLEDGE",
+      "description": "KEY_MASTER_CAUTION_ACKNOWLEDGE",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Misc_Events.htm"
+    },
+    {
+      "name": "MASTER_CAUTION_OFF",
+      "description": "KEY_MASTER_CAUTION_OFF",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Misc_Events.htm"
+    },
+    {
+      "name": "MASTER_CAUTION_ON",
+      "description": "KEY_MASTER_CAUTION_ON",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Misc_Events.htm"
+    },
+    {
+      "name": "MASTER_CAUTION_SET",
+      "description": "KEY_MASTER_CAUTION_SET",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Misc_Events.htm"
+    },
+    {
+      "name": "MASTER_CAUTION_TOGGLE",
+      "description": "KEY_MASTER_CAUTION_TOGGLE",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Misc_Events.htm"
+    },
+    {
+      "name": "MASTER_WARNING_ACKNOWLEDGE",
+      "description": "KEY_MASTER_WARNING_ACKNOWLEDGE",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Misc_Events.htm"
+    },
+    {
+      "name": "MASTER_WARNING_OFF",
+      "description": "KEY_MASTER_WARNING_OFF",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Misc_Events.htm"
+    },
+    {
+      "name": "MASTER_WARNING_ON",
+      "description": "KEY_MASTER_WARNING_ON",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Misc_Events.htm"
+    },
+    {
+      "name": "MASTER_WARNING_SET",
+      "description": "KEY_MASTER_WARNING_SET",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Misc_Events.htm"
+    },
+    {
+      "name": "MASTER_WARNING_TOGGLE",
+      "description": "KEY_MASTER_CAUTION_TOGGLE",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Misc_Events.htm"
+    },
+    {
+      "name": "TOGGLE_ELECTRICAL_FAILURE",
+      "description": "KEY_TOGGLE_ELECTRICAL_FAILURE",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Misc_Events.htm"
+    },
+    {
+      "name": "TOGGLE_ENGINE1_FAILURE TOGGLE_ENGINE2_FAILURE TOGGLE_ENGINE3_FAILURE TOGGLE_ENGINE4_FAILURE",
+      "description": "TOGGLE_ENGINE1_FAILURE TOGGLE_ENGINE2_FAILURE TOGGLE_ENGINE3_FAILURE TOGGLE_ENGINE4_FAILURE",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Misc_Events.htm"
+    },
+    {
+      "name": "TOGGLE_HYDRAULIC_FAILURE",
+      "description": "KEY_TOGGLE_HYDRAULIC_FAILURE",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Misc_Events.htm"
+    },
+    {
+      "name": "TOGGLE_LEFT_BRAKE_FAILURE",
+      "description": "KEY_TOGGLE_LEFT_BRAKE_FAILURE",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Misc_Events.htm"
+    },
+    {
+      "name": "TOGGLE_PITOT_BLOCKAGE",
+      "description": "KEY_TOGGLE_PITOT_BLOCKAGE",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Misc_Events.htm"
+    },
+    {
+      "name": "TOGGLE_RIGHT_BRAKE_FAILURE",
+      "description": "KEY_TOGGLE_RIGHT_BRAKE_FAILURE",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Misc_Events.htm"
+    },
+    {
+      "name": "TOGGLE_STATIC_PORT_BLOCKAGE",
+      "description": "KEY_TOGGLE_STATIC_PORT_BLOCKAGE",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Misc_Events.htm"
+    },
+    {
+      "name": "TOGGLE_TOTAL_BRAKE_FAILURE",
+      "description": "KEY_TOGGLE_TOTAL_BRAKE_FAILURE",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Misc_Events.htm"
+    },
+    {
+      "name": "TOGGLE_VACUUM_FAILURE",
+      "description": "KEY_TOGGLE_VACUUM_FAILURE",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Misc_Events.htm"
+    },
+    {
+      "name": "ADF",
+      "description": "KEY_ADF",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Radio_Navigation_Events.htm"
+    },
+    {
+      "name": "ADF_CARD_DEC",
+      "description": "KEY_ADF_CARD_INC",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Radio_Navigation_Events.htm"
+    },
+    {
+      "name": "ADF_CARD_INC",
+      "description": "KEY_ADF_CARD_DEC",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Radio_Navigation_Events.htm"
+    },
+    {
+      "name": "ADF_CARD_SET",
+      "description": "KEY_ADF_CARD_SET",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Radio_Navigation_Events.htm"
+    },
+    {
+      "name": "ADF_1_DEC ADF2_1_DEC",
+      "description": "KEY_ADF_1_DEC KEY_ADF2_1_DEC",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Radio_Navigation_Events.htm"
+    },
+    {
+      "name": "ADF_10_DEC ADF2_10_DEC",
+      "description": "KEY_ADF_10_DEC KEY_ADF2_10_DEC",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Radio_Navigation_Events.htm"
+    },
+    {
+      "name": "ADF_100_DEC ADF2_100_DEC",
+      "description": "KEY_ADF_100_DEC KEY_ADF2_100_DEC",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Radio_Navigation_Events.htm"
+    },
+    {
+      "name": "ADF_1_INC ADF2_1_INC",
+      "description": "KEY_ADF_1_INC KEY_ADF2_1_INC",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Radio_Navigation_Events.htm"
+    },
+    {
+      "name": "ADF_10_INC ADF2_10_INC",
+      "description": "KEY_ADF_10_INC KEY_ADF2_10_INC",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Radio_Navigation_Events.htm"
+    },
+    {
+      "name": "ADF_100_INC ADF2_100_INC",
+      "description": "KEY_ADF_100_INC KEY_ADF2_100_INC",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Radio_Navigation_Events.htm"
+    },
+    {
+      "name": "ADF_ACTIVE_SET ADF2_ACTIVE_SET",
+      "description": "KEY_ADF_ACTIVE_SET KEY_ADF2_ACTIVE_SET",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Radio_Navigation_Events.htm"
+    },
+    {
+      "name": "ADF_COMPLETE_SET ADF2_COMPLETE_SET",
+      "description": "KEY_ADF_COMPLETE_SET KEY_ADF2_COMPLETE_SET",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Radio_Navigation_Events.htm"
+    },
+    {
+      "name": "ADF_EXTENDED_SET ADF2_EXTENDED_SET",
+      "description": "KEY_ADF_EXTENDED_SET KEY_ADF2_EXTENDED_SET",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Radio_Navigation_Events.htm"
+    },
+    {
+      "name": "ADF_FRACT_DEC_CARRY ADF2_FRACT_DEC_CARRY",
+      "description": "KEY_ADF_FRACT_DEC_CARRY KEY_ADF2_FRACT_DEC_CARRY",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Radio_Navigation_Events.htm"
+    },
+    {
+      "name": "ADF_FRACT_INC_CARRY ADF2_FRACT_INC_CARRY",
+      "description": "KEY_ADF_FRACT_INC_CARRY KEY_ADF2_FRACT_INC_CARRY",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Radio_Navigation_Events.htm"
+    },
+    {
+      "name": "ADF_HIGHRANGE_SET ADF2_HIGHRANGE_SET",
+      "description": "KEY_ADF_HIGHRANGE_SET KEY_ADF2_HIGHRANGE_SET",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Radio_Navigation_Events.htm"
+    },
+    {
+      "name": "ADF_LOWRANGE_SET ADF2_LOWRANGE_SET",
+      "description": "KEY_ADF_LOWRANGE_SET KEY_ADF2_LOWRANGE_SET",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Radio_Navigation_Events.htm"
+    },
+    {
+      "name": "ADF_NEEDLE_SET ADF2_NEEDLE_SET",
+      "description": "KEY_ADF_NEEDLE_SET KEY_ADF2_NEEDLE_SET",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Radio_Navigation_Events.htm"
+    },
+    {
+      "name": "ADF_OUTSIDE_SOURCE ADF2_OUTSIDE_SOURCE",
+      "description": "KEY_ADF_OUTSIDE_SOURCE KEY_ADF2_OUTSIDE_SOURCE",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Radio_Navigation_Events.htm"
+    },
+    {
+      "name": "ADF1_RADIO_SWAP ADF2_RADIO_SWAP",
+      "description": "KEY_ADF1_RADIO_SWAP KEY_ADF2_RADIO_SWAP",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Radio_Navigation_Events.htm"
+    },
+    {
+      "name": "ADF1_RADIO_TENTHS_DEC ADF2_RADIO_TENTHS_DEC",
+      "description": "KEY_ADF1_RADIO_TENTHS_DEC KEY_ADF2_RADIO_TENTHS_DEC",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Radio_Navigation_Events.htm"
+    },
+    {
+      "name": "ADF1_RADIO_TENTHS_INC ADF2_RADIO_TENTHS_INC",
+      "description": "KEY_ADF1_RADIO_TENTHS_INC KEY_ADF2_RADIO_TENTHS_INC",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Radio_Navigation_Events.htm"
+    },
+    {
+      "name": "ADF_SET ADF2_SET",
+      "description": "KEY_ADF_SET KEY_ADF2_SET",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Radio_Navigation_Events.htm"
+    },
+    {
+      "name": "ADF_STBY_SET ADF2_STBY_SET",
+      "description": "KEY_ADF_STBY_SET KEY_ADF2_STBY_SET",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Radio_Navigation_Events.htm"
+    },
+    {
+      "name": "ADF_VOLUME_INC ADF2_VOLUME_INC",
+      "description": "KEY_ADF_VOLUME_INC KEY_ADF2_VOLUME_INC",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Radio_Navigation_Events.htm"
+    },
+    {
+      "name": "ADF_VOLUME_DEC ADF2_VOLUME_DEC",
+      "description": "KEY_ADF_VOLUME_DEC KEY_ADF2_VOLUME_DEC",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Radio_Navigation_Events.htm"
+    },
+    {
+      "name": "ADF_VOLUME_SET ADF2_VOLUME_SET",
+      "description": "KEY_ADF_VOLUME_SET KEY_ADF2_VOLUME_SET",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Radio_Navigation_Events.htm"
+    },
+    {
+      "name": "ADF1_WHOLE_DEC ADF2_WHOLE_DEC",
+      "description": "KEY_ADF_WHOLE_DEC KEY_ADF2_WHOLE_DEC",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Radio_Navigation_Events.htm"
+    },
+    {
+      "name": "ADF1_WHOLE_INC ADF2_WHOLE_INC",
+      "description": "KEY_ADF_WHOLE_INC KEY_ADF2_WHOLE_INC",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Radio_Navigation_Events.htm"
+    },
+    {
+      "name": "RADIO_ADF_IDENT_DISABLE RADIO_ADF2_IDENT_DISABLE",
+      "description": "KEY_RADIO_ADF_IDENT_DISABLE KEY_RADIO_ADF2_IDENT_DISABLE",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Radio_Navigation_Events.htm"
+    },
+    {
+      "name": "RADIO_ADF_IDENT_ENABLE RADIO_ADF2_IDENT_ENABLE",
+      "description": "KEY_RADIO_ADF_IDENT_ENABLE KEY_RADIO_ADF2_IDENT_ENABLE",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Radio_Navigation_Events.htm"
+    },
+    {
+      "name": "RADIO_ADF_IDENT_SET RADIO_ADF2_IDENT_SET",
+      "description": "KEY_RADIO_ADF_IDENT_SET KEY_RADIO_ADF2_IDENT_SET",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Radio_Navigation_Events.htm"
+    },
+    {
+      "name": "RADIO_ADF_IDENT_TOGGLE RADIO_ADF2_IDENT_TOGGLE",
+      "description": "KEY_RADIO_ADF_IDENT_TOGGLE KEY_RADIO_ADF2_IDENT_TOGGLE",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Aircraft_Radio_Navigation_Events.htm"
+    },
+    {
+      "name": "AUTO_HOVER_OFF",
+      "description": "KEY_AUTO_HOVER_OFF",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Helicopter_Specific_Events.htm"
+    },
+    {
+      "name": "AUTO_HOVER_ON",
+      "description": "KEY_AUTO_HOVER_ON",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Helicopter_Specific_Events.htm"
+    },
+    {
+      "name": "AUTO_HOVER_SET",
+      "description": "KEY_AUTO_HOVER_SET",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Helicopter_Specific_Events.htm"
+    },
+    {
+      "name": "AUTO_HOVER_TOGGLE",
+      "description": "KEY_AUTO_HOVER_TOGGLE",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Helicopter_Specific_Events.htm"
+    },
+    {
+      "name": "AXIS_COLLECTIVE_SET",
+      "description": "KEY_AXIS_COLLECTIVE_SET",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Helicopter_Specific_Events.htm"
+    },
+    {
+      "name": "AXIS_STEERING_SET",
+      "description": "KEY_AXIS_STEERING_SET",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Helicopter_Specific_Events.htm"
+    },
+    {
+      "name": "AXIS_TAIL_ROTOR_SET",
+      "description": "KEY_AXIS_TAIL_ROTOR_SET",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Helicopter_Specific_Events.htm"
+    },
+    {
+      "name": "COLLECTIVE_DECR",
+      "description": "KEY_COLLECTIVE_DECR",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Helicopter_Specific_Events.htm"
+    },
+    {
+      "name": "COLLECTIVE_INCR",
+      "description": "KEY_COLLECTIVE_INCR",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Helicopter_Specific_Events.htm"
+    },
+    {
+      "name": "DECREASE_HELO_GOV_BEEP",
+      "description": "KEY_HELI_BEEP_DECREASE",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Helicopter_Specific_Events.htm"
+    },
+    {
+      "name": "HELICOPTER_FORCE_TRIM_RELEASE_BUTTON_SET",
+      "description": "KEY_HELICOPTER_FORCE_TRIM_RELEASE_BUTTON_SET",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Helicopter_Specific_Events.htm"
+    },
+    {
+      "name": "INCREASE_HELO_GOV_BEEP",
+      "description": "KEY_HELI_BEEP_INCREASE",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Helicopter_Specific_Events.htm"
+    },
+    {
+      "name": "QUICK_TRIM",
+      "description": "KEY_QUICK_TRIM",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Helicopter_Specific_Events.htm"
+    },
+    {
+      "name": "SET_HELO_GOV_BEEP",
+      "description": "KEY_HELI_BEEP_SET",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Helicopter_Specific_Events.htm"
+    },
+    {
+      "name": "AXIS_BURNER_PITCH_SET",
+      "description": "KEY_AXIS_BURNER_PITCH_SET",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Balloon_Airship_Events.htm"
+    },
+    {
+      "name": "AXIS_BURNER_ROLL_SET",
+      "description": "KEY_AXIS_BURNER_ROLL_SET",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Balloon_Airship_Events.htm"
+    },
+    {
+      "name": "BURNER_PITCH_DEC",
+      "description": "KEY_BURNER_PITCH_DEC",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Balloon_Airship_Events.htm"
+    },
+    {
+      "name": "BURNER_PITCH_INC",
+      "description": "KEY_BURNER_PITCH_INC",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Balloon_Airship_Events.htm"
+    },
+    {
+      "name": "BURNER_ROLL_DEC",
+      "description": "KEY_BURNER_ROLL_DEC",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Balloon_Airship_Events.htm"
+    },
+    {
+      "name": "BURNER_ROLL_INC",
+      "description": "KEY_BURNER_ROLL_INC",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Balloon_Airship_Events.htm"
+    },
+    {
+      "name": "BURNER_VALVE_CLOSE",
+      "description": "KEY_BURNER_VALVE_CLOSE",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Balloon_Airship_Events.htm"
+    },
+    {
+      "name": "BURNER_VALVE_OPEN",
+      "description": "KEY_BURNER_VALVE_OPEN",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Balloon_Airship_Events.htm"
+    },
+    {
+      "name": "BURNER_VALVE_SET",
+      "description": "KEY_BURNER_VALVE_SET",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Balloon_Airship_Events.htm"
+    },
+    {
+      "name": "BURNER_VALVE_TOGGLE",
+      "description": "KEY_BURNER_VALVE_TOGGLE",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Balloon_Airship_Events.htm"
+    },
+    {
+      "name": "DEMO_RECORD_1_SEC",
+      "description": "KEY_DEMO_RECORD_1_SEC",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Miscellaneous_Events.htm"
+    },
+    {
+      "name": "DEMO_RECORD_5_SEC",
+      "description": "KEY_DEMO_RECORD_5_SEC",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Miscellaneous_Events.htm"
+    },
+    {
+      "name": "DEMO_RECORD_MESSAGE",
+      "description": "KEY_DEMO_RECORD_MESSAGE",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Miscellaneous_Events.htm"
+    },
+    {
+      "name": "DEMO_RECORD_STOP",
+      "description": "KEY_DEMO_RECORD_STOP",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Miscellaneous_Events.htm"
+    },
+    {
+      "name": "DEMO_STOP",
+      "description": "KEY_DEMO_STOP",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Miscellaneous_Events.htm"
+    },
+    {
+      "name": "REPLAY_STOP",
+      "description": "KEY_REPLAY_STOP",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/Miscellaneous_Events.htm"
+    },
+    {
+      "name": "AXIS_PAN_PITCH",
+      "description": "KEY_AXIS_PAN_PITCH",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/View_Camera_Events.htm"
+    },
+    {
+      "name": "AXIS_PAN_HEADING",
+      "description": "KEY_AXIS_PAN_HEADING",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/View_Camera_Events.htm"
+    },
+    {
+      "name": "AXIS_PAN_TILT",
+      "description": "KEY_AXIS_PAN_TILT",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/View_Camera_Events.htm"
+    },
+    {
+      "name": "AXIS_IND_SET",
+      "description": "KEY_AXIS_IND_SET",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/View_Camera_Events.htm"
+    },
+    {
+      "name": "VIEW_AXIS_INDICATOR_CYCLE",
+      "description": "KEY_AXIS_INDICATOR_CYCLE",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/View_Camera_Events.htm"
     }
   ],
   "functions": [],

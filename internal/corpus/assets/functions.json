@@ -1,138 +1,2483 @@
 {
-  "scraped_at": "2025-01-01T00:00:00Z",
-  "sdk_version": "0.21.1",
+  "scraped_at": "2026-03-01T12:28:58.6089559Z",
+  "sdk_version": "",
   "simvars": [],
   "events": [],
   "functions": [
     {
       "name": "SimConnect_Open",
-      "description": "Opens a new connection between the client application and the Flight Simulator server. This function must be called successfully before any other SimConnect function is used. The returned handle is passed to all subsequent SimConnect calls.",
-      "signature": "SIMCONNECTAPI SimConnect_Open(HANDLE * phSimConnect, LPCSTR szName, HWND hWnd, DWORD UserEventWin32, HANDLE hEventHandle, DWORD ConfigIndex)",
+      "description": "",
+      "signature": "HRESULT SimConnect_Open( HANDLE* phSimConnect, LPCSTR szName, HWND hWnd, DWORD UserEventWin32, HANDLE hEventHandle, DWORD ConfigIndex );",
       "parameters": [
         {
           "name": "phSimConnect",
-          "type": "HANDLE *",
-          "direction": "out",
-          "description": "Address of a variable that receives the SimConnect connection handle. This handle must be saved and passed to all subsequent SimConnect API calls."
+          "type": "Pointer to a handle to a SimConnect object.",
+          "direction": "in",
+          "description": "Integer"
         },
         {
           "name": "szName",
-          "type": "LPCSTR",
+          "type": "Pointer to a null-terminated string containing an appropriate name for the client program.",
           "direction": "in",
-          "description": "Null-terminated string containing the name of the client application. This name is used for identification in the SimConnect debug console and log output."
+          "description": "Integer"
         },
         {
           "name": "hWnd",
-          "type": "HWND",
+          "type": "Handle to a Windows object. Set this to NULL if the handle is not being used. UserEventWin32",
           "direction": "in",
-          "description": "Handle to the application window. When UserEventWin32 is non-zero, SimConnect posts messages to this window. Set to NULL when using an event handle for notification instead."
+          "description": "Integer"
         },
         {
           "name": "UserEventWin32",
-          "type": "DWORD",
+          "type": "Code number that the client can specify. Set this to 0 if it is not being used.",
           "direction": "in",
-          "description": "A Win32 user-defined message identifier in the range WM_USER (0x0400) through 0x7FFF. SimConnect posts this message to hWnd when new data is available. Set to 0 when using hEventHandle or polling instead."
+          "description": "Integer"
         },
         {
           "name": "hEventHandle",
-          "type": "HANDLE",
+          "type": "A Windows Event handle. A client can be written to respond to Windows Events, rather than use a polling and callback system, which can be a more efficient process if the client does not have to respond very frequently to changes in data in Microsoft Flight Simulator 2020.",
           "direction": "in",
-          "description": "A Win32 event handle created with CreateEvent. SimConnect signals this event when new data is available. Set to NULL when using Win32 messages or polling instead."
+          "description": "Integer"
         },
         {
           "name": "ConfigIndex",
-          "type": "DWORD",
+          "type": "The configuration index. The SimConnect.cfg file can contain a number of configurations, identified in sections with the [SimConnect] or [SimConnect.N] titles. Setting this configuration index indicates which configuration settings to use for this SimConnect client. This is useful for applications that communicate with a number of different machines that are running Microsoft Flight Simulator 2020. The default configuration index is zero (matching a [SimConnect] entry in a SimConnect.cfg file). Note the E_INVALIDARG return value.",
           "direction": "in",
-          "description": "Zero-based index into the [SimConnect.N] sections of SimConnect.cfg to select the connection parameters. Defaults to 0 which selects the first configuration block.",
-          "optional": true
+          "description": "Integer"
         }
       ],
-      "return_type": "HRESULT",
-      "remarks": "SimConnect_Open must be called before any other SimConnect function. A non-zero HRESULT indicates failure; use SUCCEEDED() or FAILED() macros to test the return value. The connection remains open until SimConnect_Close is called or the simulator exits.",
+      "return_type": "",
       "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/General/SimConnect_Open.htm"
     },
     {
       "name": "SimConnect_Close",
-      "description": "Closes an open SimConnect connection. All pending requests and registered data definitions associated with the handle are cancelled. After this call the handle is invalid and must not be used again.",
-      "signature": "SIMCONNECTAPI SimConnect_Close(HANDLE hSimConnect)",
+      "description": "",
+      "signature": "HRESULT SimConnect_Close( HANDLE hSimConnect );",
       "parameters": [
         {
           "name": "hSimConnect",
-          "type": "HANDLE",
+          "type": "Handle to a SimConnect object.",
           "direction": "in",
-          "description": "Handle to a SimConnect connection previously returned by SimConnect_Open."
+          "description": "Integer"
         }
       ],
-      "return_type": "HRESULT",
-      "remarks": "Calling SimConnect_Close with an invalid or already-closed handle results in an error HRESULT. Always check the return value. Resources allocated within the simulator for this client are released when the connection closes.",
+      "return_type": "",
       "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/General/SimConnect_Close.htm"
     },
     {
-      "name": "SimConnect_RequestDataOnSimObject",
-      "description": "Requests that simulation variable data for a specific simulation object be sent to the client application. The data is returned using the data definition specified by DefineID and will be delivered in SIMCONNECT_RECV_SIMOBJECT_DATA packets.",
-      "signature": "SIMCONNECTAPI SimConnect_RequestDataOnSimObject(HANDLE hSimConnect, SIMCONNECT_DATA_REQUEST_ID RequestID, SIMCONNECT_DATA_DEFINITION_ID DefineID, SIMCONNECT_OBJECT_ID ObjectID, SIMCONNECT_PERIOD Period, SIMCONNECT_DATA_REQUEST_FLAG Flags, DWORD origin, DWORD interval, DWORD limit)",
+      "name": "SimConnect_CallDispatch",
+      "description": "",
+      "signature": "HRESULT SimConnect_CallDispatch( HANDLE hSimConnect, DispatchProc pfcnDispatch, void * pContext );",
       "parameters": [
         {
           "name": "hSimConnect",
-          "type": "HANDLE",
+          "type": "Handle to a SimConnect object.",
           "direction": "in",
-          "description": "Handle to a SimConnect connection previously returned by SimConnect_Open."
+          "description": "Integer"
+        },
+        {
+          "name": "pfcnDispatch",
+          "type": "Specifies the callback function. For a definition of the function see DispatchProc.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "pContext",
+          "type": "Specifies a pointer that the client can define that will be returned in the callback. This is used in particular by managed code clients to pass a this pointer to the callback.",
+          "direction": "in",
+          "description": "Integer"
+        }
+      ],
+      "return_type": "",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/General/SimConnect_CallDispatch.htm"
+    },
+    {
+      "name": "SimConnect_GetNextDispatch",
+      "description": "",
+      "signature": "HRESULT SimConnect_GetNextDispatch( HANDLE hSimConnect, SIMCONNECT_RECV** ppData, DWORD* pcbData );",
+      "parameters": [
+        {
+          "name": "hSimConnect",
+          "type": "Handle to a SimConnect object.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "ppData",
+          "type": "Pointer to a pointer to a data buffer, initially to be treated as a SIMCONNECT_RECV structure. If you are going to make a copy of the data buffer (which is maintained by the SimConnect client library) make sure that the defined buffer is large enough (the size of the returned data structure is one member of the SIMCONNECT_RECV structure.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "pcbData",
+          "type": "Pointer to the size of the data buffer, in bytes.",
+          "direction": "in",
+          "description": "Integer"
+        }
+      ],
+      "return_type": "",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/General/SimConnect_GetNextDispatch.htm"
+    },
+    {
+      "name": "SimConnect_RequestSystemState",
+      "description": "",
+      "signature": "HRESULT SimConnect_RequestSystemState( HANDLE hSimConnect, SIMCONNECT_DATA_REQUEST_ID RequestID, const char* szState, );",
+      "parameters": [
+        {
+          "name": "hSimConnect",
+          "type": "Handle to a SimConnect object.",
+          "direction": "in",
+          "description": "Integer"
         },
         {
           "name": "RequestID",
-          "type": "SIMCONNECT_DATA_REQUEST_ID",
+          "type": "The client defined request ID.",
           "direction": "in",
-          "description": "Client-defined request identifier. This value is returned in the SIMCONNECT_RECV_SIMOBJECT_DATA packet so the client can match responses to requests. Must be unique among active requests on this connection."
+          "description": "Integer"
         },
         {
-          "name": "DefineID",
-          "type": "SIMCONNECT_DATA_DEFINITION_ID",
+          "name": "szState",
+          "type": "A null-terminated string identifying the system function. One from the table shown below.",
           "direction": "in",
-          "description": "Identifier of the data definition that specifies which simulation variables are requested. The definition must have been previously created using SimConnect_AddToDataDefinition."
+          "description": "String"
+        }
+      ],
+      "return_type": "",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/General/SimConnect_RequestSystemState.htm"
+    },
+    {
+      "name": "SimConnect_SetNotificationGroupPriority",
+      "description": "",
+      "signature": "HRESULT SimConnect_SetNotificationGroupPriority( HANDLE hSimConnect, SIMCONNECT_NOTIFICATION_GROUP_ID GroupID, DWORD uPriority );",
+      "parameters": [
+        {
+          "name": "hSimConnect",
+          "type": "Handle to a SimConnect object.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "GroupID",
+          "type": "Specifies the ID of the client defined group.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "uPriority",
+          "type": "Requests the group's priority. See the explanation of SimConnect Priorities.",
+          "direction": "in",
+          "description": "Integer"
+        }
+      ],
+      "return_type": "",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/General/SimConnect_SetNotificationGroupPriority.htm"
+    },
+    {
+      "name": "SimConnect_ExecuteAction",
+      "description": "",
+      "signature": "HRESULT SimConnect_ExecuteAction( HANDLE hSimConnect, DWORD cbRequestID, const char* szActionID, DWORD cbUnitSize void* pParamValues );",
+      "parameters": [
+        {
+          "name": "hSimConnect",
+          "type": "Handle to a SimConnect object.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "cbRequestID",
+          "type": "ID of the request to retrieve it in the callback response.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "szActionID",
+          "type": "The name of the action.",
+          "direction": "in",
+          "description": "Char"
+        },
+        {
+          "name": "cbUnitSize",
+          "type": "The size of the pParamValues data.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "pParamValues",
+          "type": "A void* that contains all the values packed as byte data.",
+          "direction": "out",
+          "description": "Void"
+        }
+      ],
+      "return_type": "",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/General/SimConnect_ExecuteAction.htm"
+    },
+    {
+      "name": "SimConnect_MapClientEventToSimEvent",
+      "description": "",
+      "signature": "HRESULT SimConnect_MapClientEventToSimEvent( HANDLE hSimConnect, SIMCONNECT_CLIENT_EVENT_ID EventID, const char* EventName );",
+      "parameters": [
+        {
+          "name": "hSimConnect",
+          "type": "Handle to a SimConnect object.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "EventID",
+          "type": "Specifies the ID of the client event.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "EventName",
+          "type": "Specifies the Microsoft Flight Simulator 2020 event name. Refer to the Event IDs document for a list of event names (listed under String Name). If the event name includes one or more periods (such as \"Custom.Event\" in the example below) then they are custom events specified by the client, and will only be recognized by another client (and not Microsoft Flight Simulator 2020) that has been coded to receive such events. No Microsoft Flight Simulator 2020 events include periods. If no entry is made for this parameter, the event is private to the client. Alternatively enter a decimal number in the format \"#nnnn\" or a hex number in the format \"#0xnnnn\", where these numbers are in the range THIRD_PARTY_EVENT_ID_MIN and THIRD_PARTY_EVENT_ID_MAX, in order to receive events from third-party add-ons to Flight Simulator X.",
+          "direction": "in",
+          "description": "Integer"
+        }
+      ],
+      "return_type": "",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Events_And_Data/SimConnect_MapClientEventToSimEvent.htm"
+    },
+    {
+      "name": "SimConnect_TransmitClientEvent",
+      "description": "",
+      "signature": "HRESULT SimConnect_TransmitClientEvent( HANDLE hSimConnect, SIMCONNECT_OBJECT_ID ObjectID, SIMCONNECT_CLIENT_EVENT_ID EventID, DWORD dwData, SIMCONNECT_NOTIFICATION_GROUP_ID GroupID, SIMCONNECT_EVENT_FLAG Flags );",
+      "parameters": [
+        {
+          "name": "hSimConnect",
+          "type": "Handle to a SimConnect object.",
+          "direction": "in",
+          "description": "Integer"
         },
         {
           "name": "ObjectID",
-          "type": "SIMCONNECT_OBJECT_ID",
+          "type": "Specifies the ID of the server defined object. If this parameter is set to SIMCONNECT_OBJECT_ID_USER, then the transmitted event will be sent to the other clients in priority order. If this parameters contains another object ID, then the event will be sent direct to that sim-object, and no other clients will receive it.",
           "direction": "in",
-          "description": "Identifier of the simulation object for which data is requested. Use SIMCONNECT_OBJECT_ID_USER (0) to request data for the user aircraft."
+          "description": "Integer"
         },
         {
-          "name": "Period",
-          "type": "SIMCONNECT_PERIOD",
+          "name": "EventID",
+          "type": "Specifies the ID of the client event.",
           "direction": "in",
-          "description": "One of the SIMCONNECT_PERIOD enumeration values specifying how often the data should be sent. For example, SIMCONNECT_PERIOD_SIM_FRAME sends data every simulation frame; SIMCONNECT_PERIOD_ONCE sends it a single time."
+          "description": "Integer"
+        },
+        {
+          "name": "dwData",
+          "type": "Double word containing any additional number required by the event. This is often zero. If the event is a Microsoft Flight Simulator 2020 event, then refer to the Event IDs document for information on this additional value. If the event is a custom event, then any value put in this parameter will be available to the clients that receive the event.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "GroupID",
+          "type": "The default behavior is that this specifies the GroupID of the event. The SimConnect server will use the priority of this group to send the message to all clients with a lower priority. To receive the event notification other SimConnect clients must have subscribed to receive the event. See the explanation of SimConnect Priorities. The exception to the default behavior is set by the SIMCONNECT_EVENT_FLAG_GROUPID_IS_PRIORITY flag, described below.",
+          "direction": "in",
+          "description": "Integer"
         },
         {
           "name": "Flags",
-          "type": "SIMCONNECT_DATA_REQUEST_FLAG",
+          "type": "One or more of the flags shown in the table below.",
           "direction": "in",
-          "description": "One or more SIMCONNECT_DATA_REQUEST_FLAG values combined with bitwise OR. Use SIMCONNECT_DATA_REQUEST_FLAG_DEFAULT (0) for standard behaviour, or SIMCONNECT_DATA_REQUEST_FLAG_CHANGED to receive data only when values have changed."
+          "description": "Integer"
+        }
+      ],
+      "return_type": "",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Events_And_Data/SimConnect_TransmitClientEvent.htm"
+    },
+    {
+      "name": "SimConnect_TransmitClientEvent_EX1",
+      "description": "",
+      "signature": "HRESULT SimConnect_TransmitClientEvent_EX1( HANDLE hSimConnect, SIMCONNECT_OBJECT_ID ObjectID, SIMCONNECT_CLIENT_EVENT_ID EventID, SIMCONNECT_NOTIFICATION_GROUP_ID GroupID, SIMCONNECT_EVENT_FLAG Flags DWORD dwData0, DWORD dwData1, DWORD dwData2, DWORD dwData3, DWORD dwData4 );",
+      "parameters": [
+        {
+          "name": "hSimConnect",
+          "type": "Handle to a SimConnect object.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "ObjectID",
+          "type": "Specifies the ID of the server defined object. If this parameter is set to SIMCONNECT_OBJECT_ID_USER, then the transmitted event will be sent to the other clients in priority order. If this parameters contains another object ID, then the event will be sent direct to that sim-object, and no other clients will receive it.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "EventID",
+          "type": "Specifies the ID of the client event.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "GroupID",
+          "type": "The default behavior is that this specifies the GroupID of the event. The SimConnect server will use the priority of this group to send the message to all clients with a lower priority. To receive the event notification other SimConnect clients must have subscribed to receive the event. See the explanation of SimConnect Priorities. The exception to the default behavior is set by the SIMCONNECT_EVENT_FLAG_GROUPID_IS_PRIORITY flag, described below.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "Flags",
+          "type": "One or more of the flags shown in the table below.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "dwData0 to dwData4",
+          "type": "Double word containing any additional number(s) required by the event. If the event is a Microsoft Flight Simulator 2020 event, then refer to the Event IDs document for information on this additional value(s). If the event is a custom event, then any values put in these parameters will be available to the clients that receive the event.",
+          "direction": "in",
+          "description": "Integer"
+        }
+      ],
+      "return_type": "",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Events_And_Data/SimConnect_TransmitClientEvent_EX1.htm"
+    },
+    {
+      "name": "SimConnect_AddClientEventToNotificationGroup",
+      "description": "",
+      "signature": "HRESULT SimConnect_AddClientEventToNotificationGroup( HANDLE hSimConnect, SIMCONNECT_NOTIFICATION_GROUP_ID GroupID, SIMCONNECT_CLIENT_EVENT_ID EventID, BOOL bMaskable = FALSE );",
+      "parameters": [
+        {
+          "name": "hSimConnect",
+          "type": "Handle to a SimConnect object.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "GroupID",
+          "type": "Specifies the ID of the client defined group.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "EventID",
+          "type": "Specifies the ID of the client defined event.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "bMaskable",
+          "type": "True indicates that the event will be masked by this client and will not be transmitted to any more clients, possibly including Microsoft Flight Simulator itself (if the priority of the client exceeds that of Flight Simulator). False is the default. See the explanation of SimConnect Priorities.",
+          "direction": "in",
+          "description": "Boolean (OPTIONAL)"
+        }
+      ],
+      "return_type": "",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Events_And_Data/SimConnect_AddClientEventToNotificationGroup.htm"
+    },
+    {
+      "name": "SimConnect_RemoveClientEvent",
+      "description": "",
+      "signature": "HRESULT SimConnect_RemoveClientEvent( HANDLE hSimConnect, SIMCONNECT_NOTIFICATION_GROUP_ID GroupID, SIMCONNECT_CLIENT_EVENT_ID EventID );",
+      "parameters": [
+        {
+          "name": "hSimConnect",
+          "type": "Handle to a SimConnect object.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "GroupID",
+          "type": "Specifies the ID of the client defined group.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "EventID",
+          "type": "Specifies the ID of the client defined event ID that is to be removed from the group.",
+          "direction": "in",
+          "description": "Integer"
+        }
+      ],
+      "return_type": "",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Events_And_Data/SimConnect_RemoveClientEvent.htm"
+    },
+    {
+      "name": "SimConnect_SubscribeToSystemEvent",
+      "description": "",
+      "signature": "HRESULT SimConnect_SubscribeToSystemEvent( HANDLE hSimConnect, SIMCONNECT_CLIENT_EVENT_ID EventID, const char* SystemEventName );",
+      "parameters": [
+        {
+          "name": "hSimConnect",
+          "type": "Handle to a SimConnect object.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "EventID",
+          "type": "Specifies the ID of the client event.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "SystemEventName",
+          "type": "The string name for the requested system event, which should be one from the table below (note that the event names are not case-sensitive). Unless otherwise stated in the Description, notifications of the event are returned in a SIMCONNECT_RECV_EVENT structure (identify the event from the EventID given with this function).",
+          "direction": "in",
+          "description": "String"
+        }
+      ],
+      "return_type": "",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Events_And_Data/SimConnect_SubscribeToSystemEvent.htm"
+    },
+    {
+      "name": "SimConnect_UnsubscribeFromSystemEvent",
+      "description": "",
+      "signature": "HRESULT SimConnect_UnsubscribeFromSystemEvent( HANDLE hSimConnect, SIMCONNECT_CLIENT_EVENT_ID EventID );",
+      "parameters": [
+        {
+          "name": "hSimConnect",
+          "type": "Handle to a SimConnect object.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "EventID",
+          "type": "Specifies the ID of the client event.",
+          "direction": "in",
+          "description": "Integer"
+        }
+      ],
+      "return_type": "",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Events_And_Data/SimConnect_UnsubscribeFromSystemEvent.htm"
+    },
+    {
+      "name": "SimConnect_SetSystemEventState",
+      "description": "",
+      "signature": "HRESULT SimConnect_SetSystemEventState( HANDLE hSimConnect, SIMCONNECT_CLIENT_EVENT_ID EventID, SIMCONNECT_STATE dwState );",
+      "parameters": [
+        {
+          "name": "hSimConnect",
+          "type": "Handle to a SimConnect object.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "EventID",
+          "type": "Specifies the ID of the client event that is to have its state changed.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "dwState",
+          "type": "Double word containing the state (one member of SIMCONNECT_STATE).",
+          "direction": "in",
+          "description": "Integer"
+        }
+      ],
+      "return_type": "",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Events_And_Data/SimConnect_SetSystemEventState.htm"
+    },
+    {
+      "name": "SimConnect_RequestDataOnSimObject",
+      "description": "",
+      "signature": "HRESULT SimConnect_RequestDataOnSimObject( HANDLE hSimConnect, SIMCONNECT_DATA_REQUEST_ID RequestID, SIMCONNECT_DATA_DEFINITION_ID DefineID, SIMCONNECT_OBJECT_ID ObjectID, SIMCONNECT_PERIOD Period, SIMCONNECT_DATA_REQUEST_FLAG Flags = 0, DWORD origin = 0, DWORD interval = 0, DWORD limit = 0 );",
+      "parameters": [
+        {
+          "name": "hSimConnect",
+          "type": "Handle to a SimConnect object.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "RequestID",
+          "type": "Specifies the ID of the client defined group.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "DefineID",
+          "type": "Specifies the ID of the client defined data definition.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "ObjectID",
+          "type": "Specifies the ID of the Microsoft Flight Simulator 2020 object that the data should be about. This ID can be SIMCONNECT_OBJECT_ID_USER (to specify the user's aircraft) or obtained from a SIMCONNECT_RECV_SIMOBJECT_DATA_BYTYPE structure after a call to SimConnect_RequestDataOnSimObjectType. Also refer to the note on developing clients for multiplayer mode in the Remarks section below.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "Period",
+          "type": "One member of the SIMCONNECT_PERIOD enumeration type, specifying how often the data is to be sent by the server and received by the client.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "Flags",
+          "type": "A DWORD containing one or more of the values shown in the table below this one.",
+          "direction": "in",
+          "description": "Integer (OPTIONAL)"
         },
         {
           "name": "origin",
-          "type": "DWORD",
+          "type": "The number of Period events that should elapse before transmission of the data begins. The default is zero, which means transmissions will start immediately.",
           "direction": "in",
-          "description": "Number of Period units to wait before sending the first data packet. Set to 0 to begin immediately.",
-          "optional": true
+          "description": "Integer (OPTIONAL)"
         },
         {
           "name": "interval",
-          "type": "DWORD",
+          "type": "The number of Period events that should elapse between transmissions of the data. The default is zero, which means the data is transmitted every Period.",
           "direction": "in",
-          "description": "Number of Period units between successive data transmissions. Set to 0 to send every period.",
-          "optional": true
+          "description": "Integer (OPTIONAL)"
         },
         {
           "name": "limit",
-          "type": "DWORD",
+          "type": "The number of times the data should be transmitted before this communication is ended. The default is zero, which means the data should be transmitted endlessly.",
           "direction": "in",
-          "description": "Maximum number of data packets to send before the request is automatically cancelled. Set to 0 for an unlimited number of transmissions.",
-          "optional": true
+          "description": "Integer (OPTIONAL)"
         }
       ],
-      "return_type": "HRESULT",
-      "remarks": "Cancel an active request by calling this function again with the same RequestID and Period set to SIMCONNECT_PERIOD_NEVER. The data definition must already exist before making this call. Requesting data for an object that does not exist results in a SIMCONNECT_EXCEPTION_OBJECT_ID exception.",
-      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Simulation_Variables/SimConnect_RequestDataOnSimObject.htm"
+      "return_type": "",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Events_And_Data/SimConnect_RequestDataOnSimObject.htm"
+    },
+    {
+      "name": "SimConnect_RequestDataOnSimObjectType",
+      "description": "",
+      "signature": "HRESULT SimConnect_RequestDataOnSimObjectType( HANDLE hSimConnect, SIMCONNECT_DATA_REQUEST_ID RequestID, SIMCONNECT_DATA_DEFINITION_ID DefineID, DWORD dwRadiusMeters, SIMCONNECT_SIMOBJECT_TYPE type );",
+      "parameters": [
+        {
+          "name": "hSimConnect",
+          "type": "Handle to a SimConnect object.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "RequestID",
+          "type": "Specifies the ID of the client defined request. This is used later by the client to identify which data has been received. This value should be unique for each request, re-using a RequestID will overwrite any previous request using the same ID.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "DefineID",
+          "type": "Specifies the ID of the client defined data definition.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "dwRadiusMeters",
+          "type": "Double word containing the radius in meters. If this is set to zero only information on the user aircraft will be returned, although this value is ignored if type is set to SIMCONNECT_SIMOBJECT_TYPE_USER. The error SIMCONNECT_EXCEPTION_OUT_OF_BOUNDS will be returned if a radius is given and it exceeds the maximum allowed (200,000 meters, or 200 Km).",
+          "direction": "in",
+          "description": ""
+        },
+        {
+          "name": "type",
+          "type": "Specifies the type of object to receive information on. One member of the SIMCONNECT_SIMOBJECT_TYPE enumeration type",
+          "direction": "in",
+          "description": ""
+        }
+      ],
+      "return_type": "",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Events_And_Data/SimConnect_RequestDataOnSimObjectType.htm"
+    },
+    {
+      "name": "SimConnect_AddToDataDefinition",
+      "description": "",
+      "signature": "HRESULT SimConnect_AddToDataDefinition( HANDLE hSimConnect, SIMCONNECT_DATA_DEFINITION_ID DefineID, const char* DatumName, const char* UnitsName, SIMCONNECT_DATATYPE DatumType = SIMCONNECT_DATATYPE_FLOAT64, float fEpsilon = 0, DWORD DatumID = SIMCONNECT_UNUSED );",
+      "parameters": [
+        {
+          "name": "hSimConnect",
+          "type": "Handle to a SimConnect object.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "DefineID",
+          "type": "Specifies the ID of the client defined data definition.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "DatumName",
+          "type": "Specifies the name of the Microsoft Flight Simulator 2020 simulation variable. See the Simulation Variables documents for tables of variable names. If an index is required then it should be appended to the variable name following a colon, see the example for DEFINITION_2 below. Indexes are numbered from 1 (not zero). Simulation variable names are not case-sensitive (so can be entered in upper or lower case).",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "UnitsName",
+          "type": "Specifies the units of the variable. See Simulation Variable Units for tables of acceptable unit names. It is possible to specify different units to receive the data in, from those specified in the Simulation Variables document. The alternative units must come under the same heading (such as Angular Velocity, or Volume, as specified in the Units of Measurement section of the Simulation Variables document). For strings and structures enter \"NULL\" for this parameter.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "DatumType",
+          "type": "One member of the SIMCONNECT_DATATYPE enumeration type. This parameter is used to determine what datatype should be used to return the data. The default is SIMCONNECT_DATATYPE_FLOAT64. Note that the structure data types are legitimate parameters here.",
+          "direction": "in",
+          "description": "Integer (OPTIONAL)"
+        },
+        {
+          "name": "fEpsilon",
+          "type": "If data is requested only when it changes (see the flags parameter of SimConnect_RequestDataOnSimObject) a change will only be reported if it is greater than the value of this parameter (not greater than or equal to). The default is zero, so even the tiniest change will initiate the transmission of data. Set this value appropriately so insignificant changes are not transmitted. This can be used with integer data, the floating point fEpsilon value is first truncated to its integer component before the comparison is made (for example, an fEpsilon value of 2.9 truncates to 2, so a data change of 2 will not trigger a transmission, and a change of 3 will do so).",
+          "direction": "in",
+          "description": "Float (OPTIONAL)"
+        },
+        {
+          "name": "DatumID",
+          "type": "Specifies a client defined datum ID. The default is zero. Use this to identify the data received if the data is being returned in tagged format (see the flags parameter of SimConnect_RequestDataOnSimObject. There is no need to specify datum IDs if the data is not being returned in tagged format.",
+          "direction": "in",
+          "description": "Integer (OPTIONAL)"
+        }
+      ],
+      "return_type": "",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Events_And_Data/SimConnect_AddToDataDefinition.htm"
+    },
+    {
+      "name": "SimConnect_ClearDataDefinition",
+      "description": "",
+      "signature": "HRESULT SimConnect_ClearDataDefinition( HANDLE hSimConnect, SIMCONNECT_DATA_DEFINITION_ID DefineID );",
+      "parameters": [
+        {
+          "name": "hSimConnect",
+          "type": "Handle to a SimConnect object.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "DefineID",
+          "type": "Specifies the ID of the client defined data definition.",
+          "direction": "in",
+          "description": "Integer"
+        }
+      ],
+      "return_type": "",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Events_And_Data/SimConnect_ClearDataDefinition.htm"
+    },
+    {
+      "name": "SimConnect_SetDataOnSimObject",
+      "description": "",
+      "signature": "HRESULT SimConnect_SetDataOnSimObject( HANDLE hSimConnect, SIMCONNECT_DATA_DEFINITION_ID DefineID, SIMCONNECT_OBJECT_ID ObjectID, SIMCONNECT_DATA_SET_FLAG Flags, DWORD ArrayCount, DWORD cbUnitSize, void* pDataSet );",
+      "parameters": [
+        {
+          "name": "hSimConnect",
+          "type": "Handle to a SimConnect object.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "DefineID",
+          "type": "Specifies the ID of the client defined data definition.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "ObjectID",
+          "type": "Specifies the ID of the Microsoft Flight Simulator object that the data should be about. This ID can be SIMCONNECT_OBJECT_ID_USER (to specify the user's aircraft) or obtained from a SIMCONNECT_RECV_SIMOBJECT_DATA_BYTYPE structure after a call to SimConnect_RequestDataOnSimObjectType. Also refer to the note on \"multiplayer mode\" at the end of the remarks for SimConnect_RequestDataOnSimObject.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "Flags",
+          "type": "Null, or one or more of the flags listed below.",
+          "direction": "in",
+          "description": "Flag"
+        },
+        {
+          "name": "ArrayCount",
+          "type": "Specifies the number of elements in the data array. A count of zero is interpreted as one element. Ensure that the data array has been initialized completely before transmitting it to Microsoft Flight Simulator. Failure to properly initialize all array elements may result in unexpected behavior.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "cbUnitSize",
+          "type": "Specifies the size of each element in the data array in bytes.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "pDataSet",
+          "type": "Pointer to the data that is to be written. If the data is not in tagged format, this should point to the block of data. If the data is in tagged format this should point to the first tag name (datumID), which is always four bytes long, which should be followed by the data itself. Any number of tag name/value pairs can be specified this way, the server will use the cbUnitSize parameter to determine how much data has been sent.",
+          "direction": "in",
+          "description": "Integer"
+        }
+      ],
+      "return_type": "",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Events_And_Data/SimConnect_SetDataOnSimObject.htm"
+    },
+    {
+      "name": "SimConnect_MapClientDataNameToID",
+      "description": "",
+      "signature": "HRESULT SimConnect_MapClientDataNameToID( HANDLE hSimConnect, const char* szClientDataName, SIMCONNECT_CLIENT_DATA_ID ClientDataID );",
+      "parameters": [
+        {
+          "name": "hSimConnect",
+          "type": "Handle to a SimConnect object.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "szClientDataName",
+          "type": "Null-terminated string containing the client data area name. This is the name that another client will use to specify the data area. The name is not case-sensitive. If the name requested is already in use by another addon, a error will be returned.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "ClientDataID",
+          "type": "A unique ID for the client data area, specified by the client. If the ID number is already in use, an error will be returned.",
+          "direction": "in",
+          "description": "Integer"
+        }
+      ],
+      "return_type": "",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Events_And_Data/SimConnect_MapClientDataNameToID.htm"
+    },
+    {
+      "name": "SimConnect_CreateClientData",
+      "description": "",
+      "signature": "HRESULT SimConnect_CreateClientData( HANDLE hSimConnect, SIMCONNECT_CLIENT_DATA_ID ClientDataID, DWORD dwSize, SIMCONNECT_CREATE_CLIENT_DATA_FLAG Flags );",
+      "parameters": [
+        {
+          "name": "hSimConnect",
+          "type": "Handle to a SimConnect object.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "ClientDataID",
+          "type": "ID of the client data area. Before calling this function, call SimConnect_MapClientDataNameToID to map an ID to a unique client area name.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "dwSize",
+          "type": "Double word containing the size of the data area in bytes.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "Flags",
+          "type": "Specify the flag SIMCONNECT_CREATE_CLIENT_DATA_FLAG_READ_ONLY if the data area can only be written to by this client (the client creating the data area). By default other clients can write to this data area.",
+          "direction": "in",
+          "description": "Integer"
+        }
+      ],
+      "return_type": "",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Events_And_Data/SimConnect_CreateClientData.htm"
+    },
+    {
+      "name": "SimConnect_AddToClientDataDefinition",
+      "description": "",
+      "signature": "HRESULT SimConnect_AddToClientDataDefinition( HANDLE hSimConnect, SIMCONNECT_CLIENT_DATA_DEFINITION_ID DefineID, DWORD dwOffset, DWORD dwSizeOrType, float fEpsilon = 0, DWORD DatumID = SIMCONNECT_UNUSED );",
+      "parameters": [
+        {
+          "name": "hSimConnect",
+          "type": "Handle to a SimConnect object.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "DefineID",
+          "type": "Specifies the ID of the client-defined client data definition.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "dwOffset",
+          "type": "Double word containing the offset into the client area, where the new addition is to start. Set this to SIMCONNECT_CLIENTDATAOFFSET_AUTO for the offsets to be calculated by the SimConnect server.",
+          "direction": "in",
+          "description": ""
+        },
+        {
+          "name": "dwSizeOrType",
+          "type": "Double word containing either the size of the client data in bytes, or one of the constant values defined in the table below (note that these definitions have a negative value, all positive values will be treated as a size parameter).",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "fEpsilon",
+          "type": "If data is requested only when it changes (see the flags parameter of SimConnect_RequestClientData, a change will only be reported if it is greater than the value of this parameter (not greater than or equal to). The default is zero, so even the tiniest change will initiate the transmission of data. Set this value appropriately so insignificant changes are not transmitted. This can be used with integer data, the floating point fEpsilon value is first truncated to its integer component before the comparison is made (for example, an fEpsilon value of 2.9 truncates to 2, so a data change of 2 will not trigger a transmission, and a change of 3 will do so). This parameter only applies if one of the six constant values listed above has been set in the dwSizeOrType parameter, if a size has been specified SimConnect has no record of the type of data being sent, so cannot do a meaningful comparison of values.",
+          "direction": "in",
+          "description": "Float (OPTIONAL)"
+        },
+        {
+          "name": "DatumID",
+          "type": "Specifies a client defined datum ID. The default is zero. Use this to identify the data received if the data is being returned in tagged format (see the flags parameter of SimConnect_RequestClientData. There is no need to specify datum IDs if the data is not being returned in tagged format.",
+          "direction": "in",
+          "description": "Integer (OPTIONAL)"
+        }
+      ],
+      "return_type": "",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Events_And_Data/SimConnect_AddToClientDataDefinition.htm"
+    },
+    {
+      "name": "SimConnect_ClearClientDataDefinition",
+      "description": "",
+      "signature": "HRESULT SimConnect_ClearClientDataDefinition( HANDLE hSimConnect, SIMCONNECT_CLIENT_DATA_DEFINITION_ID DefineID );",
+      "parameters": [
+        {
+          "name": "hSimConnect",
+          "type": "Handle to a SimConnect object.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "DefineID",
+          "type": "Specifies the ID of the client defined client data definition.",
+          "direction": "in",
+          "description": "Integer"
+        }
+      ],
+      "return_type": "",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Events_And_Data/SimConnect_ClearClientDataDefinition.htm"
+    },
+    {
+      "name": "SimConnect_RequestClientData",
+      "description": "",
+      "signature": "HRESULT SimConnect_RequestClientData( HANDLE hSimConnect, SIMCONNECT_CLIENT_DATA_ID ClientDataID, SIMCONNECT_DATA_REQUEST_ID RequestID, SIMCONNECT_CLIENT_DATA_DEFINITION_ID DefineID, SIMCONNECT_CLIENT_DATA_PERIOD Period = SIMCONNECT_CLIENT_DATA_PERIOD_ONCE, SIMCONNECT_CLIENT_DATA_REQUEST_FLAG Flags = 0, DWORD origin = 0, DWORD interval = 0, DWORD limit = 0 );",
+      "parameters": [
+        {
+          "name": "hSimConnect",
+          "type": "Handle to a SimConnect object.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "ClientDataID",
+          "type": "Specifies the ID of the client data area. Before calling this function for the first time on one client area, call SimConnect_MapClientDataNameToID to map an ID to the unique client data area name. This name must match the name specified by the client creating the data area with the SimConnect_MapClientDataNameToID and SimConnect_CreateClientData functions.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "RequestID",
+          "type": "Specifies the ID of the client-defined request. This is used later by the client to identify which data has been received. This value should be unique for each request, re-using a RequestID will overwrite any previous request using the same ID.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "DefineID",
+          "type": "Specifies the ID of the client-defined data definition. This definition specifies the data that should be sent to the client.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "Period",
+          "type": "One member of the SIMCONNECT_CLIENT_DATA_PERIOD enumeration type, specifying how often the data is to be sent by the server and received by the client.",
+          "direction": "in",
+          "description": "Integer (OPTIONAL)"
+        },
+        {
+          "name": "Flags",
+          "type": "A DWORD containing one or more of the values from the table below.",
+          "direction": "in",
+          "description": "Integer (OPTIONAL)"
+        },
+        {
+          "name": "origin",
+          "type": "The number of Period events that should elapse before transmission of the data begins. The default is zero, which means transmissions will start immediately.",
+          "direction": "in",
+          "description": "Integer (OPTIONAL)"
+        },
+        {
+          "name": "interval",
+          "type": "The number of Period events that should elapse between transmissions of the data. The default is zero, which means the data is transmitted every Period.",
+          "direction": "in",
+          "description": "Integer (OPTIONAL)"
+        },
+        {
+          "name": "limit",
+          "type": "The number of times the data should be transmitted before this communication is ended. The default is zero, which means the data should be transmitted endlessly.",
+          "direction": "in",
+          "description": "Integer (OPTIONAL)"
+        }
+      ],
+      "return_type": "",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Events_And_Data/SimConnect_RequestClientData.htm"
+    },
+    {
+      "name": "SimConnect_SetClientData",
+      "description": "",
+      "signature": "HRESULT SimConnect_SetClientData( HANDLE hSimConnect, SIMCONNECT_CLIENT_DATA_ID ClientDataID, SIMCONNECT_CLIENT_DATA_DEFINITION_ID DefineID, DWORD Flags, DWORD dwReserved, DWORD cbUnitSize, void* pDataSet );",
+      "parameters": [
+        {
+          "name": "hSimConnect",
+          "type": "Handle to a SimConnect object.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "ClientDataID",
+          "type": "Specifies the ID of the client data area.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "DefineID",
+          "type": "Specifies the ID of the client defined client data definition.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "Flags",
+          "type": "Null, or one or more of the flags listed in the table below.",
+          "direction": "in",
+          "description": "Flag"
+        },
+        {
+          "name": "dwReserved",
+          "type": "Reserved for future use. Set to zero.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "cbUnitSize",
+          "type": "Specifies the size of the data set in bytes. The server will check that this size matches exactly the size of the data definition provided in the DefineID parameter. An exception will be returned if this is not the case.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "pDataSet",
+          "type": "Pointer to the data that is to be written. If the data is not in tagged format, this should point to the block of client data. If the data is in tagged format this should point to the first tag name (datumID), which is always four bytes long, which should be followed by the data itself. Any number of tag name/value pairs can be specified this way, the server will use the cbUnitSize parameter to determine how much data has been sent.",
+          "direction": "in",
+          "description": "Integer"
+        }
+      ],
+      "return_type": "",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Events_And_Data/SimConnect_SetClientData.htm"
+    },
+    {
+      "name": "SimConnect_RequestNotificationGroup",
+      "description": "",
+      "signature": "HRESULT SimConnect_RequestNotificationGroup( HANDLE hSimConnect, SIMCONNECT_NOTIFICATION_GROUP_ID GroupID, DWORD dwReserved = 0, DWORD Flags = 0 );",
+      "parameters": [
+        {
+          "name": "hSimConnect",
+          "type": "Handle to a SimConnect object.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "GroupID",
+          "type": "Specifies the ID of the client defined input group that is to have all its events removed.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "dwReserved",
+          "type": "Reserved for future use.",
+          "direction": "in",
+          "description": "N/A"
+        },
+        {
+          "name": "Flags",
+          "type": "Reserved for future use.",
+          "direction": "in",
+          "description": "N/A"
+        }
+      ],
+      "return_type": "",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Events_And_Data/SimConnect_RequestNotificationGroup.htm"
+    },
+    {
+      "name": "SimConnect_ClearNotificationGroup",
+      "description": "",
+      "signature": "HRESULT SimConnect_ClearNotificationGroup( HANDLE hSimConnect, SIMCONNECT_NOTIFICATION_GROUP_ID GroupID );",
+      "parameters": [
+        {
+          "name": "hSimConnect",
+          "type": "Handle to a SimConnect object.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "GroupID",
+          "type": "Specifies the ID of the client defined group that is to have all its events removed.",
+          "direction": "in",
+          "description": "Integer"
+        }
+      ],
+      "return_type": "",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Events_And_Data/SimConnect_ClearNotificationGroup.htm"
+    },
+    {
+      "name": "SimConnect_ClearInputGroup",
+      "description": "",
+      "signature": "HRESULT SimConnect_ClearInputGroup( HANDLE hSimConnect, SIMCONNECT_INPUT_GROUP_ID GroupID );",
+      "parameters": [
+        {
+          "name": "hSimConnect",
+          "type": "Handle to a SimConnect object.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "GroupID",
+          "type": "Specifies the ID of the client defined input group that is to have all its events removed.",
+          "direction": "in",
+          "description": "Integer"
+        }
+      ],
+      "return_type": "",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Events_And_Data/SimConnect_ClearInputGroup.htm"
+    },
+    {
+      "name": "SimConnect_SetInputGroupPriority",
+      "description": "",
+      "signature": "RESULT SimConnect_SetInputGroupPriority( HANDLE hSimConnect, SIMCONNECT_INPUT_GROUP_ID GroupID, DWORD uPriority );",
+      "parameters": [
+        {
+          "name": "hSimConnect",
+          "type": "Handle to a SimConnect object.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "GroupID",
+          "type": "Specifies the ID of the client defined input group that the priority setting is to apply to.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "uPriority",
+          "type": "Specifies the priority setting for the input group. See the explanation of SimConnect Priorities.",
+          "direction": "in",
+          "description": "Integer"
+        }
+      ],
+      "return_type": "",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Events_And_Data/SimConnect_SetInputGroupPriority.htm"
+    },
+    {
+      "name": "SimConnect_SetInputGroupState",
+      "description": "",
+      "signature": "HRESULT SimConnect_SetInputGroupState( HANDLE hSimConnect, SIMCONNECT_INPUT_GROUP_ID GroupID, DWORD dwState );",
+      "parameters": [
+        {
+          "name": "hSimConnect",
+          "type": "Handle to a SimConnect object.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "GroupID",
+          "type": "Specifies the ID of the client defined input group that is to have its state changed.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "dwState",
+          "type": "Double word containing the new state. One member of the SIMCONNECT_STATE enumeration type.",
+          "direction": "in",
+          "description": "Integer"
+        }
+      ],
+      "return_type": "",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Events_And_Data/SimConnect_SetInputGroupState.htm"
+    },
+    {
+      "name": "SimConnect_RemoveInputEvent",
+      "description": "",
+      "signature": "HRESULT SimConnect_RemoveInputEvent( HANDLE hSimConnect, SIMCONNECT_INPUT_GROUP_ID GroupID, const char* pszInputDefinition );",
+      "parameters": [
+        {
+          "name": "hSimConnect",
+          "type": "Handle to a SimConnect object.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "GroupID",
+          "type": "Specifies the ID of the client defined input group from which the event is to be removed.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "pszInputDefinition",
+          "type": "Pointer to a null-terminated string containing the input definition.",
+          "direction": "in",
+          "description": "Integer"
+        }
+      ],
+      "return_type": "",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Events_And_Data/SimConnect_RemoveInputEvent.htm"
+    },
+    {
+      "name": "SimConnect_RequestReservedKey",
+      "description": "",
+      "signature": "HRESULT SimConnect_RequestReservedKey( HANDLE hSimConnect, SIMCONNECT_CLIENT_EVENT_ID EventID, const char* szKeyChoice1, const char* szKeyChoice2 = \"\", const char* szKeyChoice3 = \"\" );",
+      "parameters": [
+        {
+          "name": "hSimConnect",
+          "type": "Handle to a SimConnect object.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "EventID",
+          "type": "Specifies the client defined event ID.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "szKeyChoice1",
+          "type": "Null-terminated string containing the first key choice. Refer to the list below for all the choices that can be entered for these three parameters.",
+          "direction": "in",
+          "description": "String"
+        },
+        {
+          "name": "szKeyChoice2",
+          "type": "Null-terminated string containing the second key choice.",
+          "direction": "in",
+          "description": "String"
+        },
+        {
+          "name": "szKeyChoice3",
+          "type": "Null-terminated string containing the third key choice.",
+          "direction": "in",
+          "description": "String"
+        }
+      ],
+      "return_type": "",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Events_And_Data/SimConnect_RequestReservedKey.htm"
+    },
+    {
+      "name": "SimConnect_FlightLoad",
+      "description": "",
+      "signature": "HRESULT SimConnect_FlightLoad( HANDLE hSimConnect, const char* szFileName );",
+      "parameters": [
+        {
+          "name": "hSimConnect",
+          "type": "Handle to a SimConnect object.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "szFileName",
+          "type": "Null-terminated string containing the path to the flight file.",
+          "direction": "in",
+          "description": "String"
+        }
+      ],
+      "return_type": "",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Flights/SimConnect_FlightLoad.htm"
+    },
+    {
+      "name": "SimConnect_FlightSave",
+      "description": "",
+      "signature": "HRESULT SimConnect_FlightSave( HANDLE hSimConnect, const char* szFileName, const char* szDescription, DWORD Flags );",
+      "parameters": [
+        {
+          "name": "hSimConnect",
+          "type": "Handle to a SimConnect object.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "szFileName",
+          "type": "Null-terminated string containing the path to the flight file. Flight files have the extension .FLT, but no need to enter an extension here.",
+          "direction": "in",
+          "description": "String"
+        },
+        {
+          "name": "szTitle",
+          "type": "Null-terminated string containing the title of the flight file. If this is NULL then the szFileName parameter is used as the title.",
+          "direction": "in",
+          "description": "String"
+        },
+        {
+          "name": "szDescription",
+          "type": "Null-terminated string containing the text to enter in the Description field of the flight file.",
+          "direction": "in",
+          "description": "String"
+        },
+        {
+          "name": "Flags",
+          "type": "Unused.",
+          "direction": "in",
+          "description": "Integer"
+        }
+      ],
+      "return_type": "",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Flights/SimConnect_FlightSave.htm"
+    },
+    {
+      "name": "SimConnect_FlightPlanLoad",
+      "description": "",
+      "signature": "HRESULT SimConnect_FlightPlanLoad( HANDLE hSimConnect, const char* szFileName );",
+      "parameters": [
+        {
+          "name": "hSimConnect",
+          "type": "Handle to a SimConnect object.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "szFileName",
+          "type": "Null-terminated string containing the path to the flight plan file. Flight plans have the extension .PLN, but no need to enter an extension here. The easiest way to create flight plans is to create them from within Microsoft Flight Simulator itself, and then save them off for use by the user or AI controlled aircraft.",
+          "direction": "in",
+          "description": "String"
+        }
+      ],
+      "return_type": "",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Flights/SimConnect_FlightPlanLoad.htm"
+    },
+    {
+      "name": "SimConnect_GetLastSentPacketID",
+      "description": "",
+      "signature": "HRESULT SimConnect_GetLastSentPacketID( HANDLE hSimConnect, DWORD* pdwSendID );",
+      "parameters": [
+        {
+          "name": "hSimConnect",
+          "type": "Handle to a SimConnect object.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "pdwSendID",
+          "type": "Pointer to a double word containing the ID of the last sent packet.",
+          "direction": "in",
+          "description": "Integer"
+        }
+      ],
+      "return_type": "",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Debug/SimConnect_GetLastSentPacketID.htm"
+    },
+    {
+      "name": "SimConnect_RequestResponseTimes",
+      "description": "",
+      "signature": "HRESULT SimConnect_RequestResponseTimes( HANDLE hSimConnect, DWORD nCount, float* fElapsedSeconds );",
+      "parameters": [
+        {
+          "name": "hSimConnect",
+          "type": "Handle to a SimConnect object.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "nCount",
+          "type": "Integer containing the number of elements in the array of floats. This should be set to five for the full range of timings, but can be less if only the first few are of interest. There is no point creating an array of greater than five floats.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "fElapsedSeconds",
+          "type": "An array of nCount floats, containing the times. The five elements will contain the following: 0 - total round trip time 1 - time from the request till the packet is sent 2 - time from the request till the packet is received by the server 3 - time from the request till the response is made by the server 4 - time from the server response to the client receives the packet.",
+          "direction": "in",
+          "description": "Array"
+        }
+      ],
+      "return_type": "",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Debug/SimConnect_RequestResponseTimes.htm"
+    },
+    {
+      "name": "SimConnect_InsertString",
+      "description": "",
+      "signature": "HRESULT SimConnect_InsertString( char* pDest, DWORD cbDest, void** ppEnd, DWORD* pcbStringV, const char* pSource );",
+      "parameters": [
+        {
+          "name": "pDest",
+          "type": "Pointer to where the source string is to be written in the destination object.",
+          "direction": "in",
+          "description": "Pointer"
+        },
+        {
+          "name": "cbDest",
+          "type": "The size of the remaining space in the destination object.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "ppEnd",
+          "type": "Pointer to a pointer, (usually a pointer to a char pointer). On return the pointer locates the end of the string in the structure, and hence the starting position for any other string to be included in the structure.",
+          "direction": "in",
+          "description": "Pointer"
+        },
+        {
+          "name": "pcbStringV",
+          "type": "Pointer to a DWORD. On returning this DWORD will contain the size of the source string in bytes.",
+          "direction": "in",
+          "description": "Pointer"
+        },
+        {
+          "name": "pSource",
+          "type": "Pointer to the source string.",
+          "direction": "in",
+          "description": "Pointer"
+        }
+      ],
+      "return_type": "",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Debug/SimConnect_InsertString.htm"
+    },
+    {
+      "name": "SimConnect_RetrieveString",
+      "description": "",
+      "signature": "HRESULT SimConnect_RetrieveString( SIMCONNECT_RECV* pData, DWORD cbData, void* pStringV, char** ppszString, DWORD* pcbString );",
+      "parameters": [
+        {
+          "name": "pData",
+          "type": "Pointer to a SIMCONNECT_RECV structure, containing the data.",
+          "direction": "in",
+          "description": "Pointer"
+        },
+        {
+          "name": "cbData",
+          "type": "The size of the structure that inherits the SIMCONNECT_RECV structure, in bytes.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "pStringV",
+          "type": "Pointer to a the start of the variable length string within the structure.",
+          "direction": "in",
+          "description": "Pointer"
+        },
+        {
+          "name": "ppszString",
+          "type": "Specifies a pointer to a pointer to a character buffer that should be large enough to contain the maximum length of string that might be returned. On return this buffer should contain the retrieved string.",
+          "direction": "in",
+          "description": "Pointer"
+        },
+        {
+          "name": "pcbString",
+          "type": "Pointer to a DWORD. On return this contains the length of the string in bytes.",
+          "direction": "in",
+          "description": "Pointer"
+        }
+      ],
+      "return_type": "",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Debug/SimConnect_RetrieveString.htm"
+    },
+    {
+      "name": "SimConnect_AddToFacilityDefinition",
+      "description": "",
+      "signature": "HRESULT SimConnect_AddToFacilityDefinition( HANDLE hSimConnect, SIMCONNECT_DATA_DEFINITION_ID DefineID, const char * FieldName );",
+      "parameters": [
+        {
+          "name": "hSimConnect",
+          "type": "Handle to a SimConnect object.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "DefineID",
+          "type": "Specifies the ID of the client defined data definition",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "FieldName",
+          "type": "Specifies the name of the field you want to add to the object definition.",
+          "direction": "in",
+          "description": "Integer"
+        }
+      ],
+      "return_type": "",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Facilities/SimConnect_AddToFacilityDefinition.htm"
+    },
+    {
+      "name": "SimConnect_AddFacilityDataDefinitionFilter",
+      "description": "",
+      "signature": "HRESULT SimConnect_AddFacilityDataDefinitionFilter( HANDLE hSimConnect, SIMCONNECT_DATA_DEFINITION_ID DefineID, const char * szFilterPath, DWORD cbFilterDataSize, void * pFilterData );",
+      "parameters": [
+        {
+          "name": "hSimConnect",
+          "type": "Handle to a SimConnect object.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "DefineID",
+          "type": "Specifies the ID of the client defined data definition.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "szFilterPath",
+          "type": "Defines the node and member that you wish to apply the filter to.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "cbFilterDataSize",
+          "type": "The size of the pFilterData.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "pFilterData",
+          "type": "Filter data as bytes (will be cast to the right type later).",
+          "direction": "in",
+          "description": "Pointer"
+        }
+      ],
+      "return_type": "",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Facilities/SimConnect_AddFacilityDataDefinitionFilter.htm"
+    },
+    {
+      "name": "SimConnect_ClearAllFacilityDataDefinitionFilters",
+      "description": "",
+      "signature": "HRESULT SimConnect_ClearAllFacilityDataDefinitionFilters( HANDLE hSimConnect, SIMCONNECT_DATA_DEFINITION_ID DefineID );",
+      "parameters": [
+        {
+          "name": "hSimConnect",
+          "type": "Handle to a SimConnect object.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "DefineID",
+          "type": "Specifies the ID of the client defined data definition.",
+          "direction": "in",
+          "description": "Integer"
+        }
+      ],
+      "return_type": "",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Facilities/SimConnect_ClearAllFacilityDataDefinitionFilters.htm"
+    },
+    {
+      "name": "SimConnect_RequestFacilitesList",
+      "description": "",
+      "signature": "HRESULT SimConnect_RequestFacilitesList( HANDLE hSimConnect, SIMCONNECT_FACILITY_LIST_TYPE type, SIMCONNECT_DATA_REQUEST_ID RequestID );",
+      "parameters": [
+        {
+          "name": "hSimConnect",
+          "type": "Handle to a SimConnect object.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "type",
+          "type": "Specifies one member of the SIMCONNECT_FACILITY_LIST_TYPE enumeration type.",
+          "direction": "in",
+          "description": "Enum"
+        },
+        {
+          "name": "RequestID",
+          "type": "Specifies the client defined request ID. This will be returned along with the data.",
+          "direction": "in",
+          "description": "Integer"
+        }
+      ],
+      "return_type": "",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Facilities/SimConnect_RequestFacilitesList.htm"
+    },
+    {
+      "name": "SimConnect_RequestFacilitesList_EX1",
+      "description": "",
+      "signature": "HRESULT SimConnect_RequestFacilitesList_EX1( HANDLE hSimConnect, SIMCONNECT_FACILITY_LIST_TYPE type, SIMCONNECT_DATA_REQUEST_ID RequestID );",
+      "parameters": [
+        {
+          "name": "hSimConnect",
+          "type": "Handle to a SimConnect object.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "type",
+          "type": "Specifies one member of the SIMCONNECT_FACILITY_LIST_TYPE enumeration type.",
+          "direction": "in",
+          "description": "Enum"
+        },
+        {
+          "name": "RequestID",
+          "type": "Specifies the client defined request ID. This will be returned along with the data.",
+          "direction": "in",
+          "description": "Integer"
+        }
+      ],
+      "return_type": "",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Facilities/SimConnect_RequestFacilitiesList_EX1.htm"
+    },
+    {
+      "name": "SimConnect_RequestFacilityData",
+      "description": "",
+      "signature": "HRESULT SimConnect_RequestFacilityData( HANDLE hSimConnect, SIMCONNECT_DATA_DEFINITION_ID DefineID, SIMCONNECT_DATA_REQUEST_ID RequestID, const char * ICAO, const char * Region = \"\" );",
+      "parameters": [
+        {
+          "name": "hSimConnect",
+          "type": "Handle to a SimConnect object.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "DefineID",
+          "type": "Specifies the ID of the client defined data definition",
+          "direction": "in",
+          "description": ""
+        },
+        {
+          "name": "RequestID",
+          "type": "The client defined request ID",
+          "direction": "in",
+          "description": ""
+        },
+        {
+          "name": "ICAO",
+          "type": "Used to identify an airport, a VOR, an NDB or a waypoint.",
+          "direction": "in",
+          "description": ""
+        },
+        {
+          "name": "Region",
+          "type": "Additional identifier for an airport, a VOR, an NDB or a waypoint. For airports, this can be omitted without issue, however for VOR / NDB / Waypoints this should be supplied if possible, although there are workarounds provided if it's not (see remarks, below).",
+          "direction": "in",
+          "description": ""
+        }
+      ],
+      "return_type": "",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Facilities/SimConnect_RequestFacilityData.htm"
+    },
+    {
+      "name": "SimConnect_RequestFacilityData_EX1",
+      "description": "",
+      "signature": "HRESULT SimConnect_RequestFacilityData( HANDLE hSimConnect, SIMCONNECT_DATA_DEFINITION_ID DefineID, SIMCONNECT_DATA_REQUEST_ID RequestID, const char * ICAO, const char * Region = \"\", char Type = 0 );",
+      "parameters": [
+        {
+          "name": "hSimConnect",
+          "type": "Handle to a SimConnect object.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "DefineID",
+          "type": "Specifies the ID of the client defined data definition",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "RequestID",
+          "type": "The client defined request ID",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "ICAO",
+          "type": "Used to identify an airport, a VOR, an NDB or a waypoint.",
+          "direction": "in",
+          "description": "Char"
+        },
+        {
+          "name": "Region",
+          "type": "Additional identifier for an airport, a VOR, an NDB or a waypoint. For airports, this can be omitted without issue, however for VOR / NDB / Waypoints this should be supplied if possible, although there are workarounds provided if it's not (see remarks, below).",
+          "direction": "in",
+          "description": "Char"
+        },
+        {
+          "name": "Type",
+          "type": "Additional identifier for when requesting data to differentciate between waypoint/VOR/NDB when there are overlapping ICAO/Region identifiers. Should be one of the following ASCii values: 86 ('V') - VOR 78 ('N') - NDB 87 ('W') - Waypoint",
+          "direction": "in",
+          "description": "Char"
+        }
+      ],
+      "return_type": "",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Facilities/SimConnect_RequestFacilityData_EX1.htm"
+    },
+    {
+      "name": "SimConnect_RequestJetwayData",
+      "description": "",
+      "signature": "HRESULT SimConnect_RequestJetwayData( HANDLE hSimConnect, const char* szAirportIcao, DWORD dwArrayCount, int* pIndexes );",
+      "parameters": [
+        {
+          "name": "hSimConnect",
+          "type": "Handle to a SimConnect object.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "szAirportIcao",
+          "type": "The airport ICAO to check.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "dwArrayCount",
+          "type": "This is the number of elements in pIndexes. Can be 0.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "pIndexes",
+          "type": "An array of parking indices. Can be nullptr.",
+          "direction": "in",
+          "description": "Integer"
+        }
+      ],
+      "return_type": "",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Facilities/SimConnect_RequestJetwayData.htm"
+    },
+    {
+      "name": "SimConnect_SubscribeToFacilities",
+      "description": "",
+      "signature": "HRESULT SimConnect_SubscribeToFacilities( HANDLE hSimConnect, SIMCONNECT_FACILITY_LIST_TYPE type, SIMCONNECT_DATA_REQUEST_ID RequestID );",
+      "parameters": [
+        {
+          "name": "hSimConnect",
+          "type": "Handle to a SimConnect object.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "type",
+          "type": "Specifies one member of the SIMCONNECT_FACILITY_LIST_TYPE enumeration type.",
+          "direction": "in",
+          "description": "Enum"
+        },
+        {
+          "name": "RequestID",
+          "type": "Specifies the client defined request ID. This will be returned along with the data.",
+          "direction": "in",
+          "description": "Integer"
+        }
+      ],
+      "return_type": "",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Facilities/SimConnect_SubscribeToFacilities.htm"
+    },
+    {
+      "name": "SimConnect_SubscribeToFacilities_EX1",
+      "description": "",
+      "signature": "HRESULT SimConnect_SubscribeToFacilities_EX1( HANDLE hSimConnect, SIMCONNECT_FACILITY_LIST_TYPE type, SIMCONNECT_DATA_REQUEST_ID newElemInRangeRequestID, SIMCONNECT_DATA_REQUEST_ID oldElemOutRangeRequestID );",
+      "parameters": [
+        {
+          "name": "hSimConnect",
+          "type": "Handle to a SimConnect object.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "type",
+          "type": "Specifies one member of the SIMCONNECT_FACILITY_LIST_TYPE enumeration type.",
+          "direction": "in",
+          "description": "Enum"
+        },
+        {
+          "name": "newElemInRangeRequestID",
+          "type": "Request Id for messages about new elements considered to be in range of the reality bubble. If -1 is used, then the client won't receive messages for elements coming into range. NOTE: This cannot be set to -1 if oldElemOutRangeRequestID is also -1.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "oldElemOutRangeRequestID",
+          "type": "Request Id for messages about an element that is newly considered out of range of the reality bubble. If -1 is used, then the client won't receive messages for elements coming into range. NOTE: This cannot be set to -1 if newElemInRangeRequestID is also -1.",
+          "direction": "in",
+          "description": "Integer"
+        }
+      ],
+      "return_type": "",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Facilities/SimConnect_SubscribeToFacilities_EX1.htm"
+    },
+    {
+      "name": "SimConnect_UnsubscribeToFacilities",
+      "description": "",
+      "signature": "HRESULT SimConnect_UnsubscribeToFacilities( HANDLE hSimConnect, SIMCONNECT_FACILITY_LIST_TYPE type );",
+      "parameters": [
+        {
+          "name": "hSimConnect",
+          "type": "Handle to a SimConnect object.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "type",
+          "type": "Specifies one member of the SIMCONNECT_FACILITY_LIST_TYPE enumeration type.",
+          "direction": "in",
+          "description": "Enum"
+        }
+      ],
+      "return_type": "",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Facilities/SimConnect_UnsubscribeToFacilities.htm"
+    },
+    {
+      "name": "SimConnect_UnsubscribeToFacilities_EX1",
+      "description": "",
+      "signature": "HRESULT SimConnect_UnsubscribeToFacilities_EX1( HANDLE hSimConnect, SIMCONNECT_FACILITY_LIST_TYPE type, bool bUnsubscribeNewInRange, bool bUnsubscribeOldOutRange );",
+      "parameters": [
+        {
+          "name": "hSimConnect",
+          "type": "Handle to a SimConnect object.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "type",
+          "type": "Specifies one member of the SIMCONNECT_FACILITY_LIST_TYPE enumeration type.",
+          "direction": "in",
+          "description": "Enum"
+        },
+        {
+          "name": "bUnsubscribeNewInRange",
+          "type": "Specifies that the \"new element in range\" event should be disabled.",
+          "direction": "in",
+          "description": "Bool"
+        },
+        {
+          "name": "bUnsubscribeOldOutRange",
+          "type": "Specifies that the \"element out of range\" event should be disabled.",
+          "direction": "in",
+          "description": "Bool"
+        }
+      ],
+      "return_type": "",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Facilities/SimConnect_UnsubscribeToFacilities_EX1.htm"
+    },
+    {
+      "name": "SimConnect_AICreateEnrouteATCAircraft",
+      "description": "",
+      "signature": "HRESULT SimConnect_AICreateEnrouteATCAircraft( HANDLE hSimConnect, const char* szContainerTitle, const char* szTailNumber, int iFlightNumber, const char* szFlightPlanPath, double dFlightPlanPosition, BOOL bTouchAndGo, SIMCONNECT_DATA_REQUEST_ID RequestID );",
+      "parameters": [
+        {
+          "name": "hSimConnect",
+          "type": "Handle to a SimConnect object.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "szContainerTitle",
+          "type": "Null-terminated string containing the container title. The container title is found in the aircraft.cfg file. Alternatively, the aircraft title can be obtained via the Aircraft Selector (DevMode-\u003eWindows-\u003eAircraft selector). Examples of aircraft titles: title=Boeing 747-8f Asobo title=DA62 Asobo title=VL3 Asobo",
+          "direction": "in",
+          "description": "String"
+        },
+        {
+          "name": "szTailNumber",
+          "type": "Null-terminated string containing the tail number. This should have a maximum of 12 characters.",
+          "direction": "in",
+          "description": "String"
+        },
+        {
+          "name": "iFlightNumber",
+          "type": "Integer containing the flight number. There is no specific maximum length of this number. Any negative number indicates that there is no flight number. szFlightPlanPath.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "szFlightPlanPath",
+          "type": "Null-terminated string containing the path to the flight plan file. Flight plans have the extension .pln, but no need to enter an extension here. The easiest way to create flight plans is to create them from within Microsoft Flight Simulator 2020 itself, and then save them off for use with the AI controlled aircraft.",
+          "direction": "in",
+          "description": "String"
+        },
+        {
+          "name": "dFlightPlanPosition",
+          "type": "Double floating point number containing the flight plan position. The number before the point contains the waypoint index, and the number afterwards how far along the route to the next waypoint the aircraft is to be positioned. The first waypoint index is 0. For example, 0.0 indicates that the aircraft has not started on the flight plan, 2.5 would indicate the aircraft is to be initialized halfway between the third and fourth waypoints (which would have indexes 2 and 3). The waypoints are those recorded in the flight plan, which may just be two airports, and do not include any taxiway points on the ground. Also there is a threshold that will ignore requests to have an aircraft taxiing or taking off, or landing. So set the value after the point to ensure the aircraft will be in level flight.",
+          "direction": "in",
+          "description": "Float"
+        },
+        {
+          "name": "bTouchAndGo",
+          "type": "Set to True to indicate that landings should be touch and go, and not full stop landings.",
+          "direction": "in",
+          "description": "Bool"
+        },
+        {
+          "name": "RequestID",
+          "type": "Specifies the client defined request ID.",
+          "direction": "in",
+          "description": "Integer"
+        }
+      ],
+      "return_type": "",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/AI_Object/SimConnect_AICreateEnrouteATCAircraft.htm"
+    },
+    {
+      "name": "SimConnect_AICreateNonATCAircraft",
+      "description": "",
+      "signature": "HRESULT SimConnect_AICreateNonATCAircraft( HANDLE hSimConnect, const char* szContainerTitle, const char* szTailNumber, SIMCONNECT_DATA_INITPOSITION InitPos, SIMCONNECT_DATA_REQUEST_ID RequestID );",
+      "parameters": [
+        {
+          "name": "hSimConnect",
+          "type": "Handle to a SimConnect object.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "szContainerTitle",
+          "type": "Null-terminated string containing the container title. The container title is found in the aircraft.cfg file. Alternatively, the aircraft title can be obtained via the Aircraft Selector (DevMode-\u003eWindows-\u003eAircraft selector). Examples of aircraft titles: title=Boeing 747-8f Asobo title=DA62 Asobo title=VL3 Asobo",
+          "direction": "in",
+          "description": "String"
+        },
+        {
+          "name": "szTailNumber",
+          "type": "Null-terminated string containing the tail number. This should have a maximum of 12 characters.",
+          "direction": "in",
+          "description": "String"
+        },
+        {
+          "name": "InitPos",
+          "type": "Specifies the initial position, using a SIMCONNECT_DATA_INITPOSITION structure.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "RequestID",
+          "type": "Specifies the client defined request ID.",
+          "direction": "in",
+          "description": "String"
+        }
+      ],
+      "return_type": "",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/AI_Object/SimConnect_AICreateNonATCAircraft.htm"
+    },
+    {
+      "name": "SimConnect_AICreateParkedATCAircraft",
+      "description": "",
+      "signature": "HRESULT SimConnect_AICreateParkedATCAircraft( HANDLE hSimConnect, const char* szContainerTitle, const char* szTailNumber, const char* szAirportID, SIMCONNECT_DATA_REQUEST_ID RequestID );",
+      "parameters": [
+        {
+          "name": "hSimConnect",
+          "type": "Handle to a SimConnect object.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "szContainerTitle",
+          "type": "Null-terminated string containing the container title. The container title is found in the aircraft.cfg file. Alternatively, the aircraft title can be obtained via the Aircraft Selector (DevMode-\u003eWindows-\u003eAircraft selector). Examples of aircraft titles: title=Boeing 747-8f Asobo title=DA62 Asobo title=VL3 Asobo",
+          "direction": "in",
+          "description": "String"
+        },
+        {
+          "name": "szTailNumber",
+          "type": "Null-terminated string containing the tail number. This should have a maximum of 12 characters.",
+          "direction": "in",
+          "description": "String"
+        },
+        {
+          "name": "szAirportID",
+          "type": "Null-terminated string containing the airport ID. This is the ICAO code string, for example, KSEA for SeaTac International.",
+          "direction": "in",
+          "description": "String"
+        },
+        {
+          "name": "RequestID",
+          "type": "Specifies the client defined request ID.",
+          "direction": "in",
+          "description": "Integer"
+        }
+      ],
+      "return_type": "",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/AI_Object/SimConnect_AICreateParkedATCAircraft.htm"
+    },
+    {
+      "name": "SimConnect_AICreateSimulatedObject",
+      "description": "",
+      "signature": "HRESULT SimConnect_AICreateSimulatedObject( HANDLE hSimConnect, const char* szContainerTitle, SIMCONNECT_DATA_INITPOSITION InitPos, SIMCONNECT_DATA_REQUEST_ID RequestID );",
+      "parameters": [
+        {
+          "name": "hSimConnect",
+          "type": "Handle to a SimConnect object.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "szContainerTitle",
+          "type": "Null-terminated string containing the container title. The container title is case-sensitive and can be found in the sim.cfg file. NOTE: Only Dynamic SimObjects can receive \"AI Waypoint\" data via SimConnect_SetDataOnSimObject.",
+          "direction": "in",
+          "description": "String"
+        },
+        {
+          "name": "InitPos",
+          "type": "This a SIMCONNECT_DATA_INITPOSITION struct containing the data referring to the spawn position of the SimObject.",
+          "direction": "in",
+          "description": "String"
+        },
+        {
+          "name": "RequestID",
+          "type": "Specifies the client defined request ID.",
+          "direction": "in",
+          "description": "Integer"
+        }
+      ],
+      "return_type": "",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/AI_Object/SimConnect_AICreateSimulatedObject.htm"
+    },
+    {
+      "name": "SimConnect_AIReleaseControl",
+      "description": "",
+      "signature": "HRESULT SimConnect_AIReleaseControl( HANDLE hSimConnect, SIMCONNECT_OBJECT_ID ObjectID, SIMCONNECT_DATA_REQUEST_ID RequestID );",
+      "parameters": [
+        {
+          "name": "hSimConnect",
+          "type": "Handle to a SimConnect object.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "ObjectID",
+          "type": "Specifies the server defined object ID.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "RequestID",
+          "type": "Specifies the client defined request ID.",
+          "direction": "in",
+          "description": "Integer"
+        }
+      ],
+      "return_type": "",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/AI_Object/SimConnect_AIReleaseControl.htm"
+    },
+    {
+      "name": "SimConnect_AIRemoveObject",
+      "description": "",
+      "signature": "HRESULT SimConnect_AIRemoveObject( HANDLE hSimConnect, SIMCONNECT_OBJECT_ID ObjectID, SIMCONNECT_DATA_REQUEST_ID RequestID );",
+      "parameters": [
+        {
+          "name": "hSimConnect",
+          "type": "Handle to a SimConnect object.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "ObjectID",
+          "type": "Specifies the server defined object ID (refer to the SIMCONNECT_RECV_ASSIGNED_OBJECT_ID structure).",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "RequestID",
+          "type": "Specifies the client defined request ID.",
+          "direction": "in",
+          "description": "Integer"
+        }
+      ],
+      "return_type": "",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/AI_Object/SimConnect_AIRemoveObject.htm"
+    },
+    {
+      "name": "SimConnect_AISetAircraftFlightPlan",
+      "description": "",
+      "signature": "HRESULT SimConnect_AISetAircraftFlightPlan( HANDLE hSimConnect, SIMCONNECT_OBJECT_ID ObjectID, const char* szFlightPlanPath, SIMCONNECT_DATA_REQUEST_ID RequestID );",
+      "parameters": [
+        {
+          "name": "hSimConnect",
+          "type": "Handle to a SimConnect object.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "ObjectID",
+          "type": "Specifies the server defined object ID.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "szFlightPlanPath",
+          "type": "Null-terminated string containing the path to the flight plan file. Flight plans have the extension .pln, but no need to enter an extension here. The easiest way to create flight plans is to create them from within the simulation, and then save them off for use with the AI controlled aircraft.",
+          "direction": "in",
+          "description": "String"
+        },
+        {
+          "name": "RequestID",
+          "type": "Specifies the client defined request ID.",
+          "direction": "in",
+          "description": "Integer"
+        }
+      ],
+      "return_type": "",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/AI_Object/SimConnect_AISetAircraftFlightPlan.htm"
+    },
+    {
+      "name": "SimConnect_AICreateEnrouteATCAircraft_EX1",
+      "description": "",
+      "signature": "HRESULT SimConnect_AICreateEnrouteATCAircraft_EX1( HANDLE hSimConnect, const char* szContainerTitle, const char* szLivery, const char* szTailNumber, int iFlightNumber, const char* szFlightPlanPath, double dFlightPlanPosition, BOOL bTouchAndGo, SIMCONNECT_DATA_REQUEST_ID RequestID );",
+      "parameters": [
+        {
+          "name": "hSimConnect",
+          "type": "Handle to a SimConnect object.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "szContainerTitle",
+          "type": "Null-terminated string containing the container title. The container title is found in the title parameter of the aircraft.cfg file, or alternatively, you can find it from the list found in the Aircraft Capture Tool. You may also retrieve the information with SimConnect using the SimConnect_EnumerateSimObjectsAndLiveries function. Examples of aircraft titles: title=Boeing 747-8f Asobo title=DA62 Asobo title=VL3 Asobo",
+          "direction": "in",
+          "description": "String"
+        },
+        {
+          "name": "szLivery",
+          "type": "Null-terminated string containing the livery name. This field is only required when checking modular SimObjects, since their liveries are dynamically handled and do not have a unique title parameter like legacy aircraft. This parameter can be set to either the name of the livery as defined in the name parameter of the livery.cfg, or to the folder name of the livery in the package. Note that you can also get the livery name using the SimConnect_EnumerateSimObjectsAndLiveries function. The function will check for the folder first, then the parameter name second, and if the given name is not found in either location, then the default livery will be used.",
+          "direction": "in",
+          "description": "String"
+        },
+        {
+          "name": "szTailNumber",
+          "type": "Null-terminated string containing the tail number. This should have a maximum of 12 characters.",
+          "direction": "in",
+          "description": "String"
+        },
+        {
+          "name": "iFlightNumber",
+          "type": "Integer containing the flight number. There is no specific maximum length of this number. Any negative number indicates that there is no flight number. szFlightPlanPath.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "szFlightPlanPath",
+          "type": "Null-terminated string containing the path to the flight plan file. Flight plans have the extension .pln, but no need to enter an extension here. The easiest way to create flight plans is to create them from within Microsoft Flight Simulator 2024 itself, and then save them off for use with the AI controlled aircraft.",
+          "direction": "in",
+          "description": "String"
+        },
+        {
+          "name": "dFlightPlanPosition",
+          "type": "Double floating point number containing the flight plan position. The number before the point contains the waypoint index, and the number afterwards how far along the route to the next waypoint the aircraft is to be positioned. The first waypoint index is 0. For example, 0.0 indicates that the aircraft has not started on the flight plan, 2.5 would indicate the aircraft is to be initialized halfway between the third and fourth waypoints (which would have indexes 2 and 3). The waypoints are those recorded in the flight plan, which may just be two airports, and do not include any taxiway points on the ground. Also there is a threshold that will ignore requests to have an aircraft taxiing or taking off, or landing. So set the value after the point to ensure the aircraft will be in level flight.",
+          "direction": "in",
+          "description": "Float"
+        },
+        {
+          "name": "bTouchAndGo",
+          "type": "Set to True to indicate that landings should be touch and go, and not full stop landings.",
+          "direction": "in",
+          "description": "Bool"
+        },
+        {
+          "name": "RequestID",
+          "type": "Specifies the client defined request ID.",
+          "direction": "in",
+          "description": "Integer"
+        }
+      ],
+      "return_type": "",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/SimConnect/API_Reference/AI_Object/SimConnect_AICreateEnrouteATCAircraft_EX1.htm"
+    },
+    {
+      "name": "SimConnect_AICreateNonATCAircraft_EX1",
+      "description": "",
+      "signature": "HRESULT SimConnect_AICreateNonATCAircraft_EX1( HANDLE hSimConnect, const char* szContainerTitle, const char* szLivery, const char* szTailNumber, SIMCONNECT_DATA_INITPOSITION InitPos, SIMCONNECT_DATA_REQUEST_ID RequestID );",
+      "parameters": [
+        {
+          "name": "hSimConnect",
+          "type": "Handle to a SimConnect object.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "szContainerTitle",
+          "type": "Null-terminated string containing the container title. The container title is found in the title parameter of the aircraft.cfg file, or alternatively, you can find it from the list found in the Aircraft Capture Tool. IMPORTANT! This title must be in an aircraft Preset.You may also retrieve the information with SimConnect using the SimConnect_EnumerateSimObjectsAndLiveries function. Examples of aircraft titles: title=Boeing 747-8f Asobo title=DA62 Asobo title=VL3 Asobo",
+          "direction": "in",
+          "description": "String"
+        },
+        {
+          "name": "szLivery",
+          "type": "Null-terminated string containing the livery name. This field is only required when checking modular SimObjects, since their liveries are dynamically handled and do not have a unique title parameter like legacy aircraft. This parameter can be set to either the name of the livery as defined in the name parameter of the livery.cfg, or to the folder name of the livery in the package. Note that you can also get the livery name using the SimConnect_EnumerateSimObjectsAndLiveries function. The function will check for the folder first, then the parameter name second, and if the given name is not found in either location, then the default livery will be used.",
+          "direction": "in",
+          "description": "String"
+        },
+        {
+          "name": "szTailNumber",
+          "type": "Null-terminated string containing the tail number. This should have a maximum of 12 characters.",
+          "direction": "in",
+          "description": "String"
+        },
+        {
+          "name": "InitPos",
+          "type": "Specifies the initial position, using a SIMCONNECT_DATA_INITPOSITION structure.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "RequestID",
+          "type": "Specifies the client defined request ID.",
+          "direction": "in",
+          "description": "String"
+        }
+      ],
+      "return_type": "",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/SimConnect/API_Reference/AI_Object/SimConnect_AICreateNonATCAircraft_EX1.htm"
+    },
+    {
+      "name": "SimConnect_AICreateParkedATCAircraft_EX1",
+      "description": "",
+      "signature": "HRESULT SimConnect_AICreateParkedATCAircraft_EX1( HANDLE hSimConnect, const char* szContainerTitle, const char* szLivery, const char* szTailNumber, const char* szAirportID, SIMCONNECT_DATA_REQUEST_ID RequestID );",
+      "parameters": [
+        {
+          "name": "hSimConnect",
+          "type": "Handle to a SimConnect object.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "szContainerTitle",
+          "type": "Null-terminated string containing the container title. The container title is found in the title parameter of the aircraft.cfg file, or alternatively, you can find it from the list found in the Aircraft Capture Tool. IMPORTANT! This title must be in an aircraft Preset.You may also retrieve the information with SimConnect using the SimConnect_EnumerateSimObjectsAndLiveries function. Examples of aircraft titles: title=Boeing 747-8f Asobo title=DA62 Asobo title=VL3 Asobo",
+          "direction": "in",
+          "description": "String"
+        },
+        {
+          "name": "szLivery",
+          "type": "Null-terminated string containing the livery name. This field is only required when checking modular SimObjects, since their liveries are dynamically handled and do not have a unique title parameter like legacy aircraft. This parameter can be set to either the name of the livery as defined in the name parameter of the livery.cfg, or to the folder name of the livery in the package. Note that you can also get the livery name using the SimConnect_EnumerateSimObjectsAndLiveries function. The function will check for the folder first, then the parameter name second, and if the given name is not found in either location, then the default livery will be used.",
+          "direction": "in",
+          "description": "String"
+        },
+        {
+          "name": "szTailNumber",
+          "type": "Null-terminated string containing the tail number. This should have a maximum of 12 characters.",
+          "direction": "in",
+          "description": "String"
+        },
+        {
+          "name": "szAirportID",
+          "type": "Null-terminated string containing the airport ID. This is the ICAO code string, for example, KSEA for SeaTac International.",
+          "direction": "in",
+          "description": "String"
+        },
+        {
+          "name": "RequestID",
+          "type": "Specifies the client defined request ID.",
+          "direction": "in",
+          "description": "Integer"
+        }
+      ],
+      "return_type": "",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/SimConnect/API_Reference/AI_Object/SimConnect_AICreateParkedATCAircraft_EX1.htm"
+    },
+    {
+      "name": "SimConnect_AICreateSimulatedObject_EX1",
+      "description": "",
+      "signature": "HRESULT SimConnect_AICreateSimulatedObject_EX1( HANDLE hSimConnect, const char* szContainerTitle, const char* szLivery, SIMCONNECT_DATA_INITPOSITION InitPos, SIMCONNECT_DATA_REQUEST_ID RequestID );",
+      "parameters": [
+        {
+          "name": "hSimConnect",
+          "type": "Handle to a SimConnect object.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "szContainerTitle",
+          "type": "Null-terminated string containing the container title. The container title is found in the title parameter of the aircraft.cfg file, or alternatively, you can find it from the list found in the Aircraft Capture Tool. IMPORTANT! This title must be in an aircraft Preset.You may also retrieve the information with SimConnect using the SimConnect_EnumerateSimObjectsAndLiveries function. Examples of aircraft titles: title=Boeing 747-8f Asobo title=DA62 Asobo title=VL3 Asobo",
+          "direction": "in",
+          "description": "String"
+        },
+        {
+          "name": "szLivery",
+          "type": "Null-terminated string containing the livery name. This field is only required when checking modular SimObjects, since their liveries are dynamically handled and do not have a unique title parameter like legacy aircraft. This parameter can be set to either the name of the livery as defined in the name parameter of the livery.cfg, or to the folder name of the livery in the package. Note that you can also get the livery name using the SimConnect_EnumerateSimObjectsAndLiveries function. The function will check for the folder first, then the parameter name second, and if the given name is not found in either location, then the default livery will be used.",
+          "direction": "in",
+          "description": "String"
+        },
+        {
+          "name": "InitPos",
+          "type": "This a SIMCONNECT_DATA_INITPOSITION struct containing the data referring to the spawn position of the SimObject.",
+          "direction": "in",
+          "description": "Struct"
+        },
+        {
+          "name": "RequestID",
+          "type": "Specifies the client defined request ID.",
+          "direction": "in",
+          "description": "Integer"
+        }
+      ],
+      "return_type": "",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/SimConnect/API_Reference/AI_Object/SimConnect_AICreateSimulatedObject_EX1.htm"
+    },
+    {
+      "name": "SimConnect_EnumerateSimObjectsAndLiveries",
+      "description": "",
+      "signature": "HRESULT SimConnect_EnumerateSimObjectsAndLiveries( HANDLE hSimConnect, SIMCONNECT_DATA_REQUEST_ID RequestID, SIMCONNECT_SIMOBJECT_TYPE Type );",
+      "parameters": [
+        {
+          "name": "hSimConnect",
+          "type": "Handle to a SimConnect object.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "RequestId",
+          "type": "Specifies the client defined request ID.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "Type",
+          "type": "Specifies the type of SimObjects that will be retrieved by the function: SIMCONNECT_SIMOBJECT_TYPE_USER: SimObject types selectable by the user (airplane, helicopter and hot air balloon) SIMCONNECT_SIMOBJECT_TYPE_ALL: All types listed in this note. SIMCONNECT_SIMOBJECT_TYPE_AIRCRAFT: Retrieve only airplanes. SIMCONNECT_SIMOBJECT_TYPE_HELICOPTER: Retrieve only helicopters. SIMCONNECT_SIMOBJECT_TYPE_BOAT: Retrieve only boats. SIMCONNECT_SIMOBJECT_TYPE_GROUND: Retrieve only ground vehicles. SIMCONNECT_SIMOBJECT_TYPE_HOT_AIR_BALLOON: Retrieve only hot air balloons. SIMCONNECT_SIMOBJECT_TYPE_ANIMAL: Retrieve only animals. SIMCONNECT_SIMOBJECT_TYPE_USER_AVATAR: Retrieve the user avatar.",
+          "direction": "in",
+          "description": "Integer"
+        }
+      ],
+      "return_type": "",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/SimConnect/API_Reference/AI_Object/SimConnect_EnumerateSimObjectsAndLiveries.htm"
+    },
+    {
+      "name": "SimConnect_EnumerateControllers",
+      "description": "",
+      "signature": "SIMCONNECTAPI SimConnect_EnumerateControllers( HANDLE hSimConnect );",
+      "parameters": [
+        {
+          "name": "hSimConnect",
+          "type": "Handle to a SimConnect object.",
+          "direction": "in",
+          "description": "Integer"
+        }
+      ],
+      "return_type": "",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/SimConnect/API_Reference/InputEvents/SimConnect_EnumerateControllers.htm"
+    },
+    {
+      "name": "SimConnect_EnumerateInputEvents",
+      "description": "",
+      "signature": "HRESULT SimConnect_EnumerateInputEvents( HANDLE hSimConnect, SIMCONNECT_DATA_REQUEST_ID RequestID )",
+      "parameters": [
+        {
+          "name": "hSimConnect",
+          "type": "Handle to a SimConnect object.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "RequestID",
+          "type": "The ID that will identify the current request in the response event",
+          "direction": "in",
+          "description": "Integer"
+        }
+      ],
+      "return_type": "",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/SimConnect/API_Reference/InputEvents/SimConnect_EnumerateInputEvents.htm"
+    },
+    {
+      "name": "SimConnect_EnumerateInputEventParams",
+      "description": "",
+      "signature": "HRESULT SimConnect_EnumerateInputEvents( HANDLE hSimConnect, SIMCONNECT_DATA_REQUEST_ID RequestID )",
+      "parameters": [
+        {
+          "name": "hSimConnect",
+          "type": "Handle to a SimConnect object.",
+          "direction": "in",
+          "description": "String"
+        },
+        {
+          "name": "RequestID",
+          "type": "The ID that will identify the current request in the response event",
+          "direction": "in",
+          "description": ""
+        }
+      ],
+      "return_type": "",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/SimConnect/API_Reference/InputEvents/SimConnect_EnumerateInputEventParams.htm"
+    },
+    {
+      "name": "SimConnect_GetInputEvent",
+      "description": "",
+      "signature": "HRESULT SimConnect_GetInputEvent( HANDLE hSimConnect, SIMCONNECT_DATA_REQUEST_ID RequestID, DWORD Hash, )",
+      "parameters": [
+        {
+          "name": "hSimConnect",
+          "type": "Handle to a SimConnect object.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "RequestID",
+          "type": "The ID that will identify the current request in the response event.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "Hash",
+          "type": "Hash ID that will identify the desired inputEvent.",
+          "direction": "in",
+          "description": "Integer"
+        }
+      ],
+      "return_type": "",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/SimConnect/API_Reference/InputEvents/SimConnect_GetInputEvent.htm"
+    },
+    {
+      "name": "SimConnect_MapInputEventToClientEvent",
+      "description": "",
+      "signature": "HRESULT SimConnect_MapInputEventToClientEvent( HANDLE hSimConnect, SIMCONNECT_INPUT_GROUP_ID GroupID, const char* pszInputDefinition, SIMCONNECT_CLIENT_EVENT_ID DownEventID, DWORD DownValue = 0, SIMCONNECT_CLIENT_EVENT_ID UpEventID =(SIMCONNECT_CLIENT_EVENT_ID)SIMCONNECT_UNUSED, DWORD UpValue = 0, BOOL bMaskable = FALSE );",
+      "parameters": [
+        {
+          "name": "hSimConnect",
+          "type": "Handle to a SimConnect object.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "GroupID",
+          "type": "Specifies the ID of the client defined input group that the input event is to be added to.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "pszInputDefinition",
+          "type": "Pointer to a null-terminated string containing the definition of the input events (keyboard keys, mouse or joystick events, for example). See the Remarks and example below for a range of possibilities.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "DownEventID",
+          "type": "Specifies the ID of the down, and default, event. This is the client defined event that is triggered when the input event occurs. If only an up event is required, set this to SIMCONNECT_UNUSED.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "DownValue",
+          "type": "Specifies an optional numeric value, which will be returned when the down event occurs.",
+          "direction": "in",
+          "description": "Integer (OPTIONAL)"
+        },
+        {
+          "name": "UpEventID",
+          "type": "Specifies the ID of the up event. This is the client defined event that is triggered when the up action occurs.",
+          "direction": "in",
+          "description": "Integer (OPTIONAL)"
+        },
+        {
+          "name": "UpValue",
+          "type": "Specifies an optional numeric value, which will be returned when the up event occurs.",
+          "direction": "in",
+          "description": "Integer (OPTIONAL)"
+        },
+        {
+          "name": "bMaskable",
+          "type": "If set to true, specifies that the client will mask the event, and no other lower priority clients will receive it. The default is false.",
+          "direction": "in",
+          "description": "Bool (OPTIONAL)"
+        }
+      ],
+      "return_type": "",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/SimConnect/API_Reference/InputEvents/SimConnect_MapInputEventToClientEvent.htm"
+    },
+    {
+      "name": "SimConnect_MapInputEventToClientEvent_EX1",
+      "description": "",
+      "signature": "HRESULT SimConnect_MapInputEventToClientEvent_EX1( HANDLE hSimConnect, SIMCONNECT_INPUT_GROUP_ID GroupID, const char* pszInputDefinition, SIMCONNECT_CLIENT_EVENT_ID DownEventID, DWORD DownValue = 0, SIMCONNECT_CLIENT_EVENT_ID UpEventID =(SIMCONNECT_CLIENT_EVENT_ID)SIMCONNECT_UNUSED, DWORD UpValue = 0, BOOL bMaskable = FALSE );",
+      "parameters": [
+        {
+          "name": "hSimConnect",
+          "type": "Handle to a SimConnect object.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "GroupID",
+          "type": "Specifies the ID of the client defined input group that the input event is to be added to.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "pszInputDefinition",
+          "type": "Pointer to a null-terminated string containing the definition of the input events (keyboard keys, mouse or joystick events, for example). See the Remarks and example below for a range of possibilities.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "DownEventID",
+          "type": "Specifies the ID of the down, and default, event. This is the client defined event that is triggered when the input event occurs. If only an up event is required, set this to SIMCONNECT_UNUSED.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "DownValue",
+          "type": "Specifies an optional numeric value, which will be returned when the down event occurs.",
+          "direction": "in",
+          "description": "Integer (OPTIONAL)"
+        },
+        {
+          "name": "UpEventID",
+          "type": "Specifies the ID of the up event. This is the client defined event that is triggered when the up action occurs.",
+          "direction": "in",
+          "description": "Integer (OPTIONAL)"
+        },
+        {
+          "name": "UpValue",
+          "type": "Specifies an optional numeric value, which will be returned when the up event occurs.",
+          "direction": "in",
+          "description": "Integer (OPTIONAL)"
+        },
+        {
+          "name": "bMaskable",
+          "type": "If set to true, specifies that the client will mask the event, and no other lower priority clients will receive it. The default is false.",
+          "direction": "in",
+          "description": "Bool (OPTIONAL)"
+        }
+      ],
+      "return_type": "",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/SimConnect/API_Reference/InputEvents/SimConnect_MapInputEventToClientEvent_EX1.htm"
+    },
+    {
+      "name": "SimConnect_SetInputEvent",
+      "description": "",
+      "signature": "HRESULT SimConnect_SetInputEvent( HANDLE hSimConnect, DWORD Hash, DWORD cbUnitSize, PVOID Value )",
+      "parameters": [
+        {
+          "name": "hSimConnect",
+          "type": "Handle to a SimConnect object.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "Hash",
+          "type": "Hash ID that will identify the desired inputEvent.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "cbUnitSize",
+          "type": "Specifies the size of the value in bytes.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "Value",
+          "type": "New value of the specified inputEvent.",
+          "direction": "in",
+          "description": "Float/String"
+        }
+      ],
+      "return_type": "",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/SimConnect/API_Reference/InputEvents/SimConnect_SetInputEvent.htm"
+    },
+    {
+      "name": "SimConnect_SubscribeInputEvent",
+      "description": "",
+      "signature": "HRESULT SimConnect_SubscribeInputEvent( HANDLE hSimConnect, UINT64 Hash, )",
+      "parameters": [
+        {
+          "name": "hSimConnect",
+          "type": "Handle to a SimConnect object.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "Hash",
+          "type": "Hash ID that will identify the desired input event to subscribe to. You can use 0 here to subscribe to all input events.",
+          "direction": "in",
+          "description": "Integer"
+        }
+      ],
+      "return_type": "",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/SimConnect/API_Reference/InputEvents/SimConnect_SubscribeInputEvent.htm"
+    },
+    {
+      "name": "SimConnect_UnsubscribeInputEvent",
+      "description": "",
+      "signature": "HRESULT SimConnect_UnsubscribeInputEvent( HANDLE hSimConnect, UINT64 Hash )",
+      "parameters": [
+        {
+          "name": "hSimConnect",
+          "type": "Handle to a SimConnect object.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "Hash",
+          "type": "Hash ID that will identify the desired input event to unsubscribe from. You can use 0 here to unsubscribe from all input events.",
+          "direction": "in",
+          "description": "Integer"
+        }
+      ],
+      "return_type": "",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/SimConnect/API_Reference/InputEvents/SimConnect_UnsubscribeInputEvent.htm"
+    },
+    {
+      "name": "SimConnect_SubscribeToFlowEvent",
+      "description": "",
+      "signature": "HRESULT SimConnect_SubscribeToFlowEvent( HANDLE hSimConnect );",
+      "parameters": [
+        {
+          "name": "hSimConnect",
+          "type": "Handle to a SimConnect object.",
+          "direction": "in",
+          "description": "Integer"
+        }
+      ],
+      "return_type": "",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/SimConnect/API_Reference/Events_And_Data/SimConnect_SubscribeToFlowEvent.htm"
+    },
+    {
+      "name": "SimConnect_UnsubscribeToFlowEvent",
+      "description": "",
+      "signature": "HRESULT SimConnect_UnsubscribeToFlowEvent( HANDLE hSimConnect, );",
+      "parameters": [
+        {
+          "name": "hSimConnect",
+          "type": "Handle to a SimConnect object.",
+          "direction": "in",
+          "description": "Integer"
+        }
+      ],
+      "return_type": "",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/SimConnect/API_Reference/Events_And_Data/SimConnect_UnsubscribeToFlowEvent.htm"
     }
   ],
   "structures": [],

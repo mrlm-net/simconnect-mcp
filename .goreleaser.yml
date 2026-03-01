@@ -1,0 +1,70 @@
+version: 2
+
+project_name: simconnect-mcp
+
+before:
+  hooks:
+    - go mod tidy
+
+builds:
+  # docs mode — cross-platform (no CGo)
+  - id: docs
+    binary: simconnect-mcp
+    main: ./cmd/simconnect-mcp/
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    ignore:
+      # arm64 Windows not commonly needed
+      - goos: windows
+        goarch: arm64
+    ldflags:
+      - -s -w
+      - -X main.version={{.Version}}
+      - -X main.commit={{.Commit}}
+      - -X main.date={{.Date}}
+
+archives:
+  - id: default
+    ids:
+      - docs
+    name_template: >-
+      {{ .ProjectName }}_
+      {{- .Version }}_
+      {{- .Os }}_
+      {{- .Arch }}
+    format_overrides:
+      - goos: windows
+        format: zip
+    files:
+      - README.md
+      - CHANGELOG.md
+      - LICENSE*
+
+checksum:
+  name_template: checksums.txt
+
+changelog:
+  use: github
+  sort: asc
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+      - "^chore:"
+      - Merge pull request
+      - Merge branch
+
+release:
+  github:
+    owner: mrlm-net
+    name: simconnect-mcp
+  name_template: "{{.Version}}"
+  draft: false
+  prerelease: auto

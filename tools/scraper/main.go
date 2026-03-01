@@ -57,8 +57,8 @@ var simvarPages2020 = []pageSpec{
 	// ── Non-aircraft SimVars ──────────────────────────────────────────────────
 	{url: base2020SimVars + "Helicopter_Variables.htm", category: "Helicopter"},
 	{url: base2020SimVars + "Camera_Variables.htm", category: "Camera"},
-	// ── Environment variables (may or may not exist in 2020 docs) ─────────────
-	{url: "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Environmental_Variables.htm", category: "Environment"},
+	// ── Environment variables ─────────────────────────────────────────────────
+	{url: "https://docs.flightsimulator.com/html/Programming_Tools/Environment_Variables.htm", category: "Environment"},
 }
 
 var simvarPages2024 = []pageSpec{

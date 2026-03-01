@@ -1,5 +1,5 @@
 {
-  "scraped_at": "2026-03-01T11:54:07.8595562Z",
+  "scraped_at": "2026-03-01T12:08:02.8449027Z",
   "sdk_version": "2020",
   "simvars": [
     {
@@ -5423,6 +5423,325 @@
         "2020"
       ],
       "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Camera_Variables.htm"
+    },
+    {
+      "name": "ABSOLUTE TIME",
+      "description": "Seconds",
+      "units": [
+        "This returns the seconds since 12:00 am 1/1/1AD Zulu Time See the Note On Zulu Time for more information."
+      ],
+      "settable": false,
+      "category": "ENVIRONMENT VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Environment_Variables.htm"
+    },
+    {
+      "name": "ZULU TIME",
+      "description": "Seconds",
+      "units": [
+        "This returns the seconds since midnight (00:00 Zulu Time) on the current day."
+      ],
+      "settable": false,
+      "category": "ENVIRONMENT VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Environment_Variables.htm"
+    },
+    {
+      "name": "ZULU DAY OF WEEK",
+      "description": "Number",
+      "units": [
+        "This returns the current Zulu Time day of the week as an integer value between 0 and 6 (inclusive)",
+        "where 0 is Sunday and 6 is Saturday. See the Note On Zulu Time for more information."
+      ],
+      "settable": false,
+      "category": "ENVIRONMENT VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Environment_Variables.htm"
+    },
+    {
+      "name": "ZULU DAY OF MONTH",
+      "description": "Number",
+      "units": [
+        "This returns the current Zulu Time day of the month as an integer value between 1 and 31 (inclusive). See the Note On Zulu Time for more information."
+      ],
+      "settable": false,
+      "category": "ENVIRONMENT VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Environment_Variables.htm"
+    },
+    {
+      "name": "ZULU MONTH OF YEAR",
+      "description": "Number",
+      "units": [
+        "This returns the current Zulu Time month of the year as an integer value between 1 and 12 (inclusive)",
+        "where 1 is January and 12 is December. See the Note On Zulu Time for more information."
+      ],
+      "settable": false,
+      "category": "ENVIRONMENT VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Environment_Variables.htm"
+    },
+    {
+      "name": "ZULU DAY OF YEAR",
+      "description": "Number",
+      "units": [
+        "This returns the current Zulu Time day of the year as an integer value between 0 and 365 (365 only on a leap year). See the Note On Zulu Time for more information."
+      ],
+      "settable": false,
+      "category": "ENVIRONMENT VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Environment_Variables.htm"
+    },
+    {
+      "name": "ZULU YEAR",
+      "description": "Number",
+      "units": [
+        "This returns the current Zulu Time year as an integer value. See the Note On Zulu Time for more information."
+      ],
+      "settable": false,
+      "category": "ENVIRONMENT VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Environment_Variables.htm"
+    },
+    {
+      "name": "ZULU SUNRISE TIME",
+      "description": "Seconds",
+      "units": [
+        "This returns the seconds since midnight until the sunrise based on Zulu Time. See the Note On Zulu Time for more information."
+      ],
+      "settable": false,
+      "category": "ENVIRONMENT VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Environment_Variables.htm"
+    },
+    {
+      "name": "ZULU SUNSET TIME",
+      "description": "Seconds",
+      "units": [
+        "This returns the seconds since midnight until the sunset based on Zulu Time. See the Note On Zulu Time for more information."
+      ],
+      "settable": false,
+      "category": "ENVIRONMENT VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Environment_Variables.htm"
+    },
+    {
+      "name": "LOCAL TIME",
+      "description": "Seconds",
+      "units": [
+        "This returns the seconds since midnight (00:00 local time) on the current day."
+      ],
+      "settable": false,
+      "category": "ENVIRONMENT VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Environment_Variables.htm"
+    },
+    {
+      "name": "LOCAL DAY OF WEEK",
+      "description": "Number",
+      "units": [
+        "This returns the current day of the week as an integer value between 0 and 6 (inclusive)",
+        "where 0 is Monday and 6 is Sunday",
+        "within the local time reference."
+      ],
+      "settable": false,
+      "category": "ENVIRONMENT VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Environment_Variables.htm"
+    },
+    {
+      "name": "LOCAL DAY OF MONTH",
+      "description": "Number",
+      "units": [
+        "This returns the current day of the month as an integer value between 1 and 31 (inclusive)",
+        "within the local time reference."
+      ],
+      "settable": false,
+      "category": "ENVIRONMENT VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Environment_Variables.htm"
+    },
+    {
+      "name": "LOCAL MONTH OF YEAR",
+      "description": "Number",
+      "units": [
+        "This returns the current month of the year as an integer value between 1 and 12 (inclusive)",
+        "where 1 is January and 12 is December",
+        "within the local time reference."
+      ],
+      "settable": false,
+      "category": "ENVIRONMENT VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Environment_Variables.htm"
+    },
+    {
+      "name": "LOCAL DAY OF YEAR",
+      "description": "Number",
+      "units": [
+        "This returns the current day of the year as an integer value between 0 and 365 (365 only on a leap year)",
+        "within the local time reference."
+      ],
+      "settable": false,
+      "category": "ENVIRONMENT VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Environment_Variables.htm"
+    },
+    {
+      "name": "LOCAL YEAR",
+      "description": "Number",
+      "units": [
+        "This returns the current year (local time) as an integer value."
+      ],
+      "settable": false,
+      "category": "ENVIRONMENT VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Environment_Variables.htm"
+    },
+    {
+      "name": "TIME ZONE OFFSET",
+      "description": "Seconds",
+      "units": [
+        "This returns the offset between the local time and Zulu Time. See the Note On Zulu Time for more information."
+      ],
+      "settable": false,
+      "category": "ENVIRONMENT VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Environment_Variables.htm"
+    },
+    {
+      "name": "TIME OF DAY",
+      "description": "Enum (Number)",
+      "units": [
+        "This will return an integer value representing the approximate time of day where: 0 = dawn 1 = day 2 = dusk 3 = night"
+      ],
+      "settable": false,
+      "category": "ENVIRONMENT VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Environment_Variables.htm"
+    },
+    {
+      "name": "TOOLTIP UNITS",
+      "description": "Enum (Number)",
+      "units": [
+        "This will return an integer value representing the current units used to display tooltip information",
+        "where: 0 = default 1 = metric (SI) 2 = US (imperial)"
+      ],
+      "settable": false,
+      "category": "ENVIRONMENT VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Environment_Variables.htm"
+    },
+    {
+      "name": "UNITS OF MEASURE",
+      "description": "Enum (Number)",
+      "units": [
+        "This indicates the units used to express measurements and will return an integer value representing the following: 0 - English 1 - Metric with altitude in feet 2 - Metric with altitude in meters"
+      ],
+      "settable": false,
+      "category": "ENVIRONMENT VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Environment_Variables.htm"
+    },
+    {
+      "name": "SIMULATION RATE",
+      "description": "Number",
+      "units": [
+        "This is used to get/set the internal rate of passing time within the simulation(independently of the visual frame rate). The value will be clamped between 0.0625 and 128",
+        "and a value of 1 means that 1 second of game time is the same as 1 second of \"real\" time",
+        "and lower values will make the game time slower",
+        "and higher values will make the game time faster. Values are always multiples of two starting at 0.0625",
+        "so you can have: 0.0625",
+        "0.125",
+        "0.25",
+        "0.5",
+        "1",
+        "2",
+        "4",
+        "... 128"
+      ],
+      "settable": false,
+      "category": "ENVIRONMENT VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Environment_Variables.htm"
+    },
+    {
+      "name": "SIMULATION TIME",
+      "description": "Seconds",
+      "units": [
+        "This returns a value for the seconds since the simulation has been started."
+      ],
+      "settable": false,
+      "category": "ENVIRONMENT VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Environment_Variables.htm"
+    },
+    {
+      "name": "SIMULATION DELTA TIME",
+      "description": "Number",
+      "units": [
+        "This returns a value for the time passed between the last simulation frame and the current one."
+      ],
+      "settable": false,
+      "category": "ENVIRONMENT VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Environment_Variables.htm"
+    },
+    {
+      "name": "IS IN VR",
+      "description": "Boolean",
+      "units": [
+        "This returns either 1 (TRUE) ir 0 (FALSE) to indicate whether the simulation is in VR mode or not."
+      ],
+      "settable": false,
+      "category": "ENVIRONMENT VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Environment_Variables.htm"
     }
   ],
   "events": [],

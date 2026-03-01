@@ -4,6 +4,7 @@
 package docs
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"time"
@@ -25,19 +26,14 @@ type docsMode struct {
 }
 
 // New constructs a docs mode instance from the provided Config.
-// The corpus is not loaded until Mount is called.
+// The corpus is not loaded until Mount or ServeStdio is called.
 func New(cfg Config) modes.Mode {
 	return &docsMode{cfg: cfg}
 }
 
-// Mount loads the corpus, wires up the MCP server with all tool registrations,
-// and registers the /mcp, /sse, /message, and /health routes on r.
-// It returns a non-nil error when the corpus cannot be loaded; in that case
-// no routes are registered and the caller must handle the failure.
-func (m *docsMode) Mount(r *gin.Engine) error {
-	// 1. Select loader based on whether an override path is configured.
-	// Pass MSFSVersion explicitly so the corpus respects the config value
-	// rather than re-reading the env var independently.
+// buildMCPServer loads the corpus and returns a fully configured MCP server
+// with all doc tools registered. Called by both Mount and ServeStdio.
+func (m *docsMode) buildMCPServer() (*mcpadapter.Server, error) {
 	var loader corpus.DocLoader
 	if m.cfg.OverridePath != "" {
 		loader = corpus.LoadFromPathVersion(m.cfg.OverridePath, m.cfg.MSFSVersion)
@@ -45,37 +41,46 @@ func (m *docsMode) Mount(r *gin.Engine) error {
 		loader = corpus.LoadEmbeddedVersion(m.cfg.MSFSVersion)
 	}
 
-	// 2. Load the corpus; fail fast so the caller receives a clear error.
 	c, err := loader.Load()
 	if err != nil {
-		return fmt.Errorf("docs mode: load corpus: %w", err)
+		return nil, fmt.Errorf("docs mode: load corpus: %w", err)
 	}
 	m.corpusData = c
-
-	// 3. Build the in-memory store from the loaded corpus.
 	m.store = corpus.NewDocStore(c)
 
-	// 4. Create the MCP server.
 	mcp := mcpadapter.NewServer("simconnect-mcp-docs", "1.0.0")
-
-	// 5. Register all MCP tool groups.
 	tools.RegisterSimVarTools(mcp, m.store)
 	tools.RegisterEventTools(mcp, m.store)
 	tools.RegisterFunctionTools(mcp, m.store)
 	tools.RegisterStructureTools(mcp, m.store)
 	tools.RegisterErrorCodeTools(mcp, m.store)
 	tools.RegisterSearchTool(mcp, m.store)
+	return mcp, nil
+}
 
-	// 6. Mount MCP transports onto the Gin engine.
+// Mount loads the corpus, wires up the MCP server with all tool registrations,
+// and registers the /mcp, /sse, /message, and /health routes on r.
+func (m *docsMode) Mount(r *gin.Engine) error {
+	mcp, err := m.buildMCPServer()
+	if err != nil {
+		return err
+	}
 	mcp.MountStreamableHTTP(r, "/mcp")
 	mcp.MountSSE(r, "/sse", "/message")
-
-	// 7. Register the health endpoint.
 	r.GET("/health", func(c *gin.Context) {
 		c.JSON(http.StatusOK, m.HealthInfo())
 	})
-
 	return nil
+}
+
+// ServeStdio loads the corpus and runs the MCP server over stdin/stdout.
+// This is the stdio transport used by Claude Code and other local MCP clients.
+func (m *docsMode) ServeStdio(ctx context.Context) error {
+	mcp, err := m.buildMCPServer()
+	if err != nil {
+		return err
+	}
+	return mcp.ServeStdio(ctx)
 }
 
 // HealthInfo returns mode-specific status fields for the /health endpoint.

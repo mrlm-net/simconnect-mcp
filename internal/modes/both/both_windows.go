@@ -30,11 +30,11 @@ type bothMode struct {
 	docsCfg docs.Config
 	appName string
 
-	// corpus state — populated in Mount
+	// corpus state — populated in Mount/ServeStdio
 	store corpus.DocStore
 	corp  corpus.Corpus
 
-	// simconnect state — populated in Mount only when the bridge connects
+	// simconnect state — populated when the bridge connects
 	br      bridge.Bridge
 	scReady bool
 }
@@ -54,12 +54,9 @@ func New() (modes.Mode, string, error) {
 	}, dcfg.ListenAddr, nil
 }
 
-// Mount loads the corpus, attempts a SimConnect bridge connection, registers
-// all available tools onto a single MCP server, and mounts routes on r.
-// A SimConnect connection failure is non-fatal: the server starts docs-only
-// and logs a warning.
-func (m *bothMode) Mount(r *gin.Engine) error {
-	// 1. Load corpus for docs tools.
+// buildMCPServer loads the corpus, attempts a SimConnect connection, and
+// returns a fully configured MCP server. Called by Mount and ServeStdio.
+func (m *bothMode) buildMCPServer(ctx context.Context) (*mcpadapter.Server, error) {
 	var loader corpus.DocLoader
 	if m.docsCfg.OverridePath != "" {
 		loader = corpus.LoadFromPathVersion(m.docsCfg.OverridePath, m.docsCfg.MSFSVersion)
@@ -68,15 +65,12 @@ func (m *bothMode) Mount(r *gin.Engine) error {
 	}
 	c, err := loader.Load()
 	if err != nil {
-		return fmt.Errorf("both mode: load corpus: %w", err)
+		return nil, fmt.Errorf("both mode: load corpus: %w", err)
 	}
 	m.corp = c
 	m.store = corpus.NewDocStore(c)
 
-	// 2. Single MCP server for all tools.
 	mcp := mcpadapter.NewServer("simconnect-mcp", "1.0.0")
-
-	// 3. Register docs tools — always present.
 	doctools.RegisterSimVarTools(mcp, m.store)
 	doctools.RegisterEventTools(mcp, m.store)
 	doctools.RegisterFunctionTools(mcp, m.store)
@@ -84,11 +78,10 @@ func (m *bothMode) Mount(r *gin.Engine) error {
 	doctools.RegisterErrorCodeTools(mcp, m.store)
 	doctools.RegisterSearchTool(mcp, m.store)
 
-	// 4. Attempt SimConnect bridge — optional, non-fatal.
 	b := bridge.NewSimConnectBridge()
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	tctx, cancel := context.WithTimeout(ctx, 10*time.Second)
 	defer cancel()
-	if err := b.Open(ctx, m.appName); err != nil {
+	if err := b.Open(tctx, m.appName); err != nil {
 		log.Printf("[both] SimConnect unavailable, running docs-only: %v", err)
 	} else {
 		m.br = b
@@ -97,17 +90,31 @@ func (m *bothMode) Mount(r *gin.Engine) error {
 		sctools.RegisterEventTools(mcp, b)
 		sctools.RegisterStateTools(mcp, b)
 	}
+	return mcp, nil
+}
 
-	// 5. Mount MCP transports once.
+// Mount loads the corpus, attempts a SimConnect bridge connection, registers
+// all available tools onto a single MCP server, and mounts routes on r.
+func (m *bothMode) Mount(r *gin.Engine) error {
+	mcp, err := m.buildMCPServer(context.Background())
+	if err != nil {
+		return err
+	}
 	mcp.MountStreamableHTTP(r, "/mcp")
 	mcp.MountSSE(r, "/sse", "/message")
-
-	// 6. Health endpoint.
 	r.GET("/health", func(c *gin.Context) {
 		c.JSON(http.StatusOK, m.HealthInfo())
 	})
-
 	return nil
+}
+
+// ServeStdio runs the MCP server over stdin/stdout (stdio transport).
+func (m *bothMode) ServeStdio(ctx context.Context) error {
+	mcp, err := m.buildMCPServer(ctx)
+	if err != nil {
+		return err
+	}
+	return mcp.ServeStdio(ctx)
 }
 
 // HealthInfo returns merged status fields for both subsystems.
@@ -118,16 +125,16 @@ func (m *bothMode) HealthInfo() map[string]any {
 	}
 
 	h := map[string]any{
-		"status":              "ok",
-		"mode":                "both",
-		"docs_loaded":         true,
-		"docs_source":         source,
-		"msfs_version":        m.docsCfg.MSFSVersion,
-		"simvar_count":        m.store.SimVarCount(),
-		"event_count":         m.store.EventCount(),
-		"scraped_at":          m.corp.ScrapedAt.Format(time.RFC3339),
-		"sdk_version":         m.corp.SDKVersion,
-		"simconnect_ready":    m.scReady,
+		"status":           "ok",
+		"mode":             "both",
+		"docs_loaded":      true,
+		"docs_source":      source,
+		"msfs_version":     m.docsCfg.MSFSVersion,
+		"simvar_count":     m.store.SimVarCount(),
+		"event_count":      m.store.EventCount(),
+		"scraped_at":       m.corp.ScrapedAt.Format(time.RFC3339),
+		"sdk_version":      m.corp.SDKVersion,
+		"simconnect_ready": m.scReady,
 	}
 
 	if m.scReady && m.br != nil {

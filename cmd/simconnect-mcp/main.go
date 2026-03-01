@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"log"
@@ -38,6 +39,15 @@ func main() {
 	m, listenAddr, err := factory()
 	if err != nil {
 		log.Fatalf("failed to configure %s mode: %v", mode, err)
+	}
+
+	// If stdin is a pipe (not an interactive terminal), use the stdio transport.
+	// This is the case when launched by Claude Code or another local MCP client.
+	if fi, err := os.Stdin.Stat(); err == nil && fi.Mode()&os.ModeCharDevice == 0 {
+		if err := m.ServeStdio(context.Background()); err != nil {
+			log.Fatalf("stdio server error: %v", err)
+		}
+		return
 	}
 
 	r := server.New()

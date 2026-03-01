@@ -114,7 +114,7 @@
 		class="mb-5 flex w-full max-w-xl items-center justify-between gap-3 rounded-lg border px-4 py-3"
 		style="background-color: var(--color-bg-code); border-color: var(--color-border);"
 	>
-		<code class="flex-1 overflow-x-auto whitespace-nowrap text-left text-sm" style="font-family: var(--font-mono); color: var(--color-text-secondary);">
+		<code class="install-cmd flex-1 overflow-x-auto whitespace-nowrap text-left text-sm" style="font-family: var(--font-mono); color: var(--color-text-secondary);">
 			<span style="color: var(--color-text-muted);">$</span>
 			<span style="color: var(--color-text-primary);"> {installCommand}</span>
 		</code>
@@ -498,3 +498,13 @@
 		</div>
 	</div>
 </section>
+
+<style>
+	.install-cmd {
+		scrollbar-width: none;
+		-ms-overflow-style: none;
+	}
+	.install-cmd::-webkit-scrollbar {
+		display: none;
+	}
+</style>

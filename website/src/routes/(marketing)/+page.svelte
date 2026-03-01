@@ -431,16 +431,16 @@
 				</p>
 			</a>
 
-			<!-- Claude Desktop Setup -->
+			<!-- Claude Code Setup -->
 			<a
-				href="{base}/docs/claude-desktop"
+				href="{base}/docs/claude-code"
 				class="group block rounded-lg p-5 transition-colors"
 				style="background-color: var(--color-bg-secondary);"
 				onmouseenter={(e) => { (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--color-bg-tertiary)'; }}
 				onmouseleave={(e) => { (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--color-bg-secondary)'; }}
 			>
 				<div class="mb-2 flex items-center justify-between">
-					<span class="text-sm font-semibold" style="color: var(--color-text-primary);">Claude Desktop Setup</span>
+					<span class="text-sm font-semibold" style="color: var(--color-text-primary);">Claude Code Setup</span>
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
 						width="14"
@@ -459,7 +459,7 @@
 					</svg>
 				</div>
 				<p class="text-xs leading-relaxed" style="color: var(--color-text-muted);">
-					Configure Claude Desktop to use SimConnect MCP as an MCP server.
+					Add SimConnect MCP to Claude Code for in-editor SDK lookups and live simulator access.
 				</p>
 			</a>
 

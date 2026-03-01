@@ -1,7 +1,7 @@
 ---
 title: Examples
 description: Worked examples showing how to use SimConnect MCP tools in Claude Desktop.
-order: 2
+order: 3
 section: integration
 ---
 

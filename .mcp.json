@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "simconnect-mcp": {
+      "type": "stdio",
+      "command": "go",
+      "args": ["run", "./cmd/simconnect-mcp/"],
+      "env": {
+        "MCP_MODE": "docs",
+        "DOCS_MSFS_VERSION": "2024"
+      }
+    }
+  }
+}

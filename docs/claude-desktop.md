@@ -1,7 +1,7 @@
 ---
 title: Claude Desktop Setup
 description: Configure Claude Desktop to use SimConnect MCP as an MCP server.
-order: 1
+order: 2
 section: integration
 ---
 

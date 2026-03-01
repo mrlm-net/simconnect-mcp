@@ -1,5 +1,5 @@
 {
-  "scraped_at": "2026-03-01T12:08:02.8449027Z",
+  "scraped_at": "2026-03-01T12:21:07.1047416Z",
   "sdk_version": "2020",
   "simvars": [
     {
@@ -5423,6 +5423,459 @@
         "2020"
       ],
       "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Camera_Variables.htm"
+    },
+    {
+      "name": "BAGGAGELOADER ANGLE CURRENT",
+      "description": "Current angle of the baggage loader ramp, relative to the ground.",
+      "units": [
+        "Degrees"
+      ],
+      "settable": false,
+      "category": "SERVICE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Services_Variables.htm"
+    },
+    {
+      "name": "BAGGAGELOADER ANGLE TARGET",
+      "description": "Target angle of the baggage loader ramp, relative to the ground.",
+      "units": [
+        "Degrees"
+      ],
+      "settable": false,
+      "category": "SERVICE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Services_Variables.htm"
+    },
+    {
+      "name": "BAGGAGELOADER END RAMP Y",
+      "description": "\"Y\" axis position of the end of the baggage loader ramp, relative to the ground.",
+      "units": [
+        "Meters"
+      ],
+      "settable": false,
+      "category": "SERVICE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Services_Variables.htm"
+    },
+    {
+      "name": "BAGGAGELOADER END RAMP Z",
+      "description": "\"Z\" axis position of the end of the baggage loader ramp, relative to the ground.",
+      "units": [
+        "Meters"
+      ],
+      "settable": false,
+      "category": "SERVICE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Services_Variables.htm"
+    },
+    {
+      "name": "BAGGAGELOADER PIVOT Y",
+      "description": "\"Y\" axis position of the baggage loader ramp pivot, relative to the ground.",
+      "units": [
+        "Meters"
+      ],
+      "settable": false,
+      "category": "SERVICE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Services_Variables.htm"
+    },
+    {
+      "name": "BAGGAGELOADER PIVOT Z",
+      "description": "\"Z\" axis position of the baggage loader ramp pivot, relative to the ground.",
+      "units": [
+        "Meters"
+      ],
+      "settable": false,
+      "category": "SERVICE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Services_Variables.htm"
+    },
+    {
+      "name": "ANIMATION DELTA TIME",
+      "description": "Difference of time between the current frame and the last frame where this SimObject has been animated",
+      "units": [
+        "Seconds"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Miscellaneous_Variables.htm"
+    },
+    {
+      "name": "ARTIFICIAL GROUND ELEVATION",
+      "description": "In case scenery is not loaded for AI planes, this variable can be used to set a default surface elevation.",
+      "units": [
+        "Feet"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Miscellaneous_Variables.htm"
+    },
+    {
+      "name": "CATEGORY",
+      "description": "One of the following: \"Airplane\", \"Helicopter\", \"Boat\", \"GroundVehicle\", \"ControlTower\", \"SimpleObject\", \"Viewer\"",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Miscellaneous_Variables.htm"
+    },
+    {
+      "name": "CONTROLLABLE",
+      "description": "",
+      "units": null,
+      "settable": false,
+      "category": "MISCELLANEOUS VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Miscellaneous_Variables.htm"
+    },
+    {
+      "name": "CRASH FLAG",
+      "description": "Flag value that indicates the cause of a crash.",
+      "units": [
+        "Enum: 0:[index] None 2:[index] Mountain 4:[index] General 6:[index] Building 8:[index] Splash 10:[index] Gear up 12:[index] Overstress 14:[index] Building 16:[index] Aircraft 18:[index] Fuel Truck"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Miscellaneous_Variables.htm"
+    },
+    {
+      "name": "CRASH SEQUENCE",
+      "description": "The state of the crash event sequence.",
+      "units": [
+        "Enum: 0:[index] off 1:[index] complete 3:[index] reset 4:[index] pause 11:[index] start"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Miscellaneous_Variables.htm"
+    },
+    {
+      "name": "GROUND ALTITUDE",
+      "description": "Altitude of surface.",
+      "units": [
+        "Meters"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Miscellaneous_Variables.htm"
+    },
+    {
+      "name": "HAND ANIM STATE",
+      "description": "What frame of the hand is currently used.",
+      "units": [
+        "Enum: 0 = Hover 1 = Index push/Point 2 = Pinch large 3 = Pinch medium 4 = Pinch small 5 = Pinch lateral 6 = Press all/Fist 7 = Toggle lever up/down 8 = Thumb push 9 = Holde yoke thin 10 = Hold throttle 11 = Hold yokes 12 = Push/pull lever"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Miscellaneous_Variables.htm"
+    },
+    {
+      "name": "IDLE ANIMATION ID",
+      "description": "The ID of the idle animation for the sim object.",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Miscellaneous_Variables.htm"
+    },
+    {
+      "name": "MAGVAR",
+      "description": "Magnetic variation.",
+      "units": [
+        "Degrees"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Miscellaneous_Variables.htm"
+    },
+    {
+      "name": "MISSION SCORE",
+      "description": "",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Miscellaneous_Variables.htm"
+    },
+    {
+      "name": "PARACHUTE OPEN",
+      "description": "This will be TRUE if the parachute has opened and FALSE otherwise. Currently this is only applied to the Parachute SimObject used by Winches.",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Miscellaneous_Variables.htm"
+    },
+    {
+      "name": "REALISM",
+      "description": "General realism percent.",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Miscellaneous_Variables.htm"
+    },
+    {
+      "name": "REALISM CRASH DETECTION",
+      "description": "True indicates crash detection is turned on.",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Miscellaneous_Variables.htm"
+    },
+    {
+      "name": "REALISM CRASH WITH OTHERS",
+      "description": "True indicates crashing with other aircraft is possible.",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Miscellaneous_Variables.htm"
+    },
+    {
+      "name": "SIM DISABLED",
+      "description": "Is sim disabled.",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Miscellaneous_Variables.htm"
+    },
+    {
+      "name": "SIM ON GROUND",
+      "description": "On ground flag. NOTE: This is available in multiplayer to all far aircraft. See here for more information: Note On SimVars In Multiplayer.",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Miscellaneous_Variables.htm"
+    },
+    {
+      "name": "SIM SHOULD SET ON GROUND",
+      "description": "",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Miscellaneous_Variables.htm"
+    },
+    {
+      "name": "TRACK IR ENABLE",
+      "description": "Returns true if Track IR is enabled or not.",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Miscellaneous_Variables.htm"
+    },
+    {
+      "name": "TOTAL WORLD VELOCITY",
+      "description": "Speed relative to the earths center.",
+      "units": [
+        "Feet per second"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Miscellaneous_Variables.htm"
+    },
+    {
+      "name": "USER INPUT ENABLED",
+      "description": "Is input allowed from the user.",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Miscellaneous_Variables.htm"
+    },
+    {
+      "name": "VISUAL MODEL RADIUS",
+      "description": "Model radius.",
+      "units": [
+        "Meters"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Miscellaneous_Variables.htm"
+    },
+    {
+      "name": "VELOCITY WORLD X",
+      "description": "Speed relative to earth, in East/West direction. NOTE: This is available in multiplayer to all far aircraft. See here for more information: Note On SimVars In Multiplayer.",
+      "units": [
+        "Feet per second"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Miscellaneous_Variables.htm"
+    },
+    {
+      "name": "VELOCITY WORLD Y",
+      "description": "Speed relative to earth, in vertical direction. NOTE: This is available in multiplayer to all far aircraft. See here for more information: Note On SimVars In Multiplayer.",
+      "units": [
+        "Feet per second"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Miscellaneous_Variables.htm"
+    },
+    {
+      "name": "VELOCITY WORLD Z",
+      "description": "Speed relative to earth, in North/South direction. NOTE: This is available in multiplayer to all far aircraft. See here for more information: Note On SimVars In Multiplayer.",
+      "units": [
+        "Feet per second"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Miscellaneous_Variables.htm"
+    },
+    {
+      "name": "SIMVAR_GENERAL_ENG_COMBUSTION_SOUND_PERCENT",
+      "description": "GENERAL ENG COMBUSTION SOUND PERCENT",
+      "units": [
+        "Percent Over 100"
+      ],
+      "settable": false,
+      "category": "RTPC AND SIMULATION VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/RTPC_And_Simulation_Variables.htm"
+    },
+    {
+      "name": "SIMVAR_GENERAL_ENG_PCT_MAX_RPM",
+      "description": "GENERAL ENG PCT MAX RPM",
+      "units": [
+        "Percent Over 100"
+      ],
+      "settable": false,
+      "category": "RTPC AND SIMULATION VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/RTPC_And_Simulation_Variables.htm"
+    },
+    {
+      "name": "SIMVAR_GENERAL_ENG_RPM",
+      "description": "GENERAL ENG RPM",
+      "units": [
+        "RPM"
+      ],
+      "settable": false,
+      "category": "RTPC AND SIMULATION VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/RTPC_And_Simulation_Variables.htm"
+    },
+    {
+      "name": "SIMVAR_GENERAL_ENG_COMBUSTION",
+      "description": "GENERAL ENG COMBUSTION",
+      "units": [
+        "Boolean"
+      ],
+      "settable": false,
+      "category": "RTPC AND SIMULATION VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/RTPC_And_Simulation_Variables.htm"
     },
     {
       "name": "ABSOLUTE TIME",

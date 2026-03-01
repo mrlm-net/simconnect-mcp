@@ -57,6 +57,9 @@ var simvarPages2020 = []pageSpec{
 	// ── Non-aircraft SimVars ──────────────────────────────────────────────────
 	{url: base2020SimVars + "Helicopter_Variables.htm", category: "Helicopter"},
 	{url: base2020SimVars + "Camera_Variables.htm", category: "Camera"},
+	{url: base2020SimVars + "Services_Variables.htm", category: "Services"},
+	{url: base2020SimVars + "Miscellaneous_Variables.htm", category: "Miscellaneous Variables"},
+	{url: base2020SimVars + "RTPC_And_Simulation_Variables.htm", category: "RTPC"},
 	// ── Environment variables ─────────────────────────────────────────────────
 	{url: "https://docs.flightsimulator.com/html/Programming_Tools/Environment_Variables.htm", category: "Environment"},
 }
@@ -78,6 +81,7 @@ var simvarPages2024 = []pageSpec{
 	{url: base2024SimVars + "Camera_Variables.htm", category: "Camera"},
 	{url: base2024SimVars + "Balloon_Variables.htm", category: "Balloon"},
 	{url: base2024SimVars + "Services_Variables.htm", category: "Services"},
+	{url: base2024SimVars + "Miscellaneous_Variables.htm", category: "Miscellaneous Variables"},
 	// ── Environment variables ─────────────────────────────────────────────────
 	{url: base2024Root + "Environment_Variables.htm", category: "Environment"},
 }
@@ -178,6 +182,21 @@ var functionPages = []string{
 	base2020SimConn + "API_Reference/Facilities/SimConnect_UnsubscribeToFacilities.htm",
 	base2020SimConn + "API_Reference/Facilities/SimConnect_UnsubscribeToFacilities_EX1.htm",
 
+	// ── AI Objects (both versions) ───────────────────────────────────────────
+	base2020SimConn + "API_Reference/AI_Objects/SimConnect_AICreateEnrouteATCAircraft.htm",
+	base2020SimConn + "API_Reference/AI_Objects/SimConnect_AICreateNonATCAircraft.htm",
+	base2020SimConn + "API_Reference/AI_Objects/SimConnect_AICreateParkedATCAircraft.htm",
+	base2020SimConn + "API_Reference/AI_Objects/SimConnect_AICreateSimulatedObject.htm",
+	base2020SimConn + "API_Reference/AI_Objects/SimConnect_AIReleaseControl.htm",
+	base2020SimConn + "API_Reference/AI_Objects/SimConnect_AIRemoveObject.htm",
+	base2020SimConn + "API_Reference/AI_Objects/SimConnect_AISetAircraftFlightPlan.htm",
+	// ── 2024-only: AI Objects EX1 variants + SimObjectsAndLiveries ───────────
+	base2024SimConn + "API_Reference/AI_Objects/SimConnect_AICreateEnrouteATCAircraft_EX1.htm",
+	base2024SimConn + "API_Reference/AI_Objects/SimConnect_AICreateNonATCAircraft_EX1.htm",
+	base2024SimConn + "API_Reference/AI_Objects/SimConnect_AICreateParkedATCAircraft_EX1.htm",
+	base2024SimConn + "API_Reference/AI_Objects/SimConnect_AICreateSimulatedObject_EX1.htm",
+	base2024SimConn + "API_Reference/AI_Objects/SimConnect_EnumerateSimObjectsAndLiveries.htm",
+
 	// ── 2024-only: Input Events (folder name has no underscore: InputEvents/) ──
 	base2024SimConn + "API_Reference/InputEvents/SimConnect_EnumerateControllers.htm",
 	base2024SimConn + "API_Reference/InputEvents/SimConnect_EnumerateInputEvents.htm",
@@ -254,6 +273,20 @@ var structurePages = []string{
 	base2020SimConn + "API_Reference/Structures_And_Enumerations/SIMCONNECT_DATA_MARKERSTATE.htm",
 	base2020SimConn + "API_Reference/Structures_And_Enumerations/SIMCONNECT_DATA_RACE_RESULT.htm",
 	base2020SimConn + "API_Reference/Structures_And_Enumerations/SIMCONNECT_VERSION_BASE_TYPE.htm",
+
+	// ── Enumerations (listed alongside structures in the API reference) ──────
+	base2020SimConn + "API_Reference/Structures_And_Enumerations/SIMCONNECT_CLIENT_DATA_PERIOD.htm",
+	base2020SimConn + "API_Reference/Structures_And_Enumerations/SIMCONNECT_DATATYPE.htm",
+	base2020SimConn + "API_Reference/Structures_And_Enumerations/SIMCONNECT_FACILITY_DATA_TYPE.htm",
+	base2020SimConn + "API_Reference/Structures_And_Enumerations/SIMCONNECT_FACILITY_LIST_TYPE.htm",
+	base2020SimConn + "API_Reference/Structures_And_Enumerations/SIMCONNECT_INPUT_EVENT_TYPE.htm",
+	base2020SimConn + "API_Reference/Structures_And_Enumerations/SIMCONNECT_MISSION_END.htm",
+	base2020SimConn + "API_Reference/Structures_And_Enumerations/SIMCONNECT_PERIOD.htm",
+	base2020SimConn + "API_Reference/Structures_And_Enumerations/SIMCONNECT_RECV_ID.htm",
+	base2020SimConn + "API_Reference/Structures_And_Enumerations/SIMCONNECT_SIMOBJECT_TYPE.htm",
+	base2020SimConn + "API_Reference/Structures_And_Enumerations/SIMCONNECT_STATE.htm",
+	base2020SimConn + "API_Reference/Structures_And_Enumerations/SIMCONNECT_TEXT_RESULT.htm",
+	base2020SimConn + "API_Reference/Structures_And_Enumerations/SIMCONNECT_WAYPOINT_FLAGS.htm",
 
 	// ── 2024-only structures (Input Events, EX1 variants) ─────────────────────
 	base2024SimConn + "API_Reference/Structures_And_Enumerations/SIMCONNECT_RECV_EVENT_EX1.htm",

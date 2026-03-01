@@ -1,5 +1,5 @@
 {
-  "scraped_at": "2026-03-01T11:58:36.2536616Z",
+  "scraped_at": "2026-03-01T12:22:49.6482819Z",
   "sdk_version": "",
   "simvars": [],
   "events": [],
@@ -1001,6 +1001,670 @@
         }
       ],
       "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_VERSION_BASE_TYPE.htm"
+    },
+    {
+      "name": "SIMCONNECT_CLIENT_DATA_PERIOD",
+      "description": "",
+      "fields": [
+        {
+          "name": "SIMCONNECT_PERIOD_NEVER",
+          "type": "",
+          "description": "Specifies that the data is not to be sent."
+        },
+        {
+          "name": "SIMCONNECT_PERIOD_ONCE",
+          "type": "",
+          "description": "Specifies that the data should be sent once only. Note that this is not an efficient way of receiving data frequently, use one of the other periods if there is a regular frequency to the data request."
+        },
+        {
+          "name": "SIMCONNECT_PERIOD_VISUAL_FRAME",
+          "type": "",
+          "description": "Specifies that the data should be sent every visual (rendered) frame."
+        },
+        {
+          "name": "SIMCONNECT_PERIOD_ON_SET",
+          "type": "",
+          "description": "Specifies that the data should be sent whenever it is set."
+        },
+        {
+          "name": "SIMCONNECT_PERIOD_SECOND",
+          "type": "",
+          "description": "Specifies that the data should be sent once every second."
+        }
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_CLIENT_DATA_PERIOD.htm"
+    },
+    {
+      "name": "SIMCONNECT_DATATYPE",
+      "description": "",
+      "fields": [
+        {
+          "name": "SIMCONNECT_DATATYPE_FLOAT32",
+          "type": "",
+          "description": "Specifies a 32 bit or 64 bit floating point number."
+        },
+        {
+          "name": "SIMCONNECT_DATATYPE_INT32",
+          "type": "",
+          "description": "Specifies a 32 bit unsigned integer value."
+        },
+        {
+          "name": "SIMCONNECT_DATATYPE_INT64",
+          "type": "",
+          "description": "Specifies a 64 bit signed integer value."
+        },
+        {
+          "name": "SIMCONNECT_DATATYPE_STRING8",
+          "type": "",
+          "description": "Specifies strings of the given length (8 characters to 260 characters)"
+        },
+        {
+          "name": "SIMCONNECT_DATATYPE_STRINGV",
+          "type": "",
+          "description": "Specifies a variable length string."
+        },
+        {
+          "name": "SIMCONNECT_DATATYPE_INITPOSITION",
+          "type": "",
+          "description": "Specifies the SIMCONNECT_DATA_INITPOSITION structure."
+        },
+        {
+          "name": "SIMCONNECT_DATATYPE_MARKERSTATE",
+          "type": "",
+          "description": "Specifies the SIMCONNECT_DATA_MARKERSTATE structure."
+        },
+        {
+          "name": "SIMCONNECT_DATATYPE_WAYPOINT",
+          "type": "",
+          "description": "Specifies the SIMCONNECT_DATA_WAYPOINT structure."
+        },
+        {
+          "name": "SIMCONNECT_DATATYPE_LATLONALT",
+          "type": "",
+          "description": "Specifies the SIMCONNECT_DATA_LATLONALT structure."
+        },
+        {
+          "name": "SIMCONNECT_DATATYPE_XYZ",
+          "type": "",
+          "description": "Specifies the SIMCONNECT_DATA_XYZ structure."
+        }
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_DATATYPE.htm"
+    },
+    {
+      "name": "SIMCONNECT_FACILITY_DATA_TYPE",
+      "description": "",
+      "fields": [
+        {
+          "name": "SIMCONNECT_FACILITY_DATA_AIRPORT",
+          "type": "",
+          "description": "Contents of the parent struct are for an airport. See AIRPORT for more information."
+        },
+        {
+          "name": "SIMCONNECT_FACILITY_DATA_RUNWAY",
+          "type": "",
+          "description": "Contents of the parent struct are for a runway. See RUNWAY for more information."
+        },
+        {
+          "name": "SIMCONNECT_FACILITY_DATA_START",
+          "type": "",
+          "description": "Contents of the parent struct are for defining an airport start position. See START for more information."
+        },
+        {
+          "name": "SIMCONNECT_FACILITY_DATA_FREQUENCY",
+          "type": "",
+          "description": "Contents of the parent struct are for frequencies. See FREQUENCY for more information."
+        },
+        {
+          "name": "SIMCONNECT_FACILITY_DATA_HELIPAD",
+          "type": "",
+          "description": "Contents of the parent struct are for a helipad. See HELIPAD for more information."
+        },
+        {
+          "name": "SIMCONNECT_FACILITY_DATA_APPROACH",
+          "type": "",
+          "description": "Contents of the parent struct are for an approach. See APPROACH for more information."
+        },
+        {
+          "name": "SIMCONNECT_FACILITY_DATA_APPROACH_TRANSITION",
+          "type": "",
+          "description": "Contents of the parent struct are for an approach transition. See APPROACH_TRANSITION for more information."
+        },
+        {
+          "name": "SIMCONNECT_FACILITY_DATA_APPROACH_LEG",
+          "type": "",
+          "description": "Contents of the parent struct are for an approach leg. See APPROACH_LEG for more information."
+        },
+        {
+          "name": "SIMCONNECT_FACILITY_DATA_FINAL_APPROACH_LEG",
+          "type": "",
+          "description": "Contents of the parent struct are for a final approach leg. See FINAL_APPROACH_LEG for more information."
+        },
+        {
+          "name": "SIMCONNECT_FACILITY_DATA_MISSED_APPROACH_LEG",
+          "type": "",
+          "description": "Contents of the parent struct are for a missed approach leg. See MISSED_APPROACH_LEG for more information."
+        },
+        {
+          "name": "SIMCONNECT_FACILITY_DATA_DEPARTURE",
+          "type": "",
+          "description": "Contents of the parent struct are for a departure. See DEPARTURE for more information."
+        },
+        {
+          "name": "SIMCONNECT_FACILITY_DATA_ARRIVAL",
+          "type": "",
+          "description": "Contents of the parent struct are for an arrival. See ARRIVAL for more information."
+        },
+        {
+          "name": "SIMCONNECT_FACILITY_DATA_RUNWAY_TRANSITION",
+          "type": "",
+          "description": "Contents of the parent struct are for a runway transition. See RUNWAY_TRANSITION for more information."
+        },
+        {
+          "name": "SIMCONNECT_FACILITY_DATA_ENROUTE_TRANSITION",
+          "type": "",
+          "description": "Contents of the parent struct are for a route transition. See ENROUTE_TRANSITION for more information."
+        },
+        {
+          "name": "SIMCONNECT_FACILITY_DATA_TAXI_POINT",
+          "type": "",
+          "description": "Contents of the parent struct are for a taxiway point. See TAXI_POINT for more information."
+        },
+        {
+          "name": "SIMCONNECT_FACILITY_DATA_TAXI_PARKING",
+          "type": "",
+          "description": "Contents of the parent struct are for a taxiway parking spot. See TAXI_PARKING for more information."
+        },
+        {
+          "name": "SIMCONNECT_FACILITY_DATA_TAXI_PATH",
+          "type": "",
+          "description": "Contents of the parent struct are for a taxiway path. See TAXI_PATH for more information."
+        },
+        {
+          "name": "SIMCONNECT_FACILITY_DATA_TAXI_NAME",
+          "type": "",
+          "description": "Contents of the parent struct are for a taxi name. See TAXI_NAME for more information."
+        },
+        {
+          "name": "SIMCONNECT_FACILITY_DATA_JETWAY",
+          "type": "",
+          "description": "Contents of the parent struct are for a jetway. See JETWAY for more information."
+        },
+        {
+          "name": "SIMCONNECT_FACILITY_DATA_VOR",
+          "type": "",
+          "description": "Contents of the parent struct are for a VOR station. See VOR for more information."
+        },
+        {
+          "name": "SIMCONNECT_FACILITY_DATA_NDB",
+          "type": "",
+          "description": "Contents of the parent struct are for an NDB station. See NDB for more information."
+        },
+        {
+          "name": "SIMCONNECT_FACILITY_DATA_WAYPOINT",
+          "type": "",
+          "description": "Contents of the parent struct are for a waypoint. See WAYPOINT for more information."
+        },
+        {
+          "name": "SIMCONNECT_FACILITY_DATA_ROUTE",
+          "type": "",
+          "description": "Contents of the parent struct are for a route. See ROUTE for more information."
+        },
+        {
+          "name": "SIMCONNECT_FACILITY_DATA_PAVEMENT",
+          "type": "",
+          "description": "Contents of the parent struct are for a pavement element. See PAVEMENT for more information."
+        },
+        {
+          "name": "SIMCONNECT_FACILITY_DATA_APPROACH_LIGHTS",
+          "type": "",
+          "description": "Contents of the parent struct are for the runway approach lights. See APPROACHLIGHTS for more information."
+        },
+        {
+          "name": "SIMCONNECT_FACILITY_DATA_VASI",
+          "type": "",
+          "description": "Contents of the parent struct are for VASI information. See VASI for more information."
+        }
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_FACILITY_DATA_TYPE.htm"
+    },
+    {
+      "name": "SIMCONNECT_FACILITY_LIST_TYPE",
+      "description": "",
+      "fields": [
+        {
+          "name": "SIMCONNECT_FACILITY_LIST_TYPE_AIRPORT",
+          "type": "",
+          "description": "Specifies that the type of information is for an airport, see SIMCONNECT_DATA_FACILITY_AIRPORT."
+        },
+        {
+          "name": "SIMCONNECT_FACILITY_LIST_TYPE_WAYPOINT",
+          "type": "",
+          "description": "Specifies that the type of information is for a waypoint, see SIMCONNECT_DATA_FACILITY_WAYPOINT."
+        },
+        {
+          "name": "SIMCONNECT_FACILITY_LIST_TYPE_NDB",
+          "type": "",
+          "description": "Specifies that the type of information is for an NDB, see SIMCONNECT_DATA_FACILITY_NDB."
+        },
+        {
+          "name": "SIMCONNECT_FACILITY_LIST_TYPE_VOR",
+          "type": "",
+          "description": "Specifies that the type of information is for a VOR, see SIMCONNECT_DATA_FACILITY_VOR."
+        },
+        {
+          "name": "SIMCONNECT_FACILITY_LIST_TYPE_COUNT",
+          "type": "",
+          "description": "Not valid as a list type, but simply the number of list types."
+        }
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_FACILITY_LIST_TYPE.htm"
+    },
+    {
+      "name": "SIMCONNECT_INPUT_EVENT_TYPE",
+      "description": "",
+      "fields": [
+        {
+          "name": "SIMCONNECT_INPUT_EVENT_TYPE_NONE",
+          "type": "",
+          "description": "No data type specification required (C++ only)."
+        },
+        {
+          "name": "SIMCONNECT_INPUT_EVENT_TYPE_DOUBLE",
+          "type": "",
+          "description": "Specifies a double."
+        },
+        {
+          "name": "SIMCONNECT_INPUT_EVENT_TYPE_STRING",
+          "type": "",
+          "description": "Specifies a string."
+        }
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_INPUT_EVENT_TYPE.htm"
+    },
+    {
+      "name": "SIMCONNECT_MISSION_END",
+      "description": "",
+      "fields": [
+        {
+          "name": "SIMCONNECT_MISSION_FAILED",
+          "type": "",
+          "description": "The mission failed for some reason other than a crash."
+        },
+        {
+          "name": "SIMCONNECT_MISSION_CRASHED",
+          "type": "",
+          "description": "The mission failed because of a crash."
+        },
+        {
+          "name": "SIMCONNECT_MISSION_SUCCEEDED",
+          "type": "",
+          "description": "The mission was completed successfully."
+        }
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_MISSION_END.htm"
+    },
+    {
+      "name": "SIMCONNECT_PERIOD",
+      "description": "",
+      "fields": [
+        {
+          "name": "SIMCONNECT_PERIOD_NEVER",
+          "type": "",
+          "description": "Specifies that the data is not to be sent."
+        },
+        {
+          "name": "SIMCONNECT_PERIOD_ONCE",
+          "type": "",
+          "description": "Specifies that the data should be sent once only. Note that this is not an efficient way of receiving data frequently, use one of the other periods if there is a regular frequency to the data request."
+        },
+        {
+          "name": "SIMCONNECT_PERIOD_VISUAL_FRAME",
+          "type": "",
+          "description": "Specifies that the data should be sent every visual (rendered) frame."
+        },
+        {
+          "name": "SIMCONNECT_PERIOD_SIM_FRAME",
+          "type": "",
+          "description": "Specifies that the data should be sent every simulated frame, whether that frame is rendered or not."
+        },
+        {
+          "name": "SIMCONNECT_PERIOD_SECOND",
+          "type": "",
+          "description": "Specifies that the data should be sent once every second."
+        }
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_PERIOD.htm"
+    },
+    {
+      "name": "SIMCONNECT_RECV_ID",
+      "description": "",
+      "fields": [
+        {
+          "name": "SIMCONNECT_RECV_ID_NULL",
+          "type": "",
+          "description": "Specifies that nothing useful has been returned."
+        },
+        {
+          "name": "SIMCONNECT_RECV_ID_EXCEPTION",
+          "type": "",
+          "description": "Specifies that a SIMCONNECT_RECV_EXCEPTION structure has been received."
+        },
+        {
+          "name": "SIMCONNECT_RECV_ID_OPEN",
+          "type": "",
+          "description": "Specifies that a SIMCONNECT_RECV_OPEN structure has been received."
+        },
+        {
+          "name": "SIMCONNECT_RECV_ID_QUIT",
+          "type": "",
+          "description": "Specifies that the user has exited from Microsoft Flight Simulator 2020."
+        },
+        {
+          "name": "SIMCONNECT_RECV_ID_EVENT",
+          "type": "",
+          "description": "Specifies that a SIMCONNECT_RECV_EVENT structure has been received."
+        },
+        {
+          "name": "SIMCONNECT_RECV_ID_EVENT_EX1",
+          "type": "",
+          "description": "Specifies that the SIMCONNECT_RECV_EVENT_EX1 structure has been received. Can be triggered by various functions, eg: trigger_key_event_EX1 or SimConnect_TransmitClientEvent_EX1."
+        },
+        {
+          "name": "SIMCONNECT_RECV_ID_EVENT_OBJECT_ADDREMOVE",
+          "type": "",
+          "description": "Specifies that a SIMCONNECT_RECV_EVENT_OBJECT_ADDREMOVE structure has been received."
+        },
+        {
+          "name": "SIMCONNECT_RECV_ID_EVENT_FILENAME",
+          "type": "",
+          "description": "Specifies that a SIMCONNECT_RECV_EVENT_FILENAME structure has been received."
+        },
+        {
+          "name": "SIMCONNECT_RECV_ID_EVENT_FRAME",
+          "type": "",
+          "description": "Specifies that a SIMCONNECT_RECV_EVENT_FRAME structure has been received."
+        },
+        {
+          "name": "SIMCONNECT_RECV_ID_SIMOBJECT_DATA",
+          "type": "",
+          "description": "Specifies that a SIMCONNECT_RECV_SIMOBJECT_DATA structure has been received."
+        },
+        {
+          "name": "SIMCONNECT_RECV_ID_SIMOBJECT_DATA_BYTYPE",
+          "type": "",
+          "description": "Specifies that a SIMCONNECT_RECV_SIMOBJECT_DATA_BYTYPE structure has been received."
+        },
+        {
+          "name": "SIMCONNECT_RECV_ID_CLOUD_STATE",
+          "type": "",
+          "description": "Specifies that a SIMCONNECT_RECV_CLOUD_STATE structure has been received."
+        },
+        {
+          "name": "SIMCONNECT_RECV_ID_WEATHER_OBSERVATION",
+          "type": "",
+          "description": "Specifies that a SIMCONNECT_RECV_WEATHER_OBSERVATION structure has been received."
+        },
+        {
+          "name": "SIMCONNECT_RECV_ID_EVENT_WEATHER_MODE",
+          "type": "",
+          "description": "Specifies that the dwData parameter will contain one value of the SIMCONNECT_WEATHER_MODE enumeration."
+        },
+        {
+          "name": "SIMCONNECT_RECV_ID_ASSIGNED_OJBECT_ID",
+          "type": "",
+          "description": "Specifies that a SIMCONNECT_RECV_ASSIGNED_OBJECT_ID structure has been received."
+        },
+        {
+          "name": "SIMCONNECT_RECV_ID_RESERVED_KEY",
+          "type": "",
+          "description": "Specifies that a SIMCONNECT_RECV_RESERVED_KEY structure has been received."
+        },
+        {
+          "name": "SIMCONNECT_RECV_ID_CUSTOM_ACTION",
+          "type": "",
+          "description": "Specifies that a SIMCONNECT_RECV_CUSTOM_ACTION structure has been received."
+        },
+        {
+          "name": "SIMCONNECT_RECV_ID_SYSTEM_STATE",
+          "type": "",
+          "description": "Specifies that a SIMCONNECT_RECV_SYSTEM_STATE structure has been received."
+        },
+        {
+          "name": "SIMCONNECT_RECV_ID_CLIENT_DATA",
+          "type": "",
+          "description": "Specifies that a SIMCONNECT_RECV_CLIENT_DATA structure has been received."
+        },
+        {
+          "name": "SIMCONNECT_RECV_ID_AIRPORT_LIST",
+          "type": "",
+          "description": "Specifies that a SIMCONNECT_RECV_AIRPORT_LIST structure has been received."
+        },
+        {
+          "name": "SIMCONNECT_RECV_ID_VOR_LIST",
+          "type": "",
+          "description": "Specifies that a SIMCONNECT_RECV_VOR_LIST structure has been received."
+        },
+        {
+          "name": "SIMCONNECT_RECV_ID_NDB_LIST",
+          "type": "",
+          "description": "Specifies that a SIMCONNECT_RECV_NDB_LIST structure has been received."
+        },
+        {
+          "name": "SIMCONNECT_RECV_ID_WAYPOINT_LIST",
+          "type": "",
+          "description": "Specifies that a SIMCONNECT_RECV_WAYPOINT_LIST structure has been received."
+        },
+        {
+          "name": "SIMCONNECT_RECV_ID_EVENT_MULTIPLAYER_SERVER_STARTED",
+          "type": "",
+          "description": "Specifies that a SIMCONNECT_RECV_EVENT_MULTIPLAYER_SERVER_STARTED structrure has been received."
+        },
+        {
+          "name": "SIMCONNECT_RECV_ID_EVENT_MULTIPLAYER_CLIENT_STARTED",
+          "type": "",
+          "description": "Specifies that a SIMCONNECT_RECV_EVENT_MULTIPLAYER_CLIENT_STARTED structure has been received."
+        },
+        {
+          "name": "SIMCONNECT_RECV_ID_EVENT_MULTIPLAYER_SESSION_ENDED",
+          "type": "",
+          "description": "Specifies that a SIMCONNECT_RECV_EVENT_MULTIPLAYER_SESSION_ENDED structure has been received."
+        },
+        {
+          "name": "SIMCONNECT_RECV_ID_EVENT_RACE_END",
+          "type": "",
+          "description": "Specifies that a SIMCONNECT_RECV_EVENT_RACE_END structure has been received."
+        },
+        {
+          "name": "SIMCONNECT_RECV_ID_EVENT_RACE_LAP",
+          "type": "",
+          "description": "Specifies that a SIMCONNECT_RECV_EVENT_RACE_LAP structure has been received."
+        },
+        {
+          "name": "SIMCONNECT_RECV_ID_FACILITY_DATA",
+          "type": "",
+          "description": "Specifies that a SIMCONNECT_RECV_FACILITY_DATA has been received"
+        },
+        {
+          "name": "SIMCONNECT_RECV_ID_FACILITY_DATA_END",
+          "type": "",
+          "description": "Specifies that a SIMCONNECT_RECV_FACILITY_DATA_END has been received."
+        },
+        {
+          "name": "SIMCONNECT_RECV_ID_FACILITY_MINIMAL_LIST",
+          "type": "",
+          "description": "Specifies that a SIMCONNECT_RECV_FACILITIES_MINIMAL has been received."
+        },
+        {
+          "name": "SIMCONNECT_RECV_ID_JETWAY_DATA",
+          "type": "",
+          "description": "Specifies that a SIMCONNECT_RECV_JETWAY_DATA structure has been received."
+        },
+        {
+          "name": "SIMCONNECT_RECV_ID_CONTROLLERS_LIST",
+          "type": "",
+          "description": "Specifies that the callback has been created by the SimConnect_EnumerateControllers function."
+        },
+        {
+          "name": "SIMCONNECT_RECV_ID_ACTION_CALLBACK",
+          "type": "",
+          "description": "Specifies that the callback has been created by the SimConnect_ExecuteAction function."
+        },
+        {
+          "name": "SIMCONNECT_RECV_ID_ENUMERATE_INPUT_EVENTS",
+          "type": "",
+          "description": "Specifies that a SIMCONNECT_RECV_ENUMERATE_INPUT_EVENTS structure has been received."
+        },
+        {
+          "name": "SIMCONNECT_RECV_ID_GET_INPUT_EVENT",
+          "type": "",
+          "description": "Specifies that a SIMCONNECT_RECV_GET_INPUT_EVENT structure has been received."
+        },
+        {
+          "name": "SIMCONNECT_RECV_ID_SUBSCRIBE_INPUT_EVENT",
+          "type": "",
+          "description": "Specifies that an input event has been subscribed to using the SimConnect_SubscribeInputEvent function."
+        },
+        {
+          "name": "SIMCONNECT_RECV_ID_ENUMERATE_INPUT_EVENT_PARAMS",
+          "type": "",
+          "description": "Specifies that a SIMCONNECT_RECV_ENUMERATE_INPUT_EVENT_PARAMS structure has been received."
+        }
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_RECV_ID.htm"
+    },
+    {
+      "name": "SIMCONNECT_SIMOBJECT_TYPE",
+      "description": "",
+      "fields": [
+        {
+          "name": "SIMCONNECT_SIMOBJECT_TYPE_USER",
+          "type": "",
+          "description": "Specifies the user's aircraft."
+        },
+        {
+          "name": "SIMCONNECT_SIMOBJECT_TYPE_ALL",
+          "type": "",
+          "description": "Specifies all AI controlled objects."
+        },
+        {
+          "name": "SIMCONNECT_SIMOBJECT_TYPE_AIRCRAFT",
+          "type": "",
+          "description": "Specifies all aircraft."
+        },
+        {
+          "name": "SIMCONNECT_SIMOBJECT_TYPE_HELICOPTER",
+          "type": "",
+          "description": "Specifies all helicopters."
+        },
+        {
+          "name": "SIMCONNECT_SIMOBJECT_TYPE_BOAT",
+          "type": "",
+          "description": "Specifies all AI controlled boats."
+        },
+        {
+          "name": "SIMCONNECT_SIMOBJECT_TYPE_GROUND",
+          "type": "",
+          "description": "Specifies all AI controlled ground vehicles."
+        }
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_SIMOBJECT_TYPE.htm"
+    },
+    {
+      "name": "SIMCONNECT_SIMOBJECT_TYPE",
+      "description": "",
+      "fields": [
+        {
+          "name": "SIMCONNECT_STATE_OFF",
+          "type": "",
+          "description": "Specifies off."
+        },
+        {
+          "name": "SIMCONNECT_STATE_ON",
+          "type": "",
+          "description": "Specifies on."
+        }
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_STATE.htm"
+    },
+    {
+      "name": "SIMCONNECT_TEXT_RESULT",
+      "description": "",
+      "fields": [
+        {
+          "name": "SIMCONNECT_TEXT_RESULT_MENU_SELECT_1",
+          "type": "",
+          "description": "One of 10 different menu events."
+        },
+        {
+          "name": "SIMCONNECT_TEXT_RESULT_QUEUED",
+          "type": "",
+          "description": "The text has been queued."
+        },
+        {
+          "name": "SIMCONNECT_TEXT_RESULT_REMOVED",
+          "type": "",
+          "description": "The text has been removed."
+        },
+        {
+          "name": "SIMCONNECT_TEXT_RESULT_REPLACED",
+          "type": "",
+          "description": "The text has been replaced."
+        },
+        {
+          "name": "SIMCONNECT_TEXT_RESULT_TIMEOUT",
+          "type": "",
+          "description": "The text has timed out."
+        },
+        {
+          "name": "SIMCONNECT_TEXT_RESULT_DISPLAYED",
+          "type": "",
+          "description": "The text has been displayed."
+        }
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_TEXT_RESULT.htm"
+    },
+    {
+      "name": "SIMCONNECT_WAYPOINT_FLAGS",
+      "description": "",
+      "fields": [
+        {
+          "name": "SIMCONNECT_WAYPOINT_SPEED_REQUESTED",
+          "type": "",
+          "description": "Specifies requested speed is valid."
+        },
+        {
+          "name": "SIMCONNECT_WAYPOINT_THROTTLE_REQUESTED",
+          "type": "",
+          "description": "Specifies requested throttle percentage is valid."
+        },
+        {
+          "name": "SIMCONNECT_WAYPOINT_COMPUTE_VERTICAL_SPEED",
+          "type": "",
+          "description": "Specifies that the vertical should be calculated to reach the required speed when crossing the waypoint."
+        },
+        {
+          "name": "SIMCONNECT_WAYPOINT_ALTITUDE_IS_AGL",
+          "type": "",
+          "description": "Specifies the altitude specified is AGL."
+        },
+        {
+          "name": "SIMCONNECT_WAYPOINT_ON_GROUND",
+          "type": "",
+          "description": "Specifies the waypoint should be on the ground. Make sure this flag is set if the aircraft is to taxi to this point."
+        },
+        {
+          "name": "SIMCONNECT_WAYPOINT_REVERSE",
+          "type": "",
+          "description": "Specifies that the aircraft should back up to this waypoint. This is only valid on the first waypoint."
+        },
+        {
+          "name": "SIMCONNECT_WAYPOINT_WRAP_TO_FIRST",
+          "type": "",
+          "description": "Specifies that the next waypoint is the first waypoint. This is only valid on the last waypoint."
+        }
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_WAYPOINT_FLAGS.htm"
     },
     {
       "name": "SIMCONNECT_RECV_EVENT_EX1",

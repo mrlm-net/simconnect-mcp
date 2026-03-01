@@ -7,8 +7,6 @@ section: changelog
 
 All notable changes to SimConnect MCP are documented here.
 
-## [Unreleased]
-
 ## [0.1.0] - 2026-03-01
 
 ### Added

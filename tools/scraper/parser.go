@@ -179,6 +179,9 @@ func ParseFunctionPage(htmlBytes []byte, sdkVersion, sourceURL string) ([]corpus
 //   - A description paragraph.
 //   - A members table with columns: "Member", "Type", "Description".
 //   - An optional remarks paragraph.
+//
+// Some docs pages have a heading that references a different item (docs bug).
+// In that case the URL filename stem is used as the authoritative name.
 func ParseStructurePage(htmlBytes []byte, sdkVersion, sourceURL string) ([]corpus.Structure, error) {
 	doc, err := html.Parse(strings.NewReader(string(htmlBytes)))
 	if err != nil {
@@ -186,8 +189,19 @@ func ParseStructurePage(htmlBytes []byte, sdkVersion, sourceURL string) ([]corpu
 	}
 
 	name := extractH1(doc)
-	if name == "" {
+	urlName := urlFileStem(sourceURL)
+	switch {
+	case name == "" && urlName == "":
 		return nil, fmt.Errorf("no <h1> found in structure page from %s", sourceURL)
+	case name == "":
+		name = urlName
+	case urlName != "" && !strings.EqualFold(name, urlName) &&
+		strings.HasPrefix(strings.ToUpper(urlName), "SIMCONNECT_"):
+		// URL stem looks like a SimConnect API name but heading disagrees —
+		// docs website bug (e.g. SIMCONNECT_STATE.htm whose h2 says
+		// SIMCONNECT_SIMOBJECT_TYPE). Use the URL name as ground truth.
+		log.Printf("structure page %s: heading %q differs from URL name %q — using URL name", sourceURL, name, urlName)
+		name = urlName
 	}
 
 	description := extractParagraphAfterH1(doc)
@@ -665,4 +679,26 @@ func parseUnitList(s string) []string {
 		return nil
 	}
 	return units
+}
+
+// urlFileStem extracts the filename stem (last path segment without extension)
+// from a URL string. Returns "" if the URL has no recognisable last segment.
+// Example: ".../SIMCONNECT_STATE.htm" → "SIMCONNECT_STATE"
+func urlFileStem(u string) string {
+	// Work with the path part only (ignore query/fragment).
+	if idx := strings.Index(u, "?"); idx >= 0 {
+		u = u[:idx]
+	}
+	parts := strings.Split(u, "/")
+	for i := len(parts) - 1; i >= 0; i-- {
+		seg := parts[i]
+		if seg == "" {
+			continue
+		}
+		if idx := strings.LastIndex(seg, "."); idx >= 0 {
+			return seg[:idx]
+		}
+		return seg
+	}
+	return ""
 }

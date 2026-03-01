@@ -1,5 +1,5 @@
 {
-  "scraped_at": "2026-03-01T12:22:49.6482819Z",
+  "scraped_at": "2026-03-01T12:35:23.8537798Z",
   "sdk_version": "",
   "simvars": [],
   "events": [],
@@ -1571,7 +1571,7 @@
       "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_SIMOBJECT_TYPE.htm"
     },
     {
-      "name": "SIMCONNECT_SIMOBJECT_TYPE",
+      "name": "SIMCONNECT_STATE",
       "description": "",
       "fields": [
         {

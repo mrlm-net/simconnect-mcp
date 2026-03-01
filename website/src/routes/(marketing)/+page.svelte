@@ -205,7 +205,7 @@
 			class="mb-14 text-center text-2xl font-bold tracking-tight"
 			style="color: var(--color-text-primary);"
 		>
-			Everything you need to work with MSFS from your AI
+			Everything you need to work with MSFS SDK from your AI
 		</h2>
 
 		<!-- 3-col feature grid -->

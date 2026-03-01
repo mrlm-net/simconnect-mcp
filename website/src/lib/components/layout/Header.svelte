@@ -44,28 +44,28 @@
 			class="flex items-center gap-2 text-lg font-semibold tracking-tight"
 			style="color: var(--color-text-primary);"
 		>
-			<img src="{base}/icon.png" alt="" class="mr-1 h-8 w-auto" />
+			<img src="{base}/favicon.svg" alt="" class="mr-1 h-8 w-auto" aria-hidden="true" />
 			<span class="hidden md:inline">{siteConfig.title}</span>
 		</a>
 	</div>
 
 	<nav class="flex items-center gap-4">
 		<a
-			href="{base}/docs"
+			href="{base}/docs/getting-started"
 			class="nav-link text-sm transition-colors"
 			style="color: var(--color-text-secondary);"
 		>
 			Docs
 		</a>
 		<a
-			href="{base}/examples"
+			href="{base}/docs/examples"
 			class="nav-link text-sm transition-colors"
 			style="color: var(--color-text-secondary);"
 		>
 			Examples
 		</a>
 		<a
-			href="{base}/changelog"
+			href="{base}/docs/changelog"
 			class="nav-link text-sm transition-colors"
 			style="color: var(--color-text-secondary);"
 		>

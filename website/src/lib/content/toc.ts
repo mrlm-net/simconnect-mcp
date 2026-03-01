@@ -11,17 +11,18 @@ export function slugify(text: string): string {
 
 export function extractToc(markdown: string): TocEntry[] {
     const entries: TocEntry[] = [];
+    const seen = new Map<string, number>();
     const headingRegex = /^(#{2,3})\s+(.+)$/gm;
     let match: RegExpExecArray | null;
 
     while ((match = headingRegex.exec(markdown)) !== null) {
         const depth = match[1].length;
         const text = match[2].trim();
-        entries.push({
-            depth,
-            text,
-            id: slugify(text)
-        });
+        const base = slugify(text);
+        const count = seen.get(base) ?? 0;
+        seen.set(base, count + 1);
+        const id = count === 0 ? base : `${base}-${count}`;
+        entries.push({ depth, text, id });
     }
 
     return entries;

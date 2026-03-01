@@ -178,20 +178,20 @@ var functionPages = []string{
 	base2020SimConn + "API_Reference/Facilities/SimConnect_UnsubscribeToFacilities.htm",
 	base2020SimConn + "API_Reference/Facilities/SimConnect_UnsubscribeToFacilities_EX1.htm",
 
-	// ── 2024-only: Input Events ───────────────────────────────────────────────
-	base2024SimConn + "API_Reference/Input_Events/SimConnect_EnumerateControllers.htm",
-	base2024SimConn + "API_Reference/Input_Events/SimConnect_EnumerateInputEvents.htm",
-	base2024SimConn + "API_Reference/Input_Events/SimConnect_EnumerateInputEventParams.htm",
-	base2024SimConn + "API_Reference/Input_Events/SimConnect_GetInputEvent.htm",
-	base2024SimConn + "API_Reference/Input_Events/SimConnect_MapInputEventToClientEvent.htm",
-	base2024SimConn + "API_Reference/Input_Events/SimConnect_MapInputEventToClientEvent_EX1.htm",
-	base2024SimConn + "API_Reference/Input_Events/SimConnect_SetInputEvent.htm",
-	base2024SimConn + "API_Reference/Input_Events/SimConnect_SubscribeInputEvent.htm",
-	base2024SimConn + "API_Reference/Input_Events/SimConnect_UnsubscribeInputEvent.htm",
+	// ── 2024-only: Input Events (folder name has no underscore: InputEvents/) ──
+	base2024SimConn + "API_Reference/InputEvents/SimConnect_EnumerateControllers.htm",
+	base2024SimConn + "API_Reference/InputEvents/SimConnect_EnumerateInputEvents.htm",
+	base2024SimConn + "API_Reference/InputEvents/SimConnect_EnumerateInputEventParams.htm",
+	base2024SimConn + "API_Reference/InputEvents/SimConnect_GetInputEvent.htm",
+	base2024SimConn + "API_Reference/InputEvents/SimConnect_MapInputEventToClientEvent.htm",
+	base2024SimConn + "API_Reference/InputEvents/SimConnect_MapInputEventToClientEvent_EX1.htm",
+	base2024SimConn + "API_Reference/InputEvents/SimConnect_SetInputEvent.htm",
+	base2024SimConn + "API_Reference/InputEvents/SimConnect_SubscribeInputEvent.htm",
+	base2024SimConn + "API_Reference/InputEvents/SimConnect_UnsubscribeInputEvent.htm",
 
-	// ── 2024-only: Flow API ───────────────────────────────────────────────────
-	base2024SimConn + "API_Reference/Flow_API/SimConnect_SubscribeToFlowEvent.htm",
-	base2024SimConn + "API_Reference/Flow_API/SimConnect_UnsubscribeToFlowEvent.htm",
+	// ── 2024-only: Flow API (lives under Events_And_Data/, not a separate folder) ─
+	base2024SimConn + "API_Reference/Events_And_Data/SimConnect_SubscribeToFlowEvent.htm",
+	base2024SimConn + "API_Reference/Events_And_Data/SimConnect_UnsubscribeToFlowEvent.htm",
 }
 
 // structurePages lists every SimConnect structure and enumeration page.

@@ -1,5 +1,5 @@
 {
-  "scraped_at": "2026-03-01T11:56:58.0848905Z",
+  "scraped_at": "2026-03-01T12:05:13.1789554Z",
   "sdk_version": "",
   "simvars": [],
   "events": [],
@@ -1701,6 +1701,309 @@
       ],
       "return_type": "",
       "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Facilities/SimConnect_UnsubscribeToFacilities_EX1.htm"
+    },
+    {
+      "name": "SimConnect_EnumerateControllers",
+      "description": "",
+      "signature": "SIMCONNECTAPI SimConnect_EnumerateControllers( HANDLE hSimConnect );",
+      "parameters": [
+        {
+          "name": "hSimConnect",
+          "type": "Handle to a SimConnect object.",
+          "direction": "in",
+          "description": "Integer"
+        }
+      ],
+      "return_type": "",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/SimConnect/API_Reference/InputEvents/SimConnect_EnumerateControllers.htm"
+    },
+    {
+      "name": "SimConnect_EnumerateInputEvents",
+      "description": "",
+      "signature": "HRESULT SimConnect_EnumerateInputEvents( HANDLE hSimConnect, SIMCONNECT_DATA_REQUEST_ID RequestID )",
+      "parameters": [
+        {
+          "name": "hSimConnect",
+          "type": "Handle to a SimConnect object.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "RequestID",
+          "type": "The ID that will identify the current request in the response event",
+          "direction": "in",
+          "description": "Integer"
+        }
+      ],
+      "return_type": "",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/SimConnect/API_Reference/InputEvents/SimConnect_EnumerateInputEvents.htm"
+    },
+    {
+      "name": "SimConnect_EnumerateInputEventParams",
+      "description": "",
+      "signature": "HRESULT SimConnect_EnumerateInputEvents( HANDLE hSimConnect, SIMCONNECT_DATA_REQUEST_ID RequestID )",
+      "parameters": [
+        {
+          "name": "hSimConnect",
+          "type": "Handle to a SimConnect object.",
+          "direction": "in",
+          "description": "String"
+        },
+        {
+          "name": "RequestID",
+          "type": "The ID that will identify the current request in the response event",
+          "direction": "in",
+          "description": ""
+        }
+      ],
+      "return_type": "",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/SimConnect/API_Reference/InputEvents/SimConnect_EnumerateInputEventParams.htm"
+    },
+    {
+      "name": "SimConnect_GetInputEvent",
+      "description": "",
+      "signature": "HRESULT SimConnect_GetInputEvent( HANDLE hSimConnect, SIMCONNECT_DATA_REQUEST_ID RequestID, DWORD Hash, )",
+      "parameters": [
+        {
+          "name": "hSimConnect",
+          "type": "Handle to a SimConnect object.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "RequestID",
+          "type": "The ID that will identify the current request in the response event.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "Hash",
+          "type": "Hash ID that will identify the desired inputEvent.",
+          "direction": "in",
+          "description": "Integer"
+        }
+      ],
+      "return_type": "",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/SimConnect/API_Reference/InputEvents/SimConnect_GetInputEvent.htm"
+    },
+    {
+      "name": "SimConnect_MapInputEventToClientEvent",
+      "description": "",
+      "signature": "HRESULT SimConnect_MapInputEventToClientEvent( HANDLE hSimConnect, SIMCONNECT_INPUT_GROUP_ID GroupID, const char* pszInputDefinition, SIMCONNECT_CLIENT_EVENT_ID DownEventID, DWORD DownValue = 0, SIMCONNECT_CLIENT_EVENT_ID UpEventID =(SIMCONNECT_CLIENT_EVENT_ID)SIMCONNECT_UNUSED, DWORD UpValue = 0, BOOL bMaskable = FALSE );",
+      "parameters": [
+        {
+          "name": "hSimConnect",
+          "type": "Handle to a SimConnect object.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "GroupID",
+          "type": "Specifies the ID of the client defined input group that the input event is to be added to.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "pszInputDefinition",
+          "type": "Pointer to a null-terminated string containing the definition of the input events (keyboard keys, mouse or joystick events, for example). See the Remarks and example below for a range of possibilities.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "DownEventID",
+          "type": "Specifies the ID of the down, and default, event. This is the client defined event that is triggered when the input event occurs. If only an up event is required, set this to SIMCONNECT_UNUSED.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "DownValue",
+          "type": "Specifies an optional numeric value, which will be returned when the down event occurs.",
+          "direction": "in",
+          "description": "Integer (OPTIONAL)"
+        },
+        {
+          "name": "UpEventID",
+          "type": "Specifies the ID of the up event. This is the client defined event that is triggered when the up action occurs.",
+          "direction": "in",
+          "description": "Integer (OPTIONAL)"
+        },
+        {
+          "name": "UpValue",
+          "type": "Specifies an optional numeric value, which will be returned when the up event occurs.",
+          "direction": "in",
+          "description": "Integer (OPTIONAL)"
+        },
+        {
+          "name": "bMaskable",
+          "type": "If set to true, specifies that the client will mask the event, and no other lower priority clients will receive it. The default is false.",
+          "direction": "in",
+          "description": "Bool (OPTIONAL)"
+        }
+      ],
+      "return_type": "",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/SimConnect/API_Reference/InputEvents/SimConnect_MapInputEventToClientEvent.htm"
+    },
+    {
+      "name": "SimConnect_MapInputEventToClientEvent_EX1",
+      "description": "",
+      "signature": "HRESULT SimConnect_MapInputEventToClientEvent_EX1( HANDLE hSimConnect, SIMCONNECT_INPUT_GROUP_ID GroupID, const char* pszInputDefinition, SIMCONNECT_CLIENT_EVENT_ID DownEventID, DWORD DownValue = 0, SIMCONNECT_CLIENT_EVENT_ID UpEventID =(SIMCONNECT_CLIENT_EVENT_ID)SIMCONNECT_UNUSED, DWORD UpValue = 0, BOOL bMaskable = FALSE );",
+      "parameters": [
+        {
+          "name": "hSimConnect",
+          "type": "Handle to a SimConnect object.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "GroupID",
+          "type": "Specifies the ID of the client defined input group that the input event is to be added to.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "pszInputDefinition",
+          "type": "Pointer to a null-terminated string containing the definition of the input events (keyboard keys, mouse or joystick events, for example). See the Remarks and example below for a range of possibilities.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "DownEventID",
+          "type": "Specifies the ID of the down, and default, event. This is the client defined event that is triggered when the input event occurs. If only an up event is required, set this to SIMCONNECT_UNUSED.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "DownValue",
+          "type": "Specifies an optional numeric value, which will be returned when the down event occurs.",
+          "direction": "in",
+          "description": "Integer (OPTIONAL)"
+        },
+        {
+          "name": "UpEventID",
+          "type": "Specifies the ID of the up event. This is the client defined event that is triggered when the up action occurs.",
+          "direction": "in",
+          "description": "Integer (OPTIONAL)"
+        },
+        {
+          "name": "UpValue",
+          "type": "Specifies an optional numeric value, which will be returned when the up event occurs.",
+          "direction": "in",
+          "description": "Integer (OPTIONAL)"
+        },
+        {
+          "name": "bMaskable",
+          "type": "If set to true, specifies that the client will mask the event, and no other lower priority clients will receive it. The default is false.",
+          "direction": "in",
+          "description": "Bool (OPTIONAL)"
+        }
+      ],
+      "return_type": "",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/SimConnect/API_Reference/InputEvents/SimConnect_MapInputEventToClientEvent_EX1.htm"
+    },
+    {
+      "name": "SimConnect_SetInputEvent",
+      "description": "",
+      "signature": "HRESULT SimConnect_SetInputEvent( HANDLE hSimConnect, DWORD Hash, DWORD cbUnitSize, PVOID Value )",
+      "parameters": [
+        {
+          "name": "hSimConnect",
+          "type": "Handle to a SimConnect object.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "Hash",
+          "type": "Hash ID that will identify the desired inputEvent.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "cbUnitSize",
+          "type": "Specifies the size of the value in bytes.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "Value",
+          "type": "New value of the specified inputEvent.",
+          "direction": "in",
+          "description": "Float/String"
+        }
+      ],
+      "return_type": "",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/SimConnect/API_Reference/InputEvents/SimConnect_SetInputEvent.htm"
+    },
+    {
+      "name": "SimConnect_SubscribeInputEvent",
+      "description": "",
+      "signature": "HRESULT SimConnect_SubscribeInputEvent( HANDLE hSimConnect, UINT64 Hash, )",
+      "parameters": [
+        {
+          "name": "hSimConnect",
+          "type": "Handle to a SimConnect object.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "Hash",
+          "type": "Hash ID that will identify the desired input event to subscribe to. You can use 0 here to subscribe to all input events.",
+          "direction": "in",
+          "description": "Integer"
+        }
+      ],
+      "return_type": "",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/SimConnect/API_Reference/InputEvents/SimConnect_SubscribeInputEvent.htm"
+    },
+    {
+      "name": "SimConnect_UnsubscribeInputEvent",
+      "description": "",
+      "signature": "HRESULT SimConnect_UnsubscribeInputEvent( HANDLE hSimConnect, UINT64 Hash )",
+      "parameters": [
+        {
+          "name": "hSimConnect",
+          "type": "Handle to a SimConnect object.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "Hash",
+          "type": "Hash ID that will identify the desired input event to unsubscribe from. You can use 0 here to unsubscribe from all input events.",
+          "direction": "in",
+          "description": "Integer"
+        }
+      ],
+      "return_type": "",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/SimConnect/API_Reference/InputEvents/SimConnect_UnsubscribeInputEvent.htm"
+    },
+    {
+      "name": "SimConnect_SubscribeToFlowEvent",
+      "description": "",
+      "signature": "HRESULT SimConnect_SubscribeToFlowEvent( HANDLE hSimConnect );",
+      "parameters": [
+        {
+          "name": "hSimConnect",
+          "type": "Handle to a SimConnect object.",
+          "direction": "in",
+          "description": "Integer"
+        }
+      ],
+      "return_type": "",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/SimConnect/API_Reference/Events_And_Data/SimConnect_SubscribeToFlowEvent.htm"
+    },
+    {
+      "name": "SimConnect_UnsubscribeToFlowEvent",
+      "description": "",
+      "signature": "HRESULT SimConnect_UnsubscribeToFlowEvent( HANDLE hSimConnect, );",
+      "parameters": [
+        {
+          "name": "hSimConnect",
+          "type": "Handle to a SimConnect object.",
+          "direction": "in",
+          "description": "Integer"
+        }
+      ],
+      "return_type": "",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/SimConnect/API_Reference/Events_And_Data/SimConnect_UnsubscribeToFlowEvent.htm"
     }
   ],
   "structures": [],

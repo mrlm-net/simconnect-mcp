@@ -40,3 +40,6 @@ go.work.sum
 website/node_modules/
 website/build/
 website/.svelte-kit/
+
+# Scraper HTTP cache (local only, rebuilt on demand)
+.scraper-cache/

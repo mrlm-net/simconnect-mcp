@@ -4,6 +4,10 @@ SimConnect MCP exposes Microsoft Flight Simulator's SimConnect SDK documentation
 
 The server is written in Go with Gin routing and operates in two modes reflecting the project milestones: **documentation fetch** (cross-platform) and **live SimConnect data** (Windows-only).
 
+## Documentation
+
+Full documentation is available at **[simconnect-mcp.mrlm.net](https://simconnect-mcp.mrlm.net)** — getting started guides, configuration reference, MCP tool API docs, and architecture notes.
+
 ## Milestones
 
 | Milestone | Mode | `MCP_MODE` value | Status |

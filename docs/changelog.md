@@ -16,7 +16,7 @@ All notable changes to SimConnect MCP are documented here.
 - Offline docs snapshot with pre-built corpus (scheduled updates)
 - Scraping guard requiring explicit confirmation for live doc scraping
 
-## [0.2.0] — 2025-XX-XX — Milestone 2: SimConnect Live Data
+## [0.2.0] — 2026-02-28 — Milestone 2: SimConnect Live Data
 
 ### Added
 - Live SimConnect mode (`MCP_MODE=simconnect`) with Windows-only build tag
@@ -30,7 +30,7 @@ All notable changes to SimConnect MCP are documented here.
 ### Changed
 - Server startup now checks `MCP_MODE` environment variable
 
-## [0.1.0] — 2025-XX-XX — Milestone 1: Documentation Mode
+## [0.1.0] — 2026-02-28 — Milestone 1: Documentation Mode
 
 ### Added
 - Initial release with `MCP_MODE=docs` (cross-platform)

@@ -11,5 +11,5 @@ export const siteConfig: SiteConfig = {
         height: 630
     },
     locale: 'en_US',
-    license: 'MIT'
+    license: 'Apache-2.0'
 };

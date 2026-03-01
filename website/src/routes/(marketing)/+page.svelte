@@ -183,7 +183,7 @@
 			class="inline-flex items-center rounded-full px-3 py-0.5 text-xs font-medium transition-opacity hover:opacity-80"
 			style="background-color: var(--color-bg-tertiary); color: var(--color-text-muted); border: 1px solid var(--color-border);"
 		>
-			MIT License
+			Apache 2.0
 		</a>
 	</div>
 </section>

@@ -9,7 +9,7 @@
 	style="background-color: var(--color-bg-primary); border-color: var(--color-border);"
 >
 	<div class="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-4 text-sm" style="color: var(--color-text-muted);">
-		<span>SimConnect MCP &mdash; MIT License &mdash; &copy; 2024&ndash;2026 mrlm-net</span>
+		<span>SimConnect MCP &mdash; Apache 2.0 License &mdash; &copy; 2024&ndash;2026 mrlm-net</span>
 		<nav class="flex items-center gap-4" aria-label="Footer navigation">
 			<a
 				href="https://github.com/mrlm-net/simconnect-mcp"

@@ -89,6 +89,67 @@ func ParseSimVarPage(htmlBytes []byte, sdkVersion, sourceURL string) ([]corpus.S
 	return simvars, nil
 }
 
+// ParseGPSVarPage parses a GPS variable subpage (Airports.htm, Intersections.htm,
+// NDB_VOR.htm, Flightplans.htm, Miscellaneous.htm) from docs.flightsimulator.com.
+//
+// GPS pages use a 3-column format — "GPS Variable", "Units", "Settable" — with no
+// Description column. Each page may contain multiple tables (one per subsection).
+//
+// pageDeprecated and pageDeprecatedReason are applied to every variable when set.
+// In MSFS 2024 all GPS variables carry a page-level deprecation notice.
+func ParseGPSVarPage(htmlBytes []byte, sdkVersion, sourceURL string, pageDeprecated bool, pageDeprecatedReason string) ([]corpus.SimVar, error) {
+	doc, err := html.Parse(strings.NewReader(string(htmlBytes)))
+	if err != nil {
+		return nil, fmt.Errorf("parse html: %w", err)
+	}
+
+	category := extractH1(doc)
+	tables := findAllTables(doc)
+
+	var simvars []corpus.SimVar
+
+	for _, table := range tables {
+		rows := rowsFromTable(table)
+		for i, row := range rows {
+			if i == 0 {
+				continue // skip header row
+			}
+			cells := extractCells(row)
+			if len(cells) < 2 {
+				log.Printf("gps simvar row %d: expected >=2 cells, got %d — skipping", i, len(cells))
+				continue
+			}
+
+			name := cleanText(cellText(cells[0]))
+			if name == "" {
+				log.Printf("gps simvar row %d: empty name — skipping", i)
+				continue
+			}
+
+			units := parseUnitList(cleanText(cellText(cells[1])))
+
+			settable := false
+			if len(cells) >= 3 {
+				settable = strings.EqualFold(strings.TrimSpace(cellText(cells[2])), "yes")
+			}
+
+			sv := corpus.SimVar{
+				Name:             name,
+				Units:            units,
+				Settable:         settable,
+				Category:         category,
+				Versions:         []string{sdkVersion},
+				Deprecated:       pageDeprecated,
+				DeprecatedReason: pageDeprecatedReason,
+				SourceURL:        sourceURL,
+			}
+			simvars = append(simvars, sv)
+		}
+	}
+
+	return simvars, nil
+}
+
 // ParseEventPage parses an Event (Key Event ID) page from docs.flightsimulator.com.
 // The page is expected to contain an HTML table with at least the columns:
 // "Event name" and "Description".
@@ -318,6 +379,30 @@ func extractTableRows(doc *html.Node) []*html.Node {
 	if table == nil {
 		return nil
 	}
+	return rowsFromTable(table)
+}
+
+// findAllTables returns every top-level <table> node in doc without recursing
+// into nested tables.
+func findAllTables(doc *html.Node) []*html.Node {
+	var tables []*html.Node
+	var walk func(*html.Node)
+	walk = func(n *html.Node) {
+		if n.Type == html.ElementNode && n.Data == "table" {
+			tables = append(tables, n)
+			return // do not recurse into nested tables
+		}
+		for c := n.FirstChild; c != nil; c = c.NextSibling {
+			walk(c)
+		}
+	}
+	walk(doc)
+	return tables
+}
+
+// rowsFromTable extracts all <tr> nodes from a single <table> node, without
+// recursing into nested tables.
+func rowsFromTable(table *html.Node) []*html.Node {
 	var rows []*html.Node
 	var walk func(*html.Node)
 	walk = func(n *html.Node) {

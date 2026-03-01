@@ -23,8 +23,11 @@ import (
 // a page only exists in one of them.
 
 type pageSpec struct {
-	url      string
-	category string
+	url              string
+	category         string
+	deprecated       bool   // mark all items from this page as deprecated
+	deprecatedReason string // reason string set on each item when deprecated=true
+	gpsVar           bool   // use GPS 3-column parser (Name|Units|Settable, no Description)
 }
 
 // ── 2020 base URLs ────────────────────────────────────────────────────────────
@@ -32,6 +35,7 @@ const (
 	base2020SimVars = "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/"
 	base2020Events  = "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/"
 	base2020SimConn = "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/"
+	base2020GPS     = "https://docs.flightsimulator.com/html/Programming_Tools/GPSVars/"
 )
 
 // ── 2024 base URLs ────────────────────────────────────────────────────────────
@@ -40,6 +44,7 @@ const (
 	base2024SimVars = "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/SimVars/"
 	base2024Events  = "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/"
 	base2024SimConn = "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/SimConnect/"
+	base2024GPS     = "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/"
 )
 
 var simvarPages2020 = []pageSpec{
@@ -62,6 +67,12 @@ var simvarPages2020 = []pageSpec{
 	{url: base2020SimVars + "RTPC_And_Simulation_Variables.htm", category: "RTPC"},
 	// ── Environment variables ─────────────────────────────────────────────────
 	{url: "https://docs.flightsimulator.com/html/Programming_Tools/Environment_Variables.htm", category: "Environment"},
+	// ── GPS variables ─────────────────────────────────────────────────────────
+	{url: base2020GPS + "Airports.htm", category: "GPS", gpsVar: true},
+	{url: base2020GPS + "Intersections.htm", category: "GPS", gpsVar: true},
+	{url: base2020GPS + "NDB_VOR.htm", category: "GPS", gpsVar: true},
+	{url: base2020GPS + "Flightplans.htm", category: "GPS", gpsVar: true},
+	{url: base2020GPS + "Miscellaneous.htm", category: "GPS", gpsVar: true},
 }
 
 var simvarPages2024 = []pageSpec{
@@ -84,6 +95,12 @@ var simvarPages2024 = []pageSpec{
 	{url: base2024SimVars + "Miscellaneous_Variables.htm", category: "Miscellaneous Variables"},
 	// ── Environment variables ─────────────────────────────────────────────────
 	{url: base2024Root + "Environment_Variables.htm", category: "Environment"},
+	// ── GPS variables (deprecated in MSFS 2024) ───────────────────────────────
+	{url: base2024GPS + "Airports.htm", category: "GPS", gpsVar: true, deprecated: true, deprecatedReason: "GPS variables are deprecated in MSFS 2024"},
+	{url: base2024GPS + "Intersections.htm", category: "GPS", gpsVar: true, deprecated: true, deprecatedReason: "GPS variables are deprecated in MSFS 2024"},
+	{url: base2024GPS + "NDB_VOR.htm", category: "GPS", gpsVar: true, deprecated: true, deprecatedReason: "GPS variables are deprecated in MSFS 2024"},
+	{url: base2024GPS + "Flightplans.htm", category: "GPS", gpsVar: true, deprecated: true, deprecatedReason: "GPS variables are deprecated in MSFS 2024"},
+	{url: base2024GPS + "Miscellaneous.htm", category: "GPS", gpsVar: true, deprecated: true, deprecatedReason: "GPS variables are deprecated in MSFS 2024"},
 }
 
 var eventPages2020 = []pageSpec{
@@ -428,7 +445,12 @@ func scrapeSimVars(s *Scraper, pages []pageSpec, ver, outDir string, dryRun bool
 			log.Printf("simvars %s: fetch %s: %v", ver, p.url, err)
 			continue
 		}
-		vars, err := ParseSimVarPage(htmlBytes, ver, p.url)
+		var vars []corpus.SimVar
+		if p.gpsVar {
+			vars, err = ParseGPSVarPage(htmlBytes, ver, p.url, p.deprecated, p.deprecatedReason)
+		} else {
+			vars, err = ParseSimVarPage(htmlBytes, ver, p.url)
+		}
 		if err != nil {
 			log.Printf("simvars %s: parse %s: %v", ver, p.url, err)
 			continue

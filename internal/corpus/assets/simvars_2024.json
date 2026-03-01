@@ -1,5 +1,5 @@
 {
-  "scraped_at": "2026-03-01T12:21:09.1841828Z",
+  "scraped_at": "2026-03-01T13:02:44.4232091Z",
   "sdk_version": "2024",
   "simvars": [
     {
@@ -6680,6 +6680,6444 @@
         "2024"
       ],
       "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Environment_Variables.htm"
+    },
+    {
+      "name": "WaypointAirportICAO",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "WaypointAirportIdent",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "WaypointAirportKind",
+      "description": "",
+      "units": [
+        "Enum: UNKNOWN_KIND_AIRPORT (0) HARD_SURFACE_AIRPORT (1) SOFT_SURFACE_AIRPORT (2) WATER_SURFACE_AIRPORT (3) HELIPAD_AIRPORT (4) PRIVATE_AIRPORT (5)"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "WaypointAirportLongestRunwayDirection",
+      "description": "",
+      "units": [
+        "Degrees"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "WaypointAirportType",
+      "description": "",
+      "units": [
+        "Enum: UNKNOWN_TYPE_AIRPORT (0) PUBLIC_TYPE_AIRPORT (1) MILITARY_TYPE_AIRPORT (2) PRIVATE_TYPE_AIRPORT (3)"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "WaypointAirportName",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "WaypointAirportCity",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "WaypointAirportRegion",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "WaypointAirportLatitude",
+      "description": "",
+      "units": [
+        "Degrees"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "WaypointAirportLongitude",
+      "description": "",
+      "units": [
+        "Degrees"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "WaypointAirportElevation",
+      "description": "",
+      "units": [
+        "Meters"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "WaypointAirportFuel1",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "WaypointAirportFuel2",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "WaypointAirportRadarCoverage",
+      "description": "",
+      "units": [
+        "Enum: UNKNOWN (0) NO (1) YES (2)"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "WaypointAirportAirspace",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "WaypointAirportTowered",
+      "description": "",
+      "units": [
+        "Boolean"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "WaypointAirportCurrentFrequency",
+      "description": "",
+      "units": [
+        "Hz"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "WaypointAirportSelectedFrequencyIndex",
+      "description": "",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "WaypointAirportSelectedFrequencyValue",
+      "description": "",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "WaypointAirportFrequenciesNumber",
+      "description": "",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "WaypointAirportFrequencyName",
+      "description": "",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "WaypointAirportFrequencyLimit",
+      "description": "",
+      "units": [
+        "Enum: NO_LIMIT (0) RX_ONLY (1) TX_ONLY (2) PART_TIME (3)"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "WaypointAirportFrequencyValue",
+      "description": "",
+      "units": [
+        "Hz"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "WaypointAirportFrequencyType",
+      "description": "",
+      "units": [
+        "Enum: UNKNOWN (0) COM (1) NAV (2) ADF (3)"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "WaypointAirportCurrentRunway",
+      "description": "",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "WaypointAirportRunwaysNumber",
+      "description": "",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "WaypointAirportRunwayLatitude",
+      "description": "",
+      "units": [
+        "Degrees"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "WaypointAirportRunwayLongitude",
+      "description": "",
+      "units": [
+        "Degrees"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "WaypointAirportRunwayElevation",
+      "description": "",
+      "units": [
+        "Meters"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "WaypointAirportRunwayDirection",
+      "description": "",
+      "units": [
+        "Degrees"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "WaypointAirportRunwayDesignation",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "WaypointAirportRunwayLength",
+      "description": "",
+      "units": [
+        "Meters"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "WaypointAirportRunwayWidth",
+      "description": "",
+      "units": [
+        "Meters"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "WaypointAirportRunwaySurface",
+      "description": "",
+      "units": [
+        "Enum: UNKNOWN (0) CONCRETE (1) ASPHALT (2) GRASS (101) TURF (102) DIRT (103) CORAL (104) GRAVEL (105) OIL_TREATED (106) STEEL (107) BITUMINUS (108) BRICK (109) MACADAM (110) PLANKS (111) SAND (112) SHALE (113) TARMAC (114) SNOW (115) ICE (116) WATER (201)0"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "WaypointAirportRunwayLighting",
+      "description": "",
+      "units": [
+        "Enum: UNKNOWN (0) NONE (1) PART_TIME (2) FULL_TIME (3) FREQUENCY (4)"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "WaypointAirportBestApproachEnum",
+      "description": "",
+      "units": [
+        "Enum: UNKNOWN (0) VFR (1) HEL (2) TACAN (3) NDB (4) LORAN (5) RNAV (6) VOR (7) GPS (8) SDF (9) LDA (10) LOC (11) MLS (12) ILS (13)"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "WaypointAirportBestApproach",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "WaypointAirportCurrentApproach",
+      "description": "",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "WaypointAirportSelectedApproach",
+      "description": "",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "WaypointAirportApproachesNumber",
+      "description": "",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "WaypointAirportApproachName",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "WaypointAirportApproachGps",
+      "description": "",
+      "units": [
+        "Boolean"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "WaypointAirportApproachTransitionsNumber",
+      "description": "",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "WaypointAirportApproachCurrentTransition",
+      "description": "",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "WaypointAirportApproachSelectedTransition",
+      "description": "",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "WaypointAirportApproachTransitionName",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "WaypointAirportApproachTransitionLatitude",
+      "description": "",
+      "units": [
+        "Degrees"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "WaypointAirportApproachTransitionLongitude",
+      "description": "",
+      "units": [
+        "Degrees"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "WaypointAirportApproachTransitionSize",
+      "description": "",
+      "units": [
+        "Meters"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "WaypointAirportApproachCurrentLeg",
+      "description": "",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "WaypointAirportApproachNumberLegs",
+      "description": "",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "WaypointAirportApproachCurrentLegIcao",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "WaypointAirportApproachCurrentLegType",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "WaypointAirportApproachCurrentLegBearing",
+      "description": "",
+      "units": [
+        "Degrees"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "WaypointAirportApproachCurrentLegDistance",
+      "description": "",
+      "units": [
+        "Meters"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "WaypointAirportApproachCurrentLegIsMinutes",
+      "description": "",
+      "units": [
+        "Boolean"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "WaypointAirportDeparturesNumber",
+      "description": "",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "WaypointAirportCurrentDeparture",
+      "description": "",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "WaypointAirportDepartureName",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "WaypointAirportDepartureWaypointsNumber",
+      "description": "",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "WaypointAirportDepartureCurrentWaypoint",
+      "description": "",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "WaypointAirportDepartureWaypointICAO",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "WaypointAirportArrivalsNumber",
+      "description": "",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "WaypointAirportCurrentArrival",
+      "description": "",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "WaypointAirportArrivalName",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "WaypointAirportArrivalWaypointsNumber",
+      "description": "",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "WaypointAirportArrivalCurrentWaypoint",
+      "description": "",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "WaypointAirportArrivalWaypointICAO",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "NearestAirportMaximumItems",
+      "description": "",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "NearestAirportMaximumDistance",
+      "description": "",
+      "units": [
+        "Meters"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "NearestAirportItemsNumber",
+      "description": "",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "NearestAirportCurrentLine",
+      "description": "",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "NearestAirportCurrentICAO",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "NearestAirportCurrentIdent",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "NearestAirportCurrentFrequency",
+      "description": "",
+      "units": [
+        "Hz"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "NearestAirportCurrentFrequencyName",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "NearestAirportCurrentFuel1",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "NearestAirportCurrentFuel2",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "NearestAirportCurrentAirportKind",
+      "description": "",
+      "units": [
+        "Enum: UNKNOWN_KIND_AIRPORT (0) HARD_SURFACE_AIRPORT (1) SOFT_SURFACE_AIRPORT (2) WATER_SURFACE_AIRPORT (3) HELIPAD_AIRPORT (4) PRIVATE_AIRPORT (5)"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "NearestAirportCurrentLongestAirportDirection",
+      "description": "",
+      "units": [
+        "Meters"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "NearestAirportCurrentDistance",
+      "description": "",
+      "units": [
+        "Meters"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "NearestAirportCurrentTrueBearing",
+      "description": "",
+      "units": [
+        "Degrees"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "NearestAirportCurrentBestApproachEnum",
+      "description": "",
+      "units": [
+        "Enum: UNKNOWN (0) VFR (1) HEL (2) TACAN (3) NDB (4) LORAN (5) RNAV (6) VOR (7) GPS (8) SDF (9) LDA (10) LOC (11) MLS (12) ILS (13)"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "NearestAirportCurrentBestApproach",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "NearestAirportCurrentComFrequencyName",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "NearestAirportCurrentComFrequencyValue",
+      "description": "",
+      "units": [
+        "Hz"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "NearestAirportCurrentLongestRunwayLength",
+      "description": "",
+      "units": [
+        "Meters"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "NearestAirportCurrentApproach",
+      "description": "",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "NearestAirportCurrentApproachName",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "NearestAirportCurrentTowered",
+      "description": "",
+      "units": [
+        "Boolean"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "NearestAirportCurrentAirportLatitude",
+      "description": "",
+      "units": [
+        "Degrees"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "NearestAirportCurrentAirportLongitude",
+      "description": "",
+      "units": [
+        "Degrees"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "NearestAirportCurrentDeparture",
+      "description": "",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "NearestAirportDeparturesNumber",
+      "description": "",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "NearestAirportDepartureName",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "NearestAirportDepartureWaypointsNumber",
+      "description": "",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "NearestAirportDepartureCurrentWaypoint",
+      "description": "",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "NearestAirportDepartureWaypointICAO",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "NearestAirportSelected",
+      "description": "",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "NearestAirportSelectedAirportName",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "NearestAirportSelectedLatitude",
+      "description": "",
+      "units": [
+        "Degrees"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "NearestAirportSelectedLongitude",
+      "description": "",
+      "units": [
+        "Degrees"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "NearestAirportSelectedNumberFrequencies",
+      "description": "",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "NearestAirportSelectedApproachIndex",
+      "description": "",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "NearestAirportSelectedNumberApproaches",
+      "description": "",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "NearestAirportSelectedAirportRunwaysNumber",
+      "description": "",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "NearestAirportSelectedRunwayDesignation",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "NearestAirportSelectedRunwayLength",
+      "description": "",
+      "units": [
+        "Meters"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "NearestAirportSelectedRunwayWidth",
+      "description": "",
+      "units": [
+        "Meters"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "NearestAirportSelectedRunwaySurface",
+      "description": "",
+      "units": [
+        "Enum: UNKNOWN (0) CONCRETE (1) ASPHALT (2) GRASS (101) TURF (102) DIRT (103) CORAL (104) GRAVEL (105) OIL_TREATED (106) STEEL (107) BITUMINUS (108) BRICK (109) MACADAM (110) PLANKS (111) SAND (112) SHALE (113) TARMAC (114) SNOW (115) ICE (116) WATER (201)"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "NearestAirportSelectedAirportCity",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "NearestAirportSelectedAirportElevation",
+      "description": "",
+      "units": [
+        "Meters"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "NearestAirportSelectedRunway",
+      "description": "",
+      "units": [
+        "Numbers"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "NearestAirportSelectedFrequencyValue",
+      "description": "",
+      "units": [
+        "Hz"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "NearestAirportSelectedFrequencyIndex",
+      "description": "",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "NearestAirportSelectedAirportLatitude",
+      "description": "",
+      "units": [
+        "Degrees"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "NearestAirportSelectedAirportLongitude",
+      "description": "",
+      "units": [
+        "Degrees"
+      ],
+      "settable": false,
+      "category": "AIRPORTS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Airports.htm"
+    },
+    {
+      "name": "WaypointIntersectionICAO",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "INTERSECTIONS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Intersections.htm"
+    },
+    {
+      "name": "WaypointIntersectionIdent",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "INTERSECTIONS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Intersections.htm"
+    },
+    {
+      "name": "WaypointIntersectionCity",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "INTERSECTIONS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Intersections.htm"
+    },
+    {
+      "name": "WaypointIntersectionRegion",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "INTERSECTIONS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Intersections.htm"
+    },
+    {
+      "name": "WaypointIntersectionLatitude",
+      "description": "",
+      "units": [
+        "Degrees"
+      ],
+      "settable": false,
+      "category": "INTERSECTIONS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Intersections.htm"
+    },
+    {
+      "name": "WaypointIntersectionLongitude",
+      "description": "",
+      "units": [
+        "Degrees"
+      ],
+      "settable": false,
+      "category": "INTERSECTIONS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Intersections.htm"
+    },
+    {
+      "name": "WaypointIntersectionType",
+      "description": "",
+      "units": [
+        "Enum: UNKNOWN (0) NAMED (1) UNNAMED (2) VOR (3) NDB (4) OFFROUTE (5) IAF (6) FAF (7)"
+      ],
+      "settable": false,
+      "category": "INTERSECTIONS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Intersections.htm"
+    },
+    {
+      "name": "WaypointIntersectionNearestVorIdent",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "INTERSECTIONS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Intersections.htm"
+    },
+    {
+      "name": "WaypointIntersectionNearestVorFrequency",
+      "description": "",
+      "units": [
+        "Hz"
+      ],
+      "settable": false,
+      "category": "INTERSECTIONS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Intersections.htm"
+    },
+    {
+      "name": "WaypointIntersectionNearestVorType",
+      "description": "",
+      "units": [
+        "Enum: UNKNOWN (0) VOR (1) VOR_DME (2) DME (3) TACAN (4) VORTAC (5) ILS (6) VOT (7)"
+      ],
+      "settable": false,
+      "category": "INTERSECTIONS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Intersections.htm"
+    },
+    {
+      "name": "WaypointIntersectionNearestVorTrueRadial",
+      "description": "",
+      "units": [
+        "Degrees"
+      ],
+      "settable": false,
+      "category": "INTERSECTIONS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Intersections.htm"
+    },
+    {
+      "name": "WaypointIntersectionNearestVorMagneticRadial",
+      "description": "",
+      "units": [
+        "Degrees"
+      ],
+      "settable": false,
+      "category": "INTERSECTIONS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Intersections.htm"
+    },
+    {
+      "name": "WaypointIntersectionNearestVorDistance",
+      "description": "",
+      "units": [
+        "Meters"
+      ],
+      "settable": false,
+      "category": "INTERSECTIONS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Intersections.htm"
+    },
+    {
+      "name": "WaypointIntersectionRouteNumber",
+      "description": "",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "INTERSECTIONS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Intersections.htm"
+    },
+    {
+      "name": "WaypointIntersectionCurrentRoute",
+      "description": "",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "INTERSECTIONS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Intersections.htm"
+    },
+    {
+      "name": "WaypointIntersectionRouteName",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "INTERSECTIONS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Intersections.htm"
+    },
+    {
+      "name": "WaypointIntersectionRoutePrevIcao",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "INTERSECTIONS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Intersections.htm"
+    },
+    {
+      "name": "WaypointIntersectionRouteNextIcao",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "INTERSECTIONS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Intersections.htm"
+    },
+    {
+      "name": "NearestIntersectionCurrentLatitude",
+      "description": "",
+      "units": [
+        "Degrees"
+      ],
+      "settable": false,
+      "category": "INTERSECTIONS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Intersections.htm"
+    },
+    {
+      "name": "NearestIntersectionCurrentLongitude",
+      "description": "",
+      "units": [
+        "Degrees"
+      ],
+      "settable": false,
+      "category": "INTERSECTIONS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Intersections.htm"
+    },
+    {
+      "name": "NearestIntersectionMaximumItems",
+      "description": "",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "INTERSECTIONS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Intersections.htm"
+    },
+    {
+      "name": "NearestIntersectionMaximumDistance",
+      "description": "",
+      "units": [
+        "Meters"
+      ],
+      "settable": false,
+      "category": "INTERSECTIONS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Intersections.htm"
+    },
+    {
+      "name": "NearestIntersectionCurrentFilter",
+      "description": "",
+      "units": [
+        "Enum: UNKNOWN (0) NAMED (1) UNNAMED (2) VOR (3) NDB (4) OFFROUTE (5) IAF (6) FAF (7)"
+      ],
+      "settable": false,
+      "category": "INTERSECTIONS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Intersections.htm"
+    },
+    {
+      "name": "NearestIntersectionAddIntersectionType",
+      "description": "",
+      "units": null,
+      "settable": false,
+      "category": "INTERSECTIONS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Intersections.htm"
+    },
+    {
+      "name": "NearestIntersectionRemoveIntersectionType",
+      "description": "",
+      "units": null,
+      "settable": false,
+      "category": "INTERSECTIONS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Intersections.htm"
+    },
+    {
+      "name": "NearestIntersectionSetDefaultFilter",
+      "description": "",
+      "units": null,
+      "settable": false,
+      "category": "INTERSECTIONS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Intersections.htm"
+    },
+    {
+      "name": "NearestIntersectionItemsNumber",
+      "description": "",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "INTERSECTIONS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Intersections.htm"
+    },
+    {
+      "name": "NearestIntersectionCurrentLine",
+      "description": "",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "INTERSECTIONS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Intersections.htm"
+    },
+    {
+      "name": "NearestIntersectionCurrentIntersectionLatitude",
+      "description": "",
+      "units": [
+        "Degrees"
+      ],
+      "settable": false,
+      "category": "INTERSECTIONS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Intersections.htm"
+    },
+    {
+      "name": "NearestIntersectionCurrentIntersectionLongitude",
+      "description": "",
+      "units": [
+        "Degrees"
+      ],
+      "settable": false,
+      "category": "INTERSECTIONS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Intersections.htm"
+    },
+    {
+      "name": "NearestIntersectionCurrentICAO",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "INTERSECTIONS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Intersections.htm"
+    },
+    {
+      "name": "NearestIntersectionCurrentIdent",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "INTERSECTIONS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Intersections.htm"
+    },
+    {
+      "name": "NearestIntersectionCurrentType",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "INTERSECTIONS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Intersections.htm"
+    },
+    {
+      "name": "NearestIntersectionCurrentDistance",
+      "description": "",
+      "units": [
+        "Meters"
+      ],
+      "settable": false,
+      "category": "INTERSECTIONS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Intersections.htm"
+    },
+    {
+      "name": "NearestIntersectionCurrentTrueBearing",
+      "description": "",
+      "units": [
+        "Degrees"
+      ],
+      "settable": false,
+      "category": "INTERSECTIONS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Intersections.htm"
+    },
+    {
+      "name": "NearestIntersectionSelectedIntersection",
+      "description": "",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "INTERSECTIONS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Intersections.htm"
+    },
+    {
+      "name": "NearestIntersectionSelectedIntLatitude",
+      "description": "",
+      "units": [
+        "Degrees"
+      ],
+      "settable": false,
+      "category": "INTERSECTIONS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Intersections.htm"
+    },
+    {
+      "name": "NearestIntersectionSelectedIntLongitude",
+      "description": "",
+      "units": [
+        "Degrees"
+      ],
+      "settable": false,
+      "category": "INTERSECTIONS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Intersections.htm"
+    },
+    {
+      "name": "NearestIntersectionSelectedRefVorId",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "INTERSECTIONS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Intersections.htm"
+    },
+    {
+      "name": "NearestIntersectionSelectedRefVorType",
+      "description": "",
+      "units": [
+        "Enum: UNKNOWN (0) VOR (1) VOR_DME (2) DME (3) TACAN (4) VORTAC (5) ILS (6) VOT (7)"
+      ],
+      "settable": false,
+      "category": "INTERSECTIONS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Intersections.htm"
+    },
+    {
+      "name": "NearestIntersectionSelectedRefVorFrequency",
+      "description": "",
+      "units": [
+        "Hz"
+      ],
+      "settable": false,
+      "category": "INTERSECTIONS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Intersections.htm"
+    },
+    {
+      "name": "NearestIntersectionSelectedRefVorTrueRadial",
+      "description": "",
+      "units": [
+        "Degrees"
+      ],
+      "settable": false,
+      "category": "INTERSECTIONS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Intersections.htm"
+    },
+    {
+      "name": "NearestIntersectionSelectedRefVorMagneticRadial",
+      "description": "",
+      "units": [
+        "Degrees"
+      ],
+      "settable": false,
+      "category": "INTERSECTIONS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Intersections.htm"
+    },
+    {
+      "name": "NearestIntersectionSelectedRefVorDistance",
+      "description": "",
+      "units": [
+        "Meters"
+      ],
+      "settable": false,
+      "category": "INTERSECTIONS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Intersections.htm"
+    },
+    {
+      "name": "NearestIntersectionCurrentRouteNumber",
+      "description": "",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "INTERSECTIONS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Intersections.htm"
+    },
+    {
+      "name": "NearestIntersectionCurrentCurrentRoute",
+      "description": "",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "INTERSECTIONS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Intersections.htm"
+    },
+    {
+      "name": "NearestIntersectionCurrentRouteName",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "INTERSECTIONS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Intersections.htm"
+    },
+    {
+      "name": "NearestIntersectionCurrentRoutePrevIcao",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "INTERSECTIONS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Intersections.htm"
+    },
+    {
+      "name": "NearestIntersectionCurrentRouteNextIcao",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "INTERSECTIONS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Intersections.htm"
+    },
+    {
+      "name": "WaypointNdbICAO",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "NDB / VOR",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/NDB_VOR.htm"
+    },
+    {
+      "name": "WaypointNdbIdent",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "NDB / VOR",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/NDB_VOR.htm"
+    },
+    {
+      "name": "WaypointNdbType",
+      "description": "",
+      "units": [
+        "Enum: UNKNOWN (0) COMPASS_POINT (1) MH (2) H (3) HH (4)"
+      ],
+      "settable": false,
+      "category": "NDB / VOR",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/NDB_VOR.htm"
+    },
+    {
+      "name": "WaypointNdbName",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "NDB / VOR",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/NDB_VOR.htm"
+    },
+    {
+      "name": "WaypointNdbCity",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "NDB / VOR",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/NDB_VOR.htm"
+    },
+    {
+      "name": "WaypointNdbRegion",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "NDB / VOR",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/NDB_VOR.htm"
+    },
+    {
+      "name": "WaypointNdbLatitude",
+      "description": "",
+      "units": [
+        "Degrees"
+      ],
+      "settable": false,
+      "category": "NDB / VOR",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/NDB_VOR.htm"
+    },
+    {
+      "name": "WaypointNdbLongitude",
+      "description": "",
+      "units": [
+        "Degrees"
+      ],
+      "settable": false,
+      "category": "NDB / VOR",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/NDB_VOR.htm"
+    },
+    {
+      "name": "WaypointNdbElevation",
+      "description": "",
+      "units": [
+        "Meters"
+      ],
+      "settable": false,
+      "category": "NDB / VOR",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/NDB_VOR.htm"
+    },
+    {
+      "name": "WaypointNdbFrequency",
+      "description": "",
+      "units": [
+        "Hz"
+      ],
+      "settable": false,
+      "category": "NDB / VOR",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/NDB_VOR.htm"
+    },
+    {
+      "name": "WaypointNdbWeatherBroadcast",
+      "description": "",
+      "units": [
+        "Enum: UNKNOWN (0) NO (1) YES (2)"
+      ],
+      "settable": false,
+      "category": "NDB / VOR",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/NDB_VOR.htm"
+    },
+    {
+      "name": "WaypointNdbMagneticVariation",
+      "description": "",
+      "units": [
+        "Degrees"
+      ],
+      "settable": false,
+      "category": "NDB / VOR",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/NDB_VOR.htm"
+    },
+    {
+      "name": "WaypointNdbNearestAirportId",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "NDB / VOR",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/NDB_VOR.htm"
+    },
+    {
+      "name": "WaypointNdbNearestAirportLongestRunwayDirection",
+      "description": "",
+      "units": [
+        "Degrees"
+      ],
+      "settable": false,
+      "category": "NDB / VOR",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/NDB_VOR.htm"
+    },
+    {
+      "name": "WaypointNdbNearestAirportKind",
+      "description": "",
+      "units": [
+        "Enum: UNKNOWN_KIND_AIRPORT (0) HARD_SURFACE_AIRPORT (1) SOFT_SURFACE_AIRPORT (2) WATER_SURFACE_AIRPORT (3) HELIPAD_AIRPORT (4) PRIVATE_AIRPORT (5)"
+      ],
+      "settable": false,
+      "category": "NDB / VOR",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/NDB_VOR.htm"
+    },
+    {
+      "name": "WaypointNdbNearestAirportBearing",
+      "description": "",
+      "units": [
+        "Degrees"
+      ],
+      "settable": false,
+      "category": "NDB / VOR",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/NDB_VOR.htm"
+    },
+    {
+      "name": "WaypointNdbNearestAirportDistance",
+      "description": "",
+      "units": [
+        "Meters"
+      ],
+      "settable": false,
+      "category": "NDB / VOR",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/NDB_VOR.htm"
+    },
+    {
+      "name": "NearestNdbCurrentLatitude",
+      "description": "",
+      "units": [
+        "Degrees"
+      ],
+      "settable": false,
+      "category": "NDB / VOR",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/NDB_VOR.htm"
+    },
+    {
+      "name": "NearestNdbCurrentLongitude",
+      "description": "",
+      "units": [
+        "Degrees"
+      ],
+      "settable": false,
+      "category": "NDB / VOR",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/NDB_VOR.htm"
+    },
+    {
+      "name": "NearestNdbMaximumItems",
+      "description": "",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "NDB / VOR",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/NDB_VOR.htm"
+    },
+    {
+      "name": "NearestNdbMaximumDistance",
+      "description": "",
+      "units": [
+        "Meters"
+      ],
+      "settable": false,
+      "category": "NDB / VOR",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/NDB_VOR.htm"
+    },
+    {
+      "name": "NearestNdbItemsNumber",
+      "description": "",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "NDB / VOR",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/NDB_VOR.htm"
+    },
+    {
+      "name": "NearestNdbCurrentLine",
+      "description": "",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "NDB / VOR",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/NDB_VOR.htm"
+    },
+    {
+      "name": "NearestNdbCurrentNdbLatitude",
+      "description": "",
+      "units": [
+        "Degrees"
+      ],
+      "settable": false,
+      "category": "NDB / VOR",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/NDB_VOR.htm"
+    },
+    {
+      "name": "NearestNdbCurrentNdbLongitude",
+      "description": "",
+      "units": [
+        "Degrees"
+      ],
+      "settable": false,
+      "category": "NDB / VOR",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/NDB_VOR.htm"
+    },
+    {
+      "name": "NearestNdbCurrentICAO",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "NDB / VOR",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/NDB_VOR.htm"
+    },
+    {
+      "name": "NearestNdbCurrentIdent",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "NDB / VOR",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/NDB_VOR.htm"
+    },
+    {
+      "name": "NearestNdbCurrentType",
+      "description": "",
+      "units": [
+        "Enum: UNKNOWN (0) COMPASS_POINT (1) MH (2) H (3) HH (4)"
+      ],
+      "settable": false,
+      "category": "NDB / VOR",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/NDB_VOR.htm"
+    },
+    {
+      "name": "NearestNdbCurrentFrequency",
+      "description": "",
+      "units": [
+        "Hz"
+      ],
+      "settable": false,
+      "category": "NDB / VOR",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/NDB_VOR.htm"
+    },
+    {
+      "name": "NearestNdbCurrentDistance",
+      "description": "",
+      "units": [
+        "Meters"
+      ],
+      "settable": false,
+      "category": "NDB / VOR",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/NDB_VOR.htm"
+    },
+    {
+      "name": "NearestNdbCurrentTrueBearing",
+      "description": "",
+      "units": [
+        "Degrees"
+      ],
+      "settable": false,
+      "category": "NDB / VOR",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/NDB_VOR.htm"
+    },
+    {
+      "name": "NearestNdbSelectedNdb",
+      "description": "",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "NDB / VOR",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/NDB_VOR.htm"
+    },
+    {
+      "name": "NearestNdbSelectedNdbLatitude",
+      "description": "",
+      "units": [
+        "Degrees"
+      ],
+      "settable": false,
+      "category": "NDB / VOR",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/NDB_VOR.htm"
+    },
+    {
+      "name": "NearestNdbSelectedNdbLongitude",
+      "description": "",
+      "units": [
+        "Degrees"
+      ],
+      "settable": false,
+      "category": "NDB / VOR",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/NDB_VOR.htm"
+    },
+    {
+      "name": "NearestNdbSelectedNdbName",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "NDB / VOR",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/NDB_VOR.htm"
+    },
+    {
+      "name": "NearestNdbSelectedNdbCity",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "NDB / VOR",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/NDB_VOR.htm"
+    },
+    {
+      "name": "NearestNdbSelectedNdbType",
+      "description": "",
+      "units": [
+        "Meters"
+      ],
+      "settable": false,
+      "category": "NDB / VOR",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/NDB_VOR.htm"
+    },
+    {
+      "name": "NearestNdbSelectedNdbFrequency",
+      "description": "",
+      "units": [
+        "Hz"
+      ],
+      "settable": false,
+      "category": "NDB / VOR",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/NDB_VOR.htm"
+    },
+    {
+      "name": "WaypointVorICAO",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "NDB / VOR",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/NDB_VOR.htm"
+    },
+    {
+      "name": "WaypointVorIdent",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "NDB / VOR",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/NDB_VOR.htm"
+    },
+    {
+      "name": "WaypointVorType",
+      "description": "",
+      "units": [
+        "Enum: UNKNOWN (0) VOR (1) VOR_DME (2) DME (3) TACAN (4) VORTAC (5) ILS (6) VOT (7)"
+      ],
+      "settable": false,
+      "category": "NDB / VOR",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/NDB_VOR.htm"
+    },
+    {
+      "name": "WaypointVorClass",
+      "description": "",
+      "units": [
+        "Enum: UNKNOWN (0) TERMINAL (1) LOW_ALT (2) HIGH_ALT (3) ILS (4) VOT (5)"
+      ],
+      "settable": false,
+      "category": "NDB / VOR",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/NDB_VOR.htm"
+    },
+    {
+      "name": "WaypointVorName",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "NDB / VOR",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/NDB_VOR.htm"
+    },
+    {
+      "name": "WaypointVorCity",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "NDB / VOR",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/NDB_VOR.htm"
+    },
+    {
+      "name": "WaypointVorRegion",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "NDB / VOR",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/NDB_VOR.htm"
+    },
+    {
+      "name": "WaypointVorLatitude",
+      "description": "",
+      "units": [
+        "Degrees"
+      ],
+      "settable": false,
+      "category": "NDB / VOR",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/NDB_VOR.htm"
+    },
+    {
+      "name": "WaypointVorLongitude",
+      "description": "",
+      "units": [
+        "Degrees"
+      ],
+      "settable": false,
+      "category": "NDB / VOR",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/NDB_VOR.htm"
+    },
+    {
+      "name": "WaypointVorElevation",
+      "description": "",
+      "units": [
+        "Meters"
+      ],
+      "settable": false,
+      "category": "NDB / VOR",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/NDB_VOR.htm"
+    },
+    {
+      "name": "WaypointVorFrequency",
+      "description": "",
+      "units": [
+        "Hz"
+      ],
+      "settable": false,
+      "category": "NDB / VOR",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/NDB_VOR.htm"
+    },
+    {
+      "name": "WaypointVorWeatherBroadcast",
+      "description": "",
+      "units": [
+        "Enum: UNKNOWN (0) NO (1) YES (2)"
+      ],
+      "settable": false,
+      "category": "NDB / VOR",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/NDB_VOR.htm"
+    },
+    {
+      "name": "WaypointVorMagneticVariation",
+      "description": "",
+      "units": [
+        "Degrees"
+      ],
+      "settable": false,
+      "category": "NDB / VOR",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/NDB_VOR.htm"
+    },
+    {
+      "name": "WaypointVorNearestAirportId",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "NDB / VOR",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/NDB_VOR.htm"
+    },
+    {
+      "name": "WaypointVorNearestAirportLongestRunwayDirection",
+      "description": "",
+      "units": [
+        "Degrees"
+      ],
+      "settable": false,
+      "category": "NDB / VOR",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/NDB_VOR.htm"
+    },
+    {
+      "name": "WaypointVorNearestAirportKind",
+      "description": "",
+      "units": [
+        "Enum: UNKNOWN_KIND_AIRPORT (0) HARD_SURFACE_AIRPORT (1) SOFT_SURFACE_AIRPORT (2) WATER_SURFACE_AIRPORT (3) HELIPAD_AIRPORT (4) PRIVATE_AIRPORT (5)"
+      ],
+      "settable": false,
+      "category": "NDB / VOR",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/NDB_VOR.htm"
+    },
+    {
+      "name": "WaypointVorNearestAirportBearing",
+      "description": "",
+      "units": [
+        "Degrees"
+      ],
+      "settable": false,
+      "category": "NDB / VOR",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/NDB_VOR.htm"
+    },
+    {
+      "name": "WaypointVorNearestAirportDistance",
+      "description": "",
+      "units": [
+        "Meters"
+      ],
+      "settable": false,
+      "category": "NDB / VOR",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/NDB_VOR.htm"
+    },
+    {
+      "name": "NearestVorCurrentLatitude",
+      "description": "",
+      "units": [
+        "Degrees"
+      ],
+      "settable": false,
+      "category": "NDB / VOR",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/NDB_VOR.htm"
+    },
+    {
+      "name": "NearestVorCurrentLongitude",
+      "description": "",
+      "units": [
+        "Degrees"
+      ],
+      "settable": false,
+      "category": "NDB / VOR",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/NDB_VOR.htm"
+    },
+    {
+      "name": "NearestVorMaximumItems",
+      "description": "",
+      "units": [
+        "Numbers"
+      ],
+      "settable": false,
+      "category": "NDB / VOR",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/NDB_VOR.htm"
+    },
+    {
+      "name": "NearestVorMaximumDistance",
+      "description": "",
+      "units": [
+        "Meters"
+      ],
+      "settable": false,
+      "category": "NDB / VOR",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/NDB_VOR.htm"
+    },
+    {
+      "name": "NearestVorCurrentFilter",
+      "description": "",
+      "units": [
+        "Enum: UNKNOWN (0) NAMED (1) UNNAMED (2) VOR (3) NDB (4) OFFROUTE (5) IAF (6) FAF (7)"
+      ],
+      "settable": false,
+      "category": "NDB / VOR",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/NDB_VOR.htm"
+    },
+    {
+      "name": "NearestVorAddVorType",
+      "description": "",
+      "units": null,
+      "settable": false,
+      "category": "NDB / VOR",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/NDB_VOR.htm"
+    },
+    {
+      "name": "NearestVorRemoveVorType",
+      "description": "",
+      "units": null,
+      "settable": false,
+      "category": "NDB / VOR",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/NDB_VOR.htm"
+    },
+    {
+      "name": "NearestVorSetDefaultFilter",
+      "description": "",
+      "units": null,
+      "settable": false,
+      "category": "NDB / VOR",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/NDB_VOR.htm"
+    },
+    {
+      "name": "NearestVorItemsNumber",
+      "description": "",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "NDB / VOR",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/NDB_VOR.htm"
+    },
+    {
+      "name": "NearestVorCurrentLine",
+      "description": "",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "NDB / VOR",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/NDB_VOR.htm"
+    },
+    {
+      "name": "NearestVorCurrentVorLatitude",
+      "description": "",
+      "units": [
+        "Degrees"
+      ],
+      "settable": false,
+      "category": "NDB / VOR",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/NDB_VOR.htm"
+    },
+    {
+      "name": "NearestVorCurrentVorLongitude",
+      "description": "",
+      "units": [
+        "Degrees"
+      ],
+      "settable": false,
+      "category": "NDB / VOR",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/NDB_VOR.htm"
+    },
+    {
+      "name": "NearestVorCurrentICAO",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "NDB / VOR",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/NDB_VOR.htm"
+    },
+    {
+      "name": "NearestVorCurrentIdent",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "NDB / VOR",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/NDB_VOR.htm"
+    },
+    {
+      "name": "NearestVorCurrentType",
+      "description": "",
+      "units": [
+        "Enum: UNKNOWN (0) VOR (1) VOR_DME (2) DME (3) TACAN (4) VORTAC (5) ILS (6) VOT (7)"
+      ],
+      "settable": false,
+      "category": "NDB / VOR",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/NDB_VOR.htm"
+    },
+    {
+      "name": "NearestVorCurrentFrequency",
+      "description": "",
+      "units": [
+        "Hz"
+      ],
+      "settable": false,
+      "category": "NDB / VOR",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/NDB_VOR.htm"
+    },
+    {
+      "name": "NearestVorCurrentDistance",
+      "description": "",
+      "units": [
+        "Meters"
+      ],
+      "settable": false,
+      "category": "NDB / VOR",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/NDB_VOR.htm"
+    },
+    {
+      "name": "NearestVorCurrentTrueBearing",
+      "description": "",
+      "units": [
+        "Degrees"
+      ],
+      "settable": false,
+      "category": "NDB / VOR",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/NDB_VOR.htm"
+    },
+    {
+      "name": "NearestVorSelectedVor",
+      "description": "",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "NDB / VOR",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/NDB_VOR.htm"
+    },
+    {
+      "name": "NearestVorSelectedVorLatitude",
+      "description": "",
+      "units": [
+        "Degrees"
+      ],
+      "settable": false,
+      "category": "NDB / VOR",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/NDB_VOR.htm"
+    },
+    {
+      "name": "NearestVorSelectedVorLongitude",
+      "description": "",
+      "units": [
+        "Degrees"
+      ],
+      "settable": false,
+      "category": "NDB / VOR",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/NDB_VOR.htm"
+    },
+    {
+      "name": "NearestVorSelectedVorName",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "NDB / VOR",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/NDB_VOR.htm"
+    },
+    {
+      "name": "NearestVorSelectedVorCity",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "NDB / VOR",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/NDB_VOR.htm"
+    },
+    {
+      "name": "NearestVorSelectedVorType",
+      "description": "",
+      "units": [
+        "Enum: UNKNOWN (0) VOR (1) VOR_DME (2) DME (3) TACAN (4) VORTAC (5) ILS (6) VOT (7)"
+      ],
+      "settable": false,
+      "category": "NDB / VOR",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/NDB_VOR.htm"
+    },
+    {
+      "name": "NearestVorSelectedVorFrequency",
+      "description": "",
+      "units": [
+        "Hz"
+      ],
+      "settable": false,
+      "category": "NDB / VOR",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/NDB_VOR.htm"
+    },
+    {
+      "name": "NearestVorSelectedVorMagneticVariation",
+      "description": "",
+      "units": [
+        "Degrees"
+      ],
+      "settable": false,
+      "category": "NDB / VOR",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/NDB_VOR.htm"
+    },
+    {
+      "name": "FlightPlanTitle",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "FLIGHTPLANS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Flightplans.htm"
+    },
+    {
+      "name": "FlightPlanDescription",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "FLIGHTPLANS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Flightplans.htm"
+    },
+    {
+      "name": "FlightPlanIsActiveFlightPlan",
+      "description": "",
+      "units": [
+        "Boolean"
+      ],
+      "settable": false,
+      "category": "FLIGHTPLANS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Flightplans.htm"
+    },
+    {
+      "name": "FlightPlanIsLoadedApproach",
+      "description": "",
+      "units": [
+        "Boolean"
+      ],
+      "settable": false,
+      "category": "FLIGHTPLANS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Flightplans.htm"
+    },
+    {
+      "name": "FlightPlanIsActiveApproach",
+      "description": "",
+      "units": [
+        "Boolean"
+      ],
+      "settable": false,
+      "category": "FLIGHTPLANS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Flightplans.htm"
+    },
+    {
+      "name": "FlightPlanIsActiveWaypoint",
+      "description": "",
+      "units": [
+        "Boolean"
+      ],
+      "settable": false,
+      "category": "FLIGHTPLANS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Flightplans.htm"
+    },
+    {
+      "name": "FlightPlanIsDirectTo",
+      "description": "",
+      "units": [
+        "Boolean"
+      ],
+      "settable": false,
+      "category": "FLIGHTPLANS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Flightplans.htm"
+    },
+    {
+      "name": "FlightPlanDirectToWaypoint",
+      "description": "",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "FLIGHTPLANS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Flightplans.htm"
+    },
+    {
+      "name": "FlightPlanActiveWaypoint",
+      "description": "",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "FLIGHTPLANS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Flightplans.htm"
+    },
+    {
+      "name": "FlightPlanActiveApproachWaypoint",
+      "description": "",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "FLIGHTPLANS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Flightplans.htm"
+    },
+    {
+      "name": "FlightPlanIsActiveWaypointLocked",
+      "description": "",
+      "units": [
+        "Boolean"
+      ],
+      "settable": false,
+      "category": "FLIGHTPLANS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Flightplans.htm"
+    },
+    {
+      "name": "FlightPlanWaypointsNumber",
+      "description": "",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "FLIGHTPLANS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Flightplans.htm"
+    },
+    {
+      "name": "FlightPlanRouteType",
+      "description": "",
+      "units": [
+        "Enum: DIRECT (0) VOR (1) LOWALT (2) HIGHALT (3)"
+      ],
+      "settable": false,
+      "category": "FLIGHTPLANS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Flightplans.htm"
+    },
+    {
+      "name": "FlightPlanFlightPlanType",
+      "description": "",
+      "units": [
+        "Enum: NONE (0) VFR (1) IFR (2)"
+      ],
+      "settable": false,
+      "category": "FLIGHTPLANS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Flightplans.htm"
+    },
+    {
+      "name": "FlightPlanCruisingAltitude",
+      "description": "",
+      "units": [
+        "Meters"
+      ],
+      "settable": false,
+      "category": "FLIGHTPLANS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Flightplans.htm"
+    },
+    {
+      "name": "FlightPlanDirectToDestination",
+      "description": "",
+      "units": [
+        "Boolean"
+      ],
+      "settable": false,
+      "category": "FLIGHTPLANS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Flightplans.htm"
+    },
+    {
+      "name": "FlightPlanCancelDirectTo",
+      "description": "",
+      "units": [
+        "Boolean"
+      ],
+      "settable": false,
+      "category": "FLIGHTPLANS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Flightplans.htm"
+    },
+    {
+      "name": "FlightPlanDepartureAirportIdent",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "FLIGHTPLANS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Flightplans.htm"
+    },
+    {
+      "name": "FlightPlanDepartureName",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "FLIGHTPLANS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Flightplans.htm"
+    },
+    {
+      "name": "FlightPlanDepartureLatitude",
+      "description": "",
+      "units": [
+        "Degrees"
+      ],
+      "settable": false,
+      "category": "FLIGHTPLANS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Flightplans.htm"
+    },
+    {
+      "name": "FlightPlanDepartureLongitude",
+      "description": "",
+      "units": [
+        "Degrees"
+      ],
+      "settable": false,
+      "category": "FLIGHTPLANS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Flightplans.htm"
+    },
+    {
+      "name": "FlightPlanDepartureAltitude",
+      "description": "",
+      "units": [
+        "Meters"
+      ],
+      "settable": false,
+      "category": "FLIGHTPLANS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Flightplans.htm"
+    },
+    {
+      "name": "FlightPlanDestinationAirportident",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "FLIGHTPLANS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Flightplans.htm"
+    },
+    {
+      "name": "FlightPlanDestinationName",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "FLIGHTPLANS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Flightplans.htm"
+    },
+    {
+      "name": "FlightPlanDestinationLatitude",
+      "description": "",
+      "units": [
+        "Degrees"
+      ],
+      "settable": false,
+      "category": "FLIGHTPLANS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Flightplans.htm"
+    },
+    {
+      "name": "FlightPlanDestinationLongitude",
+      "description": "",
+      "units": [
+        "Degrees"
+      ],
+      "settable": false,
+      "category": "FLIGHTPLANS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Flightplans.htm"
+    },
+    {
+      "name": "FlightPlanDestinationAltitude",
+      "description": "",
+      "units": [
+        "Meters"
+      ],
+      "settable": false,
+      "category": "FLIGHTPLANS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Flightplans.htm"
+    },
+    {
+      "name": "FlightPlanAlternateAirportIdent",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "FLIGHTPLANS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Flightplans.htm"
+    },
+    {
+      "name": "FlightPlanAlternateName",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "FLIGHTPLANS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Flightplans.htm"
+    },
+    {
+      "name": "FlightPlanAlternateLatitude",
+      "description": "",
+      "units": [
+        "Degrees"
+      ],
+      "settable": false,
+      "category": "FLIGHTPLANS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Flightplans.htm"
+    },
+    {
+      "name": "FlightPlanAlternateLongitude",
+      "description": "",
+      "units": [
+        "Degrees"
+      ],
+      "settable": false,
+      "category": "FLIGHTPLANS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Flightplans.htm"
+    },
+    {
+      "name": "FlightPlanAlternateAltitude",
+      "description": "",
+      "units": [
+        "Meters"
+      ],
+      "settable": false,
+      "category": "FLIGHTPLANS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Flightplans.htm"
+    },
+    {
+      "name": "FlightPlanNewApproachAirport",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "FLIGHTPLANS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Flightplans.htm"
+    },
+    {
+      "name": "FlightPlanNewApproachApproach",
+      "description": "",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "FLIGHTPLANS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Flightplans.htm"
+    },
+    {
+      "name": "FlightPlanNewApproachTransition",
+      "description": "",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "FLIGHTPLANS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Flightplans.htm"
+    },
+    {
+      "name": "FlightPlanNewApproachMissed",
+      "description": "",
+      "units": [
+        "Boolean"
+      ],
+      "settable": false,
+      "category": "FLIGHTPLANS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Flightplans.htm"
+    },
+    {
+      "name": "FlightPlanNewApproachAddInitialLeg",
+      "description": "",
+      "units": [
+        "Enum: GPS_APPROACH_LOAD_ONLY (1) GPS_APPROACH_LOAD_ACTIVATE (2) GPS_APPROACH_ACTIVATE_VECTORS (3)"
+      ],
+      "settable": false,
+      "category": "FLIGHTPLANS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Flightplans.htm"
+    },
+    {
+      "name": "FlightPlanLoadApproach",
+      "description": "",
+      "units": [
+        "Boolean"
+      ],
+      "settable": false,
+      "category": "FLIGHTPLANS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Flightplans.htm"
+    },
+    {
+      "name": "FlightPlanApproachWaypointType",
+      "description": "",
+      "units": [
+        "Enum: NONE (0) FIX (1) PROC_TURN_LEFT (2) PROC_TURN_RIGHT (3) DME_ARC_LEFT (4) DME_ARC_RIGHT (5) HOLDING_LEFT (6) HOLDING_RIGHT (7) DISTANCE (8) ALTITUDE (9) MANUAL_SEQ (10) VECTORS_TO_FINAL (11)"
+      ],
+      "settable": false,
+      "category": "FLIGHTPLANS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Flightplans.htm"
+    },
+    {
+      "name": "FlightPlanApproachMode",
+      "description": "",
+      "units": [
+        "Enum: NONE (0) TRANSITION (1) FINAL (2) MISSED (3)"
+      ],
+      "settable": false,
+      "category": "FLIGHTPLANS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Flightplans.htm"
+    },
+    {
+      "name": "FlightPlanApproachSegmentType",
+      "description": "",
+      "units": [
+        "Enum: SEGMENT_LINE (0) SEGMENT_ARC_CW (1) SEGMENT_ARC_CCW (2)"
+      ],
+      "settable": false,
+      "category": "FLIGHTPLANS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Flightplans.htm"
+    },
+    {
+      "name": "FlightPlanApproachSegmentDistance",
+      "description": "",
+      "units": [
+        "Meters"
+      ],
+      "settable": false,
+      "category": "FLIGHTPLANS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Flightplans.htm"
+    },
+    {
+      "name": "FlightPlanApproachSegmentLength",
+      "description": "",
+      "units": [
+        "Meters"
+      ],
+      "settable": false,
+      "category": "FLIGHTPLANS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Flightplans.htm"
+    },
+    {
+      "name": "FlightPlanApproachIsWaypointRunway",
+      "description": "",
+      "units": [
+        "Boolean"
+      ],
+      "settable": false,
+      "category": "FLIGHTPLANS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Flightplans.htm"
+    },
+    {
+      "name": "FlightPlanApproachAirportIdent",
+      "description": "",
+      "units": [
+        "Runway"
+      ],
+      "settable": false,
+      "category": "FLIGHTPLANS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Flightplans.htm"
+    },
+    {
+      "name": "FlightPlanApproachIndex",
+      "description": "",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "FLIGHTPLANS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Flightplans.htm"
+    },
+    {
+      "name": "FlightPlanApproachName",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "FLIGHTPLANS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Flightplans.htm"
+    },
+    {
+      "name": "FlightPlanApproachTransitionIndex",
+      "description": "",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "FLIGHTPLANS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Flightplans.htm"
+    },
+    {
+      "name": "FlightPlanApproachTransitionName",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "FLIGHTPLANS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Flightplans.htm"
+    },
+    {
+      "name": "FlightPlanIsApproachFinal",
+      "description": "",
+      "units": [
+        "Boolean"
+      ],
+      "settable": false,
+      "category": "FLIGHTPLANS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Flightplans.htm"
+    },
+    {
+      "name": "FlightPlanIsApproachMissed",
+      "description": "",
+      "units": [
+        "Boolean"
+      ],
+      "settable": false,
+      "category": "FLIGHTPLANS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Flightplans.htm"
+    },
+    {
+      "name": "FlightPlanActiveApproachWaypoint",
+      "description": "",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "FLIGHTPLANS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Flightplans.htm"
+    },
+    {
+      "name": "FlightPlanApproachWaypointsNumber",
+      "description": "",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "FLIGHTPLANS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Flightplans.htm"
+    },
+    {
+      "name": "FlightPlanApproachType",
+      "description": "",
+      "units": [
+        "Enum: UNKNOWN (0) VFR (1) HEL (2) TACAN (3) NDB (4) LORAN (5) RNAV (6) VOR (7) GPS (8) SDF (9) LDA (10) LOC (11) MLS (12) ILS (13)"
+      ],
+      "settable": false,
+      "category": "FLIGHTPLANS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Flightplans.htm"
+    },
+    {
+      "name": "FlightPlanAddWaypoint",
+      "description": "",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "FLIGHTPLANS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Flightplans.htm"
+    },
+    {
+      "name": "FlightPlanDeleteWaypoint",
+      "description": "",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "FLIGHTPLANS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Flightplans.htm"
+    },
+    {
+      "name": "FlightPlanWaypointIndex",
+      "description": "",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "FLIGHTPLANS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Flightplans.htm"
+    },
+    {
+      "name": "FlightPlanWaypointLatitude",
+      "description": "",
+      "units": [
+        "Degrees"
+      ],
+      "settable": false,
+      "category": "FLIGHTPLANS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Flightplans.htm"
+    },
+    {
+      "name": "FlightPlanWaypointLongitude",
+      "description": "",
+      "units": [
+        "Degrees"
+      ],
+      "settable": false,
+      "category": "FLIGHTPLANS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Flightplans.htm"
+    },
+    {
+      "name": "FlightPlanWaypointAltitude",
+      "description": "",
+      "units": [
+        "Meters"
+      ],
+      "settable": false,
+      "category": "FLIGHTPLANS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Flightplans.htm"
+    },
+    {
+      "name": "FlightPlanWaypointICAO",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "FLIGHTPLANS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Flightplans.htm"
+    },
+    {
+      "name": "FlightPlanWaypointIdent",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "FLIGHTPLANS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Flightplans.htm"
+    },
+    {
+      "name": "FlightPlanWaypointAirwayIdent",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "FLIGHTPLANS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Flightplans.htm"
+    },
+    {
+      "name": "FlightPlanWaypointType",
+      "description": "",
+      "units": [
+        "Enum: NONE (0) AIRPORT (1) INTERSECTION (2) VOR (3) NDB (4) USER (5) ATC (6)"
+      ],
+      "settable": false,
+      "category": "FLIGHTPLANS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Flightplans.htm"
+    },
+    {
+      "name": "FlightPlanWaypointMinAltitude",
+      "description": "",
+      "units": [
+        "Meters"
+      ],
+      "settable": false,
+      "category": "FLIGHTPLANS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Flightplans.htm"
+    },
+    {
+      "name": "FlightPlanWaypointFrequency",
+      "description": "",
+      "units": [
+        "Hz"
+      ],
+      "settable": false,
+      "category": "FLIGHTPLANS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Flightplans.htm"
+    },
+    {
+      "name": "FlightPlanWaypointMagneticHeading",
+      "description": "",
+      "units": [
+        "Degrees"
+      ],
+      "settable": false,
+      "category": "FLIGHTPLANS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Flightplans.htm"
+    },
+    {
+      "name": "FlightPlanWaypointSpeedEstimate",
+      "description": "",
+      "units": [
+        "Meters per Second"
+      ],
+      "settable": false,
+      "category": "FLIGHTPLANS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Flightplans.htm"
+    },
+    {
+      "name": "FlightPlanWaypointDistance",
+      "description": "",
+      "units": [
+        "Meters"
+      ],
+      "settable": false,
+      "category": "FLIGHTPLANS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Flightplans.htm"
+    },
+    {
+      "name": "FlightPlanWaypointDistanceTotal",
+      "description": "",
+      "units": [
+        "Meters"
+      ],
+      "settable": false,
+      "category": "FLIGHTPLANS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Flightplans.htm"
+    },
+    {
+      "name": "FlightPlanWaypointDistanceRemaining",
+      "description": "",
+      "units": [
+        "Meters"
+      ],
+      "settable": false,
+      "category": "FLIGHTPLANS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Flightplans.htm"
+    },
+    {
+      "name": "FlightPlanWaypointRemainingDistance",
+      "description": "",
+      "units": [
+        "Meters"
+      ],
+      "settable": false,
+      "category": "FLIGHTPLANS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Flightplans.htm"
+    },
+    {
+      "name": "FlightPlanWaypointRemainingTotalDistance",
+      "description": "",
+      "units": [
+        "Meters"
+      ],
+      "settable": false,
+      "category": "FLIGHTPLANS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Flightplans.htm"
+    },
+    {
+      "name": "FlightPlanWaypointTimeZoneDeviation",
+      "description": "",
+      "units": [
+        "Seconds"
+      ],
+      "settable": false,
+      "category": "FLIGHTPLANS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Flightplans.htm"
+    },
+    {
+      "name": "FlightPlanWaypointETE",
+      "description": "",
+      "units": [
+        "Seconds"
+      ],
+      "settable": false,
+      "category": "FLIGHTPLANS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Flightplans.htm"
+    },
+    {
+      "name": "FlightPlanWaypointET",
+      "description": "",
+      "units": [
+        "Seconds"
+      ],
+      "settable": false,
+      "category": "FLIGHTPLANS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Flightplans.htm"
+    },
+    {
+      "name": "FlightPlanWaypointATE",
+      "description": "",
+      "units": [
+        "Seconds"
+      ],
+      "settable": false,
+      "category": "FLIGHTPLANS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Flightplans.htm"
+    },
+    {
+      "name": "FlightPlanWaypointAT",
+      "description": "",
+      "units": [
+        "Seconds"
+      ],
+      "settable": false,
+      "category": "FLIGHTPLANS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Flightplans.htm"
+    },
+    {
+      "name": "FlightPlanWaypointEstimatedTimeRemaining",
+      "description": "",
+      "units": [
+        "Seconds"
+      ],
+      "settable": false,
+      "category": "FLIGHTPLANS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Flightplans.htm"
+    },
+    {
+      "name": "FlightPlanWaypointETA",
+      "description": "",
+      "units": [
+        "Seconds"
+      ],
+      "settable": false,
+      "category": "FLIGHTPLANS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Flightplans.htm"
+    },
+    {
+      "name": "FlightPlanWaypointFuelRemainedAtArrival",
+      "description": "",
+      "units": [
+        "Gallons"
+      ],
+      "settable": false,
+      "category": "FLIGHTPLANS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Flightplans.htm"
+    },
+    {
+      "name": "FlightPlanWaypointEstimatedFuelConsumption",
+      "description": "",
+      "units": [
+        "Gallons"
+      ],
+      "settable": false,
+      "category": "FLIGHTPLANS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Flightplans.htm"
+    },
+    {
+      "name": "FlightPlanWaypointActualFuelConsumption",
+      "description": "",
+      "units": [
+        "Gallons"
+      ],
+      "settable": false,
+      "category": "FLIGHTPLANS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Flightplans.htm"
+    },
+    {
+      "name": "FlightPlanWaypointApproachIndex",
+      "description": "",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "FLIGHTPLANS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Flightplans.htm"
+    },
+    {
+      "name": "FlightPlanWaypointApproachType",
+      "description": "",
+      "units": [
+        "Enum: NONE (0) FIX (1) PROC_TURN_LEFT (2) PROC_TURN_RIGHT (3) DME_ARC_LEFT (4) DME_ARC_RIGHT (5) HOLDING_LEFT (6) HOLDING_RIGHT (7) DISTANCE (8) ALTITUDE (9) MANUAL_SEQ (10) VECTORS_TO_FINAL (11)"
+      ],
+      "settable": false,
+      "category": "FLIGHTPLANS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Flightplans.htm"
+    },
+    {
+      "name": "FlightPlanWaypointApproachMode",
+      "description": "",
+      "units": [
+        "Enum: NONE (0) TRANSITION (1) FINAL (2) MISSED (3)"
+      ],
+      "settable": false,
+      "category": "FLIGHTPLANS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Flightplans.htm"
+    },
+    {
+      "name": "FlightPlanWaypointApproachName",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "FLIGHTPLANS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Flightplans.htm"
+    },
+    {
+      "name": "FlightPlanWaypointApproachICAO",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "FLIGHTPLANS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Flightplans.htm"
+    },
+    {
+      "name": "FlightPlanWaypointApproachLatitude",
+      "description": "",
+      "units": [
+        "Degrees"
+      ],
+      "settable": false,
+      "category": "FLIGHTPLANS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Flightplans.htm"
+    },
+    {
+      "name": "FlightPlanWaypointApproachLongitude",
+      "description": "",
+      "units": [
+        "Degrees"
+      ],
+      "settable": false,
+      "category": "FLIGHTPLANS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Flightplans.htm"
+    },
+    {
+      "name": "FlightPlanWaypointApproachAltitude",
+      "description": "",
+      "units": [
+        "Meters"
+      ],
+      "settable": false,
+      "category": "FLIGHTPLANS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Flightplans.htm"
+    },
+    {
+      "name": "FlightPlanWaypointApproachTarget",
+      "description": "",
+      "units": [
+        "Meters"
+      ],
+      "settable": false,
+      "category": "FLIGHTPLANS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Flightplans.htm"
+    },
+    {
+      "name": "FlightPlanWaypointApproachLegDistance",
+      "description": "",
+      "units": [
+        "Meters"
+      ],
+      "settable": false,
+      "category": "FLIGHTPLANS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Flightplans.htm"
+    },
+    {
+      "name": "FlightPlanWaypointApproachLegTotalDistance",
+      "description": "",
+      "units": [
+        "Meters"
+      ],
+      "settable": false,
+      "category": "FLIGHTPLANS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Flightplans.htm"
+    },
+    {
+      "name": "FlightPlanWaypointApproachLegFromDistance",
+      "description": "",
+      "units": [
+        "Meters"
+      ],
+      "settable": false,
+      "category": "FLIGHTPLANS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Flightplans.htm"
+    },
+    {
+      "name": "FlightPlanWaypointApproachRemainingDistance",
+      "description": "",
+      "units": [
+        "Meters"
+      ],
+      "settable": false,
+      "category": "FLIGHTPLANS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Flightplans.htm"
+    },
+    {
+      "name": "FlightPlanWaypointApproachRemainingTotalDistance",
+      "description": "",
+      "units": [
+        "Meters"
+      ],
+      "settable": false,
+      "category": "FLIGHTPLANS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Flightplans.htm"
+    },
+    {
+      "name": "FlightPlanWaypointApproachCourse",
+      "description": "",
+      "units": [
+        "Degrees"
+      ],
+      "settable": false,
+      "category": "FLIGHTPLANS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Flightplans.htm"
+    },
+    {
+      "name": "FlightPlanNewWaypointLatitude",
+      "description": "",
+      "units": [
+        "Degrees"
+      ],
+      "settable": false,
+      "category": "FLIGHTPLANS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Flightplans.htm"
+    },
+    {
+      "name": "FlightPlanNewWaypointLongitude",
+      "description": "",
+      "units": [
+        "Degrees"
+      ],
+      "settable": false,
+      "category": "FLIGHTPLANS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Flightplans.htm"
+    },
+    {
+      "name": "FlightPlanNewWaypointIdent",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "FLIGHTPLANS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Flightplans.htm"
+    },
+    {
+      "name": "FlightPlanNewWaypointICAO",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "FLIGHTPLANS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Flightplans.htm"
+    },
+    {
+      "name": "NearestAirspaceCurrentLatitude",
+      "description": "",
+      "units": [
+        "Degrees"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Miscellaneous.htm"
+    },
+    {
+      "name": "NearestAirspaceCurrentLongitude",
+      "description": "",
+      "units": [
+        "Degrees"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Miscellaneous.htm"
+    },
+    {
+      "name": "NearestAirspaceCurrentAltitude",
+      "description": "",
+      "units": [
+        "Meters"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Miscellaneous.htm"
+    },
+    {
+      "name": "NearestAirspaceTrueGroundTrack",
+      "description": "",
+      "units": [
+        "Degrees"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Miscellaneous.htm"
+    },
+    {
+      "name": "NearestAirspaceGroundSpeed",
+      "description": "",
+      "units": [
+        "Meters per Second"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Miscellaneous.htm"
+    },
+    {
+      "name": "NearestAirspaceNearDistance",
+      "description": "",
+      "units": [
+        "Meters"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Miscellaneous.htm"
+    },
+    {
+      "name": "NearestAirspaceNearAltitude",
+      "description": "",
+      "units": [
+        "Meters"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Miscellaneous.htm"
+    },
+    {
+      "name": "NearestAirspaceAheadTime",
+      "description": "",
+      "units": [
+        "Seconds"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Miscellaneous.htm"
+    },
+    {
+      "name": "NearestAirspaceQuery",
+      "description": "",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Miscellaneous.htm"
+    },
+    {
+      "name": "NearestAirspaceMaximumItems",
+      "description": "",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Miscellaneous.htm"
+    },
+    {
+      "name": "NearestAirspaceMaximumDistance",
+      "description": "",
+      "units": [
+        "Meters"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Miscellaneous.htm"
+    },
+    {
+      "name": "NearestAirspaceItemsNumber",
+      "description": "",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Miscellaneous.htm"
+    },
+    {
+      "name": "NearestAirspaceCurrentLine",
+      "description": "",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Miscellaneous.htm"
+    },
+    {
+      "name": "NearestAirspaceCurrentName",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Miscellaneous.htm"
+    },
+    {
+      "name": "NearestAirspaceCurrentType",
+      "description": "",
+      "units": [
+        "Enum: NONE (0) CENTER (1) CLASS_A (2) CLASS_B (3) CLASS_C (4) CLASS_D (5) CLASS_E (6) CLASS_F (7) CLASS_G (8) TOWER (9) CLEARANCE (10) GROUND (11) DEPARTURE (12) APPROACH (13) MOA (14) RESTRICTED (15) PROHIBITED (16) WARNING (17) ALERT (18) DANGER (19) NATIONAL_PARK (20) MODE_C (21) RADAR (22) TRAINING (23)"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Miscellaneous.htm"
+    },
+    {
+      "name": "NearestAirspaceCurrentFrequency",
+      "description": "",
+      "units": [
+        "Hz"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Miscellaneous.htm"
+    },
+    {
+      "name": "NearestAirspaceCurrentFrequencyName",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Miscellaneous.htm"
+    },
+    {
+      "name": "NearestAirspaceCurrentMinAltitude",
+      "description": "",
+      "units": [
+        "Meters"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Miscellaneous.htm"
+    },
+    {
+      "name": "NearestAirspaceCurrentMaxAltitude",
+      "description": "",
+      "units": [
+        "Meters"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Miscellaneous.htm"
+    },
+    {
+      "name": "NearestAirspaceCurrentStatus",
+      "description": "",
+      "units": [
+        "Enum: NONE (0) NEAR (1) AHEAD (2) NEAR_AHEAD (3) INSIDE (4)"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Miscellaneous.htm"
+    },
+    {
+      "name": "NearestAirspaceCurrentNearDistance",
+      "description": "",
+      "units": [
+        "Meters"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Miscellaneous.htm"
+    },
+    {
+      "name": "NearestAirspaceCurrentAheadTime",
+      "description": "",
+      "units": [
+        "Seconds"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Miscellaneous.htm"
+    },
+    {
+      "name": "MessageItemsNumber",
+      "description": "",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Miscellaneous.htm"
+    },
+    {
+      "name": "MessageCurrentLine",
+      "description": "",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Miscellaneous.htm"
+    },
+    {
+      "name": "MessageCurrentType",
+      "description": "",
+      "units": [
+        "Enum: NONE (0) NEAR (1) AHEAD (2) NEAR_AHEAD (3) INSIDE (4)"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Miscellaneous.htm"
+    },
+    {
+      "name": "NewMessagesNumber",
+      "description": "",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Miscellaneous.htm"
+    },
+    {
+      "name": "NewMessagesConfirm",
+      "description": "",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Miscellaneous.htm"
+    },
+    {
+      "name": "IcaoSearchInitialIcao",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Miscellaneous.htm"
+    },
+    {
+      "name": "IcaoSearchStartCursor",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Miscellaneous.htm"
+    },
+    {
+      "name": "IcaoSearchStopCursor",
+      "description": "",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Miscellaneous.htm"
+    },
+    {
+      "name": "IcaoSearchAdvanceCursor",
+      "description": "",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Miscellaneous.htm"
+    },
+    {
+      "name": "IcaoSearchAdvanceCharacter",
+      "description": "",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Miscellaneous.htm"
+    },
+    {
+      "name": "IcaoSearchEnterChar",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Miscellaneous.htm"
+    },
+    {
+      "name": "IcaoSearchBackupChar",
+      "description": "",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Miscellaneous.htm"
+    },
+    {
+      "name": "IcaoSearchCursorPosition",
+      "description": "",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Miscellaneous.htm"
+    },
+    {
+      "name": "IcaoSearchCurrentIdent",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Miscellaneous.htm"
+    },
+    {
+      "name": "IcaoSearchCurrentIcao",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Miscellaneous.htm"
+    },
+    {
+      "name": "IcaoSearchCurrentIcaoType",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Miscellaneous.htm"
+    },
+    {
+      "name": "IcaoSearchCurrentIcaoRegion",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Miscellaneous.htm"
+    },
+    {
+      "name": "IcaoSearchMatchedIcaosNumber",
+      "description": "",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Miscellaneous.htm"
+    },
+    {
+      "name": "IcaoSearchMatchedIcao",
+      "description": "",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Miscellaneous.htm"
+    },
+    {
+      "name": "NameSearchInitialIcao",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Miscellaneous.htm"
+    },
+    {
+      "name": "NameSearchInitialName",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Miscellaneous.htm"
+    },
+    {
+      "name": "NameSearchStartCursor",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Miscellaneous.htm"
+    },
+    {
+      "name": "NameSearchStopCursor",
+      "description": "",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Miscellaneous.htm"
+    },
+    {
+      "name": "NameSearchAdvanceCursor",
+      "description": "",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Miscellaneous.htm"
+    },
+    {
+      "name": "NameSearchAdvanceCharacter",
+      "description": "",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Miscellaneous.htm"
+    },
+    {
+      "name": "NameSearchEnterChar",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Miscellaneous.htm"
+    },
+    {
+      "name": "NameSearchBackupChar",
+      "description": "",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Miscellaneous.htm"
+    },
+    {
+      "name": "NameSearchCursorPosition",
+      "description": "",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Miscellaneous.htm"
+    },
+    {
+      "name": "NameSearchCurrentName",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Miscellaneous.htm"
+    },
+    {
+      "name": "NameSearchCurrentMatch",
+      "description": "",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Miscellaneous.htm"
+    },
+    {
+      "name": "NameSearchCurrentIcao",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Miscellaneous.htm"
+    },
+    {
+      "name": "NameSearchCurrentIcaoType",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Miscellaneous.htm"
+    },
+    {
+      "name": "NameSearchCurrentIcaoRegion",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Miscellaneous.htm"
+    },
+    {
+      "name": "FacilityICAO",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Miscellaneous.htm"
+    },
+    {
+      "name": "FacilityCode",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Miscellaneous.htm"
+    },
+    {
+      "name": "FacilityIdent",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Miscellaneous.htm"
+    },
+    {
+      "name": "FacilityValid",
+      "description": "",
+      "units": [
+        "Boolean"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Miscellaneous.htm"
+    },
+    {
+      "name": "FacilityName",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Miscellaneous.htm"
+    },
+    {
+      "name": "FacilityCity",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Miscellaneous.htm"
+    },
+    {
+      "name": "FacilityRegion",
+      "description": "",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Miscellaneous.htm"
+    },
+    {
+      "name": "FacilityLatitude",
+      "description": "",
+      "units": [
+        "Degrees"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Miscellaneous.htm"
+    },
+    {
+      "name": "FacilityLongitude",
+      "description": "",
+      "units": [
+        "Degrees"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Miscellaneous.htm"
+    },
+    {
+      "name": "FacilityMagneticVariation",
+      "description": "",
+      "units": [
+        "Degrees"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Miscellaneous.htm"
+    },
+    {
+      "name": "GeoCalcLatitude1",
+      "description": "",
+      "units": [
+        "Degrees"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Miscellaneous.htm"
+    },
+    {
+      "name": "GeoCalcLongitude1",
+      "description": "",
+      "units": [
+        "Degrees"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Miscellaneous.htm"
+    },
+    {
+      "name": "GeoCalcAzimuth1",
+      "description": "",
+      "units": [
+        "Degrees"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Miscellaneous.htm"
+    },
+    {
+      "name": "GeoCalcLatitude2",
+      "description": "",
+      "units": [
+        "Degrees"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Miscellaneous.htm"
+    },
+    {
+      "name": "GeoCalcLongitude2",
+      "description": "",
+      "units": [
+        "Degrees"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Miscellaneous.htm"
+    },
+    {
+      "name": "GeoCalcAzimuth2",
+      "description": "",
+      "units": [
+        "Degrees"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Miscellaneous.htm"
+    },
+    {
+      "name": "GeoCalcLength",
+      "description": "",
+      "units": [
+        "Meters"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Miscellaneous.htm"
+    },
+    {
+      "name": "GeoCalcCrossTrack",
+      "description": "",
+      "units": [
+        "Meters"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Miscellaneous.htm"
+    },
+    {
+      "name": "GeoCalcBearing",
+      "description": "",
+      "units": [
+        "Degrees"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Miscellaneous.htm"
+    },
+    {
+      "name": "GeoCalcDistance",
+      "description": "",
+      "units": [
+        "Meters"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Miscellaneous.htm"
+    },
+    {
+      "name": "GeoCalcIsIntersect",
+      "description": "",
+      "units": [
+        "Boolean"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Miscellaneous.htm"
+    },
+    {
+      "name": "GeoCalcIntersectionLatitude",
+      "description": "",
+      "units": [
+        "Degrees"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Miscellaneous.htm"
+    },
+    {
+      "name": "GeoCalcIntersectionLatitude",
+      "description": "",
+      "units": [
+        "Degrees"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Miscellaneous.htm"
+    },
+    {
+      "name": "GeoCalcExtrapolationLatitude",
+      "description": "",
+      "units": [
+        "Degrees"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Miscellaneous.htm"
+    },
+    {
+      "name": "GeoCalcExtrapolationLongitude",
+      "description": "",
+      "units": [
+        "Degrees"
+      ],
+      "settable": false,
+      "category": "MISCELLANEOUS",
+      "versions": [
+        "2024"
+      ],
+      "deprecated": true,
+      "deprecated_reason": "GPS variables are deprecated in MSFS 2024",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/GPSVars/Miscellaneous.htm"
     }
   ],
   "events": [],

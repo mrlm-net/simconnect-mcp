@@ -15,9 +15,33 @@ Full documentation is available at **[simconnect-mcp.mrlm.net](https://simconnec
 | M1 | Documentation fetch | `docs` | Complete |
 | M2 | Live SimConnect data | `simconnect` | Complete |
 
+## Installation
+
+### Prebuilt binaries (recommended)
+
+Download the latest release for your platform from the [GitHub Releases page](https://github.com/mrlm-net/simconnect-mcp/releases). Extract the archive and place the binary in your `PATH`.
+
+### go install
+
+```sh
+go install github.com/mrlm-net/simconnect-mcp/cmd/simconnect-mcp@latest
+```
+
+Requires Go 1.24+. The binary is installed as `simconnect-mcp`.
+
+> **Note:** The `simconnect` mode binary for Windows (CGo/SimConnect SDK) is not available via `go install` due to CGo requirements. Download the Windows release binary instead.
+
+### Build from source
+
+```sh
+git clone git@github.com:mrlm-net/simconnect-mcp.git
+cd simconnect-mcp
+go build -o simconnect-mcp ./cmd/simconnect-mcp/
+```
+
 ## Prerequisites
 
-- **Go 1.24+**
+- **Go 1.24+** (build from source or `go install` only)
 - Milestone 1 (`docs` mode) runs on any operating system — no additional prerequisites.
 - Milestone 2 (`simconnect` mode) requires:
   - **Windows 10/11 (x64)**
@@ -27,14 +51,20 @@ Full documentation is available at **[simconnect-mcp.mrlm.net](https://simconnec
 ## Quick Start
 
 ```sh
-git clone git@github.com:mrlm-net/simconnect-mcp.git
-cd simconnect-mcp
-go mod download
-
-# Run in docs mode (default, cross-platform)
-MCP_MODE=docs go run ./cmd/simconnect-mcp/
+# Run in docs mode (cross-platform)
+MCP_MODE=docs simconnect-mcp
 
 # Run in live SimConnect mode (Windows only — requires MSFS 2020 or 2024 running)
+MCP_MODE=simconnect simconnect-mcp
+```
+
+Or with `go run` from the repository root:
+
+```sh
+# docs mode
+MCP_MODE=docs go run ./cmd/simconnect-mcp/
+
+# simconnect mode (Windows only)
 MCP_MODE=simconnect go run -tags windows ./cmd/simconnect-mcp/
 ```
 
@@ -62,14 +92,15 @@ Expected output (Gin startup log):
 
 ## MCP Client Configuration
 
-Add the following to your `claude_desktop_config.json` (or equivalent MCP client config) to connect Claude Desktop to the docs server:
+Add the following to your `claude_desktop_config.json` (or equivalent MCP client config) to connect Claude Desktop to the docs server.
+
+**Using the installed binary** (recommended):
 
 ```json
 {
   "mcpServers": {
     "simconnect": {
-      "command": "go",
-      "args": ["run", "./cmd/simconnect-mcp/"],
+      "command": "simconnect-mcp",
       "env": {
         "MCP_MODE": "docs",
         "DOCS_MSFS_VERSION": "2024"
@@ -79,7 +110,23 @@ Add the following to your `claude_desktop_config.json` (or equivalent MCP client
 }
 ```
 
-The working directory must be the repository root when `go run` resolves the package path.
+**Using `go run`** (development / no binary installed):
+
+```json
+{
+  "mcpServers": {
+    "simconnect": {
+      "command": "go",
+      "args": ["run", "./cmd/simconnect-mcp/"],
+      "cwd": "/path/to/simconnect-mcp",
+      "env": {
+        "MCP_MODE": "docs",
+        "DOCS_MSFS_VERSION": "2024"
+      }
+    }
+  }
+}
+```
 
 ## Available Tools
 
@@ -150,6 +197,15 @@ Unit tests live alongside the code in `_test.go` files. Integration tests are in
 
 ## Contributing
 
-Milestone 1 development lives on the `milestone/1-docs` branch; Milestone 2 development lives on `milestone/2-simconnect`. Issues are labelled `milestone-1` or `milestone-2`.
+Development is milestone-based. Active branches:
+
+| Branch | Purpose |
+|--------|---------|
+| `main` | Stable releases |
+| `milestone/1-docs` | Documentation fetch mode (complete) |
+| `milestone/2-simconnect` | Live SimConnect mode (complete) |
+| `milestone/3-website` | Documentation website (active) |
+
+Issues are labelled `milestone-1`, `milestone-2`, `milestone-3`, etc.
 
 Browse open issues and submit bug reports or feature requests at [github.com/mrlm-net/simconnect-mcp/issues](https://github.com/mrlm-net/simconnect-mcp/issues).

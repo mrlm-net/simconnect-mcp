@@ -4,6 +4,13 @@ All notable changes to SimConnect MCP are documented here. The format follows [K
 
 Full release history with release notes is also available on the [GitHub Releases page](https://github.com/mrlm-net/simconnect-mcp/releases).
 
+## [0.1.1] - 2026-03-01
+
+### Fixed
+
+- Install command in hero no longer wraps to a second line; scrollbar hidden while scroll is preserved
+- Removed empty Unreleased section from changelog
+
 ## [0.1.0] - 2026-03-01
 
 ### Added

@@ -1,5 +1,5 @@
 {
-  "scraped_at": "2026-03-01T11:25:39.6857839Z",
+  "scraped_at": "2026-03-01T11:58:36.2536616Z",
   "sdk_version": "",
   "simvars": [],
   "events": [],
@@ -26,6 +26,96 @@
         }
       ],
       "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_RECV.htm"
+    },
+    {
+      "name": "SIMCONNECT_RECV_OPEN",
+      "description": "",
+      "fields": [
+        {
+          "name": "szApplicationName[256]",
+          "type": "",
+          "description": "Null-terminated string containing the application name."
+        },
+        {
+          "name": "dwApplicationVersionMajor",
+          "type": "",
+          "description": "Double word containing the application version major number."
+        },
+        {
+          "name": "dwApplicationVersionMinor",
+          "type": "",
+          "description": "Double word containing the application version minor number."
+        },
+        {
+          "name": "dwApplicationBuildMajor",
+          "type": "",
+          "description": "Double word containing the application build major number."
+        },
+        {
+          "name": "dwApplicationBuildMinor",
+          "type": "",
+          "description": "Double word containing the application build minor number."
+        },
+        {
+          "name": "dwSimConnectVersionMajor",
+          "type": "",
+          "description": "Double word containing the SimConnect version major number."
+        },
+        {
+          "name": "dwSimConnectVersionMinor",
+          "type": "",
+          "description": "Double word containing the SimConnect version minor number."
+        },
+        {
+          "name": "dwSimConnectBuildMajor",
+          "type": "",
+          "description": "Double word containing the SimConnect build major number."
+        },
+        {
+          "name": "dwSimConnectBuildMinor",
+          "type": "",
+          "description": "Double word containing the SimConnect build minor number."
+        },
+        {
+          "name": "dwReserved1",
+          "type": "",
+          "description": "Reserved."
+        },
+        {
+          "name": "dwReserved2",
+          "type": "",
+          "description": "Reserved."
+        }
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_RECV_OPEN.htm"
+    },
+    {
+      "name": "SIMCONNECT_RECV_QUIT",
+      "description": "",
+      "fields": null,
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_RECV_QUIT.htm"
+    },
+    {
+      "name": "SIMCONNECT_RECV_EXCEPTION",
+      "description": "",
+      "fields": [
+        {
+          "name": "dwException",
+          "type": "",
+          "description": "One member of the SIMCONNECT_EXCEPTION enumeration type, indicating which error has occurred."
+        },
+        {
+          "name": "dwSendID",
+          "type": "",
+          "description": "The ID of the packet that contained the error, see Remarks below."
+        },
+        {
+          "name": "dwIndex",
+          "type": "",
+          "description": "The index number (starting at 1) of the first parameter that caused an error. Special case: UNKNOWN_INDEX = 0."
+        }
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_RECV_EXCEPTION.htm"
     },
     {
       "name": "SIMCONNECT_RECV_SIMOBJECT_DATA",
@@ -75,26 +165,596 @@
       "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_RECV_SIMOBJECT_DATA.htm"
     },
     {
-      "name": "SIMCONNECT_RECV_EXCEPTION",
+      "name": "SIMCONNECT_RECV_SIMOBJECT_DATA_BYTYPE",
+      "description": "",
+      "fields": null,
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_RECV_SIMOBJECT_DATA_BYTYPE.htm"
+    },
+    {
+      "name": "SIMCONNECT_RECV_ASSIGNED_OBJECT_ID",
       "description": "",
       "fields": [
         {
-          "name": "dwException",
+          "name": "dwRequestID",
           "type": "",
-          "description": "One member of the SIMCONNECT_EXCEPTION enumeration type, indicating which error has occurred."
+          "description": "Double word containing the client defined request ID."
         },
         {
-          "name": "dwSendID",
+          "name": "dwObjectID",
           "type": "",
-          "description": "The ID of the packet that contained the error, see Remarks below."
-        },
-        {
-          "name": "dwIndex",
-          "type": "",
-          "description": "The index number (starting at 1) of the first parameter that caused an error. Special case: UNKNOWN_INDEX = 0."
+          "description": "Double word containing the server defined object ID."
         }
       ],
-      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_RECV_EXCEPTION.htm"
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_RECV_ASSIGNED_OBJECT_ID.htm"
+    },
+    {
+      "name": "SIMCONNECT_RECV_EVENT",
+      "description": "",
+      "fields": [
+        {
+          "name": "uGroupID",
+          "type": "",
+          "description": "The ID of the client defined group, or the special case value: UNKNOWN_GROUP (which equals DWORD_MAX)."
+        },
+        {
+          "name": "uEventID",
+          "type": "",
+          "description": "The ID of the client defined event that has been requested (such as EVENT_1 or EVENT_BRAKES)."
+        },
+        {
+          "name": "dwData",
+          "type": "",
+          "description": "This value is usually zero, but some events require further qualification. For example, joystick movement events require a movement value in addition to the notification that the joystick has been moved (see SimConnect_MapInputEventToClientEvent for more information)."
+        }
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_RECV_EVENT.htm"
+    },
+    {
+      "name": "SIMCONNECT_RECV_EVENT_FILENAME",
+      "description": "",
+      "fields": [
+        {
+          "name": "szFileName[MAX_PATH]",
+          "type": "",
+          "description": "The returned filename."
+        },
+        {
+          "name": "dwFlags",
+          "type": "",
+          "description": "Reserved, should be 0."
+        }
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_RECV_EVENT_FILENAME.htm"
+    },
+    {
+      "name": "SIMCONNECT_RECV_EVENT_FRAME",
+      "description": "",
+      "fields": [
+        {
+          "name": "fFrameRate",
+          "type": "",
+          "description": "The visual frame rate in frames per second."
+        },
+        {
+          "name": "fSimSpeed",
+          "type": "",
+          "description": "The simulation rate. For example if the simulation is running at four times normal speed - 4X - then 4.0 will be returned."
+        }
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_RECV_EVENT_FRAME.htm"
+    },
+    {
+      "name": "SIMCONNECT_RECV_EVENT_OBJECT_ADDREMOVE",
+      "description": "",
+      "fields": [
+        {
+          "name": "eObjType",
+          "type": "",
+          "description": "Specifies the type of object that was added or removed. One member of the SIMCONNECT_SIMOBJECT_TYPE enumeration."
+        }
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_RECV_EVENT_OBJECT_ADDREMOVE.htm"
+    },
+    {
+      "name": "SIMCONNECT_RECV_EVENT_RACE_END",
+      "description": "",
+      "fields": [
+        {
+          "name": "dwRacerNumber",
+          "type": "",
+          "description": "The index of the racer the results are for. Players are indexed from 0."
+        },
+        {
+          "name": "RacerData",
+          "type": "",
+          "description": "A SIMCONNECT_DATA_RACE_RESULT structure."
+        }
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_RECV_EVENT_RACE_END.htm"
+    },
+    {
+      "name": "SIMCONNECT_RECV_EVENT_RACE_LAP",
+      "description": "",
+      "fields": [
+        {
+          "name": "dwLapIndex",
+          "type": "",
+          "description": "The index of the lap the results are for. Laps are indexed from 0."
+        },
+        {
+          "name": "RacerData",
+          "type": "",
+          "description": "A SIMCONNECT_DATA_RACE_RESULT structure."
+        }
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_RECV_EVENT_RACE_LAP.htm"
+    },
+    {
+      "name": "SIMCONNECT_RECV_EVENT_MULTIPLAYER_CLIENT_STARTED",
+      "description": "",
+      "fields": null,
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_RECV_EVENT_MULTIPLAYER_CLIENT_STARTED.htm"
+    },
+    {
+      "name": "SIMCONNECT_RECV_EVENT_MULTIPLAYER_SERVER_STARTED",
+      "description": "",
+      "fields": null,
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_RECV_EVENT_MULTIPLAYER_SERVER_STARTED.htm"
+    },
+    {
+      "name": "SIMCONNECT_RECV_EVENT_MULTIPLAYER_SESSION_ENDED",
+      "description": "",
+      "fields": null,
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_RECV_EVENT_MULTIPLAYER_SESSION_ENDED.htm"
+    },
+    {
+      "name": "SIMCONNECT_RECV_CLIENT_DATA",
+      "description": "",
+      "fields": null,
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_RECV_CLIENT_DATA.htm"
+    },
+    {
+      "name": "SIMCONNECT_RECV_SYSTEM_STATE",
+      "description": "",
+      "fields": [
+        {
+          "name": "dwRequestID",
+          "type": "",
+          "description": "Double word containing the client defined request ID."
+        },
+        {
+          "name": "dwInteger",
+          "type": "",
+          "description": "Double word containing an integer, or boolean, value."
+        },
+        {
+          "name": "fFloat",
+          "type": "",
+          "description": "A float value."
+        },
+        {
+          "name": "szString",
+          "type": "",
+          "description": "Null-terminated string."
+        }
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_RECV_SYSTEM_STATE.htm"
+    },
+    {
+      "name": "SIMCONNECT_RECV_RESERVED_KEY",
+      "description": "",
+      "fields": [
+        {
+          "name": "szChoiceReserved[30]",
+          "type": "",
+          "description": "Null-terminated string containing the key that has been reserved. This will be identical to the string entered as one of the choices for the SimConnect_RequestReservedKey function."
+        },
+        {
+          "name": "szReservedKey[50]",
+          "type": "",
+          "description": "Null-terminated string containing the reserved key combination. This will be an uppercase string containing all the modifiers that apply. For example, if the client program requests \"q\", and the choice is accepted, then this parameter will contain \"TAB+Q\". If the client program requests \"Q\", then this parameter will contain \"SHIFT+TAB+Q\". This string could then appear, for example, in a dialog from the client application, informing a user of the appropriate help key."
+        }
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_RECV_RESERVED_KEY.htm"
+    },
+    {
+      "name": "SIMCONNECT_RECV_FACILITIES_LIST",
+      "description": "",
+      "fields": [
+        {
+          "name": "dwRequestID",
+          "type": "",
+          "description": "Double word containing the client defined request ID."
+        },
+        {
+          "name": "dwArraySize",
+          "type": "",
+          "description": "Double word containing the number of elements in the list that are within this packet. For example, if there are 25 airports returned in the SIMCONNECT_RECV_AIRPORT_LIST structure, then this field will contain 25, but if there are 400 airports in the list and the data is returned in two packets, then this value will contain the number of entries within each packet."
+        },
+        {
+          "name": "dwEntryNumber",
+          "type": "",
+          "description": "Double word containing the index number of this list packet. This number will be from 0 to dwOutOf - 1."
+        },
+        {
+          "name": "dwOutOf",
+          "type": "",
+          "description": "Double word containing the total number of packets used to transmit the list."
+        }
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_RECV_FACILITIES_LIST.htm"
+    },
+    {
+      "name": "SIMCONNECT_RECV_AIRPORT_LIST",
+      "description": "",
+      "fields": [
+        {
+          "name": "rgData[dwArraySize]",
+          "type": "",
+          "description": "Array of SIMCONNECT_DATA_FACILITY_AIRPORT structures."
+        }
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_RECV_AIRPORT_LIST.htm"
+    },
+    {
+      "name": "SIMCONNECT_RECV_NDB_LIST",
+      "description": "",
+      "fields": [
+        {
+          "name": "rgData[dwArraySize]",
+          "type": "",
+          "description": "Array of SIMCONNECT_DATA_FACILITY_NDB structures."
+        }
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_RECV_NDB_LIST.htm"
+    },
+    {
+      "name": "SIMCONNECT_RECV_VOR_LIST",
+      "description": "",
+      "fields": [
+        {
+          "name": "dwRequestID",
+          "type": "",
+          "description": "Double word containing the client defined request ID."
+        },
+        {
+          "name": "dwInteger",
+          "type": "",
+          "description": "Double word containing an integer, or boolean, value."
+        },
+        {
+          "name": "fFloat",
+          "type": "",
+          "description": "A float value."
+        },
+        {
+          "name": "szString",
+          "type": "",
+          "description": "Null-terminated string."
+        }
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_RECV_VOR_LIST.htm"
+    },
+    {
+      "name": "SIMCONNECT_RECV_WAYPOINT_LIST",
+      "description": "",
+      "fields": [
+        {
+          "name": "rgData[dwArraySize]",
+          "type": "",
+          "description": "Array of SIMCONNECT_DATA_FACILITY_WAYPOINT structures."
+        }
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_RECV_WAYPOINT_LIST.htm"
+    },
+    {
+      "name": "SIMCONNECT_RECV_LIST_TEMPLATE",
+      "description": "",
+      "fields": [
+        {
+          "name": "dwRequestID",
+          "type": "",
+          "description": "Double word containing the client defined request ID."
+        },
+        {
+          "name": "dwArraySize",
+          "type": "",
+          "description": "Double word containing the number of elements in the list that are within this packet. For example, if there are items returned in the structure, then this field will contain 25, but if there are 400 items in the list and the data is returned in two packets, then this value will contain the number of entries within each packet, ie: 200."
+        },
+        {
+          "name": "dwREntry",
+          "type": "",
+          "description": "Double word containing the index number of this list packet. This number will be from 0 to dwOutOf - 1."
+        },
+        {
+          "name": "dwOutOf",
+          "type": "",
+          "description": "Double word containing the total number of packets used to transmit the list."
+        }
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_RECV_LIST_TEMPLATE.htm"
+    },
+    {
+      "name": "SIMCONNECT_RECV_FACILITY_DATA",
+      "description": "",
+      "fields": [
+        {
+          "name": "UserRequestId",
+          "type": "",
+          "description": "Double word containing the client defined request ID."
+        },
+        {
+          "name": "UniqueRequestId",
+          "type": "",
+          "description": "The unique request ID, so the client can identify it."
+        },
+        {
+          "name": "ParentUniqueRequestId",
+          "type": "",
+          "description": "If the current message is about a child object, this field will contain the parent's UniqueRequestId, otherwise it will be 0."
+        },
+        {
+          "name": "Type",
+          "type": "",
+          "description": "Specifies the type of the object, will be a value from the SIMCONNECT_FACILITY_DATA_TYPE enum."
+        },
+        {
+          "name": "IsListItem",
+          "type": "",
+          "description": "If the current message is about a child object, this specifies if it is an orphan object or not."
+        },
+        {
+          "name": "ItemIndex",
+          "type": "",
+          "description": "If IsListItem is true then this specifies the index in the list."
+        },
+        {
+          "name": "ListSize",
+          "type": "",
+          "description": "If IsListItem is true, then this specifies the list size."
+        },
+        {
+          "name": "Data",
+          "type": "",
+          "description": "Buffer of data. Have to cast it to a struct which matches the definition."
+        }
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_RECV_FACILITY_DATA.htm"
+    },
+    {
+      "name": "SIMCONNECT_RECV_FACILITY_DATA_END",
+      "description": "",
+      "fields": [
+        {
+          "name": "RequestId",
+          "type": "",
+          "description": "Double word containing the client defined request ID."
+        }
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_RECV_FACILITY_DATA_END.htm"
+    },
+    {
+      "name": "SIMCONNECT_RECV_FACILITY_MINIMAL_LIST",
+      "description": "",
+      "fields": [
+        {
+          "name": "rgData[dwArraySize]",
+          "type": "",
+          "description": "Array of SIMCONNECT_FACILITY_MINIMAL structures."
+        }
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_RECV_FACILITY_MINIMAL_LIST.htm"
+    },
+    {
+      "name": "SIMCONNECT_RECV_JETWAY_DATA",
+      "description": "",
+      "fields": [
+        {
+          "name": "rgData[dwArraySize]",
+          "type": "",
+          "description": "Array of SIMCONNECT_JETWAY_DATA structures."
+        }
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_RECV_JETWAY_DATA.htm"
+    },
+    {
+      "name": "SIMCONNECT_DATA_FACILITY_AIRPORT",
+      "description": "",
+      "fields": [
+        {
+          "name": "ident",
+          "type": "",
+          "description": "The airport ICAO code."
+        },
+        {
+          "name": "region",
+          "type": "",
+          "description": "The airport region code."
+        },
+        {
+          "name": "Latitude",
+          "type": "",
+          "description": "Latitude of the airport facility."
+        },
+        {
+          "name": "Longitude",
+          "type": "",
+          "description": "Longitude of the airport facility."
+        },
+        {
+          "name": "Altitude",
+          "type": "",
+          "description": "Altitude of the facility in meters."
+        }
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_DATA_FACILITY_AIRPORT.htm"
+    },
+    {
+      "name": "SIMCONNECT_DATA_FACILITY_NDB",
+      "description": "",
+      "fields": [
+        {
+          "name": "fFrequency",
+          "type": "",
+          "description": "Frequency of the station in Hz."
+        }
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_DATA_FACILITY_NDB.htm"
+    },
+    {
+      "name": "SIMCONNECT_DATA_FACILITY_VOR",
+      "description": "",
+      "fields": [
+        {
+          "name": "Flags",
+          "type": "",
+          "description": "Flags indicating whether the other fields are valid or not. SIMCONNECT_RECV_ID_VOR_LIST_HAS_NAV_SIGNAL(0x1): Set if the station has a NAV transmitter, and if so, GlideLat, GlideLon and GlideAlt contain valid data. SIMCONNECT_RECV_ID_VOR_LIST_HAS_LOCALIZER(0x2): Set if the station transmits an ILS localizer angle, and if so fLocalizer contains valid data. SIMCONNECT_RECV_ID_VOR_LIST_HAS_GLIDE_SLOPE(0x4): Set if the station transmits an ILS approach angle, and if so fGlideSlopeAngle contains valid data. SIMCONNECT_RECV_ID_VOR_LIST_HAS_DME(0x8): Set if the station t transmits a DME signal, and if so the inherited DME fFrequency contains valid data."
+        },
+        {
+          "name": "fLocalizer",
+          "type": "",
+          "description": "The ILS localizer angle in degrees."
+        },
+        {
+          "name": "GlideLat",
+          "type": "",
+          "description": "The latitude of the glide slope transmitter in degrees."
+        },
+        {
+          "name": "GlideLon",
+          "type": "",
+          "description": "The longitude of the glide slope transmitter in degrees."
+        },
+        {
+          "name": "GlideAlt",
+          "type": "",
+          "description": "The altitude of the glide slope transmitter in degrees."
+        },
+        {
+          "name": "fGlideSlopeAngle",
+          "type": "",
+          "description": "The ILS approach angle in degrees."
+        }
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_DATA_FACILITY_VOR.htm"
+    },
+    {
+      "name": "SIMCONNECT_DATA_FACILITY_WAYPOINT",
+      "description": "",
+      "fields": [
+        {
+          "name": "fMagVar",
+          "type": "",
+          "description": "The magnetic variation of the waypoint in degrees."
+        }
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_DATA_FACILITY_WAYPOINT.htm"
+    },
+    {
+      "name": "SIMCONNECT_FACILITY_MINIMAL",
+      "description": "",
+      "fields": [
+        {
+          "name": "icao",
+          "type": "",
+          "description": "The SIMCONNECT_ICAO struct with information about the facility."
+        },
+        {
+          "name": "lla",
+          "type": "",
+          "description": "The latitude, longitude and altitude of the facility, returned as a SIMCONNECT_DATA_LATLONALT struct."
+        }
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_FACILITY_MINIMAL.htm"
+    },
+    {
+      "name": "SIMCONNECT_ICAO",
+      "description": "",
+      "fields": [
+        {
+          "name": "Ident",
+          "type": "",
+          "description": "The identity string."
+        },
+        {
+          "name": "Region",
+          "type": "",
+          "description": "The region string."
+        },
+        {
+          "name": "Airport",
+          "type": "",
+          "description": "The airport string."
+        }
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_ICAO.htm"
+    },
+    {
+      "name": "SIMCONNECT_JETWAY_DATA",
+      "description": "",
+      "fields": [
+        {
+          "name": "AirportIcao",
+          "type": "",
+          "description": "ICAO code of the airport (will be the same as the one you used to make the request)."
+        },
+        {
+          "name": "ParkingIndex",
+          "type": "",
+          "description": "Index of the parking space linked to this jetway (will be the same as the one you used to make the request)."
+        },
+        {
+          "name": "Lla",
+          "type": "",
+          "description": "Lattitude / Longitude / Altitude of the jetway, returned as a SIMCONNECT_DATA_LATLONALT struct."
+        },
+        {
+          "name": "Pbh",
+          "type": "",
+          "description": "Pitch / Bank / Heading of the jetway, returned as a SIMCONNECT_DATA_PBH struct."
+        },
+        {
+          "name": "Status",
+          "type": "",
+          "description": "The status of the jetway, which will be one of the following: 0: JETWAY_STATUS_REST 1: JETWAY_STATUS_APPROACH_OUTSIDE 2: JETWAY_STATUS_APPROACH_DOOR 3: JETWAY_STATUS_HOOD_CONNECT 4: JETWAY_STATUS_HOOD_DISCONNECT 5: JETWAY_STATUS_RETRACT_OUTSIDE 6: JETWAY_STATUS_RETRACT_HOME 7: JETWAY_STATUS_FULLY_ATTACHED"
+        },
+        {
+          "name": "Door",
+          "type": "",
+          "description": "The index of the door attached to the jetway."
+        },
+        {
+          "name": "ExitDoorRelativePos",
+          "type": "",
+          "description": "Door position relative to aircraft, returned as a SIMCONNECT_DATA_XYZ struct."
+        },
+        {
+          "name": "MainHandlePos",
+          "type": "",
+          "description": "Relative position of IK_MainHandle (world pos, in meters), returned as a SIMCONNECT_DATA_XYZ struct."
+        },
+        {
+          "name": "SecondaryHandle",
+          "type": "",
+          "description": "Relative position of IK_SecondaryHandle (world pos, in meters), returned as a SIMCONNECT_DATA_XYZ struct."
+        },
+        {
+          "name": "WheelGroundLock",
+          "type": "",
+          "description": "Relative position of IK_WheelsGroundLock (world pos, in meters), returned as a SIMCONNECT_DATA_XYZ struct"
+        },
+        {
+          "name": "JetwayObjectId",
+          "type": "",
+          "description": "ObjectId of the jetway (used by SimConnect_RequestDataOnSimObject for example)"
+        },
+        {
+          "name": "AttachedObjectId",
+          "type": "",
+          "description": "ObjectId of the object (aircraft) attached to the jetway (used by SimConnect_RequestDataOnSimObject for example)"
+        }
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_JETWAY_DATA.htm"
     },
     {
       "name": "SIMCONNECT_DATA_INITPOSITION",
@@ -164,6 +824,378 @@
         }
       ],
       "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_DATA_LATLONALT.htm"
+    },
+    {
+      "name": "SIMCONNECT_DATA_PBH",
+      "description": "",
+      "fields": [
+        {
+          "name": "Pitch",
+          "type": "",
+          "description": "The pitch in degrees."
+        },
+        {
+          "name": "Bank",
+          "type": "",
+          "description": "The bank in degrees."
+        },
+        {
+          "name": "Heading",
+          "type": "",
+          "description": "The heading in degrees."
+        }
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_DATA_PBH.htm"
+    },
+    {
+      "name": "SIMCONNECT_DATA_XYZ",
+      "description": "",
+      "fields": [
+        {
+          "name": "x",
+          "type": "",
+          "description": "The position along the x axis."
+        },
+        {
+          "name": "y",
+          "type": "",
+          "description": "The position along the y axis."
+        },
+        {
+          "name": "z",
+          "type": "",
+          "description": "The position along the z axis."
+        }
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_DATA_XYZ.htm"
+    },
+    {
+      "name": "SIMCONNECT_DATA_WAYPOINT",
+      "description": "",
+      "fields": [
+        {
+          "name": "Latitude",
+          "type": "",
+          "description": "Latitude in degrees."
+        },
+        {
+          "name": "Longitude",
+          "type": "",
+          "description": "Longitude in degrees."
+        },
+        {
+          "name": "Altitude",
+          "type": "",
+          "description": "Altitude in feet."
+        },
+        {
+          "name": "Flags",
+          "type": "",
+          "description": "Specifies the flags set for this waypoint, see SIMCONNECT_WAYPOINT_FLAGS. These flags can be OR'ed together, for example: Flags = SIMCONNECT_WAYPOINT_ON_GROUND | SIMCONNECT_WAYPOINT_REVERSE;"
+        },
+        {
+          "name": "ktsSpeed",
+          "type": "",
+          "description": "Specifies the required speed in knots. If a specific speed is required, then the SIMCONNECT_WAYPOINT_SPEED_REQUESTED flag must be set to True."
+        },
+        {
+          "name": "percentThrottle",
+          "type": "",
+          "description": "Specifies the required throttle as a percentage. If a specific throttle percentage is required, then the SIMCONNECT_WAYPOINT_THROTTLE_REQUESTED flag must be set to True."
+        }
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_DATA_WAYPOINT.htm"
+    },
+    {
+      "name": "SIMCONNECT_DATA_MARKERSTATE",
+      "description": "",
+      "fields": [
+        {
+          "name": "szMarkerName[64]",
+          "type": "",
+          "description": "Null-terminated string containing the marker name. One from the following list: Cg ModelCenter Wheel Skid Ski Float Scrape Engine Prop Eyepoint LongScale LatScale VertScale AeroCenter WingApex RefChord Datum WingTip FuelTank Forces"
+        },
+        {
+          "name": "dwMarkerState",
+          "type": "",
+          "description": "Double word containing the marker state, set to 1 for on and 0 for off."
+        }
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_DATA_MARKERSTATE.htm"
+    },
+    {
+      "name": "SIMCONNECT_DATA_RACE_RESULT",
+      "description": "",
+      "fields": [
+        {
+          "name": "dwNumberOfRacers",
+          "type": "",
+          "description": "The total number of racers."
+        },
+        {
+          "name": "MissionGUID",
+          "type": "",
+          "description": "The GUID of the mission that has been selected by the host."
+        },
+        {
+          "name": "szPlayerName[MAX_PATH]",
+          "type": "",
+          "description": "Null terminated string containing the name of the player."
+        },
+        {
+          "name": "szSessionType[MAX_PATH]",
+          "type": "",
+          "description": "Null terminated string containing the type of the multiplayer session, currently one of: \"LAN\" or \"GAMESPY\"."
+        },
+        {
+          "name": "szAircraft[MAX_PATH]",
+          "type": "",
+          "description": "Null terminated string containing the aircraft type."
+        },
+        {
+          "name": "szPlayerRole[MAX_PATH]",
+          "type": "",
+          "description": "Null terminated string containing the player's role (or name) in the mission. This string wil be filled from the Name property of the Player object in the mission file."
+        },
+        {
+          "name": "fTotalTime",
+          "type": "",
+          "description": "If this structure is a member of a SIMCONNECT_RECV_EVENT_RACE_END structure, then this contains the final race time in seconds, or 0 for DNF (Did Not Finish). If this structure is a member of a SIMCONNECT_RECV_EVENT_RACE_LAP structure, then this contains the lap time in seconds."
+        },
+        {
+          "name": "fPenaltyTime",
+          "type": "",
+          "description": "If this structure is a member of a SIMCONNECT_RECV_EVENT_RACE_END structure, then this contains the final penalty time in seconds. If this structure is a member of a SIMCONNECT_RECV_EVENT_RACE_LAP structure, then this contains the total penalty time in seconds received so far (not just for this lap)."
+        },
+        {
+          "name": "dwIsDisqualified",
+          "type": "",
+          "description": "A boolean value, 0 indicating the player has not been disqualified, non-zero indicating they have been disqualified."
+        }
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_DATA_RACE_RESULT.htm"
+    },
+    {
+      "name": "SIMCONNECT_VERSION_BASE_TYPE",
+      "description": "",
+      "fields": [
+        {
+          "name": "Major",
+          "type": "",
+          "description": "The major version number."
+        },
+        {
+          "name": "Minor",
+          "type": "",
+          "description": "The minor version number."
+        },
+        {
+          "name": "Revision",
+          "type": "",
+          "description": "The revision number."
+        },
+        {
+          "name": "Build",
+          "type": "",
+          "description": "The build ID."
+        }
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_VERSION_BASE_TYPE.htm"
+    },
+    {
+      "name": "SIMCONNECT_RECV_EVENT_EX1",
+      "description": "",
+      "fields": [
+        {
+          "name": "uGroupID",
+          "type": "",
+          "description": "The ID of the client defined group, or the special case value: UNKNOWN_GROUP (which equals DWORD_MAX)."
+        },
+        {
+          "name": "uEventID",
+          "type": "",
+          "description": "The ID of the client defined event that has been requested (such as EVENT_1 or EVENT_BRAKES)."
+        },
+        {
+          "name": "dwData to dwData",
+          "type": "",
+          "description": "Each of these 5 paramters corresponds to a parameter that was passed along with the event."
+        }
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_RECV_EVENT_EX1.htm"
+    },
+    {
+      "name": "SIMCONNECT_RECV_ENUMERATE_INPUT_EVENTS",
+      "description": "",
+      "fields": [
+        {
+          "name": "rgData[dwArraySize]",
+          "type": "",
+          "description": "Array of SIMCONNECT_INPUT_EVENT_DESCRIPTOR structures."
+        }
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_RECV_ENUMERATE_INPUT_EVENTS.htm"
+    },
+    {
+      "name": "SIMCONNECT_RECV_ENUMERATE_INPUT_EVENT_PARAMS",
+      "description": "",
+      "fields": [
+        {
+          "name": "Hash",
+          "type": "",
+          "description": "Hash ID that identifies the input event."
+        },
+        {
+          "name": "Value",
+          "type": "",
+          "description": "String that contains the values, separated by ;. Values can be: char[260] FLOAT64"
+        }
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_RECV_ENUMERATE_INPUT_EVENT_PARAMS.htm"
+    },
+    {
+      "name": "SIMCONNECT_RECV_GET_INPUT_EVENT",
+      "description": "",
+      "fields": [
+        {
+          "name": "RequestID",
+          "type": "",
+          "description": "Specifies the client defined request ID."
+        },
+        {
+          "name": "Type",
+          "type": "",
+          "description": "One member of the SIMCONNECT_INPUT_EVENT_TYPE enumeration type. This is used to cast the Value to the correct type."
+        },
+        {
+          "name": "Value",
+          "type": "",
+          "description": "The value of the requested input event, which should be cast to the correct format (float / string)."
+        }
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_RECV_GET_INPUT_EVENT.htm"
+    },
+    {
+      "name": "SIMCONNECT_RECV_SUBSCRIBE_INPUT_EVENT",
+      "description": "",
+      "fields": [
+        {
+          "name": "Hash",
+          "type": "",
+          "description": "Hash ID that will identify the subscribed input event."
+        },
+        {
+          "name": "Type",
+          "type": "",
+          "description": "One member of the SIMCONNECT_INPUT_EVENT_TYPE enumeration type. This is used to cast the Value to the correct type."
+        },
+        {
+          "name": "Value",
+          "type": "",
+          "description": "The value of the subscribed input event, which should be cast to the correct format (float / string)."
+        }
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_RECV_SUBSCRIBE_INPUT_EVENT.htm"
+    },
+    {
+      "name": "SIMCONNECT_RECV_CONTROLLERS_LIST",
+      "description": "",
+      "fields": [
+        {
+          "name": "rgData[dwArraySize]",
+          "type": "",
+          "description": "Array of SIMCONNECT_CONTROLLER_ITEM structures."
+        }
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_RECV_CONTROLLERS_LIST.htm"
+    },
+    {
+      "name": "SIMCONNECT_INPUT_EVENT_DESCRIPTOR",
+      "description": "",
+      "fields": [
+        {
+          "name": "Name",
+          "type": "",
+          "description": "The name of the Input Event."
+        },
+        {
+          "name": "Hash",
+          "type": "",
+          "description": "The hash ID for the event."
+        },
+        {
+          "name": "Type",
+          "type": "",
+          "description": "The expected datatype (from the SIMCONNECT_DATATYPE enum). Usually a FLOAT32 or STRING128."
+        },
+        {
+          "name": "NodeNames",
+          "type": "",
+          "description": "A list of the names of the nodes linked to this InputEvent, where each node name is separated by a ;."
+        }
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_INPUT_EVENT_DESCRIPTOR.htm"
+    },
+    {
+      "name": "SIMCONNECT_CONTROLLER_ITEM",
+      "description": "",
+      "fields": [
+        {
+          "name": "DeviceName",
+          "type": "",
+          "description": "A string that gives the descriptive name for the device."
+        },
+        {
+          "name": "DeviceId",
+          "type": "",
+          "description": "The device ID."
+        },
+        {
+          "name": "ProductId",
+          "type": "",
+          "description": "The product ID."
+        },
+        {
+          "name": "CompositeID",
+          "type": "",
+          "description": "ID of the USB composite device (for when devices have the same ProductId, but there are multiple recognised parts on the same device)"
+        },
+        {
+          "name": "HardwareVersion",
+          "type": "",
+          "description": "The version data for the hardware, returned as a SIMCONNECT_VERSION_BASE_TYPE struct."
+        }
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_CONTROLLER_ITEM.htm"
+    },
+    {
+      "name": "SIMCONNECT_ENUMERATE_SIMOBJECT_LIVERY",
+      "description": "",
+      "fields": [
+        {
+          "name": "AircraftTitle",
+          "type": "",
+          "description": "A string that gives the container title of a SimObject, as found in the title parameter of the aircraft.cfg file."
+        },
+        {
+          "name": "LiveryName",
+          "type": "",
+          "description": "A string that gives the name of a livery, as defined in the name parameter of the livery.cfg file."
+        }
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_ENUMERATE_SIMOBJECT_LIVERY.htm"
+    },
+    {
+      "name": "SIMCONNECT_RECV_ENUMERATE_SIMOBJECT_AND_LIVERY_LIST",
+      "description": "",
+      "fields": [
+        {
+          "name": "rgData[dwArraySize]",
+          "type": "",
+          "description": "Array of SIMCONNECT_ENUMERATE_SIMOBJECT_LIVERY structures."
+        }
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_RECV_ENUMERATE_SIMOBJECT_AND_LIVERY_LIST.htm"
     }
   ],
   "error_codes": []

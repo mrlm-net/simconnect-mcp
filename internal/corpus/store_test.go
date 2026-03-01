@@ -539,8 +539,10 @@ func TestDocStore_Search_TypeEvent(t *testing.T) {
 func TestDocStore_Search_TypeAll_MatchesMultipleCategories(t *testing.T) {
 	store := newBothStore(t)
 
-	// "simconnect" appears in function names, structure names, and error code names
-	res, err := store.Search(background, "simconnect", "all", 50)
+	// "simconnect" appears in function names, structure names, and error code names.
+	// Use a high limit (200) because all ~52 functions match "simconnect" and the
+	// search processes types in order — error_codes only appear after functions.
+	res, err := store.Search(background, "simconnect", "all", 200)
 	if err != nil {
 		t.Fatalf("Search type=all: %v", err)
 	}

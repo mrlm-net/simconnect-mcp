@@ -1,5 +1,5 @@
 {
-  "scraped_at": "2026-03-01T11:25:39.6528928Z",
+  "scraped_at": "2026-03-01T11:54:17.9736552Z",
   "sdk_version": "2024",
   "simvars": [
     {
@@ -5493,6 +5493,842 @@
         "2024"
       ],
       "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/SimVars/Aircraft_SimVars/Aircraft_System_Variables.htm"
+    },
+    {
+      "name": "COLLECTIVE POSITION",
+      "description": "N/A",
+      "units": [
+        "The position of the helicopter collective. 0 is fully up",
+        "100 fully depressed."
+      ],
+      "settable": false,
+      "category": "HELICOPTER VARIABLES",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/SimVars/Helicopter_Variables.htm"
+    },
+    {
+      "name": "VORTEX RING STATE PROTECTION ASSISTANCE IMPACT",
+      "description": "N/A",
+      "units": [
+        "Indicates how much the current collective lever position has been increased by the Vortex Ring State Protection Assistance",
+        "compared to the player's input. See Note On Helicopter Vortex Ring Protection Assistance for more information."
+      ],
+      "settable": false,
+      "category": "HELICOPTER VARIABLES",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/SimVars/Helicopter_Variables.htm"
+    },
+    {
+      "name": "CAMERA GAMEPLAY PITCH YAW",
+      "description": "[0] Index",
+      "units": [
+        "Returns either the pitch (index 0) or the yaw (index 1) of the current gameplay camera."
+      ],
+      "settable": false,
+      "category": "CAMERA VARIABLES",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/SimVars/Camera_Variables.htm"
+    },
+    {
+      "name": "CAMERA REQUEST ACTION",
+      "description": "[0] Enum",
+      "units": [
+        "This can be used to have the currently active camera perform a predefined action. Currently only 1 action is supported",
+        "but more may be added over time."
+      ],
+      "settable": false,
+      "category": "CAMERA VARIABLES",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/SimVars/Camera_Variables.htm"
+    },
+    {
+      "name": "CAMERA STATE",
+      "description": "[0] State",
+      "units": [
+        "This can be used to get or set the camera \"state\"",
+        "which will be one of the listed enum values. Note that not ALL possible enum values are shown",
+        "since some values are internal only",
+        "and some values will do nothing",
+        "but have been reserved for future expansion of the camera system. Also note that the value \"9\" is a special case",
+        "generally used only when working with in-sim panels and is used to go to the showcase cameras",
+        "defaulting to the last selected camera within this section (Drone",
+        "Fixed or Environment)."
+      ],
+      "settable": false,
+      "category": "CAMERA VARIABLES",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/SimVars/Camera_Variables.htm"
+    },
+    {
+      "name": "CAMERA SUBSTATE",
+      "description": "[0] State",
+      "units": [
+        "This variable can be used to get or set the camera \"sub-state\". The options here are generally only required when working with the in-sim panel UI. Note that the \"locked\" and \"unlocked\" state will be changed automatically if the following SimVars have their values changed: COCKPIT CAMERA HEADLOOK",
+        "CHASE_CAMERA_HEADLOOK."
+      ],
+      "settable": false,
+      "category": "CAMERA VARIABLES",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/SimVars/Camera_Variables.htm"
+    },
+    {
+      "name": "CAMERA VIEW TYPE AND INDEX",
+      "description": "[0] Index [1] State",
+      "units": [
+        "With this you can get or set both the type of view for the current camera",
+        "as well as the option index",
+        "which will be between 0 and the maximum index value (as retrieved using the CAMERA VIEW TYPE AND INDEX MAX SimVar). Supplying an index of 0 to the SimVar will get/set the type (from the selection of enum values listed)",
+        "and using an index of 1 will get/set the option index",
+        "which is an integer value. Please see the Notes On View Types And Indices section below for more information."
+      ],
+      "settable": false,
+      "category": "CAMERA VARIABLES",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/SimVars/Camera_Variables.htm"
+    },
+    {
+      "name": "CAMERA VIEW TYPE AND INDEX MAX",
+      "description": "[0] Index [1] Value",
+      "units": [
+        "This variable can get the number of option indices related to a specific camera view type. The index value supplied to the SimVar should be one of the camera view type Enum values (see CAMERA VIEW TYPE AND INDEX)",
+        "and the SimVar will return the number of options available for that camera type (counting from 1",
+        "so - for example - if the camera view type is \"Quickview\" and has 8 quickview settings",
+        "then CAMERA VIEW TYPE AND INDEX MAX:4 will return 8). Note that this value can be set after a flight has started",
+        "but it will have no effect since the number of camera options is initilaised once only and not updated (and the simulation may overwrite the value again even after setting it). Please see the Notes On View Types And Indices section below for more information."
+      ],
+      "settable": false,
+      "category": "CAMERA VARIABLES",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/SimVars/Camera_Variables.htm"
+    },
+    {
+      "name": "DIRECTORS CUT CAMERA PITCH",
+      "description": "N/A",
+      "units": [
+        "Sets the pitch of the Director's Cut camera gimbal."
+      ],
+      "settable": false,
+      "category": "CAMERA VARIABLES",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/SimVars/Camera_Variables.htm"
+    },
+    {
+      "name": "DIRECTORS CUT CAMERA YAW",
+      "description": "N/A",
+      "units": [
+        "Sets the yaw of the Director's Cut camera gimbal."
+      ],
+      "settable": false,
+      "category": "CAMERA VARIABLES",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/SimVars/Camera_Variables.htm"
+    },
+    {
+      "name": "GAMEPLAY CAMERA FOCUS",
+      "description": "[0] Enum",
+      "units": [
+        "This gets/sets the focus for the camera zoom",
+        "which can be either manual",
+        "or auto. The setting affects both the Cockpit and the External (Chase) cameras. The following SimVars can be used to get/set the level of zoom: COCKPIT CAMERA ZOOM or CHASE_CAMERA_ZOOM."
+      ],
+      "settable": false,
+      "category": "CAMERA VARIABLES",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/SimVars/Camera_Variables.htm"
+    },
+    {
+      "name": "IS CAMERA LOCKED",
+      "description": "N/A",
+      "units": [
+        "This will return whether the camera is locked (1",
+        "TRUE) or not (0",
+        "FALSE)."
+      ],
+      "settable": false,
+      "category": "CAMERA VARIABLES",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/SimVars/Camera_Variables.htm"
+    },
+    {
+      "name": "IS CAMERA RAY INTERSECT WITH NODE",
+      "description": "N/A",
+      "units": [
+        "This SimVar is used to check for a collision along a ray from the center of the user FOV and a model node. The available nodes that can be checked using this SimVar must be previously defined in the [CAMERA_RAY_NODE_COLLISION] of the cameras.cfg file. The SimVar requires a node index value between 1 and 10",
+        "corresponding to the node defined in the CFG file",
+        "and the SimVar will return 1 (TRUE) if there is a collision along the camera ray or 0 (FALSE) otherwise. You may also supply an index of 0 to perform a collision check for all defined nodes",
+        "in which case the SimVar will return 1 (TRUE) if there is a collision between the ray and any of the defined nodes. Supplying an index outside of the range of 1 to 10",
+        "or supplying an index for which no node has been defined",
+        "will return 0 (FALSE)."
+      ],
+      "settable": false,
+      "category": "CAMERA VARIABLES",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/SimVars/Camera_Variables.htm"
+    },
+    {
+      "name": "BALLOON AUTO FILL ACTIVE",
+      "description": "N/A",
+      "units": [
+        "Sets / returns whether the balloon is creating air inside to emulate fans air flow or not."
+      ],
+      "settable": false,
+      "category": "BALLOON / AIRSHIP VARIABLES",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/SimVars/Balloon_Variables.htm"
+    },
+    {
+      "name": "BALLOON FILL AMOUNT",
+      "description": "[0] Percent",
+      "units": [
+        "This is used to get / set the ratio of air within the balloon envelope from 0 (empty) to 1 (full)."
+      ],
+      "settable": false,
+      "category": "BALLOON / AIRSHIP VARIABLES",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/SimVars/Balloon_Variables.htm"
+    },
+    {
+      "name": "BALLOON GAS DENSITY",
+      "description": "N/A",
+      "units": [
+        "The density of the gas inside the balloon."
+      ],
+      "settable": false,
+      "category": "BALLOON / AIRSHIP VARIABLES",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/SimVars/Balloon_Variables.htm"
+    },
+    {
+      "name": "BALLOON GAS TEMPERATURE",
+      "description": "N/A",
+      "units": [
+        "Temperature of the gas inside a balloon."
+      ],
+      "settable": false,
+      "category": "BALLOON / AIRSHIP VARIABLES",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/SimVars/Balloon_Variables.htm"
+    },
+    {
+      "name": "BALLOON VENT OPEN VALUE",
+      "description": "[0] Percent",
+      "units": [
+        "This represents how open the \"parachute valve\" of a hot air balloon is",
+        "where 0 is fully closed and 1 is fully open."
+      ],
+      "settable": false,
+      "category": "BALLOON / AIRSHIP VARIABLES",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/SimVars/Balloon_Variables.htm"
+    },
+    {
+      "name": "BURNER FUEL FLOW RATE",
+      "description": "[0] Name (or index)",
+      "units": [
+        "The amount of fuel that is flowing through the named Burner expressed in lbs per hour."
+      ],
+      "settable": false,
+      "category": "BALLOON / AIRSHIP VARIABLES",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/SimVars/Balloon_Variables.htm"
+    },
+    {
+      "name": "BURNER HEATING POWER",
+      "description": "[0] Name (or index)",
+      "units": [
+        "This is the thermal power of the named (or indexed) Burner expressed in BTU per hour. If a value of 0 is given instead of a name (or index) then the sum total of all burners heating power will be returned."
+      ],
+      "settable": false,
+      "category": "BALLOON / AIRSHIP VARIABLES",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/SimVars/Balloon_Variables.htm"
+    },
+    {
+      "name": "BURNER PILOT LIGHT ON",
+      "description": "[0] Name (or index) [1] True / False",
+      "units": [
+        "The named (or indexed) hot air balloon Burner pilot light status",
+        "where 0 (FALSE) is off",
+        "and 1 (TRUE) is on. Note that of the burner is not receiving fuel this SimVar will revert to 0 (FALSE)",
+        "if set to 1 (TRUE)."
+      ],
+      "settable": false,
+      "category": "BALLOON / AIRSHIP VARIABLES",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/SimVars/Balloon_Variables.htm"
+    },
+    {
+      "name": "BURNER VALVE OPEN VALUE",
+      "description": "[0] Name (or index) [1] Percent",
+      "units": [
+        "This represents how open the the named (or indexed) burner Valve is",
+        "where 0 is fully closed and 1 is fully open."
+      ],
+      "settable": false,
+      "category": "BALLOON / AIRSHIP VARIABLES",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/SimVars/Balloon_Variables.htm"
+    },
+    {
+      "name": "GROUND ATTACHMENT",
+      "description": "[0] Attach Status",
+      "units": [
+        "This toggles the status of the attachment rope. When 1 (true) the balloon has an attachment rope",
+        "and when 0 (false) it does not."
+      ],
+      "settable": false,
+      "category": "BALLOON / AIRSHIP VARIABLES",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/SimVars/Balloon_Variables.htm"
+    },
+    {
+      "name": "BAGGAGELOADER ANGLE CURRENT",
+      "description": "Current angle of the baggage loader ramp, relative to the ground.",
+      "units": [
+        "Degrees"
+      ],
+      "settable": false,
+      "category": "SERVICE VARIABLES",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/SimVars/Services_Variables.htm"
+    },
+    {
+      "name": "BAGGAGELOADER ANGLE TARGET",
+      "description": "Target angle of the baggage loader ramp, relative to the ground.",
+      "units": [
+        "Degrees"
+      ],
+      "settable": false,
+      "category": "SERVICE VARIABLES",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/SimVars/Services_Variables.htm"
+    },
+    {
+      "name": "BAGGAGELOADER END RAMP Y",
+      "description": "\"Y\" axis position of the end of the baggage loader ramp, relative to the ground.",
+      "units": [
+        "Meters"
+      ],
+      "settable": false,
+      "category": "SERVICE VARIABLES",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/SimVars/Services_Variables.htm"
+    },
+    {
+      "name": "BAGGAGELOADER END RAMP Z",
+      "description": "\"Z\" axis position of the end of the baggage loader ramp, relative to the ground.",
+      "units": [
+        "Meters"
+      ],
+      "settable": false,
+      "category": "SERVICE VARIABLES",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/SimVars/Services_Variables.htm"
+    },
+    {
+      "name": "BAGGAGELOADER PIVOT Y",
+      "description": "\"Y\" axis position of the baggage loader ramp pivot, relative to the ground.",
+      "units": [
+        "Meters"
+      ],
+      "settable": false,
+      "category": "SERVICE VARIABLES",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/SimVars/Services_Variables.htm"
+    },
+    {
+      "name": "BAGGAGELOADER PIVOT Z",
+      "description": "\"Z\" axis position of the baggage loader ramp pivot, relative to the ground.",
+      "units": [
+        "Meters"
+      ],
+      "settable": false,
+      "category": "SERVICE VARIABLES",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/SimVars/Services_Variables.htm"
+    },
+    {
+      "name": "ABSOLUTE TIME",
+      "description": "Seconds",
+      "units": [
+        "This returns the seconds since 12:00 am 1/1/1AD Zulu Time See the Note On Zulu Time for more information."
+      ],
+      "settable": false,
+      "category": "PROGRAMMING APIs",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Environment_Variables.htm"
+    },
+    {
+      "name": "ZULU TIME",
+      "description": "Seconds",
+      "units": [
+        "This returns the seconds since midnight (00:00 Zulu Time) on the current day."
+      ],
+      "settable": false,
+      "category": "PROGRAMMING APIs",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Environment_Variables.htm"
+    },
+    {
+      "name": "ZULU DAY OF WEEK",
+      "description": "Number",
+      "units": [
+        "This returns the current Zulu Time day of the week as an integer value between 0 and 6 (inclusive)",
+        "where 0 is Sunday and 6 is Saturday. See the Note On Zulu Time for more information."
+      ],
+      "settable": false,
+      "category": "PROGRAMMING APIs",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Environment_Variables.htm"
+    },
+    {
+      "name": "ZULU DAY OF MONTH",
+      "description": "Number",
+      "units": [
+        "This returns the current Zulu Time day of the month as an integer value between 1 and 31 (inclusive). See the Note On Zulu Time for more information."
+      ],
+      "settable": false,
+      "category": "PROGRAMMING APIs",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Environment_Variables.htm"
+    },
+    {
+      "name": "ZULU MONTH OF YEAR",
+      "description": "Number",
+      "units": [
+        "This returns the current Zulu Time month of the year as an integer value between 1 and 12 (inclusive)",
+        "where 1 is January and 12 is December. See the Note On Zulu Time for more information."
+      ],
+      "settable": false,
+      "category": "PROGRAMMING APIs",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Environment_Variables.htm"
+    },
+    {
+      "name": "ZULU DAY OF YEAR",
+      "description": "Number",
+      "units": [
+        "This returns the current Zulu Time day of the year as an integer value between 0 and 365 (365 only on a leap year). See the Note On Zulu Time for more information."
+      ],
+      "settable": false,
+      "category": "PROGRAMMING APIs",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Environment_Variables.htm"
+    },
+    {
+      "name": "ZULU YEAR",
+      "description": "Number",
+      "units": [
+        "This returns the current Zulu Time year as an integer value. See the Note On Zulu Time for more information."
+      ],
+      "settable": false,
+      "category": "PROGRAMMING APIs",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Environment_Variables.htm"
+    },
+    {
+      "name": "ZULU SUNRISE TIME",
+      "description": "Seconds",
+      "units": [
+        "This returns the seconds since midnight until the sunrise based on Zulu Time. See the Note On Zulu Time for more information."
+      ],
+      "settable": false,
+      "category": "PROGRAMMING APIs",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Environment_Variables.htm"
+    },
+    {
+      "name": "ZULU SUNSET TIME",
+      "description": "Seconds",
+      "units": [
+        "This returns the seconds since midnight until the sunset based on Zulu Time. See the Note On Zulu Time for more information."
+      ],
+      "settable": false,
+      "category": "PROGRAMMING APIs",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Environment_Variables.htm"
+    },
+    {
+      "name": "LOCAL TIME",
+      "description": "Seconds",
+      "units": [
+        "This returns the seconds since midnight (00:00 local time) on the current day."
+      ],
+      "settable": false,
+      "category": "PROGRAMMING APIs",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Environment_Variables.htm"
+    },
+    {
+      "name": "LOCAL DAY OF WEEK",
+      "description": "Number",
+      "units": [
+        "This returns the current day of the week as an integer value between 0 and 6 (inclusive)",
+        "where 0 is Sunday and 6 is Saturday",
+        "within the local time reference."
+      ],
+      "settable": false,
+      "category": "PROGRAMMING APIs",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Environment_Variables.htm"
+    },
+    {
+      "name": "LOCAL DAY OF MONTH",
+      "description": "Number",
+      "units": [
+        "This returns the current day of the month as an integer value between 1 and 31 (inclusive)",
+        "within the local time reference."
+      ],
+      "settable": false,
+      "category": "PROGRAMMING APIs",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Environment_Variables.htm"
+    },
+    {
+      "name": "LOCAL MONTH OF YEAR",
+      "description": "Number",
+      "units": [
+        "This returns the current month of the year as an integer value between 1 and 12 (inclusive)",
+        "where 1 is January and 12 is December",
+        "within the local time reference."
+      ],
+      "settable": false,
+      "category": "PROGRAMMING APIs",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Environment_Variables.htm"
+    },
+    {
+      "name": "LOCAL DAY OF YEAR",
+      "description": "Number",
+      "units": [
+        "This returns the current day of the year as an integer value between 0 and 365 (365 only on a leap year)",
+        "within the local time reference."
+      ],
+      "settable": false,
+      "category": "PROGRAMMING APIs",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Environment_Variables.htm"
+    },
+    {
+      "name": "LOCAL YEAR",
+      "description": "Number",
+      "units": [
+        "This returns the current year (local time) as an integer value."
+      ],
+      "settable": false,
+      "category": "PROGRAMMING APIs",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Environment_Variables.htm"
+    },
+    {
+      "name": "TIME ZONE OFFSET",
+      "description": "Seconds",
+      "units": [
+        "This returns the offset between the local time and Zulu Time. See the Note On Zulu Time for more information."
+      ],
+      "settable": false,
+      "category": "PROGRAMMING APIs",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Environment_Variables.htm"
+    },
+    {
+      "name": "TIME OF DAY",
+      "description": "Enum (Number)",
+      "units": [
+        "This will return an integer value representing the approximate time of day where: 0 = dawn 1 = day 2 = dusk 3 = night"
+      ],
+      "settable": false,
+      "category": "PROGRAMMING APIs",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Environment_Variables.htm"
+    },
+    {
+      "name": "TOOLTIP UNITS",
+      "description": "Enum (Number)",
+      "units": [
+        "This will return an integer value representing the current units used to display tooltip information",
+        "where: 0 = default 1 = metric (SI) 2 = US (imperial)"
+      ],
+      "settable": false,
+      "category": "PROGRAMMING APIs",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Environment_Variables.htm"
+    },
+    {
+      "name": "UNITS OF MEASURE",
+      "description": "Enum (Number)",
+      "units": [
+        "This indicates the units used to express measurements and will return an integer value representing the following: 0 - English 1 - Metric with altitude in feet 2 - Metric with altitude in meters"
+      ],
+      "settable": false,
+      "category": "PROGRAMMING APIs",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Environment_Variables.htm"
+    },
+    {
+      "name": "SIMULATION RATE",
+      "description": "Number",
+      "units": [
+        "This is used to get/set the internal rate of passing time within the simulation(independently of the visual frame rate). The value will be clamped between 0.0625 and 128",
+        "and a value of 1 means that 1 second of game time is the same as 1 second of \"real\" time",
+        "and lower values will make the game time slower",
+        "and higher values will make the game time faster. Values are always multiples of two starting at 0.0625",
+        "so you can have: 0.0625",
+        "0.125",
+        "0.25",
+        "0.5",
+        "1",
+        "2",
+        "4",
+        "... 128"
+      ],
+      "settable": false,
+      "category": "PROGRAMMING APIs",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Environment_Variables.htm"
+    },
+    {
+      "name": "SIMULATION TIME",
+      "description": "Seconds",
+      "units": [
+        "This returns a value for the seconds since the simulation has been started."
+      ],
+      "settable": false,
+      "category": "PROGRAMMING APIs",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Environment_Variables.htm"
+    },
+    {
+      "name": "SIMULATION DELTA TIME",
+      "description": "Number",
+      "units": [
+        "This returns a value for the time passed between the last simulation frame and the current one."
+      ],
+      "settable": false,
+      "category": "PROGRAMMING APIs",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Environment_Variables.htm"
+    },
+    {
+      "name": "IS IN VR",
+      "description": "Boolean",
+      "units": [
+        "This returns either 1 (TRUE) or 0 (FALSE) to indicate whether the simulation is in VR mode or not."
+      ],
+      "settable": false,
+      "category": "PROGRAMMING APIs",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Environment_Variables.htm"
+    },
+    {
+      "name": "IS USING MOTION CONTROLLERS",
+      "description": "Boolean",
+      "units": [
+        "This returns either 1 (TRUE) or 0 (FALSE) to indicate whether the user is using 6DoF controllers in VR or not."
+      ],
+      "settable": false,
+      "category": "PROGRAMMING APIs",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Environment_Variables.htm"
+    },
+    {
+      "name": "IS USING JOYSTICK THROTTLE",
+      "description": "Boolean",
+      "units": [
+        "This returns either 1 (TRUE) or 0 (FALSE) to indicate whether the user is manipulating the throttle with a joystick device or not."
+      ],
+      "settable": false,
+      "category": "PROGRAMMING APIs",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Environment_Variables.htm"
+    },
+    {
+      "name": "IS IN RTC",
+      "description": "Boolean",
+      "units": [
+        "This returns either 1 (TRUE) or 0 (FALSE) to indicate whether the simulation is currently running an RTC or not."
+      ],
+      "settable": false,
+      "category": "PROGRAMMING APIs",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Environment_Variables.htm"
+    },
+    {
+      "name": "IS AVATAR",
+      "description": "Boolean",
+      "units": [
+        "This returns either 1 (TRUE) or 0 (FALSE) to indicate whether the user is in \"Avatar\" mode or not."
+      ],
+      "settable": false,
+      "category": "PROGRAMMING APIs",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Environment_Variables.htm"
+    },
+    {
+      "name": "IS AIRCRAFT",
+      "description": "Boolean",
+      "units": [
+        "This returns either 1 (TRUE) or 0 (FALSE) to indicate whether the user is in \"Aircraft\" mode or not."
+      ],
+      "settable": false,
+      "category": "PROGRAMMING APIs",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Environment_Variables.htm"
+    },
+    {
+      "name": "IS CAMERA LOCKED",
+      "description": "Boolean",
+      "units": [
+        "This returns either 1 (TRUE) or 0 (FALSE) to indicate whether the camera is locked or not."
+      ],
+      "settable": false,
+      "category": "PROGRAMMING APIs",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Environment_Variables.htm"
+    },
+    {
+      "name": "EFB BRIGHTNESS",
+      "description": "Percent Over 100",
+      "units": [
+        "This return the brightness of the EFB",
+        "from 0 to 1. If it is set to \"auto brightness\" within the EFB's settings",
+        "then -1 will be returned."
+      ],
+      "settable": false,
+      "category": "PROGRAMMING APIs",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Environment_Variables.htm"
+    },
+    {
+      "name": "SWITCH USER ALWAYS ALLOWED",
+      "description": "Boolean",
+      "units": [
+        "This returns either 1 (TRUE) or 0 (FALSE) to indicate whether there is no limitation to switch between avatar and aircraft mode or not."
+      ],
+      "settable": false,
+      "category": "PROGRAMMING APIs",
+      "versions": [
+        "2024"
+      ],
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Environment_Variables.htm"
     }
   ],
   "events": [],

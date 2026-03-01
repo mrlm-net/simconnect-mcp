@@ -1,5 +1,5 @@
 {
-  "scraped_at": "2026-03-01T11:25:39.6343791Z",
+  "scraped_at": "2026-03-01T11:54:07.8595562Z",
   "sdk_version": "2020",
   "simvars": [
     {
@@ -5316,6 +5316,113 @@
         "2020"
       ],
       "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Helicopter_Variables.htm"
+    },
+    {
+      "name": "CAMERA GAMEPLAY PITCH YAW",
+      "description": "Returns either the pitch (index 0) or the yaw (index 1) of the current gameplay camera.",
+      "units": [
+        "Radians"
+      ],
+      "settable": false,
+      "category": "CAMERA VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Camera_Variables.htm"
+    },
+    {
+      "name": "CAMERA REQUEST ACTION",
+      "description": "This can be used to have the currently active camera perform a predefined action. Currently only 1 action is supported, but more may be added over time.",
+      "units": [
+        "Enum: 1 = Reset Active Camera (in VR this will recenter the headset view)"
+      ],
+      "settable": false,
+      "category": "CAMERA VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Camera_Variables.htm"
+    },
+    {
+      "name": "CAMERA STATE",
+      "description": "This can be used to get or set the camera \"state\", which will be one of the listed enum values. Note that not ALL possible enum values are shown, since some values are internal only, and some values will do nothing, but have been reserved for future expansion of the camera system. Also note that the value \"9\" is a special case, generally used only when working with in-sim panels and is used to go to the showcase cameras, defaulting to the last selected camera within this section (Drone, Fixed or Environment).",
+      "units": [
+        "Enum: 2 = Cockpit 3 = External/Chase 4 = Drone 5 = Fixed on Plane 6 = Environment 7 = Six DoF 8 = Gameplay 9 = Showcase 10 = Drone Aircraft 11 = Waiting 12 = World Map 13 = Hangar RTC 14 = Hangar Custom 15 = Menu RTC 16 = In-Game RTC 17 = Replay 19 = Drone Top-Down 21 = Hangar 24 = Ground 25 = Follow Traffic Aircraft"
+      ],
+      "settable": false,
+      "category": "CAMERA VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Camera_Variables.htm"
+    },
+    {
+      "name": "CAMERA SUBSTATE",
+      "description": "This variable can be used to get or set the camera \"sub-state\". The options here are generally only required when working with the in-sim panel UI. Note that the \"locked\" and \"unlocked\" state will be changed automatically if the following SimVars have their values changed: COCKPIT_CAMERA_HEADLOOK, CHASE_CAMERA_HEADLOOK.",
+      "units": [
+        "Enum: 1 = Locked (Fixed look or chase lock - The camera is locked in position) 2 = Unlocked (Head look or Chase normal - The camera is \"attached\" to the mouse) 3 = Quickview (the camera is currently using a Quickview) 4 = Smart (The camera has Smart camera active) 5 = Instrument (The camera is focused on an instruments panel)"
+      ],
+      "settable": false,
+      "category": "CAMERA VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Camera_Variables.htm"
+    },
+    {
+      "name": "CAMERA VIEW TYPE AND INDEX",
+      "description": "With this you can get or set both the type of view for the current camera, as well as the option index, which will be between 0 and the maximum index value (as retrieved using the CAMERA VIEW TYPE AND INDEX MAX SimVar). Supplying an index of 0 to the SimVar will get/set the type (from the selection of enum values listed), and using an index of 1 will get/set the option index, which is an integer value. Please see the Notes On View Types And Indices section below for more information.",
+      "units": [
+        "Enum (index = 0): 0 = Unknown/default (External / Chase and Showcase / Drone / Fixed / Environment states) 1 = Pilot View (Cockpit State) 2 = Instruments (Cockpit State) 3 = Quickview (Cockpit State) 4 = Quickview External (External State) 5 = View (Showcase / Drone / Fixed / Environment states) or Number (index = 1)"
+      ],
+      "settable": false,
+      "category": "CAMERA VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Camera_Variables.htm"
+    },
+    {
+      "name": "CAMERA VIEW TYPE AND INDEX MAX",
+      "description": "This variable can get the number of option indices related to a specific camera view type. The index value supplied to the SimVar should be one of the camera view type Enum values (see CAMERA VIEW TYPE AND INDEX), and the SimVar will return the number of options available for that camera type (counting from 1, so - for example - if the camera view type is \"Quickview\" and has 8 quickview settings, then CAMERA VIEW TYPE AND INDEX MAX:4 will return 8). Note that this value can be set after a flight has started, but it will have no effect since the number of camera options is initilaised once only and not updated (and the simulation may overwrite the value again even after setting it). Please see the Notes On View Types And Indices section below for more information.",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "CAMERA VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Camera_Variables.htm"
+    },
+    {
+      "name": "GAMEPLAY CAMERA FOCUS",
+      "description": "This gets/sets the focus for the camera zoom, which can be either manual, or auto. The setting affects both the Cockpit and the External (Chase) cameras. The following SimVars can be used to get/set the level of zoom: COCKPIT_CAMERA_ZOOM or CHASE_CAMERA_ZOOM.",
+      "units": [
+        "Enum: 0 = Auto 1 = Manual"
+      ],
+      "settable": false,
+      "category": "CAMERA VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Camera_Variables.htm"
+    },
+    {
+      "name": "IS CAMERA RAY INTERSECT WITH NODE",
+      "description": "This SimVar is used to check for a collision along a ray from the center of the user FOV and a model node. The available nodes that can be checked using this SimVar must be previously defined in the [CAMERA_RAY_NODE_COLLISION] of the cameras.cfg file. The SimVar requires a node index value between 1 and 10, corresponding to the node defined in the CFG file, and the SimVar will return 1 (TRUE) if there is a collision along the camera ray or 0 (FALSE) otherwise. You may also supply an index of 0 to perform a collision check for all defined nodes, in which case the SimVar will return 1 (TRUE) if there is a collision between the ray and any of the defined nodes. Supplying an index outside of the range of 1 to 10, or supplying an index for which no node has been defined, will return 0 (FALSE).",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "CAMERA VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Camera_Variables.htm"
     }
   ],
   "events": [],

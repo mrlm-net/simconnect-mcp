@@ -182,20 +182,20 @@ var functionPages = []string{
 	base2020SimConn + "API_Reference/Facilities/SimConnect_UnsubscribeToFacilities.htm",
 	base2020SimConn + "API_Reference/Facilities/SimConnect_UnsubscribeToFacilities_EX1.htm",
 
-	// ── AI Objects (both versions) ───────────────────────────────────────────
-	base2020SimConn + "API_Reference/AI_Objects/SimConnect_AICreateEnrouteATCAircraft.htm",
-	base2020SimConn + "API_Reference/AI_Objects/SimConnect_AICreateNonATCAircraft.htm",
-	base2020SimConn + "API_Reference/AI_Objects/SimConnect_AICreateParkedATCAircraft.htm",
-	base2020SimConn + "API_Reference/AI_Objects/SimConnect_AICreateSimulatedObject.htm",
-	base2020SimConn + "API_Reference/AI_Objects/SimConnect_AIReleaseControl.htm",
-	base2020SimConn + "API_Reference/AI_Objects/SimConnect_AIRemoveObject.htm",
-	base2020SimConn + "API_Reference/AI_Objects/SimConnect_AISetAircraftFlightPlan.htm",
-	// ── 2024-only: AI Objects EX1 variants + SimObjectsAndLiveries ───────────
-	base2024SimConn + "API_Reference/AI_Objects/SimConnect_AICreateEnrouteATCAircraft_EX1.htm",
-	base2024SimConn + "API_Reference/AI_Objects/SimConnect_AICreateNonATCAircraft_EX1.htm",
-	base2024SimConn + "API_Reference/AI_Objects/SimConnect_AICreateParkedATCAircraft_EX1.htm",
-	base2024SimConn + "API_Reference/AI_Objects/SimConnect_AICreateSimulatedObject_EX1.htm",
-	base2024SimConn + "API_Reference/AI_Objects/SimConnect_EnumerateSimObjectsAndLiveries.htm",
+	// ── AI Object (folder is singular: AI_Object/) ────────────────────────────
+	base2020SimConn + "API_Reference/AI_Object/SimConnect_AICreateEnrouteATCAircraft.htm",
+	base2020SimConn + "API_Reference/AI_Object/SimConnect_AICreateNonATCAircraft.htm",
+	base2020SimConn + "API_Reference/AI_Object/SimConnect_AICreateParkedATCAircraft.htm",
+	base2020SimConn + "API_Reference/AI_Object/SimConnect_AICreateSimulatedObject.htm",
+	base2020SimConn + "API_Reference/AI_Object/SimConnect_AIReleaseControl.htm",
+	base2020SimConn + "API_Reference/AI_Object/SimConnect_AIRemoveObject.htm",
+	base2020SimConn + "API_Reference/AI_Object/SimConnect_AISetAircraftFlightPlan.htm",
+	// ── 2024-only: AI Object EX1 variants + SimObjectsAndLiveries ────────────
+	base2024SimConn + "API_Reference/AI_Object/SimConnect_AICreateEnrouteATCAircraft_EX1.htm",
+	base2024SimConn + "API_Reference/AI_Object/SimConnect_AICreateNonATCAircraft_EX1.htm",
+	base2024SimConn + "API_Reference/AI_Object/SimConnect_AICreateParkedATCAircraft_EX1.htm",
+	base2024SimConn + "API_Reference/AI_Object/SimConnect_AICreateSimulatedObject_EX1.htm",
+	base2024SimConn + "API_Reference/AI_Object/SimConnect_EnumerateSimObjectsAndLiveries.htm",
 
 	// ── 2024-only: Input Events (folder name has no underscore: InputEvents/) ──
 	base2024SimConn + "API_Reference/InputEvents/SimConnect_EnumerateControllers.htm",

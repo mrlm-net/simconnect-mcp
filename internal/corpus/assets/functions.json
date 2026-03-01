@@ -1,5 +1,5 @@
 {
-  "scraped_at": "2026-03-01T12:22:25.5419731Z",
+  "scraped_at": "2026-03-01T12:28:58.6089559Z",
   "sdk_version": "",
   "simvars": [],
   "events": [],
@@ -1701,6 +1701,480 @@
       ],
       "return_type": "",
       "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Facilities/SimConnect_UnsubscribeToFacilities_EX1.htm"
+    },
+    {
+      "name": "SimConnect_AICreateEnrouteATCAircraft",
+      "description": "",
+      "signature": "HRESULT SimConnect_AICreateEnrouteATCAircraft( HANDLE hSimConnect, const char* szContainerTitle, const char* szTailNumber, int iFlightNumber, const char* szFlightPlanPath, double dFlightPlanPosition, BOOL bTouchAndGo, SIMCONNECT_DATA_REQUEST_ID RequestID );",
+      "parameters": [
+        {
+          "name": "hSimConnect",
+          "type": "Handle to a SimConnect object.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "szContainerTitle",
+          "type": "Null-terminated string containing the container title. The container title is found in the aircraft.cfg file. Alternatively, the aircraft title can be obtained via the Aircraft Selector (DevMode-\u003eWindows-\u003eAircraft selector). Examples of aircraft titles: title=Boeing 747-8f Asobo title=DA62 Asobo title=VL3 Asobo",
+          "direction": "in",
+          "description": "String"
+        },
+        {
+          "name": "szTailNumber",
+          "type": "Null-terminated string containing the tail number. This should have a maximum of 12 characters.",
+          "direction": "in",
+          "description": "String"
+        },
+        {
+          "name": "iFlightNumber",
+          "type": "Integer containing the flight number. There is no specific maximum length of this number. Any negative number indicates that there is no flight number. szFlightPlanPath.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "szFlightPlanPath",
+          "type": "Null-terminated string containing the path to the flight plan file. Flight plans have the extension .pln, but no need to enter an extension here. The easiest way to create flight plans is to create them from within Microsoft Flight Simulator 2020 itself, and then save them off for use with the AI controlled aircraft.",
+          "direction": "in",
+          "description": "String"
+        },
+        {
+          "name": "dFlightPlanPosition",
+          "type": "Double floating point number containing the flight plan position. The number before the point contains the waypoint index, and the number afterwards how far along the route to the next waypoint the aircraft is to be positioned. The first waypoint index is 0. For example, 0.0 indicates that the aircraft has not started on the flight plan, 2.5 would indicate the aircraft is to be initialized halfway between the third and fourth waypoints (which would have indexes 2 and 3). The waypoints are those recorded in the flight plan, which may just be two airports, and do not include any taxiway points on the ground. Also there is a threshold that will ignore requests to have an aircraft taxiing or taking off, or landing. So set the value after the point to ensure the aircraft will be in level flight.",
+          "direction": "in",
+          "description": "Float"
+        },
+        {
+          "name": "bTouchAndGo",
+          "type": "Set to True to indicate that landings should be touch and go, and not full stop landings.",
+          "direction": "in",
+          "description": "Bool"
+        },
+        {
+          "name": "RequestID",
+          "type": "Specifies the client defined request ID.",
+          "direction": "in",
+          "description": "Integer"
+        }
+      ],
+      "return_type": "",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/AI_Object/SimConnect_AICreateEnrouteATCAircraft.htm"
+    },
+    {
+      "name": "SimConnect_AICreateNonATCAircraft",
+      "description": "",
+      "signature": "HRESULT SimConnect_AICreateNonATCAircraft( HANDLE hSimConnect, const char* szContainerTitle, const char* szTailNumber, SIMCONNECT_DATA_INITPOSITION InitPos, SIMCONNECT_DATA_REQUEST_ID RequestID );",
+      "parameters": [
+        {
+          "name": "hSimConnect",
+          "type": "Handle to a SimConnect object.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "szContainerTitle",
+          "type": "Null-terminated string containing the container title. The container title is found in the aircraft.cfg file. Alternatively, the aircraft title can be obtained via the Aircraft Selector (DevMode-\u003eWindows-\u003eAircraft selector). Examples of aircraft titles: title=Boeing 747-8f Asobo title=DA62 Asobo title=VL3 Asobo",
+          "direction": "in",
+          "description": "String"
+        },
+        {
+          "name": "szTailNumber",
+          "type": "Null-terminated string containing the tail number. This should have a maximum of 12 characters.",
+          "direction": "in",
+          "description": "String"
+        },
+        {
+          "name": "InitPos",
+          "type": "Specifies the initial position, using a SIMCONNECT_DATA_INITPOSITION structure.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "RequestID",
+          "type": "Specifies the client defined request ID.",
+          "direction": "in",
+          "description": "String"
+        }
+      ],
+      "return_type": "",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/AI_Object/SimConnect_AICreateNonATCAircraft.htm"
+    },
+    {
+      "name": "SimConnect_AICreateParkedATCAircraft",
+      "description": "",
+      "signature": "HRESULT SimConnect_AICreateParkedATCAircraft( HANDLE hSimConnect, const char* szContainerTitle, const char* szTailNumber, const char* szAirportID, SIMCONNECT_DATA_REQUEST_ID RequestID );",
+      "parameters": [
+        {
+          "name": "hSimConnect",
+          "type": "Handle to a SimConnect object.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "szContainerTitle",
+          "type": "Null-terminated string containing the container title. The container title is found in the aircraft.cfg file. Alternatively, the aircraft title can be obtained via the Aircraft Selector (DevMode-\u003eWindows-\u003eAircraft selector). Examples of aircraft titles: title=Boeing 747-8f Asobo title=DA62 Asobo title=VL3 Asobo",
+          "direction": "in",
+          "description": "String"
+        },
+        {
+          "name": "szTailNumber",
+          "type": "Null-terminated string containing the tail number. This should have a maximum of 12 characters.",
+          "direction": "in",
+          "description": "String"
+        },
+        {
+          "name": "szAirportID",
+          "type": "Null-terminated string containing the airport ID. This is the ICAO code string, for example, KSEA for SeaTac International.",
+          "direction": "in",
+          "description": "String"
+        },
+        {
+          "name": "RequestID",
+          "type": "Specifies the client defined request ID.",
+          "direction": "in",
+          "description": "Integer"
+        }
+      ],
+      "return_type": "",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/AI_Object/SimConnect_AICreateParkedATCAircraft.htm"
+    },
+    {
+      "name": "SimConnect_AICreateSimulatedObject",
+      "description": "",
+      "signature": "HRESULT SimConnect_AICreateSimulatedObject( HANDLE hSimConnect, const char* szContainerTitle, SIMCONNECT_DATA_INITPOSITION InitPos, SIMCONNECT_DATA_REQUEST_ID RequestID );",
+      "parameters": [
+        {
+          "name": "hSimConnect",
+          "type": "Handle to a SimConnect object.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "szContainerTitle",
+          "type": "Null-terminated string containing the container title. The container title is case-sensitive and can be found in the sim.cfg file. NOTE: Only Dynamic SimObjects can receive \"AI Waypoint\" data via SimConnect_SetDataOnSimObject.",
+          "direction": "in",
+          "description": "String"
+        },
+        {
+          "name": "InitPos",
+          "type": "This a SIMCONNECT_DATA_INITPOSITION struct containing the data referring to the spawn position of the SimObject.",
+          "direction": "in",
+          "description": "String"
+        },
+        {
+          "name": "RequestID",
+          "type": "Specifies the client defined request ID.",
+          "direction": "in",
+          "description": "Integer"
+        }
+      ],
+      "return_type": "",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/AI_Object/SimConnect_AICreateSimulatedObject.htm"
+    },
+    {
+      "name": "SimConnect_AIReleaseControl",
+      "description": "",
+      "signature": "HRESULT SimConnect_AIReleaseControl( HANDLE hSimConnect, SIMCONNECT_OBJECT_ID ObjectID, SIMCONNECT_DATA_REQUEST_ID RequestID );",
+      "parameters": [
+        {
+          "name": "hSimConnect",
+          "type": "Handle to a SimConnect object.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "ObjectID",
+          "type": "Specifies the server defined object ID.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "RequestID",
+          "type": "Specifies the client defined request ID.",
+          "direction": "in",
+          "description": "Integer"
+        }
+      ],
+      "return_type": "",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/AI_Object/SimConnect_AIReleaseControl.htm"
+    },
+    {
+      "name": "SimConnect_AIRemoveObject",
+      "description": "",
+      "signature": "HRESULT SimConnect_AIRemoveObject( HANDLE hSimConnect, SIMCONNECT_OBJECT_ID ObjectID, SIMCONNECT_DATA_REQUEST_ID RequestID );",
+      "parameters": [
+        {
+          "name": "hSimConnect",
+          "type": "Handle to a SimConnect object.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "ObjectID",
+          "type": "Specifies the server defined object ID (refer to the SIMCONNECT_RECV_ASSIGNED_OBJECT_ID structure).",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "RequestID",
+          "type": "Specifies the client defined request ID.",
+          "direction": "in",
+          "description": "Integer"
+        }
+      ],
+      "return_type": "",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/AI_Object/SimConnect_AIRemoveObject.htm"
+    },
+    {
+      "name": "SimConnect_AISetAircraftFlightPlan",
+      "description": "",
+      "signature": "HRESULT SimConnect_AISetAircraftFlightPlan( HANDLE hSimConnect, SIMCONNECT_OBJECT_ID ObjectID, const char* szFlightPlanPath, SIMCONNECT_DATA_REQUEST_ID RequestID );",
+      "parameters": [
+        {
+          "name": "hSimConnect",
+          "type": "Handle to a SimConnect object.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "ObjectID",
+          "type": "Specifies the server defined object ID.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "szFlightPlanPath",
+          "type": "Null-terminated string containing the path to the flight plan file. Flight plans have the extension .pln, but no need to enter an extension here. The easiest way to create flight plans is to create them from within the simulation, and then save them off for use with the AI controlled aircraft.",
+          "direction": "in",
+          "description": "String"
+        },
+        {
+          "name": "RequestID",
+          "type": "Specifies the client defined request ID.",
+          "direction": "in",
+          "description": "Integer"
+        }
+      ],
+      "return_type": "",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/AI_Object/SimConnect_AISetAircraftFlightPlan.htm"
+    },
+    {
+      "name": "SimConnect_AICreateEnrouteATCAircraft_EX1",
+      "description": "",
+      "signature": "HRESULT SimConnect_AICreateEnrouteATCAircraft_EX1( HANDLE hSimConnect, const char* szContainerTitle, const char* szLivery, const char* szTailNumber, int iFlightNumber, const char* szFlightPlanPath, double dFlightPlanPosition, BOOL bTouchAndGo, SIMCONNECT_DATA_REQUEST_ID RequestID );",
+      "parameters": [
+        {
+          "name": "hSimConnect",
+          "type": "Handle to a SimConnect object.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "szContainerTitle",
+          "type": "Null-terminated string containing the container title. The container title is found in the title parameter of the aircraft.cfg file, or alternatively, you can find it from the list found in the Aircraft Capture Tool. You may also retrieve the information with SimConnect using the SimConnect_EnumerateSimObjectsAndLiveries function. Examples of aircraft titles: title=Boeing 747-8f Asobo title=DA62 Asobo title=VL3 Asobo",
+          "direction": "in",
+          "description": "String"
+        },
+        {
+          "name": "szLivery",
+          "type": "Null-terminated string containing the livery name. This field is only required when checking modular SimObjects, since their liveries are dynamically handled and do not have a unique title parameter like legacy aircraft. This parameter can be set to either the name of the livery as defined in the name parameter of the livery.cfg, or to the folder name of the livery in the package. Note that you can also get the livery name using the SimConnect_EnumerateSimObjectsAndLiveries function. The function will check for the folder first, then the parameter name second, and if the given name is not found in either location, then the default livery will be used.",
+          "direction": "in",
+          "description": "String"
+        },
+        {
+          "name": "szTailNumber",
+          "type": "Null-terminated string containing the tail number. This should have a maximum of 12 characters.",
+          "direction": "in",
+          "description": "String"
+        },
+        {
+          "name": "iFlightNumber",
+          "type": "Integer containing the flight number. There is no specific maximum length of this number. Any negative number indicates that there is no flight number. szFlightPlanPath.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "szFlightPlanPath",
+          "type": "Null-terminated string containing the path to the flight plan file. Flight plans have the extension .pln, but no need to enter an extension here. The easiest way to create flight plans is to create them from within Microsoft Flight Simulator 2024 itself, and then save them off for use with the AI controlled aircraft.",
+          "direction": "in",
+          "description": "String"
+        },
+        {
+          "name": "dFlightPlanPosition",
+          "type": "Double floating point number containing the flight plan position. The number before the point contains the waypoint index, and the number afterwards how far along the route to the next waypoint the aircraft is to be positioned. The first waypoint index is 0. For example, 0.0 indicates that the aircraft has not started on the flight plan, 2.5 would indicate the aircraft is to be initialized halfway between the third and fourth waypoints (which would have indexes 2 and 3). The waypoints are those recorded in the flight plan, which may just be two airports, and do not include any taxiway points on the ground. Also there is a threshold that will ignore requests to have an aircraft taxiing or taking off, or landing. So set the value after the point to ensure the aircraft will be in level flight.",
+          "direction": "in",
+          "description": "Float"
+        },
+        {
+          "name": "bTouchAndGo",
+          "type": "Set to True to indicate that landings should be touch and go, and not full stop landings.",
+          "direction": "in",
+          "description": "Bool"
+        },
+        {
+          "name": "RequestID",
+          "type": "Specifies the client defined request ID.",
+          "direction": "in",
+          "description": "Integer"
+        }
+      ],
+      "return_type": "",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/SimConnect/API_Reference/AI_Object/SimConnect_AICreateEnrouteATCAircraft_EX1.htm"
+    },
+    {
+      "name": "SimConnect_AICreateNonATCAircraft_EX1",
+      "description": "",
+      "signature": "HRESULT SimConnect_AICreateNonATCAircraft_EX1( HANDLE hSimConnect, const char* szContainerTitle, const char* szLivery, const char* szTailNumber, SIMCONNECT_DATA_INITPOSITION InitPos, SIMCONNECT_DATA_REQUEST_ID RequestID );",
+      "parameters": [
+        {
+          "name": "hSimConnect",
+          "type": "Handle to a SimConnect object.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "szContainerTitle",
+          "type": "Null-terminated string containing the container title. The container title is found in the title parameter of the aircraft.cfg file, or alternatively, you can find it from the list found in the Aircraft Capture Tool. IMPORTANT! This title must be in an aircraft Preset.You may also retrieve the information with SimConnect using the SimConnect_EnumerateSimObjectsAndLiveries function. Examples of aircraft titles: title=Boeing 747-8f Asobo title=DA62 Asobo title=VL3 Asobo",
+          "direction": "in",
+          "description": "String"
+        },
+        {
+          "name": "szLivery",
+          "type": "Null-terminated string containing the livery name. This field is only required when checking modular SimObjects, since their liveries are dynamically handled and do not have a unique title parameter like legacy aircraft. This parameter can be set to either the name of the livery as defined in the name parameter of the livery.cfg, or to the folder name of the livery in the package. Note that you can also get the livery name using the SimConnect_EnumerateSimObjectsAndLiveries function. The function will check for the folder first, then the parameter name second, and if the given name is not found in either location, then the default livery will be used.",
+          "direction": "in",
+          "description": "String"
+        },
+        {
+          "name": "szTailNumber",
+          "type": "Null-terminated string containing the tail number. This should have a maximum of 12 characters.",
+          "direction": "in",
+          "description": "String"
+        },
+        {
+          "name": "InitPos",
+          "type": "Specifies the initial position, using a SIMCONNECT_DATA_INITPOSITION structure.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "RequestID",
+          "type": "Specifies the client defined request ID.",
+          "direction": "in",
+          "description": "String"
+        }
+      ],
+      "return_type": "",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/SimConnect/API_Reference/AI_Object/SimConnect_AICreateNonATCAircraft_EX1.htm"
+    },
+    {
+      "name": "SimConnect_AICreateParkedATCAircraft_EX1",
+      "description": "",
+      "signature": "HRESULT SimConnect_AICreateParkedATCAircraft_EX1( HANDLE hSimConnect, const char* szContainerTitle, const char* szLivery, const char* szTailNumber, const char* szAirportID, SIMCONNECT_DATA_REQUEST_ID RequestID );",
+      "parameters": [
+        {
+          "name": "hSimConnect",
+          "type": "Handle to a SimConnect object.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "szContainerTitle",
+          "type": "Null-terminated string containing the container title. The container title is found in the title parameter of the aircraft.cfg file, or alternatively, you can find it from the list found in the Aircraft Capture Tool. IMPORTANT! This title must be in an aircraft Preset.You may also retrieve the information with SimConnect using the SimConnect_EnumerateSimObjectsAndLiveries function. Examples of aircraft titles: title=Boeing 747-8f Asobo title=DA62 Asobo title=VL3 Asobo",
+          "direction": "in",
+          "description": "String"
+        },
+        {
+          "name": "szLivery",
+          "type": "Null-terminated string containing the livery name. This field is only required when checking modular SimObjects, since their liveries are dynamically handled and do not have a unique title parameter like legacy aircraft. This parameter can be set to either the name of the livery as defined in the name parameter of the livery.cfg, or to the folder name of the livery in the package. Note that you can also get the livery name using the SimConnect_EnumerateSimObjectsAndLiveries function. The function will check for the folder first, then the parameter name second, and if the given name is not found in either location, then the default livery will be used.",
+          "direction": "in",
+          "description": "String"
+        },
+        {
+          "name": "szTailNumber",
+          "type": "Null-terminated string containing the tail number. This should have a maximum of 12 characters.",
+          "direction": "in",
+          "description": "String"
+        },
+        {
+          "name": "szAirportID",
+          "type": "Null-terminated string containing the airport ID. This is the ICAO code string, for example, KSEA for SeaTac International.",
+          "direction": "in",
+          "description": "String"
+        },
+        {
+          "name": "RequestID",
+          "type": "Specifies the client defined request ID.",
+          "direction": "in",
+          "description": "Integer"
+        }
+      ],
+      "return_type": "",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/SimConnect/API_Reference/AI_Object/SimConnect_AICreateParkedATCAircraft_EX1.htm"
+    },
+    {
+      "name": "SimConnect_AICreateSimulatedObject_EX1",
+      "description": "",
+      "signature": "HRESULT SimConnect_AICreateSimulatedObject_EX1( HANDLE hSimConnect, const char* szContainerTitle, const char* szLivery, SIMCONNECT_DATA_INITPOSITION InitPos, SIMCONNECT_DATA_REQUEST_ID RequestID );",
+      "parameters": [
+        {
+          "name": "hSimConnect",
+          "type": "Handle to a SimConnect object.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "szContainerTitle",
+          "type": "Null-terminated string containing the container title. The container title is found in the title parameter of the aircraft.cfg file, or alternatively, you can find it from the list found in the Aircraft Capture Tool. IMPORTANT! This title must be in an aircraft Preset.You may also retrieve the information with SimConnect using the SimConnect_EnumerateSimObjectsAndLiveries function. Examples of aircraft titles: title=Boeing 747-8f Asobo title=DA62 Asobo title=VL3 Asobo",
+          "direction": "in",
+          "description": "String"
+        },
+        {
+          "name": "szLivery",
+          "type": "Null-terminated string containing the livery name. This field is only required when checking modular SimObjects, since their liveries are dynamically handled and do not have a unique title parameter like legacy aircraft. This parameter can be set to either the name of the livery as defined in the name parameter of the livery.cfg, or to the folder name of the livery in the package. Note that you can also get the livery name using the SimConnect_EnumerateSimObjectsAndLiveries function. The function will check for the folder first, then the parameter name second, and if the given name is not found in either location, then the default livery will be used.",
+          "direction": "in",
+          "description": "String"
+        },
+        {
+          "name": "InitPos",
+          "type": "This a SIMCONNECT_DATA_INITPOSITION struct containing the data referring to the spawn position of the SimObject.",
+          "direction": "in",
+          "description": "Struct"
+        },
+        {
+          "name": "RequestID",
+          "type": "Specifies the client defined request ID.",
+          "direction": "in",
+          "description": "Integer"
+        }
+      ],
+      "return_type": "",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/SimConnect/API_Reference/AI_Object/SimConnect_AICreateSimulatedObject_EX1.htm"
+    },
+    {
+      "name": "SimConnect_EnumerateSimObjectsAndLiveries",
+      "description": "",
+      "signature": "HRESULT SimConnect_EnumerateSimObjectsAndLiveries( HANDLE hSimConnect, SIMCONNECT_DATA_REQUEST_ID RequestID, SIMCONNECT_SIMOBJECT_TYPE Type );",
+      "parameters": [
+        {
+          "name": "hSimConnect",
+          "type": "Handle to a SimConnect object.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "RequestId",
+          "type": "Specifies the client defined request ID.",
+          "direction": "in",
+          "description": "Integer"
+        },
+        {
+          "name": "Type",
+          "type": "Specifies the type of SimObjects that will be retrieved by the function: SIMCONNECT_SIMOBJECT_TYPE_USER: SimObject types selectable by the user (airplane, helicopter and hot air balloon) SIMCONNECT_SIMOBJECT_TYPE_ALL: All types listed in this note. SIMCONNECT_SIMOBJECT_TYPE_AIRCRAFT: Retrieve only airplanes. SIMCONNECT_SIMOBJECT_TYPE_HELICOPTER: Retrieve only helicopters. SIMCONNECT_SIMOBJECT_TYPE_BOAT: Retrieve only boats. SIMCONNECT_SIMOBJECT_TYPE_GROUND: Retrieve only ground vehicles. SIMCONNECT_SIMOBJECT_TYPE_HOT_AIR_BALLOON: Retrieve only hot air balloons. SIMCONNECT_SIMOBJECT_TYPE_ANIMAL: Retrieve only animals. SIMCONNECT_SIMOBJECT_TYPE_USER_AVATAR: Retrieve the user avatar.",
+          "direction": "in",
+          "description": "Integer"
+        }
+      ],
+      "return_type": "",
+      "source_url": "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/SimConnect/API_Reference/AI_Object/SimConnect_EnumerateSimObjectsAndLiveries.htm"
     },
     {
       "name": "SimConnect_EnumerateControllers",

@@ -15,7 +15,7 @@
 
 <Header siteConfig={data.siteConfig} onToggleSidebar={() => {}} showMenuButton={false} />
 
-<main class="flex-1 pt-16">
+<main id="main-content" tabindex="-1" class="flex-1 pt-16">
 	{@render children()}
 </main>
 

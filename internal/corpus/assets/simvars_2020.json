@@ -1,54 +1,5321 @@
 {
-  "scraped_at": "2025-01-01T00:00:00Z",
-  "sdk_version": "0.21.1",
+  "scraped_at": "2026-03-01T11:25:39.6343791Z",
+  "sdk_version": "2020",
   "simvars": [
     {
-      "name": "PLANE ALTITUDE",
-      "description": "The altitude of the aircraft above mean sea level. This value is referenced against the standard WGS84 ellipsoid and is the primary altitude reading used for navigation and autopilot operations.",
-      "units": ["feet", "meters"],
-      "settable": true,
-      "category": "Aircraft Position and Speed",
-      "versions": ["2020"],
-      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Position_And_Speed_Variables.htm"
+      "name": "AUTOPILOT AIRSPEED ACQUISITION",
+      "description": "Currently not used within the simulation.",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT AUTOPILOT/ASSISTANT VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_AutopilotAssistant_Variables.htm"
     },
     {
-      "name": "GROUND ALTITUDE",
-      "description": "The altitude of the terrain directly beneath the aircraft above mean sea level. This reflects the ground elevation at the aircraft's current horizontal position and is independent of aircraft altitude.",
-      "units": ["meters"],
+      "name": "AUTOPILOT AIRSPEED HOLD",
+      "description": "returns whether airspeed hold is active (1, TRUE) or not (0, FALSE).",
+      "units": [
+        "Bool"
+      ],
       "settable": false,
-      "category": "Miscellaneous Variables",
-      "versions": ["2020"],
-      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Miscellaneous_Variables.htm"
+      "category": "AIRCRAFT AUTOPILOT/ASSISTANT VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_AutopilotAssistant_Variables.htm"
     },
     {
-      "name": "ENGINE RPM",
-      "description": "The revolutions per minute of the indexed engine. For piston engines this reflects crankshaft speed; for turbine engines this reflects the N2 shaft speed unless otherwise specified.",
-      "units": ["rpm"],
+      "name": "AUTOPILOT AIRSPEED HOLD CURRENT",
+      "description": "Currently not used within the simulation.",
+      "units": [
+        "Bool"
+      ],
       "settable": false,
-      "category": "Engine",
-      "versions": ["2020"],
-      "indexed_by": "Engine number, 1 or 2",
+      "category": "AIRCRAFT AUTOPILOT/ASSISTANT VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_AutopilotAssistant_Variables.htm"
+    },
+    {
+      "name": "AUTOPILOT AIRSPEED HOLD VAR",
+      "description": "Returns the target holding airspeed for the autopilot.",
+      "units": [
+        "Knots"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT AUTOPILOT/ASSISTANT VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_AutopilotAssistant_Variables.htm"
+    },
+    {
+      "name": "AUTOPILOT AIRSPEED MAX CALCULATED",
+      "description": "Returns the maximum calculated airspeed (kcas) limit set for the autopilot.",
+      "units": [
+        "Knots"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT AUTOPILOT/ASSISTANT VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_AutopilotAssistant_Variables.htm"
+    },
+    {
+      "name": "AUTOPILOT AIRSPEED MIN CALCULATED",
+      "description": "Returns the minimum calculated airspeed (kcas) limit set for the autopilot.",
+      "units": [
+        "Knots"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT AUTOPILOT/ASSISTANT VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_AutopilotAssistant_Variables.htm"
+    },
+    {
+      "name": "AUTOPILOT ALT RADIO MODE",
+      "description": "If enabled the Autopilot will use the Radio Altitude rather than the Indicated Altitude.",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT AUTOPILOT/ASSISTANT VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_AutopilotAssistant_Variables.htm"
+    },
+    {
+      "name": "AUTOPILOT ALTITUDE ARM",
+      "description": "Returns whether the autopilot is in Altitude Arm mode (1, TRUE) or not (0, FALSE).",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT AUTOPILOT/ASSISTANT VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_AutopilotAssistant_Variables.htm"
+    },
+    {
+      "name": "AUTOPILOT ALTITUDE LOCK",
+      "description": "Altitude hold active",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT AUTOPILOT/ASSISTANT VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_AutopilotAssistant_Variables.htm"
+    },
+    {
+      "name": "AUTOPILOT ALTITUDE LOCK VAR",
+      "description": "Set or get the slot index which the altitude hold mode will track when captured. See alt_mode_slot_index for more information.",
+      "units": [
+        "Feet (ft)"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT AUTOPILOT/ASSISTANT VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_AutopilotAssistant_Variables.htm"
+    },
+    {
+      "name": "AUTOPILOT ALTITUDE MANUALLY TUNABLE",
+      "description": "Whether or not the autopilot altitude is manually tunable or not.",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT AUTOPILOT/ASSISTANT VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_AutopilotAssistant_Variables.htm"
+    },
+    {
+      "name": "AUTOPILOT ALTITUDE SLOT INDEX",
+      "description": "Index of the slot that the autopilot will use for the altitude reference. Note that there are 3 slots (1, 2, 3) that you can set/get normally, however you can also target slot index 0. Writing to slot 0 will overwrite all other slots with the slot 0 value, and by default the autopilot will follow slot 0 if you have not selected any slot index. See alt_mode_slot_index for more information.",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT AUTOPILOT/ASSISTANT VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_AutopilotAssistant_Variables.htm"
+    },
+    {
+      "name": "AUTOPILOT APPROACH ACTIVE",
+      "description": "When true, the autopilot is currently flying the approach Flight Plan (the last legs).",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT AUTOPILOT/ASSISTANT VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_AutopilotAssistant_Variables.htm"
+    },
+    {
+      "name": "AUTOPILOT APPROACH ARM",
+      "description": "Returns true when the autopilot is active on the approach, once it reaches the adequate condition (in most cases, once it reaches the second-last waypoint of the flightplan).",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT AUTOPILOT/ASSISTANT VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_AutopilotAssistant_Variables.htm"
+    },
+    {
+      "name": "AUTOPILOT APPROACH CAPTURED",
+      "description": "Returns true when the lateral NAV mode is engaged and the angular deviation with the current tuned navigation frequency is less than 5°.",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT AUTOPILOT/ASSISTANT VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_AutopilotAssistant_Variables.htm"
+    },
+    {
+      "name": "AUTOPILOT APPROACH HOLD",
+      "description": "Returns whether pproach mode is active (1, TRUE) or not (0, FALSE).",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT AUTOPILOT/ASSISTANT VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_AutopilotAssistant_Variables.htm"
+    },
+    {
+      "name": "AUTOPILOT APPROACH IS LOCALIZER",
+      "description": "Returns true if the current approach is using a localizer.",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT AUTOPILOT/ASSISTANT VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_AutopilotAssistant_Variables.htm"
+    },
+    {
+      "name": "AUTOPILOT ATTITUDE HOLD",
+      "description": "Attitude hold active",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT AUTOPILOT/ASSISTANT VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_AutopilotAssistant_Variables.htm"
+    },
+    {
+      "name": "AUTOPILOT AVAILABLE",
+      "description": "Available flag",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT AUTOPILOT/ASSISTANT VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_AutopilotAssistant_Variables.htm"
+    },
+    {
+      "name": "AUTOPILOT AVIONICS MANAGED",
+      "description": "Returns whether the autopilot has active managed avionics (1, TRUE) or not (0, FALSE).",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT AUTOPILOT/ASSISTANT VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_AutopilotAssistant_Variables.htm"
+    },
+    {
+      "name": "AUTOPILOT BACKCOURSE HOLD",
+      "description": "Returns whether the autopilot back course mode is active (1, TRUE) or not (0, FALSE).",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT AUTOPILOT/ASSISTANT VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_AutopilotAssistant_Variables.htm"
+    },
+    {
+      "name": "AUTOPILOT BANK HOLD",
+      "description": "Returns whether the autopilot bank hold mode is active (1, TRUE) or not (0, FALSE).",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT AUTOPILOT/ASSISTANT VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_AutopilotAssistant_Variables.htm"
+    },
+    {
+      "name": "AUTOPILOT BANK HOLD REF",
+      "description": "The current bank-hold bank reference. Note that if you set this, the next frame the value will be overwritten by the engine, so you may need to write to this every game frame to ensure it maintains the required value.",
+      "units": [
+        "Degrees"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT AUTOPILOT/ASSISTANT VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_AutopilotAssistant_Variables.htm"
+    },
+    {
+      "name": "AUTOPILOT CRUISE SPEED HOLD",
+      "description": "Currently not used within the simulation.",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT AUTOPILOT/ASSISTANT VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_AutopilotAssistant_Variables.htm"
+    },
+    {
+      "name": "AUTOPILOT DEFAULT PITCH MODE",
+      "description": "The current default pitch mode of the autopilot as configured in the plane configuration with the parameter default_pitch_mode.",
+      "units": [
+        "Enum: 0 = None 1 = Pitch 2 = Altitude Hold 3 = Vertical Speed"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT AUTOPILOT/ASSISTANT VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_AutopilotAssistant_Variables.htm"
+    },
+    {
+      "name": "AUTOPILOT DEFAULT ROLL MODE",
+      "description": "The current default roll mode of the autopilot as configured in the plane configuration with the parameter default_bank_mode.",
+      "units": [
+        "Enum: 0 = None 1 = Wing Leveler 2 = Heading 3 = Roll Hold"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT AUTOPILOT/ASSISTANT VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_AutopilotAssistant_Variables.htm"
+    },
+    {
+      "name": "AUTOPILOT DISENGAGED",
+      "description": "Returns whether the autopilot has been disengaged (1, TRUE) or not (0, FALSE).",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT AUTOPILOT/ASSISTANT VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_AutopilotAssistant_Variables.htm"
+    },
+    {
+      "name": "AUTOPILOT FLIGHT DIRECTOR ACTIVE",
+      "description": "Flight director active",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT AUTOPILOT/ASSISTANT VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_AutopilotAssistant_Variables.htm"
+    },
+    {
+      "name": "AUTOPILOT FLIGHT DIRECTOR BANK",
+      "description": "Reference bank angle",
+      "units": [
+        "Radians"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT AUTOPILOT/ASSISTANT VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_AutopilotAssistant_Variables.htm"
+    },
+    {
+      "name": "AUTOPILOT FLIGHT DIRECTOR BANK EX1",
+      "description": "Raw reference bank angle",
+      "units": [
+        "Radians"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT AUTOPILOT/ASSISTANT VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_AutopilotAssistant_Variables.htm"
+    },
+    {
+      "name": "AUTOPILOT FLIGHT DIRECTOR PITCH",
+      "description": "Reference pitch angle",
+      "units": [
+        "Radians"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT AUTOPILOT/ASSISTANT VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_AutopilotAssistant_Variables.htm"
+    },
+    {
+      "name": "AUTOPILOT FLIGHT DIRECTOR PITCH EX1",
+      "description": "Raw reference pitch angle",
+      "units": [
+        "Radians"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT AUTOPILOT/ASSISTANT VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_AutopilotAssistant_Variables.htm"
+    },
+    {
+      "name": "AUTOPILOT FLIGHT LEVEL CHANGE",
+      "description": "Boolean, toggles the autopilot Flight Level Change mode",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT AUTOPILOT/ASSISTANT VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_AutopilotAssistant_Variables.htm"
+    },
+    {
+      "name": "AUTOPILOT GLIDESLOPE ACTIVE",
+      "description": "When true, the autopilot is receiving a signal from the runway beacon and is following the slope to reach the ground.",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT AUTOPILOT/ASSISTANT VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_AutopilotAssistant_Variables.htm"
+    },
+    {
+      "name": "AUTOPILOT GLIDESLOPE ARM",
+      "description": "Returns true when the autopilot is active on the glide slope.",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT AUTOPILOT/ASSISTANT VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_AutopilotAssistant_Variables.htm"
+    },
+    {
+      "name": "AUTOPILOT GLIDESLOPE HOLD",
+      "description": "Returns whether the autopilot glidslope hold is active (1, TRUE) or not (0, FALSE).",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT AUTOPILOT/ASSISTANT VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_AutopilotAssistant_Variables.htm"
+    },
+    {
+      "name": "AUTOPILOT HEADING LOCK",
+      "description": "Returns whether the autopilot heading lock is enabled (1, TRUE) or not (0, FALSE).",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT AUTOPILOT/ASSISTANT VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_AutopilotAssistant_Variables.htm"
+    },
+    {
+      "name": "AUTOPILOT HEADING LOCK DIR",
+      "description": "Specifies / Returns the locked in heading for the autopilot.",
+      "units": [
+        "Degrees"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT AUTOPILOT/ASSISTANT VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_AutopilotAssistant_Variables.htm"
+    },
+    {
+      "name": "AUTOPILOT HEADING MANUALLY TUNABLE",
+      "description": "Whether or not the autopilot heading is manually tunable or not.",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT AUTOPILOT/ASSISTANT VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_AutopilotAssistant_Variables.htm"
+    },
+    {
+      "name": "AUTOPILOT HEADING SLOT INDEX",
+      "description": "Index of the slot that the autopilot will use for the heading reference. Note that there are 3 slots (1, 2, 3) that you can set/get normally, however you can also target slot index 0. Writing to slot 0 will overwrite all other slots with the slot 0 value, and by default the autopilot will follow slot 0 if you have not selected any slot index.",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT AUTOPILOT/ASSISTANT VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_AutopilotAssistant_Variables.htm"
+    },
+    {
+      "name": "AUTOPILOT MACH HOLD",
+      "description": "Mach hold active",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT AUTOPILOT/ASSISTANT VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_AutopilotAssistant_Variables.htm"
+    },
+    {
+      "name": "AUTOPILOT MACH HOLD VAR",
+      "description": "Returns the target holding mach airspeed for the autopilot.",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT AUTOPILOT/ASSISTANT VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_AutopilotAssistant_Variables.htm"
+    },
+    {
+      "name": "AUTOPILOT MANAGED INDEX",
+      "description": "Currently not used within the simulation.",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT AUTOPILOT/ASSISTANT VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_AutopilotAssistant_Variables.htm"
+    },
+    {
+      "name": "AUTOPILOT MANAGED SPEED IN MACH",
+      "description": "Returns whether the managed speed is in mach (1, TRUE) or not (0, FALSE).",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT AUTOPILOT/ASSISTANT VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_AutopilotAssistant_Variables.htm"
+    },
+    {
+      "name": "AUTOPILOT MANAGED THROTTLE ACTIVE",
+      "description": "Returns whether the autopilot managed throttle is active (1, TRUE) or not (0, FALSE).",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT AUTOPILOT/ASSISTANT VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_AutopilotAssistant_Variables.htm"
+    },
+    {
+      "name": "AUTOPILOT MASTER",
+      "description": "On/off flag",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT AUTOPILOT/ASSISTANT VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_AutopilotAssistant_Variables.htm"
+    },
+    {
+      "name": "AUTOPILOT MAX BANK",
+      "description": "Returns the maximum banking angle for the autopilot, in radians.",
+      "units": [
+        "Radians"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT AUTOPILOT/ASSISTANT VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_AutopilotAssistant_Variables.htm"
+    },
+    {
+      "name": "AUTOPILOT MAX BANK ID",
+      "description": "Returns the index of the current maximum bank setting of the autopilot.",
+      "units": [
+        "Integer"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT AUTOPILOT/ASSISTANT VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_AutopilotAssistant_Variables.htm"
+    },
+    {
+      "name": "AUTOPILOT MAX SPEED HOLD",
+      "description": "Currently not used within the simulation.",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT AUTOPILOT/ASSISTANT VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_AutopilotAssistant_Variables.htm"
+    },
+    {
+      "name": "AUTOPILOT NAV1 LOCK",
+      "description": "Returns TRUE (1) if the autopilot Nav1 lock is applied, or 0 (FALSE) otherwise.",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT AUTOPILOT/ASSISTANT VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_AutopilotAssistant_Variables.htm"
+    },
+    {
+      "name": "AUTOPILOT NAV SELECTED",
+      "description": "Index of Nav radio selected",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT AUTOPILOT/ASSISTANT VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_AutopilotAssistant_Variables.htm"
+    },
+    {
+      "name": "AUTOPILOT PITCH HOLD",
+      "description": "Set to True if the autopilot pitch hold has is engaged.",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT AUTOPILOT/ASSISTANT VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_AutopilotAssistant_Variables.htm"
+    },
+    {
+      "name": "AUTOPILOT PITCH HOLD REF",
+      "description": "Returns the current autotpilot reference pitch.",
+      "units": [
+        "Radians"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT AUTOPILOT/ASSISTANT VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_AutopilotAssistant_Variables.htm"
+    },
+    {
+      "name": "AUTOPILOT RPM HOLD",
+      "description": "True if autopilot rpm hold applied",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT AUTOPILOT/ASSISTANT VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_AutopilotAssistant_Variables.htm"
+    },
+    {
+      "name": "AUTOPILOT RPM HOLD VAR",
+      "description": "Selected rpm",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT AUTOPILOT/ASSISTANT VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_AutopilotAssistant_Variables.htm"
+    },
+    {
+      "name": "AUTOPILOT RPM SLOT INDEX",
+      "description": "Index of the slot that the autopilot will use for the RPM reference. Note that there are 3 slots (1, 2, 3) that you can set/get normally, however you can also target slot index 0. Writing to slot 0 will overwrite all other slots with the slot 0 value, and by default the autopilot will follow slot 0 if you have not selected any slot index.",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT AUTOPILOT/ASSISTANT VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_AutopilotAssistant_Variables.htm"
+    },
+    {
+      "name": "AUTOPILOT SPEED SETTING",
+      "description": "Currently not used within the simulation.",
+      "units": [
+        "Knots"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT AUTOPILOT/ASSISTANT VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_AutopilotAssistant_Variables.htm"
+    },
+    {
+      "name": "AUTOPILOT SPEED SLOT INDEX",
+      "description": "Index of the managed references",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT AUTOPILOT/ASSISTANT VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_AutopilotAssistant_Variables.htm"
+    },
+    {
+      "name": "AUTOPILOT TAKEOFF POWER ACTIVE",
+      "description": "Takeoff / Go Around power mode active",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT AUTOPILOT/ASSISTANT VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_AutopilotAssistant_Variables.htm"
+    },
+    {
+      "name": "AUTOPILOT THROTTLE ARM",
+      "description": "Returns whether the autopilot auto-throttle is armed (1, TRUE) or not (0, FALSE).",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT AUTOPILOT/ASSISTANT VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_AutopilotAssistant_Variables.htm"
+    },
+    {
+      "name": "AUTOPILOT THROTTLE MAX THRUST",
+      "description": "This can be used to set/get the thrust lever position for autopilot maximum thrust.",
+      "units": [
+        "Percent"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT AUTOPILOT/ASSISTANT VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_AutopilotAssistant_Variables.htm"
+    },
+    {
+      "name": "AUTOPILOT VERTICAL HOLD",
+      "description": "True if autopilot vertical hold applied",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT AUTOPILOT/ASSISTANT VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_AutopilotAssistant_Variables.htm"
+    },
+    {
+      "name": "AUTOPILOT VERTICAL HOLD VAR",
+      "description": "Selected vertical speed",
+      "units": [
+        "Feet (ft)/minute"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT AUTOPILOT/ASSISTANT VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_AutopilotAssistant_Variables.htm"
+    },
+    {
+      "name": "AUTOPILOT VS SLOT INDEX",
+      "description": "Index of the slot that the autopilot will use for the VS reference. Note that there are 3 slots (1, 2, 3) that you can set/get normally, however you can also target slot index 0. Writing to slot 0 will overwrite all other slots with the slot 0 value, and by default the autopilot will follow slot 0 if you have not selected any slot index.",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT AUTOPILOT/ASSISTANT VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_AutopilotAssistant_Variables.htm"
+    },
+    {
+      "name": "AUTOPILOT WING LEVELER",
+      "description": "Wing leveler active",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT AUTOPILOT/ASSISTANT VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_AutopilotAssistant_Variables.htm"
+    },
+    {
+      "name": "AUTOPILOT YAW DAMPER",
+      "description": "Yaw damper active",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT AUTOPILOT/ASSISTANT VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_AutopilotAssistant_Variables.htm"
+    },
+    {
+      "name": "ANTISKID BRAKES ACTIVE",
+      "description": "True if antiskid brakes active. This can be set using the AntiSkidActive parameter.",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT BRAKE / LANDING GEAR VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Brake_Landing_Gear_Variables.htm"
+    },
+    {
+      "name": "AUTOBRAKES ACTIVE",
+      "description": "Whether or not the AutoBrakes are currently active.",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT BRAKE / LANDING GEAR VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Brake_Landing_Gear_Variables.htm"
+    },
+    {
+      "name": "AUTO BRAKE SWITCH CB",
+      "description": "Auto brake switch position",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT BRAKE / LANDING GEAR VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Brake_Landing_Gear_Variables.htm"
+    },
+    {
+      "name": "BRAKE DEPENDENT HYDRAULIC PRESSURE",
+      "description": "Brake dependent hydraulic pressure reading",
+      "units": [
+        "Pounds per square foot (psf)"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT BRAKE / LANDING GEAR VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Brake_Landing_Gear_Variables.htm"
+    },
+    {
+      "name": "BRAKE INDICATOR",
+      "description": "Brake on indication",
+      "units": [
+        "Position (0 to 16K) 0 = off 16K = full"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT BRAKE / LANDING GEAR VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Brake_Landing_Gear_Variables.htm"
+    },
+    {
+      "name": "BRAKE LEFT POSITION",
+      "description": "Percent left brake. Note that this SimVar no longer sets the right brake percent and simply triggers a brake pressure increase regardless of the value passed.",
+      "units": [
+        "Position (0 to 32K) 0 = off 32K = full"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT BRAKE / LANDING GEAR VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Brake_Landing_Gear_Variables.htm"
+    },
+    {
+      "name": "BRAKE LEFT POSITION EX1",
+      "description": "Triggers a brake pressure increase on the left brake regardless of the value passed.",
+      "units": [
+        "Position (0 to 32K) 0 = off 32K = full"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT BRAKE / LANDING GEAR VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Brake_Landing_Gear_Variables.htm"
+    },
+    {
+      "name": "BRAKE PARKING INDICATOR",
+      "description": "Parking brake indicator",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT BRAKE / LANDING GEAR VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Brake_Landing_Gear_Variables.htm"
+    },
+    {
+      "name": "BRAKE PARKING POSITION",
+      "description": "Gets the parking brake position - either on (true) or off (false).",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT BRAKE / LANDING GEAR VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Brake_Landing_Gear_Variables.htm"
+    },
+    {
+      "name": "BRAKE RIGHT POSITION",
+      "description": "Percent right brake.",
+      "units": [
+        "Position (0 to 32K) 0 = off 32K = full"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT BRAKE / LANDING GEAR VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Brake_Landing_Gear_Variables.htm"
+    },
+    {
+      "name": "BRAKE RIGHT POSITION EX1",
+      "description": "Triggers a brake pressure increase on the right brake regardless of the value passed.",
+      "units": [
+        "Position (0 to 32K) 0 = off 32K = full"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT BRAKE / LANDING GEAR VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Brake_Landing_Gear_Variables.htm"
+    },
+    {
+      "name": "REJECTED TAKEOFF BRAKES ACTIVE",
+      "description": "Whether or not the rejected takeoff brakes are currently active.",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT BRAKE / LANDING GEAR VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Brake_Landing_Gear_Variables.htm"
+    },
+    {
+      "name": "TOE BRAKES AVAILABLE",
+      "description": "True if toe brakes are available",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT BRAKE / LANDING GEAR VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Brake_Landing_Gear_Variables.htm"
+    },
+    {
+      "name": "AILERON AVERAGE DEFLECTION",
+      "description": "Angle deflection for the aileron.",
+      "units": [
+        "Radians"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT CONTROL VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Control_Variables.htm"
+    },
+    {
+      "name": "AILERON LEFT DEFLECTION",
+      "description": "Angle deflection for the aileron.",
+      "units": [
+        "Radians"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT CONTROL VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Control_Variables.htm"
+    },
+    {
+      "name": "AILERON LEFT DEFLECTION PCT",
+      "description": "Percent deflection for the aileron. NOTE: This is available in multiplayer to all near aircraft. See here for more information: Note On SimVars In Multiplayer.",
+      "units": [
+        "Percent Over 100"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT CONTROL VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Control_Variables.htm"
+    },
+    {
+      "name": "AILERON POSITION",
+      "description": "Percent aileron input left/right.",
+      "units": [
+        "Position (-16K to 0) -16K = full left"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT CONTROL VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Control_Variables.htm"
+    },
+    {
+      "name": "AILERON RIGHT DEFLECTION",
+      "description": "Angle deflection.",
+      "units": [
+        "Radians"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT CONTROL VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Control_Variables.htm"
+    },
+    {
+      "name": "AILERON RIGHT DEFLECTION PCT",
+      "description": "Percent deflection. NOTE: This is available in multiplayer to all near aircraft. See here for more information: Note On SimVars In Multiplayer.",
+      "units": [
+        "Percent Over 100"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT CONTROL VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Control_Variables.htm"
+    },
+    {
+      "name": "AILERON TRIM",
+      "description": "Angle deflection.",
+      "units": [
+        "Radians"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT CONTROL VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Control_Variables.htm"
+    },
+    {
+      "name": "AILERON TRIM DISABLED",
+      "description": "Whether or not the Aileron Trim has been disabled.",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT CONTROL VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Control_Variables.htm"
+    },
+    {
+      "name": "AILERON TRIM PCT",
+      "description": "The trim position of the ailerons. Zero is fully retracted. NOTE: This is available in multiplayer to all near aircraft. See here for more information: Note On SimVars In Multiplayer.",
+      "units": [
+        "Percent Over 100"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT CONTROL VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Control_Variables.htm"
+    },
+    {
+      "name": "BUS LOOKUP INDEX",
+      "description": "This is a settable simvar meaning that it can both be read and set. Some of the simvars in this list are using this to lookup a value using two arguments (one argument in addition to the component index). For example to check the state of the connection between a \"circuit.45\" and the \"bus.2\" it would be written as follows: 2 (\u003eA:BUS LOOKUP INDEX, Number) (A:CIRCUIT CONNECTION ON:45, Bool) It should be notes that when BUS_LOOKUP_INDEX is not set (ie: it is 0) then TRUE will be returned if any of your bus connections are on.",
+      "units": [
+        "-"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ELECTRICS VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Electrics_Variables.htm"
+    },
+    {
+      "name": "BUS BREAKER PULLED",
+      "description": "This will be true if the bus breaker is pulled. Requires a BUS_LOOKUP_INDEX and a bus index.",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ELECTRICS VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Electrics_Variables.htm"
+    },
+    {
+      "name": "BUS CONNECTION ON",
+      "description": "This will be true if the bus is connected. Requires a BUS_LOOKUP_INDEX and a bus index.",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ELECTRICS VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Electrics_Variables.htm"
+    },
+    {
+      "name": "ELECTRICAL GENALT LOAD",
+      "description": "This returns the percentage of the load output that is being consumed. This requires an alternator index when referencing.",
+      "units": [
+        "Percent"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ELECTRICS VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Electrics_Variables.htm"
+    },
+    {
+      "name": "ELECTRICAL GENALT BUS AMPS",
+      "description": "The load handled by the alternator. This requires an alternator index when referencing.",
+      "units": [
+        "Amperes"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ELECTRICS VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Electrics_Variables.htm"
+    },
+    {
+      "name": "ELECTRICAL GENALT BUS VOLTAGE",
+      "description": "General alternator voltage. This requires an alternator index when referencing.",
+      "units": [
+        "Volts"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ELECTRICS VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Electrics_Variables.htm"
+    },
+    {
+      "name": "ELECTRICAL MAIN BUS VOLTAGE",
+      "description": "The main bus voltage. Use a bus index when referencing.",
+      "units": [
+        "Volts"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ELECTRICS VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Electrics_Variables.htm"
+    },
+    {
+      "name": "ELECTRICAL AVIONICS BUS AMPS",
+      "description": "Avionics bus current",
+      "units": [
+        "Amperes"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ELECTRICS VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Electrics_Variables.htm"
+    },
+    {
+      "name": "ELECTRICAL AVIONICS BUS VOLTAGE",
+      "description": "Avionics bus voltage",
+      "units": [
+        "Volts"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ELECTRICS VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Electrics_Variables.htm"
+    },
+    {
+      "name": "ELECTRICAL MAIN BUS AMPS",
+      "description": "Main bus current",
+      "units": [
+        "Amperes"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ELECTRICS VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Electrics_Variables.htm"
+    },
+    {
+      "name": "ELECTRICAL OLD CHARGING AMPS",
+      "description": "Deprecated, do not use! Use ELECTRICAL BATTERY LOAD.",
+      "units": [
+        "Amps"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ELECTRICS VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Electrics_Variables.htm"
+    },
+    {
+      "name": "ELECTRICAL TOTAL LOAD AMPS",
+      "description": "Total load amps",
+      "units": [
+        "Amperes"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ELECTRICS VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Electrics_Variables.htm"
+    },
+    {
+      "name": "NEW ELECTRICAL SYSTEM",
+      "description": "Is the aircraft using the new Electrical System or the legacy FSX one.",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ELECTRICS VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Electrics_Variables.htm"
+    },
+    {
+      "name": "BLEED AIR ENGINE",
+      "description": "Returns whether or not the indexed engine (see note) attempts to provide bleed air.",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
       "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
     },
     {
-      "name": "AIRSPEED INDICATED",
-      "description": "The indicated airspeed of the aircraft as displayed on the airspeed indicator. This value accounts for instrument error and position error but not for compressibility effects at high speeds.",
-      "units": ["knots", "feet/second", "meters/second"],
+      "name": "BLEED AIR SOURCE CONTROL",
+      "description": "The bleed air system source controller for an indexed engine (see note). This will work as follows: When engines and APU are activated, it will return 0 because it is in Auto. If the APU is removed, it will return 3 for engines only. If instead the engines are removed, it would return 2 for the APU only. If the APU and engines are removed, it would return 1 (so, off).",
+      "units": [
+        "Enum: 0 = auto 1 = off 2 = apu 3 = engines"
+      ],
       "settable": false,
-      "category": "Aircraft Position and Speed",
-      "versions": ["2020"],
-      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Position_And_Speed_Variables.htm"
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
     },
     {
-      "name": "PLANE HEADING DEGREES MAGNETIC",
-      "description": "The heading of the aircraft measured in degrees from magnetic north. Magnetic heading differs from true heading by the local magnetic variation (declination) at the aircraft's current position.",
-      "units": ["degrees", "radians"],
-      "settable": true,
-      "category": "Aircraft Position and Speed",
-      "versions": ["2020"],
-      "deprecated": true,
-      "deprecated_reason": "Use PLANE HEADING DEGREES TRUE",
-      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Position_And_Speed_Variables.htm"
+      "name": "COWL FLAPS",
+      "description": "Deprecated, do not use!",
+      "units": [
+        "Percent Over 100"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "ENGINE CONTROL SELECT",
+      "description": "Selected engines (combination of bit flags)",
+      "units": [
+        "Flags: 1 = Engine 1 2 = Engine 2 4 = Engine 3 8 = Engine 4"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "ENGINE MIXURE AVAILABLE",
+      "description": "True if engine mixture is available for prop engines. Deprecated, do not use (mixture is always available)!",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "ENGINE PRIMER",
+      "description": "The engine primer position.",
+      "units": [
+        "Position"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "ENGINE TYPE",
+      "description": "Engine type.",
+      "units": [
+        "Enum: 0 = Piston 1 = Jet 2 = None 3 = Helo(Bell) turbine 4 = Unsupported 5 = Turboprop"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "ENG ANTI ICE",
+      "description": "Anti-ice switch for the indexed engine (see note), true if enabled false otherwise.",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "ENG COMBUSTION",
+      "description": "True if the indexed engine (see note) is running, false otherwise.",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "ENG CYLINDER HEAD TEMPERATURE",
+      "description": "The indexed engine (see note) cylinder head temperature.",
+      "units": [
+        "Rankine"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "ENG EXHAUST GAS TEMPERATURE",
+      "description": "Exhaust gas temperature for the indexed engine (see note).",
+      "units": [
+        "Rankine"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "ENG EXHAUST GAS TEMPERATURE GES",
+      "description": "Governed engine setting exhaust gas temperature for the indexed engine (see note).",
+      "units": [
+        "Percent Over 100"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "ENG FAILED",
+      "description": "Failure flag for the indexed engine (see note) that has failed.",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "ENG FUEL FLOW BUG POSITION",
+      "description": "Fuel flow reference in pounds per hour for the indexed engine (see note).",
+      "units": [
+        "Pounds per hour"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "ENG FUEL FLOW GPH",
+      "description": "Engine fuel flow in gallons per hour for the indexed engine (see note).",
+      "units": [
+        "Gallons per hour"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "ENG FUEL FLOW PPH",
+      "description": "The indexed engine (see note) fuel flow in pounds per hour.",
+      "units": [
+        "Pounds per hour"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "ENG FUEL FLOW PPH SSL",
+      "description": "Engine fuel flow in pounds per hour. Deprecated in favour of ENG FUEL FLOW PPH.",
+      "units": [
+        "Pounds per hour"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "ENG HYDRAULIC PRESSURE",
+      "description": "The indexed engine (see note) hydraulic pressure.",
+      "units": [
+        "Pounds per square foot (psf)"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "ENG HYDRAULIC QUANTITY",
+      "description": "The indexed engine (see note)hydraulic fluid quantity, as a percentage of total capacity",
+      "units": [
+        "Percent Over 100"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "ENG MANIFOLD PRESSURE",
+      "description": "The indexed engine (see note) manifold pressure.",
+      "units": [
+        "Inches of mercury (inHg)"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "ENG MAX RPM",
+      "description": "The indexed engine (see note) Maximum rpm.",
+      "units": [
+        "RPM"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "ENG N1 RPM",
+      "description": "The indexed engine (see note) N1 rpm.",
+      "units": [
+        "RPM (0 to 16384 = 0 to 100%)"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "ENG N2 RPM",
+      "description": "The indexed engine (see note) N2 rpm.",
+      "units": [
+        "RPM (0 to 16384 = 0 to 100%)"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "ENG OIL PRESSURE",
+      "description": "The indexed engine (see note) oil pressure.",
+      "units": [
+        "pounds per square foot (psf)"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "ENG OIL QUANTITY",
+      "description": "The indexed engine (see note) oil quantity as a percentage of full capacity.",
+      "units": [
+        "Percent Over 100"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "ENG OIL TEMPERATURE",
+      "description": "The indexed engine (see note) oil temperature.",
+      "units": [
+        "Rankine"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "ENG ON FIRE",
+      "description": "The indexed engine (see note) on fire state.",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "ENG PRESSURE RATIO",
+      "description": "The indexed engine (see note) pressure ratio.",
+      "units": [
+        "Ratio (0-16384)"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "ENG PRESSURE RATIO GES",
+      "description": "Engine pressure ratio. Deprecated, do not use!",
+      "units": [
+        "Scalar"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "ENG RPM ANIMATION PERCENT",
+      "description": "The indexed engine (see note) percentage maximum rated rpm - used for visual animation. NOTE: This is available in multiplayer to all near aircraft. See here for more information: Note On SimVars In Multiplayer.",
+      "units": [
+        "Percent"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "ENG RPM SCALER",
+      "description": "RPM scalar value. Deprecated, do not use!",
+      "units": [
+        "Scalar"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "ENG TORQUE",
+      "description": "The indexed engine (see note) torque.",
+      "units": [
+        "Foot pounds"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "ENG VIBRATION",
+      "description": "The indexed engine (see note) vibration.",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "ESTIMATED FUEL FLOW",
+      "description": "Estimated fuel flow to the indexed engine (see note) at cruise speed.",
+      "units": [
+        "Pounds per hour"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "FULL THROTTLE THRUST TO WEIGHT RATIO",
+      "description": "Full throttle thrust to weight ratio",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "GENERAL ENG ANTI ICE POSITION",
+      "description": "The indexed engine (see note) anti-ice switch state - 0 (FALSE) is off and 1 (TRUE) is on.",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "GENERAL ENG COMBUSTION",
+      "description": "Set the indexed engine (see note) combustion flag to TRUE or FALSE. Note that this will not only stop all combustion, but it will also set the engine RPM to 0, regardless of the actual state of the simulation. NOTE: This is available in multiplayer to all far aircraft. See here for more information: Note On SimVars In Multiplayer.",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "GENERAL ENG COMBUSTION EX1",
+      "description": "This SimVar is similar to GENERAL ENG COMBUSTION, in that it can also be used to enable or disable engine combustion. However this SimVar will not interfere with the current state of ths simulation. For example, if the aircraft has a turbine engine with auto_ignition enabled or it's a propeller engine with magnetos, then in the subsequent simulation frames this SimVar may be set to 1 (TRUE) again as the engine restarts automatically.",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "GENERAL ENG COMBUSTION SOUND PERCENT",
+      "description": "Percent of maximum sound being created by the indexed engine (see note). NOTE: This is available in multiplayer to all far aircraft. See here for more information: Note On SimVars In Multiplayer.",
+      "units": [
+        "Percent"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "GENERAL ENG DAMAGE PERCENT",
+      "description": "Percent of total damage to the indexed engine (see note).",
+      "units": [
+        "Percent"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "GENERAL ENG ELAPSED TIME",
+      "description": "Total elapsed time since the indexed engine (see note) was started.",
+      "units": [
+        "Hours"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "GENERAL ENG EXHAUST GAS TEMPERATURE",
+      "description": "The indexed engine (see note) exhaust gas temperature.",
+      "units": [
+        "Rankine"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "GENERAL ENG FAILED",
+      "description": "The indexed engine (see note) fail flag.",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "GENERAL ENG FIRE DETECTED",
+      "description": "Detects if a fire has been detected in an indexed engine (see note) or not. If 0 (FALSE) no fire has been detected and if 1 (TRUE) then it has.",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "GENERAL ENG FUEL PRESSURE",
+      "description": "The indexed engine (see note) fuel pressure.",
+      "units": [
+        "Pounds per square inch (psi"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "GENERAL ENG FUEL PUMP ON",
+      "description": "Whether the indexed engine (see note) fuel pump on (1, TRUE) or off (0, FALSE).",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "GENERAL ENG FUEL PUMP SWITCH",
+      "description": "Fuel pump switch state the indexed engine (see note). If 0 (FALSE) the pump is off and if 1 (TRUE) then it is on.",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "GENERAL ENG FUEL PUMP SWITCH EX1",
+      "description": "Equivalent to GENERAL ENG FUEL PUMP SWITCH but differentiates between ON and AUTO",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "GENERAL ENG FUEL USED SINCE START",
+      "description": "Fuel used since the indexed engine (see note) was last started.",
+      "units": [
+        "Pounds"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "GENERAL ENG FUEL VALVE",
+      "description": "Fuel valve state for the indexed engine (see note). If 0 (FALSE) then the valve is closed and if 1 (TRUE) then it is open.",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "GENERAL ENG GENERATOR ACTIVE",
+      "description": "Settable alternator (generator) on/off switch for the indexed engine (see note).",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "GENERAL ENG GENERATOR SWITCH",
+      "description": "Alternator (generator) on/off switch state for the indexed engine (see note).",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "GENERAL ENG HOBBS ELAPSED TIME",
+      "description": "This can be used to find the time since the indexed engine (see note) started running. Similar to ElapsedTachometerTime, this records the time the engine has been running, but instead of taking a % of the time based on the Pct/RPM this takes the full time, but only if a threshold RPM/speed is reached. You can set the thresholds using the accumulated_time_hobbs_min_pct_rpm and accumulated_time_hobbs_min_knots parameters in the [GENERALENGINEDATA] section of the engines.cfg file.",
+      "units": [
+        "Seconds"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "GENERAL ENG MASTER ALTERNATOR",
+      "description": "The alternator switch for a specific engine. Requires an engine index (1 - 4) when used.",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "GENERAL ENG MAX REACHED RPM",
+      "description": "Maximum attained rpm for the indexed engine (see note).",
+      "units": [
+        "RPM"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "GENERAL ENG MIXTURE LEVER POSITION",
+      "description": "Percent of max mixture lever position for the indexed engine (see note).",
+      "units": [
+        "Percent"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "GENERAL ENG OIL LEAKED PERCENT",
+      "description": "Percent of max oil capacity leaked for the indexed engine (see note).",
+      "units": [
+        "Percent"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "GENERAL ENG OIL PRESSURE",
+      "description": "The indexed engine (see note) oil pressure.",
+      "units": [
+        "Psf"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "GENERAL ENG OIL TEMPERATURE",
+      "description": "The indexed engine (see note) oil temperature.",
+      "units": [
+        "Rankine"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "GENERAL ENG PCT MAX RPM",
+      "description": "Percent of max rated rpm for the indexed engine (see note). NOTE: This is available in multiplayer to all far aircraft. See here for more information: Note On SimVars In Multiplayer.",
+      "units": [
+        "Percent"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "GENERAL ENG PROPELLER LEVER POSITION",
+      "description": "Percent of max prop lever position for the indexed engine (see note).",
+      "units": [
+        "Percent"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "GENERAL ENG REVERSE THRUST ENGAGED",
+      "description": "This will return 1 (TRUE) if the reverse thruster is engaged, or 0 (FALSE) otherwise.",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "GENERAL ENG RPM",
+      "description": "The RPM for an indexed engine (see note). NOTE: This is available in multiplayer to all far aircraft. See here for more information: Note On SimVars In Multiplayer.",
+      "units": [
+        "RPM"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "GENERAL ENG STARTER",
+      "description": "The indexed engine (see note) starter on/off state.",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "GENERAL ENG STARTER ACTIVE",
+      "description": "True if the indexed engine (see note) starter is active. NOTE: This is available in multiplayer to all near aircraft. See here for more information: Note On SimVars In Multiplayer.",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "GENERAL ENG THROTTLE LEVER POSITION",
+      "description": "Percent of max throttle position for the indexed engine (see note). The lower limit will be clamped to the value set for min_throttle_limit.",
+      "units": [
+        "Percent"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "GENERAL ENG THROTTLE MANAGED MODE",
+      "description": "Current mode of the managed throttle for the indexed engine (see note).",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "MASTER IGNITION SWITCH",
+      "description": "Aircraft master ignition switch (grounds all engines magnetos).",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "MAX EGT",
+      "description": "The maximum EGT, as set using the egt_peak_temperature parameter in the engines.cfg file.",
+      "units": [
+        "Rankine"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "MAX OIL TEMPERATURE",
+      "description": "The maximum oil temperature, as set using the parameter oil_temp_heating_constant in the engines.cfg file.",
+      "units": [
+        "Rankine"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "MAX RATED ENGINE RPM",
+      "description": "Maximum rated rpm for the indexed engine (see note).",
+      "units": [
+        "RPM"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "NUMBER OF ENGINES",
+      "description": "Number of engines (minimum 0, maximum 4)",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "OIL AMOUNT",
+      "description": "Deprecated, do not use!",
+      "units": [
+        "FS7 Oil Quantity (Deprecated)"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "PANEL AUTO FEATHER SWITCH",
+      "description": "Auto-feather arming switch for the indexed engine (see note). Please see the Note On Autofeathering for more information.",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "PROP AUTO CRUISE ACTIVE",
+      "description": "True if prop auto cruise active",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "PROP AUTO FEATHER ARMED",
+      "description": "Auto-feather armed state for the indexed engine (see note).",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "PROP BETA",
+      "description": "The \"prop beta\" is the pitch of the blades of the propeller, and this can be used to retrieve the current pitch setting, per indexed engine (see note).",
+      "units": [
+        "Radians"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "PROP BETA FORCED ACTIVE",
+      "description": "This can be used to enable the propeller forced beta mode (1, TRUE) or disable it (0, FALSE), when being written to. When being read from, it will return TRUE (1) if the forced beta mode is enabled or FALSE (0) if it isn't. When enabled, the PROP BETA FORCED POSITION value will be used to drive the prop beta, while the internal coded simulation logic is used when this is disabled.",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "PROP BETA FORCED POSITION",
+      "description": "Get or set the beta at which the prop is forced. Only valid when PROP BETA FORCED ACTIVE is TRUE (1).",
+      "units": [
+        "Radians"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "PROP BETA MAX",
+      "description": "The \"prop beta\" is the pitch of the blades of the propeller. This retrieves the maximum possible pitch value for all engines.",
+      "units": [
+        "Radians"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "PROP BETA MIN",
+      "description": "The \"prop beta\" is the pitch of the blades of the propeller. This retrieves the minimum possible pitch value for all engines.",
+      "units": [
+        "Radians"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "PROP BETA MIN REVERSE",
+      "description": "The \"prop beta\" is the pitch of the blades of the propeller. This retrieves the minimum possible pitch value when the propeller is in reverse for all engines.",
+      "units": [
+        "Radians"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "PROP DEICE SWITCH",
+      "description": "True if prop deice switch on for the indexed engine (see note).",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "PROP FEATHERED",
+      "description": "This will return the feathered state of the propeller for an indexed engine (see note). The state is either feathered (true) or not (false).",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "PROP FEATHERING INHIBIT",
+      "description": "Feathering inhibit flag for the indexed engine (see note).",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "PROP FEATHER SWITCH",
+      "description": "Prop feather switch for the indexed engine (see note).",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "PROP MAX RPM PERCENT",
+      "description": "Percent of max rated rpm for the indexed engine (see note). NOTE: This is available in multiplayer to all near aircraft. See here for more information: Note On SimVars In Multiplayer.",
+      "units": [
+        "Percent"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "PROP ROTATION ANGLE",
+      "description": "Prop rotation angle. NOTE: This is available in multiplayer to all near aircraft. See here for more information: Note On SimVars In Multiplayer.",
+      "units": [
+        "Radians"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "PROP RPM",
+      "description": "Propeller rpm for the indexed engine (see note).",
+      "units": [
+        "RPM"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "PROP SYNC ACTIVE",
+      "description": "True if prop sync is active the indexed engine (see note).",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "PROP SYNC DELTA LEVER",
+      "description": "Corrected prop correction input on slaved engine for the indexed engine (see note).",
+      "units": [
+        "Position"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "PROP THRUST",
+      "description": "Propeller thrust for the indexed engine (see note). NOTE: This is available in multiplayer to all near aircraft. See here for more information: Note On SimVars In Multiplayer.",
+      "units": [
+        "Pounds"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "PROPELLER ADVANCED SELECTION",
+      "description": "Deprecated, do not use!",
+      "units": [
+        "Enum (Deprecated)"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "SHUTOFF VALVE PULLED",
+      "description": "This checks if the shutoff valve to the engine has been pulled (true) or not (false). When pulled piston engines will be blocked from getting any fuel.",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "THROTTLE LOWER LIMIT",
+      "description": "Percent throttle defining lower limit (negative for reverse thrust equipped airplanes). This will be the value defined for the min_throttle_limit parameter.",
+      "units": [
+        "Percent"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "TURB ENG AFTERBURNER",
+      "description": "Afterburner state for the indexed engine (see note). NOTE: This is available in multiplayer to all near aircraft. See here for more information: Note On SimVars In Multiplayer.",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "TURB ENG AFTERBURNER PCT ACTIVE",
+      "description": "The percentage that the afterburner is running at. NOTE: This is available in multiplayer to all near aircraft. See here for more information: Note On SimVars In Multiplayer.",
+      "units": [
+        "Percent Over 100"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "TURB ENG AFTERBURNER STAGE ACTIVE",
+      "description": "The stage of the afterburner, or 0 if the afterburner is not active. NOTE: This is available in multiplayer to all near aircraft. See here for more information: Note On SimVars In Multiplayer.",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "TURB ENG BLEED AIR",
+      "description": "Bleed air pressure for the indexed engine (see note).",
+      "units": [
+        "Pounds per square inch (psi"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "TURB ENG COMMANDED N1",
+      "description": "Effective commanded N1 for the indexed turbine engine (see note).",
+      "units": [
+        "Percent"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "TURB ENG CONDITION LEVER POSITION",
+      "description": "When the throttle is on idle position, this sets the condition levers to one of 3 positions to define the idle N1 target for the indexed engine (see note): Down position is the cut-off position that cuts the fuel to the engine, effectively shutting down the engine. Middle position requires N1 to reach the low idle value when throttle is in idle position (low idle value can be checked using the TURB_ENG_LOW_IDLE SimVar). High position requires N1 to reach the high idle value when throttle is in idle position (high idle value can be checked using the TURB_ENG_HIGH_IDLE SimVar). Note that this option requires several settings from the engines.cfg file to be set to specific values before working correctly: DisableMixtureControls needs to be set to 1 (TRUE). tp_idle_range should be set to 0 (since there is no mixture setting). idle_fuel_flow and idle_high_fuel_flow must be set to the same value (since there is no mixture setting to induce a variation between the 2). low_idle_n1 and high_idle_n1 to be correctly set.",
+      "units": [
+        "Enum: 0 = fuel cut-off 1 = low idle 2 = high idle"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "TURB ENG CORRECTED FF",
+      "description": "Corrected fuel flow for the indexed engine (see note).",
+      "units": [
+        "Pounds per hour"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "TURB ENG CORRECTED N1",
+      "description": "The indexed turbine engine (see note) corrected N1.",
+      "units": [
+        "Percent"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "TURB ENG CORRECTED N2",
+      "description": "The indexed turbine engine (see note) corrected N2.",
+      "units": [
+        "Percent"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "TURB ENG FREE TURBINE TORQUE",
+      "description": "The amount of free torque for the indexed turbine engine (see note).",
+      "units": [
+        "Foot Pound"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "TURB ENG FUEL AVAILABLE",
+      "description": "True if fuel is available for the indexed engine (see note).",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "TURB ENG FUEL EFFICIENCY LOSS",
+      "description": "This is used to control the fuel efficiency loss of the indexed engine, from 0 - no fuel efficiency loss - to 100 - double the fuel consumption.",
+      "units": [
+        "Percent"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "TURB ENG FUEL FLOW PPH",
+      "description": "The indexed engine (see note) fuel flow rate.",
+      "units": [
+        "Pounds per hour"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "TURB ENG HIGH IDLE",
+      "description": "Retrieves the high idle N1 value to be reached by the the indexed turboprop engine (see note) with throttle in idle position and condition lever in high idle position (condition lever position can be checked or set using the TURB_ENG_CONDITION_LEVER_POSITION SimVar).",
+      "units": [
+        "Percent"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "TURB ENG IGNITION SWITCH",
+      "description": "True if the the indexed turbine engine (see note) ignition switch is on.",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "TURB ENG IGNITION SWITCH EX1",
+      "description": "Position of the the indexed turbine engine (see note) Ignition Switch. Similar to TURB_ENG_IGNITION_SWITCH but differentiates between ON and AUTO.",
+      "units": [
+        "Enum: 0 = OFF 1 = AUTO 2 = ON"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "TURB ENG IS IGNITING",
+      "description": "Whether or not the ignition system is currently running for the indexed engine (see note). Depends on TURB_ENG_IGNITION_SWITCH_EX1 Enum, the cfg var ignition_auto_type and current state of the plane.",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "TURB ENG ITT",
+      "description": "Retrieve or set the ITT for the indexed engine (see note).",
+      "units": [
+        "Rankine"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "TURB ENG ITT COOLING EFFICIENCY LOSS",
+      "description": "This is used to control the ITT cooling efficiency loss of the indexed engine, from 0 - no cooling efficiency loss - to 100 -engine recieves no ITT cooling.",
+      "units": [
+        "Percent"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "TURB ENG JET THRUST",
+      "description": "The indexed engine (see note) jet thrust.",
+      "units": [
+        "Pounds"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "TURB ENG LOW IDLE",
+      "description": "Retrieves the low idle N1 value to be reached by the the indexed turboprop engine (see note) with throttle in idle position and condition lever in low idle position (condition lever position can be checked or set using the TURB_ENG_CONDITION_LEVER_POSITION SimVar).",
+      "units": [
+        "Percent"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "TURB ENG MASTER STARTER SWITCH",
+      "description": "True if the turbine engine master starter switch is on, false otherwise.",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "TURB ENG MAX TORQUE PERCENT",
+      "description": "Percent of max rated torque for the indexed engine (see note).",
+      "units": [
+        "Percent"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "TURB ENG N1",
+      "description": "The indexed turbine engine (see note) N1 value. NOTE: This is available in multiplayer to all far aircraft. See here for more information: Note On SimVars In Multiplayer.",
+      "units": [
+        "Percent"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "TURB ENG N1 LOSS",
+      "description": "This is used to control the N1 loss of the indexed engine, from 0 - no N1 loss - to 100 - 100% N1 loss.",
+      "units": [
+        "Percent"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "TURB ENG N2",
+      "description": "The indexed turbine engine (see note) N2 value. NOTE: This is available in multiplayer to all far aircraft. See here for more information: Note On SimVars In Multiplayer.",
+      "units": [
+        "Percent"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "TURB ENG NUM TANKS USED",
+      "description": "Number of tanks currently being used by the indexed engine (see note).",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "TURB ENG PRESSURE RATIO",
+      "description": "The indexed engine (see note) pressure ratio.",
+      "units": [
+        "Ratio"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "TURB ENG PRIMARY NOZZLE PERCENT",
+      "description": "Percent thrust of primary nozzle for the indexed engine (see note).",
+      "units": [
+        "Percent Over 100"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "TURB ENG REVERSE NOZZLE PERCENT",
+      "description": "Percent thrust reverser nozzles deployed for the indexed engine (see note). NOTE: This is available in multiplayer to all far aircraft. See here for more information: Note On SimVars In Multiplayer.",
+      "units": [
+        "Percent"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "TURB ENG TANKS USED",
+      "description": "Fuel tanks used by the indexed engine (see note), one or more of the following bit flags: Center 1 Bit 0 Center 2 Bit 1 Center 3 Bit 2 Left Main Bit 3 Left Aux Bit 4 Left Tip Bit 5 Right Main Bit 6 Right Aux Bit 7 Right Tip Bit 8 External 1 Bit 9 External 2 Bit 10",
+      "units": [
+        "Mask"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "TURB ENG TANK SELECTOR",
+      "description": "Fuel tank selected for the indexed engine (see note). See Fuel Tank Selection for a list of values.",
+      "units": [
+        "Enum"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "TURB ENG THROTTLE COMMANDED N1",
+      "description": "The indexed turbine engine (see note) commanded N1 for current throttle position.",
+      "units": [
+        "Percent"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "TURB ENG THRUST EFFICIENCY LOSS",
+      "description": "This can be used to control the thrust efficiency loss of the indexed engine, where a value of 0 is 100% of available thrust, and 100 is 0% available thrust.",
+      "units": [
+        "Percent"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "TURB ENG VIBRATION",
+      "description": "The indexed turbine engine (see note) vibration value.",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "TURB MAX ITT",
+      "description": "Retrieve the itt_peak_temperature as set in the engines.cfg file.",
+      "units": [
+        "Rankine"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT ENGINE VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm"
+    },
+    {
+      "name": "BETA DOT",
+      "description": "Beta dot",
+      "units": [
+        "Radians per second"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT FLIGHT MODEL VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_FlightModel_Variables.htm"
+    },
+    {
+      "name": "DECISION ALTITUDE MSL",
+      "description": "Design decision altitude above mean sea level",
+      "units": [
+        "Feet (ft)"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT FLIGHT MODEL VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_FlightModel_Variables.htm"
+    },
+    {
+      "name": "DECISION HEIGHT",
+      "description": "Design decision height",
+      "units": [
+        "Feet (ft)"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT FLIGHT MODEL VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_FlightModel_Variables.htm"
+    },
+    {
+      "name": "DESIGN CRUISE ALT",
+      "description": "This design constant represents the optimal altitude the aircraft should maintain when in cruise. It is derived from the cruise_alt setting in the [REFERENCE SPEEDS] section of the flightmodel.cfg. Default is 1500ft.",
+      "units": [
+        "Feet (ft)"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT FLIGHT MODEL VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_FlightModel_Variables.htm"
+    },
+    {
+      "name": "DESIGN SPAWN ALTITUDE CRUISE",
+      "description": "This design constant represents the spawn altitude for the aircraft when spawning in cruise. It is derived from the spawn_cruise_altitude setting in the [REFERENCE SPEEDS] section of the flightmodel.cfg. Default is 1500ft.",
+      "units": [
+        "Feet (ft)"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT FLIGHT MODEL VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_FlightModel_Variables.htm"
+    },
+    {
+      "name": "DESIGN SPAWN ALTITUDE DESCENT",
+      "description": "This design constant represents the spawn altitude for the aircraft when spawning in descent. It is derived from the spawn_descent_altitude setting in the [REFERENCE SPEEDS] section of the flightmodel.cfg. Default is 500ft.",
+      "units": [
+        "Feet (ft)"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT FLIGHT MODEL VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_FlightModel_Variables.htm"
+    },
+    {
+      "name": "DESIGN SPEED CLIMB",
+      "description": "This design constant represents the optimal climb speed for the aircraft. It is derived from the climb_speed setting in the [REFERENCE SPEEDS] section of the flightmodel.cfg. Default value is -1.",
+      "units": [
+        "Feet (ft) per second"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT FLIGHT MODEL VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_FlightModel_Variables.htm"
+    },
+    {
+      "name": "DESIGN SPEED MIN ROTATION",
+      "description": "This design constant represents the minimum speed required for aircraft rotation. It is derived from the rotation_speed_min setting in the [REFERENCE SPEEDS] section of the flightmodel.cfg. Default value is -1.",
+      "units": [
+        "Feet (ft) per second"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT FLIGHT MODEL VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_FlightModel_Variables.htm"
+    },
+    {
+      "name": "DESIGN SPEED VC",
+      "description": "This design constant represents the aircraft ideal cruising speed. It is derived from the cruise_speed setting in the [REFERENCE SPEEDS] section of the flightmodel.cfg. The default value is computed an internal function that uses the estimated cruise altitude and estimated cruise percent power, according of the engine type, the number of engines, the density, the wing area and some drag parameters. Normally this value is set in the CFG file and the default value is never used.",
+      "units": [
+        "Feet (ft) per second"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT FLIGHT MODEL VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_FlightModel_Variables.htm"
+    },
+    {
+      "name": "DESIGN SPEED VS0",
+      "description": "This design constant represents the the stall speed when flaps are fully extended. It is derived from the full_flaps_stall_speed setting in the [REFERENCE SPEEDS] section of the flightmodel.cfg. Default value is 0.8 x VS.",
+      "units": [
+        "kias"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT FLIGHT MODEL VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_FlightModel_Variables.htm"
+    },
+    {
+      "name": "DESIGN SPEED VS1",
+      "description": "This design constant represents the stall speed when flaps are fully retracted. It is derived from the flaps_up_stall_speed setting in the [REFERENCE SPEEDS] section of the flightmodel.cfg. Default value is 0.",
+      "units": [
+        "kias"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT FLIGHT MODEL VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_FlightModel_Variables.htm"
+    },
+    {
+      "name": "DESIGN TAKEOFF SPEED",
+      "description": "This design constant represents the aircraft ideal takoff speed. It is derived from the takeoff_speed setting in the [REFERENCE SPEEDS] section of the flightmodel.cfg.",
+      "units": [
+        "Knots"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT FLIGHT MODEL VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_FlightModel_Variables.htm"
+    },
+    {
+      "name": "DYNAMIC PRESSURE",
+      "description": "Dynamic pressure",
+      "units": [
+        "Pounds per square foot (psf)"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT FLIGHT MODEL VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_FlightModel_Variables.htm"
+    },
+    {
+      "name": "ESTIMATED CRUISE SPEED",
+      "description": "Estimated cruise speed",
+      "units": [
+        "Feet (ft) per second"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT FLIGHT MODEL VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_FlightModel_Variables.htm"
+    },
+    {
+      "name": "G FORCE",
+      "description": "Current g force",
+      "units": [
+        "GForce"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT FLIGHT MODEL VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_FlightModel_Variables.htm"
+    },
+    {
+      "name": "G LIMITER SETTING",
+      "description": "This returns the setting of the G-limiter, as set using the GLimiterSetting parameter.",
+      "units": [
+        "Enum: 0 = Off 1 = On 2 = Override"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT FLIGHT MODEL VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_FlightModel_Variables.htm"
+    },
+    {
+      "name": "INCIDENCE ALPHA",
+      "description": "Angle of attack",
+      "units": [
+        "Radians"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT FLIGHT MODEL VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_FlightModel_Variables.htm"
+    },
+    {
+      "name": "INCIDENCE BETA",
+      "description": "Sideslip angle",
+      "units": [
+        "Radians"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT FLIGHT MODEL VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_FlightModel_Variables.htm"
+    },
+    {
+      "name": "IS TAIL DRAGGER",
+      "description": "True if the aircraft is a taildragger",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT FLIGHT MODEL VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_FlightModel_Variables.htm"
+    },
+    {
+      "name": "LINEAR CL ALPHA",
+      "description": "Linear CL alpha",
+      "units": [
+        "Per radian"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT FLIGHT MODEL VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_FlightModel_Variables.htm"
+    },
+    {
+      "name": "MACH MAX OPERATE",
+      "description": "Maximum design mach",
+      "units": [
+        "Mach"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT FLIGHT MODEL VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_FlightModel_Variables.htm"
+    },
+    {
+      "name": "MAX G FORCE",
+      "description": "Maximum G force attained",
+      "units": [
+        "Gforce"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT FLIGHT MODEL VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_FlightModel_Variables.htm"
+    },
+    {
+      "name": "MIN DRAG VELOCITY",
+      "description": "Minimum drag velocity, in clean, with no input and no gears, when at 10000ft.",
+      "units": [
+        "Feet (ft) per second"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT FLIGHT MODEL VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_FlightModel_Variables.htm"
+    },
+    {
+      "name": "MIN G FORCE",
+      "description": "Minimum G force attained",
+      "units": [
+        "Gforce"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT FLIGHT MODEL VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_FlightModel_Variables.htm"
+    },
+    {
+      "name": "SEMIBODY LOADFACTOR X",
+      "description": "Deprecated, do not use!",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT FLIGHT MODEL VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_FlightModel_Variables.htm"
+    },
+    {
+      "name": "SEMIBODY LOADFACTOR Y",
+      "description": "Acceleration along the axis Y divided by the gravity constant g (usually around 9.81m.s²)",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT FLIGHT MODEL VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_FlightModel_Variables.htm"
+    },
+    {
+      "name": "SEMIBODY LOADFACTOR YDOT",
+      "description": "Derivative of SEMIBODY LOADFACTOR Y in relation to time.",
+      "units": [
+        "Per second"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT FLIGHT MODEL VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_FlightModel_Variables.htm"
+    },
+    {
+      "name": "SEMIBODY LOADFACTOR Z",
+      "description": "Deprecated, do not use!",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT FLIGHT MODEL VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_FlightModel_Variables.htm"
+    },
+    {
+      "name": "SIGMA SQRT",
+      "description": "Sigma sqrt",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT FLIGHT MODEL VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_FlightModel_Variables.htm"
+    },
+    {
+      "name": "SIMULATED RADIUS",
+      "description": "Simulated radius",
+      "units": [
+        "Feet (ft)"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT FLIGHT MODEL VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_FlightModel_Variables.htm"
+    },
+    {
+      "name": "STALL ALPHA",
+      "description": "The angle of attack which produces the maximum lift coefficient before entering into stall conditions.",
+      "units": [
+        "Radians"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT FLIGHT MODEL VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_FlightModel_Variables.htm"
+    },
+    {
+      "name": "STATIC PITCH",
+      "description": "The angle at which static pitch stability is achieved.",
+      "units": [
+        "Radians"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT FLIGHT MODEL VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_FlightModel_Variables.htm"
+    },
+    {
+      "name": "TYPICAL DESCENT RATE",
+      "description": "the typical (normal) descent rate for the aircraft.",
+      "units": [
+        "Feet (ft) per minute"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT FLIGHT MODEL VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_FlightModel_Variables.htm"
+    },
+    {
+      "name": "WING AREA",
+      "description": "Total wing area",
+      "units": [
+        "Square feet (ft)"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT FLIGHT MODEL VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_FlightModel_Variables.htm"
+    },
+    {
+      "name": "WING FLEX PCT",
+      "description": "The current wing flex. Different values can be set for each wing (for example, during banking). Set an index of 1 for the left wing, and 2 for the right wing.",
+      "units": [
+        "Percent Over 100"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT FLIGHT MODEL VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_FlightModel_Variables.htm"
+    },
+    {
+      "name": "WING SPAN",
+      "description": "Total wing span",
+      "units": [
+        "Feet (ft)"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT FLIGHT MODEL VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_FlightModel_Variables.htm"
+    },
+    {
+      "name": "YAW STRING ANGLE",
+      "description": "The yaw string angle. Yaw strings are attached to gliders as visible indicators of the yaw angle. An animation of this is not implemented in ESP.",
+      "units": [
+        "Radians"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT FLIGHT MODEL VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_FlightModel_Variables.htm"
+    },
+    {
+      "name": "YAW STRING PCT EXTENDED",
+      "description": "Yaw string angle as a percentage",
+      "units": [
+        "Percent Over 100"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT FLIGHT MODEL VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_FlightModel_Variables.htm"
+    },
+    {
+      "name": "ZERO LIFT ALPHA",
+      "description": "The angle of attack at which the wing has zero lift.",
+      "units": [
+        "Radians"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT FLIGHT MODEL VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_FlightModel_Variables.htm"
+    },
+    {
+      "name": "FUEL CROSS FEED",
+      "description": "Cross feed valve setting. This will return the current setting for the fuel crossfeed for the indexed engine, based on the current status of the simulation and the Cross Feed key events.",
+      "units": [
+        "Enum: 0 = Closed 1 = Open 2 = Left to Right 3 = Right to Left"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT FUEL VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Fuel_Variables.htm"
+    },
+    {
+      "name": "FUEL DUMP ACTIVE",
+      "description": "If 1 (TRUE) then the aircraft can dump fuel.",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT FUEL VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Fuel_Variables.htm"
+    },
+    {
+      "name": "FUEL DUMP SWITCH",
+      "description": "If set to 1 (TRUE) then the aircraft will dump fuel at the rate set by fuel_dump_rate parameter in the flight_model.cfg file.",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT FUEL VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Fuel_Variables.htm"
+    },
+    {
+      "name": "FUEL LEFT CAPACITY",
+      "description": "Maximum capacity in volume of all the tanks on the left side of the aircraft.",
+      "units": [
+        "Gallons"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT FUEL VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Fuel_Variables.htm"
+    },
+    {
+      "name": "FUEL LEFT QUANTITY",
+      "description": "Current quantity in volume of all the tanks on the left side of the aircraft.",
+      "units": [
+        "Gallons"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT FUEL VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Fuel_Variables.htm"
+    },
+    {
+      "name": "FUEL PUMP",
+      "description": "Currently not used within the simulation.",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT FUEL VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Fuel_Variables.htm"
+    },
+    {
+      "name": "FUEL RIGHT CAPACITY",
+      "description": "Maximum capacity in volume of all the tanks on the right side of the aircraft.",
+      "units": [
+        "Gallons"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT FUEL VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Fuel_Variables.htm"
+    },
+    {
+      "name": "FUEL RIGHT QUANTITY",
+      "description": "Current quantity in volume of all the tanks on the right side of the aircraft.",
+      "units": [
+        "Gallons"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT FUEL VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Fuel_Variables.htm"
+    },
+    {
+      "name": "FUEL SELECTED QUANTITY",
+      "description": "Quantity of fuel in the tank referenced by the indexed selector. When using the legacy fuel system, this SimVar will return the quantity of fuel in the tank pointed to by the selector you chose with the index. If passing an index higher than the number of selectors - or when using the modern fuel system - it will return the total fuel quantity available.",
+      "units": [
+        "Gallons"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT FUEL VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Fuel_Variables.htm"
+    },
+    {
+      "name": "FUEL SELECTED QUANTITY PERCENT",
+      "description": "Percent or capacity for the tank referenced by the indexed selector. When using the legacy fuel system, this SimVar will return the percentage of fuel in the tank pointed to by the selector you chose with the index. If passing an index higher than the number of selectors available - or when using the modern fuel system - it will return the percentage of total fuel quantity available.",
+      "units": [
+        "Percent Over 100"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT FUEL VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Fuel_Variables.htm"
+    },
+    {
+      "name": "FUEL SELECTED TRANSFER MODE",
+      "description": "The method of transfer for the fuel. Each of the available transfer options are explained below: off - Fuel transfer is switched off. auto - Automatically balance the fuel between the Center1 and Center2 tanks to maintain the center of gravity. forward - Fuel will be transferred forwards from the Center1 tank to the Center2 tank. aft - Fuel will be transferred aftwards from the Center2 tank to the Center1 tank. manual - Fuel will be transferred for 1 second from the Center1 tank to the Center2 tank at a rate of 1lbs/s. custom - This requires one or more pumps to have been defined using the fuel_transfer_pump.N parameter in the flight_model.cfg file, as well as their associated electrical circuits.",
+      "units": [
+        "Enum: 0 = off 1 = auto 2 = forward 3 = aft 4 = manual 5 = custom"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT FUEL VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Fuel_Variables.htm"
+    },
+    {
+      "name": "FUEL TOTAL CAPACITY",
+      "description": "Total fuel capacity of the aircraft for all tanks.",
+      "units": [
+        "Gallons"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT FUEL VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Fuel_Variables.htm"
+    },
+    {
+      "name": "FUEL TOTAL QUANTITY",
+      "description": "Current total quantity of fuel in volume for all tanks of the aircraft.",
+      "units": [
+        "Gallons"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT FUEL VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Fuel_Variables.htm"
+    },
+    {
+      "name": "FUEL TOTAL QUANTITY WEIGHT",
+      "description": "Current total fuel weight for all tanks of the aircraft",
+      "units": [
+        "Pounds"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT FUEL VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Fuel_Variables.htm"
+    },
+    {
+      "name": "FUEL TRANSFER PUMP ON",
+      "description": "Returns 1 (TRUE) if the indexed pump is active.",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT FUEL VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Fuel_Variables.htm"
+    },
+    {
+      "name": "FUEL WEIGHT PER GALLON",
+      "description": "The weight of the fuel, per gallon.",
+      "units": [
+        "Pounds"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT FUEL VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Fuel_Variables.htm"
+    },
+    {
+      "name": "NEW FUEL SYSTEM",
+      "description": "Will return 1 (TRUE) if the aircraft is using the modern [FUEL_SYSTEM] or 0 (FALSE) for the legacy [FUEL].",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT FUEL VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Fuel_Variables.htm"
+    },
+    {
+      "name": "NUM FUEL SELECTORS",
+      "description": "The number of fuel selectors on the aircraft.",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT FUEL VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Fuel_Variables.htm"
+    },
+    {
+      "name": "UNLIMITED FUEL",
+      "description": "Will return 1 (TRUE) if the unlimited fuel flag has been enabled, or 0 (FALSE) otherwise.",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT FUEL VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Fuel_Variables.htm"
+    },
+    {
+      "name": "UNUSABLE FUEL TOTAL QUANTITY",
+      "description": "The total amount of fuel in all tanks of the aircraft which is not usable.",
+      "units": [
+        "Gallons"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT FUEL VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Fuel_Variables.htm"
+    },
+    {
+      "name": "AMBIENT IN CLOUD",
+      "description": "True if the aircraft is in a cloud.",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT MISC VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Misc_Variables.htm"
+    },
+    {
+      "name": "CONTRAILS CONDITIONS MET",
+      "description": "True if the aircraft has met the conditions required to spawn the contrail VFX.",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT MISC VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Misc_Variables.htm"
+    },
+    {
+      "name": "IS SLEW ACTIVE",
+      "description": "True if slew is active.",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT MISC VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Misc_Variables.htm"
+    },
+    {
+      "name": "IS SLEW ALLOWED",
+      "description": "True if slew is enabled.",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT MISC VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Misc_Variables.htm"
+    },
+    {
+      "name": "IS USER SIM",
+      "description": "Is this the user loaded aircraft.",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT MISC VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Misc_Variables.htm"
+    },
+    {
+      "name": "ON ANY RUNWAY",
+      "description": "Whether or not the plane is currently on a runway.",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT MISC VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Misc_Variables.htm"
+    },
+    {
+      "name": "PLANE IN PARKING STATE",
+      "description": "Whether or not the plane is currently parked (true) or not (false).",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT MISC VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Misc_Variables.htm"
+    },
+    {
+      "name": "SURFACE CONDITION",
+      "description": "The state of the surface directly under the aircraft.",
+      "units": [
+        "Enum: 0 = Normal 1 = Wet 2 = Icy 3 = Snow"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT MISC VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Misc_Variables.htm"
+    },
+    {
+      "name": "SURFACE INFO VALID",
+      "description": "True indicates that the SURFACE CONDITION return value is meaningful.",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT MISC VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Misc_Variables.htm"
+    },
+    {
+      "name": "SURFACE TYPE",
+      "description": "The type of surface under the aircraft.",
+      "units": [
+        "Enum: 0 = Concrete 1 = Grass 2 = Water 3 = Grass_bumpy 4 = Asphalt 5 = Short_grass 6 = Long_grass 7 = Hard_turf 8 = Snow 9 = Ice 10 = Urban 11 = Forest 12 = Dirt 13 = Coral 14 = Gravel 15 = Oil_treated 16 = Steel_mats 17 = Bituminus 18 = Brick 19 = Macadam 20 = Planks 21 = Sand 22 = Shale 23 = Tarmac 24 = Wright flyer track"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT MISC VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Misc_Variables.htm"
+    },
+    {
+      "name": "STRUCTURAL ICE PCT",
+      "description": "Amount of ice on aircraft structure. 100 is fully iced.",
+      "units": [
+        "Percent Over 100"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT MISC VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Misc_Variables.htm"
+    },
+    {
+      "name": "TITLE",
+      "description": "Title from aircraft.cfg.",
+      "units": [
+        "String (max 128 chars)"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT MISC VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Misc_Variables.htm"
+    },
+    {
+      "name": "TOW CONNECTION",
+      "description": "True if a towline is connected to both tow plane and glider.",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT MISC VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Misc_Variables.htm"
+    },
+    {
+      "name": "WINDSHIELD RAIN EFFECT AVAILABLE",
+      "description": "Is visual effect available on this aircraft.",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT MISC VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Misc_Variables.htm"
+    },
+    {
+      "name": "ADF ACTIVE FREQUENCY",
+      "description": "ADF frequency. Index of 1 or 2.",
+      "units": [
+        "Frequency ADF BCD32"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT RADIO NAVIGATION VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_RadioNavigation_Variables.htm"
+    },
+    {
+      "name": "ADF AVAILABLE",
+      "description": "True if ADF is available",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT RADIO NAVIGATION VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_RadioNavigation_Variables.htm"
+    },
+    {
+      "name": "ADF CARD",
+      "description": "ADF compass rose setting",
+      "units": [
+        "Degrees"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT RADIO NAVIGATION VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_RadioNavigation_Variables.htm"
+    },
+    {
+      "name": "ADF EXT FREQUENCY",
+      "description": "Deprecated, use ADF ACTIVE FREQUENCY",
+      "units": [
+        "Frequency BCD16"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT RADIO NAVIGATION VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_RadioNavigation_Variables.htm"
+    },
+    {
+      "name": "ADF FREQUENCY",
+      "description": "Deprecated, use ADF ACTIVE FREQUENCY",
+      "units": [
+        "Frequency BCD16"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT RADIO NAVIGATION VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_RadioNavigation_Variables.htm"
+    },
+    {
+      "name": "ADF IDENT",
+      "description": "ICAO code",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT RADIO NAVIGATION VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_RadioNavigation_Variables.htm"
+    },
+    {
+      "name": "ADF LATLONALT",
+      "description": "Returns the latitude, longitude and altitude of the station the radio equipment is currently tuned to, or zeros if the radio is not tuned to any ADF station. Index of 1 or 2 for ADF 1 and ADF 2.",
+      "units": [
+        "SIMCONNECT_DATA_LATLONALT structure"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT RADIO NAVIGATION VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_RadioNavigation_Variables.htm"
+    },
+    {
+      "name": "ADF NAME",
+      "description": "Descriptive name",
+      "units": [
+        "String"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT RADIO NAVIGATION VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_RadioNavigation_Variables.htm"
+    },
+    {
+      "name": "ADF RADIAL",
+      "description": "Current direction from NDB station",
+      "units": [
+        "Degrees"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT RADIO NAVIGATION VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_RadioNavigation_Variables.htm"
+    },
+    {
+      "name": "ADF RADIAL MAG",
+      "description": "Returns the magnetic bearing to the currently tuned ADF transmitter.",
+      "units": [
+        "Degrees"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT RADIO NAVIGATION VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_RadioNavigation_Variables.htm"
+    },
+    {
+      "name": "ADF SIGNAL",
+      "description": "Signal strength",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT RADIO NAVIGATION VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_RadioNavigation_Variables.htm"
+    },
+    {
+      "name": "ADF SOUND",
+      "description": "ADF audio flag. Index of 0 or 1.",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT RADIO NAVIGATION VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_RadioNavigation_Variables.htm"
+    },
+    {
+      "name": "ADF STANDBY AVAILABLE",
+      "description": "True if ADF Standby is available",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT RADIO NAVIGATION VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_RadioNavigation_Variables.htm"
+    },
+    {
+      "name": "ADF STANDBY FREQUENCY",
+      "description": "ADF standby frequency",
+      "units": [
+        "Hz"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT RADIO NAVIGATION VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_RadioNavigation_Variables.htm"
+    },
+    {
+      "name": "ADF VOLUME",
+      "description": "Returns the volume of the ADF",
+      "units": [
+        "Percent Over 100"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT RADIO NAVIGATION VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_RadioNavigation_Variables.htm"
+    },
+    {
+      "name": "AIRSPEED TRUE CALIBRATE",
+      "description": "Angle of True calibration scale on airspeed indicator.",
+      "units": [
+        "Degrees"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT SYSTEM VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_System_Variables.htm"
+    },
+    {
+      "name": "ALTERNATE STATIC SOURCE OPEN",
+      "description": "Alternate static air source.",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT SYSTEM VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_System_Variables.htm"
+    },
+    {
+      "name": "ANEMOMETER PCT RPM",
+      "description": "Anemometer rpm as a percentage.",
+      "units": [
+        "Percent Over 100"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT SYSTEM VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_System_Variables.htm"
+    },
+    {
+      "name": "ANGLE OF ATTACK INDICATOR",
+      "description": "AoA indication.",
+      "units": [
+        "Radians"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT SYSTEM VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_System_Variables.htm"
+    },
+    {
+      "name": "ANNUNCIATOR SWITCH",
+      "description": "Currently not used in the simulation.",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT SYSTEM VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_System_Variables.htm"
+    },
+    {
+      "name": "APPLY HEAT TO SYSTEMS",
+      "description": "Used when too close to a fire.",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT SYSTEM VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_System_Variables.htm"
+    },
+    {
+      "name": "AUDIO PANEL AVAILABLE",
+      "description": "True if the audio panel is available.",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT SYSTEM VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_System_Variables.htm"
+    },
+    {
+      "name": "AUDIO PANEL VOLUME",
+      "description": "The Volume of the Audio Panel.",
+      "units": [
+        "Percent"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT SYSTEM VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_System_Variables.htm"
+    },
+    {
+      "name": "AUTOTHROTTLE ACTIVE",
+      "description": "Auto-throttle active.",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT SYSTEM VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_System_Variables.htm"
+    },
+    {
+      "name": "AUTO COORDINATION",
+      "description": "Is auto-coordination active.",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT SYSTEM VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_System_Variables.htm"
+    },
+    {
+      "name": "AVIONICS MASTER SWITCH",
+      "description": "The avionics master switch position, true if the switch is ON. Use an avionics circuit index when referencing.",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT SYSTEM VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_System_Variables.htm"
+    },
+    {
+      "name": "CABIN NO SMOKING ALERT SWITCH",
+      "description": "True if the No Smoking switch is on.",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT SYSTEM VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_System_Variables.htm"
+    },
+    {
+      "name": "CABIN SEATBELTS ALERT SWITCH",
+      "description": "True if the Seatbelts switch is on.",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT SYSTEM VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_System_Variables.htm"
+    },
+    {
+      "name": "CANOPY OPEN",
+      "description": "Percent primary door/exit open.",
+      "units": [
+        "Percent Over 100"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT SYSTEM VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_System_Variables.htm"
+    },
+    {
+      "name": "CARB HEAT AVAILABLE",
+      "description": "True if carburetor heat available.",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT SYSTEM VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_System_Variables.htm"
+    },
+    {
+      "name": "DELTA HEADING RATE",
+      "description": "Rate of turn of heading indicator.",
+      "units": [
+        "Radians per second"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT SYSTEM VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_System_Variables.htm"
+    },
+    {
+      "name": "DME SOUND",
+      "description": "DME audio flag.",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT SYSTEM VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_System_Variables.htm"
+    },
+    {
+      "name": "ELT ACTIVATED",
+      "description": "Whether or not the Emergency Locator Transmitter is active.",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT SYSTEM VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_System_Variables.htm"
+    },
+    {
+      "name": "EXTERNAL SYSTEM VALUE",
+      "description": "Generic SimVar.",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT SYSTEM VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_System_Variables.htm"
+    },
+    {
+      "name": "FIRE BOTTLE DISCHARGED",
+      "description": "True if the fire bottle is discharged.",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT SYSTEM VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_System_Variables.htm"
+    },
+    {
+      "name": "FIRE BOTTLE SWITCH",
+      "description": "True if the fire bottle switch is on.",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT SYSTEM VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_System_Variables.htm"
+    },
+    {
+      "name": "GLASSCOCKPIT AUTOMATIC BRIGHTNESS",
+      "description": "This variable will return a value between 0 and 1 for the automatic brightness setting for glass cockpit displays, where 0 is the dimmest and 1 is the brightest. This value will vary depending on the time of day.",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT SYSTEM VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_System_Variables.htm"
+    },
+    {
+      "name": "GPWS SYSTEM ACTIVE",
+      "description": "True if the Ground Proximity Warning System is active.",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT SYSTEM VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_System_Variables.htm"
+    },
+    {
+      "name": "GPWS WARNING",
+      "description": "True if Ground Proximity Warning System installed.",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT SYSTEM VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_System_Variables.htm"
+    },
+    {
+      "name": "GYRO DRIFT ERROR",
+      "description": "Angular error of heading indicator.",
+      "units": [
+        "Radians"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT SYSTEM VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_System_Variables.htm"
+    },
+    {
+      "name": "HAS STALL PROTECTION",
+      "description": "Will return whether the aircraft has stall protection (true) or not (false).",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT SYSTEM VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_System_Variables.htm"
+    },
+    {
+      "name": "HEADING INDICATOR",
+      "description": "Heading indicator (directional gyro) indication.",
+      "units": [
+        "Radians"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT SYSTEM VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_System_Variables.htm"
+    },
+    {
+      "name": "INDICATED ALTITUDE",
+      "description": "The indicated altitude.",
+      "units": [
+        "Feet"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT SYSTEM VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_System_Variables.htm"
+    },
+    {
+      "name": "INDICATED ALTITUDE CALIBRATED",
+      "description": "Indicated altitude with the altimeter calibrated to current sea level pressure.",
+      "units": [
+        "Feet"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT SYSTEM VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_System_Variables.htm"
+    },
+    {
+      "name": "INDICATED ALTITUDE EX1",
+      "description": "Similar to INDICATED_ALTITUDE but doesn't affect actual plane position when setting this variable.",
+      "units": [
+        "Feet"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT SYSTEM VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_System_Variables.htm"
+    },
+    {
+      "name": "INDUCTOR COMPASS HEADING REF",
+      "description": "Inductor compass heading.",
+      "units": [
+        "Radians"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT SYSTEM VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_System_Variables.htm"
+    },
+    {
+      "name": "INDUCTOR COMPASS PERCENT DEVIATION",
+      "description": "Inductor compass deviation reading.",
+      "units": [
+        "Percent Over 100"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT SYSTEM VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_System_Variables.htm"
+    },
+    {
+      "name": "INSTRUMENTS AVAILABLE",
+      "description": "Deprecated, do not use!",
+      "units": [
+        "Mask"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT SYSTEM VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_System_Variables.htm"
+    },
+    {
+      "name": "INTERCOM MODE",
+      "description": "Intercom Mode",
+      "units": [
+        "Enum: 0 = ISO 1 = ALL 2 = CREW"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT SYSTEM VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_System_Variables.htm"
+    },
+    {
+      "name": "INTERCOM SYSTEM ACTIVE",
+      "description": "Whether or not the intercom system is active.",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT SYSTEM VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_System_Variables.htm"
+    },
+    {
+      "name": "IS ALTITUDE FREEZE ON",
+      "description": "True if the altitude of the aircraft is frozen.",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT SYSTEM VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_System_Variables.htm"
+    },
+    {
+      "name": "IS ATTITUDE FREEZE ON",
+      "description": "True if the attitude (pitch, bank and heading) of the aircraft is frozen.",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT SYSTEM VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_System_Variables.htm"
+    },
+    {
+      "name": "IS LATITUDE LONGITUDE FREEZE ON",
+      "description": "True if the lat/lon of the aircraft (either user or AI controlled) is frozen. If this variable returns true, it means that the latitude and longitude of the aircraft are not being controlled by ESP, so enabling, for example, a SimConnect client to control the position of the aircraft. This can also apply to altitude and attitude. Also refer to the range of KEY_FREEZE..... Event IDs.",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT SYSTEM VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_System_Variables.htm"
+    },
+    {
+      "name": "KOHLSMAN SETTING HG",
+      "description": "The value for the given altimeter index in inches of mercury. IMPORTANT! In the system.cfg file, altimeters are indexed from 0, but the SimVar indexes from 1. So, altimeter 0 in that file is accessed using KOHLSMAN SETTING HG:1, 1 by KOHLSMAN SETTING HG:2, etc...",
+      "units": [
+        "Inches of Mercury",
+        "inHg"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT SYSTEM VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_System_Variables.htm"
+    },
+    {
+      "name": "KOHLSMAN SETTING MB",
+      "description": "The value for the given altimeter index in millibars. IMPORTANT! In the system.cfg file, altimeters are indexed from 0, but the SimVar indexes from 1. So, altimeter 0 in that file is accessed using KOHLSMAN SETTING MB:1, 1 by KOHLSMAN SETTING MB:2, etc...",
+      "units": [
+        "Millibars"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT SYSTEM VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_System_Variables.htm"
+    },
+    {
+      "name": "KOHLSMAN SETTING STD",
+      "description": "True if the indexed altimeter is in \"Standard\" mode, or false otherwise. IMPORTANT! In the system.cfg file, altimeters are indexed from 0, but the SimVar indexes from 1. So, altimeter 0 in that file is accessed using KOHLSMAN SETTING STD:1, 1 by KOHLSMAN SETTING STD:2, etc...",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT SYSTEM VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_System_Variables.htm"
+    },
+    {
+      "name": "MAGNETIC COMPASS",
+      "description": "Compass reading.",
+      "units": [
+        "Degrees"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT SYSTEM VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_System_Variables.htm"
+    },
+    {
+      "name": "MANUAL FUEL PUMP HANDLE",
+      "description": "Position of manual fuel pump handle. 1 is fully deployed.",
+      "units": [
+        "Percent Over 100"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT SYSTEM VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_System_Variables.htm"
+    },
+    {
+      "name": "OVERSPEED WARNING",
+      "description": "Overspeed warning state.",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT SYSTEM VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_System_Variables.htm"
+    },
+    {
+      "name": "PANEL ANTI ICE SWITCH",
+      "description": "True if panel anti-ice switch is on.",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT SYSTEM VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_System_Variables.htm"
+    },
+    {
+      "name": "PITOT ICE PCT",
+      "description": "Amount of pitot ice. 100 is fully iced.",
+      "units": [
+        "Percent Over 100"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT SYSTEM VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_System_Variables.htm"
+    },
+    {
+      "name": "PITOT HEAT",
+      "description": "Pitot heat active.",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT SYSTEM VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_System_Variables.htm"
+    },
+    {
+      "name": "PITOT HEAT SWITCH",
+      "description": "Pitot heat switch state.",
+      "units": [
+        "Enum: 0 = Off 1 = On 2 = Auto"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT SYSTEM VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "indexed_by": "1-indexed",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_System_Variables.htm"
+    },
+    {
+      "name": "PLANE HEADING DEGREES GYRO",
+      "description": "Heading indicator (directional gyro) indication.",
+      "units": [
+        "Radians"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT SYSTEM VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_System_Variables.htm"
+    },
+    {
+      "name": "PRESSURE ALTITUDE",
+      "description": "Standard Altitude, ie: at a 1013.25 hPa (1 atmosphere) setting.",
+      "units": [
+        "Meters"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT SYSTEM VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_System_Variables.htm"
+    },
+    {
+      "name": "PRESSURIZATION CABIN ALTITUDE",
+      "description": "The current altitude of the cabin pressurization.",
+      "units": [
+        "Feet"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT SYSTEM VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_System_Variables.htm"
+    },
+    {
+      "name": "PRESSURIZATION CABIN ALTITUDE GOAL",
+      "description": "The set altitude of the cabin pressurization as initialised from the Design Cabin Pressure value in the systems.cfg file. Pressure is converted into an altitude using a standard condition table. You can adjust the goal pressure using the PRESSURIZATION_PRESSURE_ALT_INC and PRESSURIZATION_PRESSURE_ALT_DEC events.",
+      "units": [
+        "Feet"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT SYSTEM VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_System_Variables.htm"
+    },
+    {
+      "name": "PRESSURIZATION CABIN ALTITUDE RATE",
+      "description": "The rate at which cabin pressurization changes.",
+      "units": [
+        "Feet per second"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT SYSTEM VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_System_Variables.htm"
+    },
+    {
+      "name": "PRESSURIZATION DUMP SWITCH",
+      "description": "True if the cabin pressurization dump switch is on.",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT SYSTEM VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_System_Variables.htm"
+    },
+    {
+      "name": "PRESSURIZATION PRESSURE DIFFERENTIAL",
+      "description": "The difference in pressure between the set altitude pressurization and the current pressurization.",
+      "units": [
+        "Pounds per square foot",
+        "psf"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT SYSTEM VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_System_Variables.htm"
+    },
+    {
+      "name": "RAD INS SWITCH",
+      "description": "True if Rad INS switch on.",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT SYSTEM VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_System_Variables.htm"
+    },
+    {
+      "name": "SELECTED DME",
+      "description": "Selected DME.",
+      "units": [
+        "Number"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT SYSTEM VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_System_Variables.htm"
+    },
+    {
+      "name": "SMOKESYSTEM AVAILABLE",
+      "description": "Smoke system available. NOTE: There is no default \"smoke system\" that this SimVar works on and this is a legacy variable that is available for use should you wish to use it but it affects nothing by default.",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT SYSTEM VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_System_Variables.htm"
+    },
+    {
+      "name": "SMOKE ENABLE",
+      "description": "Set to True to activate the smoke system, if one is available. Please see the notes for SMOKESYSTEM AVAILABLE for more information.",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT SYSTEM VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_System_Variables.htm"
+    },
+    {
+      "name": "SPEAKER ACTIVE",
+      "description": "Whether or not the speaker is active.",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT SYSTEM VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_System_Variables.htm"
+    },
+    {
+      "name": "STALL HORN AVAILABLE",
+      "description": "True if stall alarm available.",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT SYSTEM VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_System_Variables.htm"
+    },
+    {
+      "name": "STALL PROTECTION OFF LIMIT",
+      "description": "Alpha below which the Stall Protection can be disabled. See the [STALL PROTECTION] section for more information.",
+      "units": [
+        "Radians"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT SYSTEM VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_System_Variables.htm"
+    },
+    {
+      "name": "STALL PROTECTION ON GOAL",
+      "description": "The alpha that the Stall Protection will attempt to reach when triggered. See the [STALL PROTECTION] section for more information.",
+      "units": [
+        "Radians"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT SYSTEM VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_System_Variables.htm"
+    },
+    {
+      "name": "STALL PROTECTION ON LIMIT",
+      "description": "Alpha above which the Stall Protection timer starts. See the [STALL PROTECTION] section for more information.",
+      "units": [
+        "Radians"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT SYSTEM VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_System_Variables.htm"
+    },
+    {
+      "name": "STALL WARNING",
+      "description": "Stall warning state.",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT SYSTEM VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_System_Variables.htm"
+    },
+    {
+      "name": "STRUCTURAL DEICE SWITCH",
+      "description": "True if the aircraft structure deice switch is on.",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT SYSTEM VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_System_Variables.htm"
+    },
+    {
+      "name": "SUCTION PRESSURE",
+      "description": "Vacuum system suction pressure.",
+      "units": [
+        "Inches of Mercury",
+        "inHg"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT SYSTEM VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_System_Variables.htm"
+    },
+    {
+      "name": "SYSTEMS AVAILABLE",
+      "description": "Deprecated, do not use!",
+      "units": [
+        "Mask"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT SYSTEM VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_System_Variables.htm"
+    },
+    {
+      "name": "TAILHOOK HANDLE",
+      "description": "True if the tailhook handle is engaged.",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT SYSTEM VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_System_Variables.htm"
+    },
+    {
+      "name": "TAILHOOK POSITION",
+      "description": "Percent tail hook extended.",
+      "units": [
+        "Percent Over 100"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT SYSTEM VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_System_Variables.htm"
+    },
+    {
+      "name": "TOW RELEASE HANDLE",
+      "description": "Position of tow release handle. 100 is fully deployed.",
+      "units": [
+        "Percent Over 100"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT SYSTEM VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_System_Variables.htm"
+    },
+    {
+      "name": "TRUE AIRSPEED SELECTED",
+      "description": "True if True Airspeed has been selected.",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT SYSTEM VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_System_Variables.htm"
+    },
+    {
+      "name": "TURN COORDINATOR BALL",
+      "description": "Turn coordinator ball position.",
+      "units": [
+        "Position 128 (-127 to 127)"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT SYSTEM VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_System_Variables.htm"
+    },
+    {
+      "name": "TURN COORDINATOR BALL INV",
+      "description": "Turn coordinator ball position inverted (upside down).",
+      "units": [
+        "Position 128 (-127 to 127)"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT SYSTEM VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_System_Variables.htm"
+    },
+    {
+      "name": "TURN INDICATOR RATE",
+      "description": "Turn indicator reading. NOTE: This is available in multiplayer to all near aircraft. See here for more information: Note On SimVars In Multiplayer.",
+      "units": [
+        "Radians per second"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT SYSTEM VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_System_Variables.htm"
+    },
+    {
+      "name": "TURN INDICATOR SWITCH",
+      "description": "True if turn indicator switch is on.",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT SYSTEM VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_System_Variables.htm"
+    },
+    {
+      "name": "WINDSHIELD DEICE SWITCH",
+      "description": "True if the aircraft windshield deice switch is on.",
+      "units": [
+        "Bool"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT SYSTEM VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_System_Variables.htm"
+    },
+    {
+      "name": "WISKEY COMPASS INDICATION DEGREES",
+      "description": "Deprecated, do not use! Use MAGNETIC_COMPASS instead.",
+      "units": [
+        "Degrees"
+      ],
+      "settable": false,
+      "category": "AIRCRAFT SYSTEM VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_System_Variables.htm"
+    },
+    {
+      "name": "COLLECTIVE POSITION",
+      "description": "The position of the helicopter\\'s collective. 0 is fully up, 100 fully depressed.",
+      "units": [
+        "Percent Over 100"
+      ],
+      "settable": false,
+      "category": "HELICOPTER VARIABLES",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Helicopter_Variables.htm"
     }
   ],
   "events": [],

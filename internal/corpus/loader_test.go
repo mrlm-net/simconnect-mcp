@@ -125,27 +125,17 @@ func TestLoadEmbedded_VersionBoth_SharedSimVarsHaveTwoVersions(t *testing.T) {
 		t.Fatalf("LoadEmbedded().Load() error: %v", err)
 	}
 
-	// PLANE ALTITUDE, GROUND ALTITUDE, ENGINE RPM are shared; each must have
-	// Versions: ["2020","2024"].
-	shared := []string{"PLANE ALTITUDE", "GROUND ALTITUDE", "ENGINE RPM"}
-	sharedFound := 0
-
+	// In "both" mode, simvars that appear in both 2020 and 2024 docs must have
+	// Versions: ["2020","2024"]. The real corpus has 387+ such shared simvars.
+	sharedCount := 0
 	for _, sv := range c.SimVars {
-		for _, want := range shared {
-			if sv.Name == want {
-				sharedFound++
-				if len(sv.Versions) != 2 {
-					t.Errorf("SimVar %q: Versions = %v, want [\"2020\",\"2024\"]", sv.Name, sv.Versions)
-				} else if sv.Versions[0] != "2020" || sv.Versions[1] != "2024" {
-					t.Errorf("SimVar %q: Versions = %v, want [\"2020\",\"2024\"]", sv.Name, sv.Versions)
-				}
-				break
-			}
+		if len(sv.Versions) == 2 && sv.Versions[0] == "2020" && sv.Versions[1] == "2024" {
+			sharedCount++
 		}
 	}
 
-	if sharedFound < 3 {
-		t.Errorf("expected at least 3 shared SimVars with 2 versions, found %d", sharedFound)
+	if sharedCount < 50 {
+		t.Errorf("expected at least 50 shared SimVars with versions [\"2020\",\"2024\"], found %d", sharedCount)
 	}
 }
 

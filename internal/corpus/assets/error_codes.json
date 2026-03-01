@@ -1,6 +1,6 @@
 {
-  "scraped_at": "2025-01-01T00:00:00Z",
-  "sdk_version": "0.21.1",
+  "scraped_at": "2026-03-01T11:25:39.6867822Z",
+  "sdk_version": "",
   "simvars": [],
   "events": [],
   "functions": [],
@@ -9,31 +9,265 @@
     {
       "name": "SIMCONNECT_EXCEPTION_NONE",
       "value": 0,
-      "description": "No error has occurred. This value is sent in a SIMCONNECT_RECV_EXCEPTION packet when the server wants to indicate successful processing of a request that would otherwise generate no acknowledgement.",
+      "description": "Specifies that there has not been an error. This value is not currently used.",
       "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_EXCEPTION.htm"
     },
     {
       "name": "SIMCONNECT_EXCEPTION_ERROR",
       "value": 1,
-      "description": "An unspecified error has occurred in the SimConnect server while processing the client request. No further detail is available. The client should log the request context and retry or abort the affected operation.",
+      "description": "An unspecific error has occurred. This can be from incorrect flag settings, null or incorrect parameters, the need to have at least one up or down event with an input event, failed calls from the SimConnect server to the operating system, among other reasons.",
       "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_EXCEPTION.htm"
     },
     {
       "name": "SIMCONNECT_EXCEPTION_SIZE_MISMATCH",
       "value": 2,
-      "description": "The size of the data definition does not match the size of the data structure supplied by the client. This typically occurs when the client passes a struct that does not match the AddToDataDefinition calls made for the associated definition ID.",
+      "description": "Specifies the size of the data provided does not match the size required. This typically occurs when the wrong string length, fixed or variable, is involved.",
       "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_EXCEPTION.htm"
     },
     {
       "name": "SIMCONNECT_EXCEPTION_UNRECOGNIZED_ID",
       "value": 3,
-      "description": "A client-defined identifier (such as a request ID, data definition ID, or object ID) supplied in the request is not recognised by the server. The ID has not been registered or has already been released.",
+      "description": "Specifies that the client event, request ID, data definition ID, or object ID was not recognized.",
       "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_EXCEPTION.htm"
     },
     {
       "name": "SIMCONNECT_EXCEPTION_UNOPENED",
       "value": 4,
-      "description": "The client attempted to call a SimConnect function before successfully opening a connection with SimConnect_Open, or after the connection was closed. All SimConnect calls except SimConnect_Open require a valid open connection.",
+      "description": "Specifies that communication with the SimConnect server has not been opened. This error is not currently used.",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_EXCEPTION.htm"
+    },
+    {
+      "name": "SIMCONNECT_EXCEPTION_VERSION_MISMATCH",
+      "value": 5,
+      "description": "Specifies a versioning error has occurred. Typically this will occur when a client built on a newer version of the SimConnect client dll attempts to work with an older version of the SimConnect server.",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_EXCEPTION.htm"
+    },
+    {
+      "name": "SIMCONNECT_EXCEPTION_TOO_MANY_GROUPS",
+      "value": 6,
+      "description": "Specifies that the maximum number of groups allowed has been reached. The maximum is 20.",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_EXCEPTION.htm"
+    },
+    {
+      "name": "SIMCONNECT_EXCEPTION_NAME_UNRECOGNIZED",
+      "value": 7,
+      "description": "Specifies that the simulation event name (such as \"brakes\") is not recognized.",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_EXCEPTION.htm"
+    },
+    {
+      "name": "SIMCONNECT_EXCEPTION_TOO_MANY_EVENT_NAMES",
+      "value": 8,
+      "description": "Specifies that the maximum number of event names allowed has been reached. The maximum is 1000.",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_EXCEPTION.htm"
+    },
+    {
+      "name": "SIMCONNECT_EXCEPTION_EVENT_ID_DUPLICATE",
+      "value": 9,
+      "description": "Specifies that the event ID has been used already. This can occur with calls to SimConnect_MapClientEventToSimEvent, or SimConnect_SubscribeToSystemEvent.",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_EXCEPTION.htm"
+    },
+    {
+      "name": "SIMCONNECT_EXCEPTION_TOO_MANY_MAPS",
+      "value": 10,
+      "description": "Specifies that the maximum number of mappings allowed has been reached. The maximum is 20.",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_EXCEPTION.htm"
+    },
+    {
+      "name": "SIMCONNECT_EXCEPTION_TOO_MANY_OBJECTS",
+      "value": 11,
+      "description": "Specifies that the maximum number of objects allowed has been reached. The maximum is 1000.",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_EXCEPTION.htm"
+    },
+    {
+      "name": "SIMCONNECT_EXCEPTION_TOO_MANY_REQUESTS",
+      "value": 12,
+      "description": "Specifies that the maximum number of requests allowed has been reached. The maximum is 1000.",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_EXCEPTION.htm"
+    },
+    {
+      "name": "SIMCONNECT_EXCEPTION_WEATHER_INVALID_PORT",
+      "value": 13,
+      "description": "Specifies an invalid port number was requested. NOTE: This is a legacy exception, and no longer used in the simulation.",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_EXCEPTION.htm"
+    },
+    {
+      "name": "SIMCONNECT_EXCEPTION_WEATHER_INVALID_METAR",
+      "value": 14,
+      "description": "Specifies that the metar data supplied did not match the required format. NOTE: This is a legacy exception, and no longer used in the simulation.",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_EXCEPTION.htm"
+    },
+    {
+      "name": "SIMCONNECT_EXCEPTION_WEATHER_UNABLE_TO_GET_OBSERVATION",
+      "value": 15,
+      "description": "Specifies that the weather observation requested was not available. NOTE: This is a legacy exception, and no longer used in the simulation.",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_EXCEPTION.htm"
+    },
+    {
+      "name": "SIMCONNECT_EXCEPTION_WEATHER_UNABLE_TO_CREATE_STATION",
+      "value": 16,
+      "description": "Specifies that the weather station could not be created. NOTE: This is a legacy exception, and no longer used in the simulation.",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_EXCEPTION.htm"
+    },
+    {
+      "name": "SIMCONNECT_EXCEPTION_WEATHER_UNABLE_TO_REMOVE_STATION",
+      "value": 17,
+      "description": "Specifies that the weather station could not be removed. NOTE: This is a legacy exception, and no longer used in the simulation.",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_EXCEPTION.htm"
+    },
+    {
+      "name": "SIMCONNECT_EXCEPTION_INVALID_DATA_TYPE",
+      "value": 18,
+      "description": "Specifies that the data type requested does not apply to the type of data requested. Typically this occurs with a fixed length string of the wrong length.",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_EXCEPTION.htm"
+    },
+    {
+      "name": "SIMCONNECT_EXCEPTION_INVALID_DATA_SIZE",
+      "value": 19,
+      "description": "Specifies that the size of the data provided is not what is expected. This can occur when the size of a structure provided does not match the size given, or a null string entry is made for a menu or sub-menu entry text, or data with a size of zero is added to a data definition. It can also occur with an invalid request to SimConnect_CreateClientData.",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_EXCEPTION.htm"
+    },
+    {
+      "name": "SIMCONNECT_EXCEPTION_DATA_ERROR",
+      "value": 20,
+      "description": "Specifies a generic data error. This error is used by the SimConnect_WeatherCreateThermal function to report incorrect parameters, such as negative radii or values greater than the maximum allowed. It is also used by the SimConnect_FlightSave and SimConnect_FlightLoad functions to report incorrect file types. It is also used by other functions to report that flags or reserved parameters have not been set to zero.",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_EXCEPTION.htm"
+    },
+    {
+      "name": "SIMCONNECT_EXCEPTION_INVALID_ARRAY",
+      "value": 21,
+      "description": "Specifies an invalid array has been sent to the SimConnect_SetDataOnSimObject function.",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_EXCEPTION.htm"
+    },
+    {
+      "name": "SIMCONNECT_EXCEPTION_CREATE_OBJECT_FAILED",
+      "value": 22,
+      "description": "Specifies that the attempt to create an AI object failed.",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_EXCEPTION.htm"
+    },
+    {
+      "name": "SIMCONNECT_EXCEPTION_LOAD_FLIGHTPLAN_FAILED",
+      "value": 23,
+      "description": "Specifies that the specified flight plan could not be found, or did not load correctly.",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_EXCEPTION.htm"
+    },
+    {
+      "name": "SIMCONNECT_EXCEPTION_OPERATION_INVALID_FOR_OJBECT_TYPE",
+      "value": 24,
+      "description": "Specifies that the operation requested does not apply to the object type, for example trying to set a flight plan on an object that is not an aircraft will result in this error.",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_EXCEPTION.htm"
+    },
+    {
+      "name": "SIMCONNECT_EXCEPTION_ILLEGAL_OPERATION",
+      "value": 25,
+      "description": "Specifies that the AI operation requested cannot be completed, such as requesting that an object be removed when the client did not create that object. This error also applies to the Weather system.",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_EXCEPTION.htm"
+    },
+    {
+      "name": "SIMCONNECT_EXCEPTION_ALREADY_SUBSCRIBED",
+      "value": 26,
+      "description": "Specifies that the client has already subscribed to that event.",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_EXCEPTION.htm"
+    },
+    {
+      "name": "SIMCONNECT_EXCEPTION_INVALID_ENUM",
+      "value": 27,
+      "description": "Specifies that the member of the enumeration provided was not valid. Currently this is only used if an unknown type is provided to SimConnect_RequestDataOnSimObjectType.",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_EXCEPTION.htm"
+    },
+    {
+      "name": "SIMCONNECT_EXCEPTION_DEFINITION_ERROR",
+      "value": 28,
+      "description": "Specifies that there is a problem with a data definition. Currently this is only used if a variable length definition is sent with SimConnect_RequestDataOnSimObject.",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_EXCEPTION.htm"
+    },
+    {
+      "name": "SIMCONNECT_EXCEPTION_DUPLICATE_ID",
+      "value": 29,
+      "description": "Specifies that the ID has already been used. This can occur with menu IDs, or with the IDs provided to SimConnect_AddToDataDefinition, SimConnect_AddClientEventToNotificationGroup or SimConnect_MapClientDataNameToID.",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_EXCEPTION.htm"
+    },
+    {
+      "name": "SIMCONNECT_EXCEPTION_DATUM_ID",
+      "value": 30,
+      "description": "Specifies that the datum ID is not recognized. This currently occurs with a call to the SimConnect_SetDataOnSimObject function.",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_EXCEPTION.htm"
+    },
+    {
+      "name": "SIMCONNECT_EXCEPTION_OUT_OF_BOUNDS",
+      "value": 31,
+      "description": "Specifies that the radius given in the SimConnect_RequestDataOnSimObjectType was outside the acceptable range, or with an invalid request to SimConnect_CreateClientData.",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_EXCEPTION.htm"
+    },
+    {
+      "name": "SIMCONNECT_EXCEPTION_ALREADY_CREATED",
+      "value": 32,
+      "description": "Specifies that a client data area with the name requested by a call to SimConnect_MapClientDataNameToID has already been created by another addon. Try again with a different name.",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_EXCEPTION.htm"
+    },
+    {
+      "name": "SIMCONNECT_EXCEPTION_OBJECT_OUTSIDE_REALITY_BUBBLE",
+      "value": 33,
+      "description": "Specifies that an attempt to create an ATC controlled AI object failed because the location of the object is outside the reality bubble.",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_EXCEPTION.htm"
+    },
+    {
+      "name": "SIMCONNECT_EXCEPTION_OBJECT_CONTAINER",
+      "value": 34,
+      "description": "Specifies that an attempt to create an AI object failed because of an error with the container system for the object.",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_EXCEPTION.htm"
+    },
+    {
+      "name": "SIMCONNECT_EXCEPTION_OBJECT_AI",
+      "value": 35,
+      "description": "Specifies that an attempt to create an AI object failed because of an error with the AI system for the object.",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_EXCEPTION.htm"
+    },
+    {
+      "name": "SIMCONNECT_EXCEPTION_OBJECT_ATC",
+      "value": 36,
+      "description": "Specifies that an attempt to create an AI object failed because of an error with the ATC system for the object.",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_EXCEPTION.htm"
+    },
+    {
+      "name": "SIMCONNECT_EXCEPTION_OBJECT_SCHEDULE",
+      "value": 37,
+      "description": "Specifies that an attempt to create an AI object failed because of a scheduling problem.",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_EXCEPTION.htm"
+    },
+    {
+      "name": "SIMCONNECT_EXCEPTION_JETWAY_DATA",
+      "value": 38,
+      "description": "Specifies that an attempt to retrieve jetway data using SimConnect_RequestJetwayData has caused an exception.",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_EXCEPTION.htm"
+    },
+    {
+      "name": "SIMCONNECT_EXCEPTION_ACTION_NOT_FOUND",
+      "value": 39,
+      "description": "Specifies that the given action cannot be found when using the SimConnect_ExecuteAction function.",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_EXCEPTION.htm"
+    },
+    {
+      "name": "SIMCONNECT_EXCEPTION_NOT_AN_ACTION",
+      "value": 40,
+      "description": "Specifies that the given action does not exist when using the SimConnect_ExecuteAction function.",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_EXCEPTION.htm"
+    },
+    {
+      "name": "SIMCONNECT_EXCEPTION_INCORRECT_ACTION_PARAMS",
+      "value": 41,
+      "description": "Specifies that the wrong parameters have been given to the function SimConnect_ExecuteAction.",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_EXCEPTION.htm"
+    },
+    {
+      "name": "SIMCONNECT_EXCEPTION_GET_INPUT_EVENT_FAILED",
+      "value": 42,
+      "description": "This means that the wrong name/hash has been passed to the SimConnect_GetInputEvent function.",
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_EXCEPTION.htm"
+    },
+    {
+      "name": "SIMCONNECT_EXCEPTION_SET_INPUT_EVENT_FAILED",
+      "value": 43,
+      "description": "This means that the wrong name/hash has been passed to the SimConnect_SetInputEvent function.",
       "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_EXCEPTION.htm"
     }
   ]

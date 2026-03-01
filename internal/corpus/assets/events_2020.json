@@ -1,45 +1,2111 @@
 {
-  "scraped_at": "2025-01-01T00:00:00Z",
-  "sdk_version": "0.21.1",
+  "scraped_at": "2026-03-01T11:25:39.6653492Z",
+  "sdk_version": "2020",
   "simvars": [],
   "events": [
     {
-      "name": "BRAKES",
-      "description": "Applies maximum braking to all wheel brakes simultaneously. This is equivalent to pressing both left and right brake pedals to full deflection. The brakes are applied for as long as the event is held active.",
-      "versions": ["2020"],
-      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Misc_Events.htm"
-    },
-    {
-      "name": "LANDING_LIGHTS_TOGGLE",
-      "description": "Toggles the landing lights on or off. If the landing lights are currently off they will be switched on, and vice versa. Applies to all landing light units simultaneously on aircraft that have more than one.",
-      "versions": ["2020"],
-      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Misc_Events.htm"
-    },
-    {
-      "name": "THROTTLE_SET",
-      "description": "Sets the throttle position for all engines to the value specified in the parameter. The parameter value ranges from 0 (full idle) to 16383 (full throttle). Negative values select reverse thrust where the powerplant supports it.",
-      "parameters": [
-        {
-          "index": 0,
-          "name": "value",
-          "description": "Target throttle position. Range 0 (idle) to 16383 (full throttle). Negative values activate reverse thrust where supported.",
-          "type": "DWORD"
-        }
+      "name": "AP_AIRSPEED_HOLD",
+      "description": "N/A",
+      "versions": [
+        "2020"
       ],
-      "versions": ["2020"],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_AIRSPEED_OFF",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_AIRSPEED_ON",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_AIRSPEED_SET",
+      "description": "[0]: TRUE/FALSE to enable/disable",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_ALT_VAR_DEC",
+      "description": "[0]: New reference altitude [1]: Index",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_ALT_VAR_INC",
+      "description": "[0]: New reference altitude [1]: Index",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_ALT_HOLD",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_ALT_HOLD_OFF",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_ALT_HOLD_ON",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_ALT_RADIO_MODE_OFF",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_ALT_RADIO_MODE_ON",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_ALT_RADIO_MODE_SET",
+      "description": "[0]: bool",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_ALT_RADIO_MODE_TOGGLE",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_ALT_VAR_SET_ENGLISH",
+      "description": "[0]: New reference altitude [1]: Index",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_ALT_VAR_SET_METRIC",
+      "description": "[0]: New reference altitude [1]: Index",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_APR_HOLD",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_APR_HOLD_OFF",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_APR_HOLD_ON",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_ATT_HOLD",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_ATT_HOLD_OFF",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_ATT_HOLD_ON",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_AVIONICS_MANAGED_OFF",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_AVIONICS_MANAGED_ON",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_AVIONICS_MANAGED_SET",
+      "description": "[0]: TRUE/FALSE to enable/disable",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_AVIONICS_MANAGED_TOGGLE",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_BANK_HOLD",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_BANK_HOLD_OFF",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_BANK_HOLD_ON",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_BC_HOLD",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_BC_HOLD_OFF",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_BC_HOLD_ON",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_HDG_HOLD",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_HDG_HOLD_OFF",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_HDG_HOLD_ON",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_LOC_HOLD",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_LOC_HOLD_OFF",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_LOC_HOLD_ON",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_MACH_VAR_DEC",
+      "description": "[0]: the Index of the engine to target (1 - 4)",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_MACH_VAR_INC",
+      "description": "[0]: Index of the engine to target (1 - 4)",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_MACH_HOLD",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_MACH_OFF",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_MACH_ON",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_MACH_SET",
+      "description": "[0]: TRUE/FALSE to enable/disable",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_MACH_VAR_SET",
+      "description": "[0]: Integer mach value / 100 (eg: 100 as value results as mach 1) [1]: Index of the engine to target (1 - 4)",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_MACH_VAR_SET_EX1",
+      "description": "[0]: Integer mach value \\ 1000000 (eg: 1000 as value results as mach 0.001) [1]: Index of the engine to target (1 - 4)",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_MANAGED_SPEED_IN_MACH_OFF",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_MANAGED_SPEED_IN_MACH_ON",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_MANAGED_SPEED_IN_MACH_SET",
+      "description": "[0]: use TRUE/FALSE to enabled/disable",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_MANAGED_SPEED_IN_MACH_TOGGLE",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_MASTER",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_MASTER_ALT",
+      "description": "",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_MAX_BANK_ANGLE_SET",
+      "description": "[0]: angle",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_MAX_BANK_INC",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_MAX_BANK_DEC",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_MAX_BANK_SET",
+      "description": "[0]: the index to use for max bank angle.",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_MAX_BANK_VELOCITY_SET",
+      "description": "[0]: Velocity",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_N1_HOLD",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_N1_REF_DEC",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_N1_REF_INC",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_N1_REF_SET",
+      "description": "[0]: Integer N1 reference value [1]: Index of the engine to target (1 - 4)",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_NAV_SELECT_SET",
+      "description": "[0]: the NAVindex to use",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_NAV1_HOLD",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_NAV1_HOLD_OFF",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_NAV1_HOLD_ON",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_PANEL_ALTITUDE_HOLD",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_PANEL_ALTITUDE_OFF",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_PANEL_ALTITUDE_ON",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_PANEL_ALTITUDE_SET",
+      "description": "[0]: TRUE/FALSE to enable/disable",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_PANEL_HEADING_HOLD",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_PANEL_HEADING_OFF",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_PANEL_HEADING_ON",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_PANEL_HEADING_SET",
+      "description": "[0]: TRUE/FALSE to enable/disable",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_PANEL_MACH_HOLD",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_PANEL_MACH_OFF",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_PANEL_MACH_ON",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_PANEL_MACH_SET",
+      "description": "[0]: TRUE/FALSE to enable/disable",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_PANEL_SPEED_HOLD",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_PANEL_SPEED_OFF",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_PANEL_SPEED_ON",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_PANEL_SPEED_SET",
+      "description": "[0]: TRUE/FALSE to enable/disable",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_PANEL_VS_OFF",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_PANEL_VS_ON",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_PANEL_VS_SET",
+      "description": "[0]: TRUE/FALSE to enable/disable",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_PANEL_VS_HOLD",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_PITCH_LEVELER",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_PITCH_LEVELER_OFF",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_PITCH_LEVELER_ON",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_PITCH_REF_INC_DN",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_PITCH_REF_INC_UP",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_PITCH_REF_SELECT",
+      "description": "",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_PITCH_REF_SET",
+      "description": "[0]: pitch value between -16384 and 16384",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_RPM_SLOT_INDEX_SET",
+      "description": "[0]: slot index from 1 to 4",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_SPD_VAR_DEC",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_SPD_VAR_INC",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_SPD_VAR_SET",
+      "description": "[0]: value in Knots. [1]: the managed index, from 1 to 4, or 0.",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_SPD_VAR_SET_EX1",
+      "description": "[0]: value in Knots. [1]: the managed index, from 1 to 4, or 0.",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_SPEED_SLOT_INDEX_SET",
+      "description": "[0]: slot index from 1 to 4",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_VS_HOLD",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_VS_OFF",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_VS_ON",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_VS_SET",
+      "description": "[0]: TRUE/FALSE to enable/disable",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_VS_SLOT_INDEX_SET",
+      "description": "[0]: slot index from 1 to 4",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_VS_VAR_DEC",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_VS_VAR_INC",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_VS_VAR_SET_CURRENT",
+      "description": "",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_VS_VAR_SET_ENGLISH",
+      "description": "[0]: New VS reference [1]: Index",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_VS_VAR_SET_METRIC",
+      "description": "[0]: New VS reference [1]: Index",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_WING_LEVELER",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_WING_LEVELER_OFF",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_WING_LEVELER_ON",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_PANEL_SPEED_HOLD_TOGGLE",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AP_PANEL_MACH_HOLD_TOGGLE",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AUTOPILOT_AIRSPEED_ACQUIRE",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AUTOPILOT_DISENGAGE_SET",
+      "description": "[0]: boolean value to enable/disable the disengage value",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AUTOPILOT_DISENGAGE_TOGGLE",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AUTOPILOT_OFF",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AUTOPILOT_ON",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AUTOPILOT_PANEL_AIRSPEED_SET",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AUTOPILOT_PANEL_CRUISE_SPEED",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "AUTOPILOT_PANEL_MAX_SPEED",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "ALTITUDE_SLOT_INDEX_SET",
+      "description": "",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "FLIGHT_LEVEL_CHANGE",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "FLIGHT_LEVEL_CHANGE_OFF",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "FLIGHT_LEVEL_CHANGE_ON",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "HEADING_SLOT_INDEX_SET",
+      "description": "",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "RPM_SLOT_INDEX_SET",
+      "description": "",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "SPEED_SLOT_INDEX_SET",
+      "description": "",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "VS_SLOT_INDEX_SET",
+      "description": "",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"
+    },
+    {
+      "name": "ALTERNATOR_OFF",
+      "description": "[0]: alternator index",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Electrical_Events.htm"
+    },
+    {
+      "name": "ALTERNATOR_ON",
+      "description": "[0]: alternator index",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Electrical_Events.htm"
+    },
+    {
+      "name": "ALTERNATOR_SET",
+      "description": "[0]: The state on/off (bool) [1]: alternator index",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Electrical_Events.htm"
+    },
+    {
+      "name": "ELECTRICAL_ALTERNATOR_BREAKER_TOGGLE",
+      "description": "[0] Source bus index [1] Target alternator index",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Electrical_Events.htm"
+    },
+    {
+      "name": "TOGGLE_ALTERNATOR1 TOGGLE_ALTERNATOR2 TOGGLE_ALTERNATOR3 TOGGLE_ALTERNATOR4",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Electrical_Events.htm"
+    },
+    {
+      "name": "TOGGLE_MASTER_ALTERNATOR",
+      "description": "[0]: alternator index",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Electrical_Events.htm"
+    },
+    {
+      "name": "ANTI_ICE_GRADUAL_SET",
+      "description": "[0]: Position (0 - 16384)",
+      "versions": [
+        "2020"
+      ],
       "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Engine_Events.htm"
     },
     {
-      "name": "PARKING_BRAKES",
-      "description": "Toggles the parking brake on or off. When engaged the parking brake holds the aircraft stationary on the ground by locking all wheel brakes. The current state toggles with each transmission of this event.",
-      "versions": ["2020"],
+      "name": "ANTI_ICE_GRADUAL_SET_ENG1 ANTI_ICE_GRADUAL_SET_ENG2 ANTI_ICE_GRADUAL_SET_ENG3 ANTI_ICE_GRADUAL_SET_ENG4",
+      "description": "[0]: Position (0 - 16384)",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Engine_Events.htm"
+    },
+    {
+      "name": "ANTI_ICE_ON",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Engine_Events.htm"
+    },
+    {
+      "name": "ANTI_ICE_OFF",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Engine_Events.htm"
+    },
+    {
+      "name": "ANTI_ICE_SET",
+      "description": "[0]: Bool",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Engine_Events.htm"
+    },
+    {
+      "name": "ANTI_ICE_SET_ENG1 ANTI_ICE_SET_ENG2 ANTI_ICE_SET_ENG3 ANTI_ICE_SET_ENG4",
+      "description": "[0]: Bool",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Engine_Events.htm"
+    },
+    {
+      "name": "ANTI_ICE_TOGGLE",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Engine_Events.htm"
+    },
+    {
+      "name": "ANTI_ICE_TOGGLE_ENG1 ANTI_ICE_TOGGLE_ENG2 ANTI_ICE_TOGGLE_ENG3 ANTI_ICE_TOGGLE_ENG4",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Engine_Events.htm"
+    },
+    {
+      "name": "AILERON_CENTER",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Flight_Control_Events.htm"
+    },
+    {
+      "name": "AILERON_LEFT",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Flight_Control_Events.htm"
+    },
+    {
+      "name": "AILERON_RIGHT",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Flight_Control_Events.htm"
+    },
+    {
+      "name": "AILERON_SET",
+      "description": "[0] Position (-16383 to 16384)",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Flight_Control_Events.htm"
+    },
+    {
+      "name": "AILERON_TRIM_DISABLED_SET",
+      "description": "[0]: Bool",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Flight_Control_Events.htm"
+    },
+    {
+      "name": "AILERON_TRIM_DISABLED_TOGGLE",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Flight_Control_Events.htm"
+    },
+    {
+      "name": "AILERON_TRIM_LEFT",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Flight_Control_Events.htm"
+    },
+    {
+      "name": "AILERON_TRIM_RIGHT",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Flight_Control_Events.htm"
+    },
+    {
+      "name": "AILERON_TRIM_SET",
+      "description": "[0] Position (-100 to 100)",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Flight_Control_Events.htm"
+    },
+    {
+      "name": "AILERON_TRIM_SET_EX1",
+      "description": "[0] Position (-16383 to 16384)",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Flight_Control_Events.htm"
+    },
+    {
+      "name": "AILERONS_LEFT",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Flight_Control_Events.htm"
+    },
+    {
+      "name": "AILERONS_RIGHT",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Flight_Control_Events.htm"
+    },
+    {
+      "name": "AXIS_AILERONS_SET",
+      "description": "[0] Position (-16383 to 16384)",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Flight_Control_Events.htm"
+    },
+    {
+      "name": "CENTER_AILER_RUDDER",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Flight_Control_Events.htm"
+    },
+    {
+      "name": "CROSS_FEED_OPEN",
+      "description": "",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Fuel_System_Events.htm"
+    },
+    {
+      "name": "CROSS_FEED_TOGGLE",
+      "description": "",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Fuel_System_Events.htm"
+    },
+    {
+      "name": "CROSS_FEED_OFF",
+      "description": "",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Fuel_System_Events.htm"
+    },
+    {
+      "name": "CROSS_FEED_LEFT_TO_RIGHT",
+      "description": "",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Fuel_System_Events.htm"
+    },
+    {
+      "name": "CROSS_FEED_RIGHT_TO_LEFT",
+      "description": "",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Fuel_System_Events.htm"
+    },
+    {
+      "name": "ATTITUDE_BARS_POSITION_DOWN",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Instrumentation_Events.htm"
+    },
+    {
+      "name": "ATTITUDE_BARS_POSITION_UP",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Instrumentation_Events.htm"
+    },
+    {
+      "name": "ATTITUDE_BARS_POSITION_SET",
+      "description": "[0]: Index [1]: Value",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Instrumentation_Events.htm"
+    },
+    {
+      "name": "BAROMETRIC",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Instrumentation_Events.htm"
+    },
+    {
+      "name": "BAROMETRIC_STD_PRESSURE",
+      "description": "[0]: the index of the altimeter",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Instrumentation_Events.htm"
+    },
+    {
+      "name": "GAUGE_KEYSTROKE",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Instrumentation_Events.htm"
+    },
+    {
+      "name": "GYRO_DRIFT_DEC",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Instrumentation_Events.htm"
+    },
+    {
+      "name": "GYRO_DRIFT_INC",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Instrumentation_Events.htm"
+    },
+    {
+      "name": "GYRO_DRIFT_SET",
+      "description": "[0]: Drift angle (degrees)",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Instrumentation_Events.htm"
+    },
+    {
+      "name": "GYRO_DRIFT_SET_EX1",
+      "description": "",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Instrumentation_Events.htm"
+    },
+    {
+      "name": "HEADING_GYRO_SET",
+      "description": "",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Instrumentation_Events.htm"
+    },
+    {
+      "name": "INDUCTOR_COMPASS_REF_INC",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Instrumentation_Events.htm"
+    },
+    {
+      "name": "INDUCTOR_COMPASS_REF_DEC",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Instrumentation_Events.htm"
+    },
+    {
+      "name": "KOHLSMAN_INC",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Instrumentation_Events.htm"
+    },
+    {
+      "name": "KOHLSMAN_DEC",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Instrumentation_Events.htm"
+    },
+    {
+      "name": "KOHLSMAN_SET",
+      "description": "[0]: Value to set [1]: Altimeter index",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Instrumentation_Events.htm"
+    },
+    {
+      "name": "RESET_G_FORCE_INDICATOR",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Instrumentation_Events.htm"
+    },
+    {
+      "name": "RESET_MAX_RPM_INDICATOR",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Instrumentation_Events.htm"
+    },
+    {
+      "name": "ATTITUDE_CAGE_BUTTON",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Instrumentation_Events.htm"
+    },
+    {
+      "name": "TOGGLE_ICS",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Instrumentation_Events.htm"
+    },
+    {
+      "name": "TOGGLE_SPEAKER",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Instrumentation_Events.htm"
+    },
+    {
+      "name": "TOGGLE_TURN_INDICATOR_SWITCH",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Instrumentation_Events.htm"
+    },
+    {
+      "name": "TOGGLE_VARIOMETER_SWITCH",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Instrumentation_Events.htm"
+    },
+    {
+      "name": "TRUE_AIRSPEED_CAL_DEC",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Instrumentation_Events.htm"
+    },
+    {
+      "name": "TRUE_AIRSPEED_CAL_INC",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Instrumentation_Events.htm"
+    },
+    {
+      "name": "TRUE_AIRSPEED_CAL_SET",
+      "description": "[0]: Degrees",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Instrumentation_Events.htm"
+    },
+    {
+      "name": "VARIOMETER_SOUND_TOGGLE",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Instrumentation_Events.htm"
+    },
+    {
+      "name": "LOW_HEIGHT_WARNING_GAUGE_WILL_SET or LOW_HIGHT_WARNING_GAUGE_WILL_SET",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
       "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Misc_Events.htm"
     },
     {
-      "name": "GEAR_DOWN",
-      "description": "Commands the landing gear to extend to the down and locked position. If the gear is already down no action is taken. The gear transition animation plays when this event is sent while gear is retracted.",
-      "versions": ["2020"],
+      "name": "LOW_HEIGHT_WARNING_SET or LOW_HIGHT_WARNING_SET",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
       "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Misc_Events.htm"
+    },
+    {
+      "name": "MASTER_CAUTION_ACKNOWLEDGE",
+      "description": "",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Misc_Events.htm"
+    },
+    {
+      "name": "MASTER_CAUTION_OFF",
+      "description": "",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Misc_Events.htm"
+    },
+    {
+      "name": "MASTER_CAUTION_ON",
+      "description": "",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Misc_Events.htm"
+    },
+    {
+      "name": "MASTER_CAUTION_SET",
+      "description": "",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Misc_Events.htm"
+    },
+    {
+      "name": "MASTER_CAUTION_TOGGLE",
+      "description": "",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Misc_Events.htm"
+    },
+    {
+      "name": "MASTER_WARNING_ACKNOWLEDGE",
+      "description": "",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Misc_Events.htm"
+    },
+    {
+      "name": "MASTER_WARNING_OFF",
+      "description": "",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Misc_Events.htm"
+    },
+    {
+      "name": "MASTER_WARNING_ON",
+      "description": "",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Misc_Events.htm"
+    },
+    {
+      "name": "MASTER_WARNING_SET",
+      "description": "",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Misc_Events.htm"
+    },
+    {
+      "name": "MASTER_WARNING_TOGGLE",
+      "description": "",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Misc_Events.htm"
+    },
+    {
+      "name": "TOGGLE_ELECTRICAL_FAILURE",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Misc_Events.htm"
+    },
+    {
+      "name": "TOGGLE_ENGINE1_FAILURE TOGGLE_ENGINE2_FAILURE TOGGLE_ENGINE3_FAILURE TOGGLE_ENGINE4_FAILURE",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Misc_Events.htm"
+    },
+    {
+      "name": "TOGGLE_HYDRAULIC_FAILURE",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Misc_Events.htm"
+    },
+    {
+      "name": "TOGGLE_LEFT_BRAKE_FAILURE",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Misc_Events.htm"
+    },
+    {
+      "name": "TOGGLE_PITOT_BLOCKAGE",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Misc_Events.htm"
+    },
+    {
+      "name": "TOGGLE_RIGHT_BRAKE_FAILURE",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Misc_Events.htm"
+    },
+    {
+      "name": "TOGGLE_STATIC_PORT_BLOCKAGE",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Misc_Events.htm"
+    },
+    {
+      "name": "TOGGLE_TOTAL_BRAKE_FAILURE",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Misc_Events.htm"
+    },
+    {
+      "name": "TOGGLE_VACUUM_FAILURE",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Misc_Events.htm"
+    },
+    {
+      "name": "ADF",
+      "description": "",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Radio_Navigation_Events.htm"
+    },
+    {
+      "name": "ADF_CARD_DEC",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Radio_Navigation_Events.htm"
+    },
+    {
+      "name": "ADF_CARD_INC",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Radio_Navigation_Events.htm"
+    },
+    {
+      "name": "ADF_CARD_SET",
+      "description": "[0]: Card value",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Radio_Navigation_Events.htm"
+    },
+    {
+      "name": "ADF_1_DEC ADF2_1_DEC",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Radio_Navigation_Events.htm"
+    },
+    {
+      "name": "ADF_10_DEC ADF2_10_DEC",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Radio_Navigation_Events.htm"
+    },
+    {
+      "name": "ADF_100_DEC ADF2_100_DEC",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Radio_Navigation_Events.htm"
+    },
+    {
+      "name": "ADF_1_INC ADF2_1_INC",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Radio_Navigation_Events.htm"
+    },
+    {
+      "name": "ADF_10_INC ADF2_10_INC",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Radio_Navigation_Events.htm"
+    },
+    {
+      "name": "ADF_100_INC ADF2_100_INC",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Radio_Navigation_Events.htm"
+    },
+    {
+      "name": "ADF_ACTIVE_SET ADF2_ACTIVE_SET",
+      "description": "[0]: Frequency value (BCD32 encoded Hz)",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Radio_Navigation_Events.htm"
+    },
+    {
+      "name": "ADF_COMPLETE_SET ADF2_COMPLETE_SET",
+      "description": "[0]: Frequency value (BCD32 encoded Hz)",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Radio_Navigation_Events.htm"
+    },
+    {
+      "name": "ADF_EXTENDED_SET ADF2_EXTENDED_SET",
+      "description": "[0]: Frequency value (BCD32 encoded Hz)",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Radio_Navigation_Events.htm"
+    },
+    {
+      "name": "ADF_FRACT_DEC_CARRY ADF2_FRACT_DEC_CARRY",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Radio_Navigation_Events.htm"
+    },
+    {
+      "name": "ADF_FRACT_INC_CARRY ADF2_FRACT_INC_CARRY",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Radio_Navigation_Events.htm"
+    },
+    {
+      "name": "ADF_HIGHRANGE_SET ADF2_HIGHRANGE_SET",
+      "description": "[0]: Frequency value (BCD32 encoded Hz)",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Radio_Navigation_Events.htm"
+    },
+    {
+      "name": "ADF_LOWRANGE_SET ADF2_LOWRANGE_SET",
+      "description": "[0]: Frequency value (BCD32 encoded Hz)",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Radio_Navigation_Events.htm"
+    },
+    {
+      "name": "ADF_NEEDLE_SET ADF2_NEEDLE_SET",
+      "description": "[0]: Needle value",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Radio_Navigation_Events.htm"
+    },
+    {
+      "name": "ADF_OUTSIDE_SOURCE ADF2_OUTSIDE_SOURCE",
+      "description": "[0]: Bool",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Radio_Navigation_Events.htm"
+    },
+    {
+      "name": "ADF1_RADIO_SWAP ADF2_RADIO_SWAP",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Radio_Navigation_Events.htm"
+    },
+    {
+      "name": "ADF1_RADIO_TENTHS_DEC ADF2_RADIO_TENTHS_DEC",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Radio_Navigation_Events.htm"
+    },
+    {
+      "name": "ADF1_RADIO_TENTHS_INC ADF2_RADIO_TENTHS_INC",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Radio_Navigation_Events.htm"
+    },
+    {
+      "name": "ADF_SET ADF2_SET",
+      "description": "[0]: Frequency value",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Radio_Navigation_Events.htm"
+    },
+    {
+      "name": "ADF_STBY_SET ADF2_STBY_SET",
+      "description": "[0]: Frequency value",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Radio_Navigation_Events.htm"
+    },
+    {
+      "name": "ADF_VOLUME_INC ADF2_VOLUME_INC",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Radio_Navigation_Events.htm"
+    },
+    {
+      "name": "ADF_VOLUME_DEC ADF2_VOLUME_DEC",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Radio_Navigation_Events.htm"
+    },
+    {
+      "name": "ADF_VOLUME_SET ADF2_VOLUME_SET",
+      "description": "[0]: Volume value",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Radio_Navigation_Events.htm"
+    },
+    {
+      "name": "ADF1_WHOLE_DEC ADF2_WHOLE_DEC",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Radio_Navigation_Events.htm"
+    },
+    {
+      "name": "ADF1_WHOLE_INC ADF2_WHOLE_INC",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Radio_Navigation_Events.htm"
+    },
+    {
+      "name": "RADIO_ADF_IDENT_DISABLE RADIO_ADF2_IDENT_DISABLE",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Radio_Navigation_Events.htm"
+    },
+    {
+      "name": "RADIO_ADF_IDENT_ENABLE RADIO_ADF2_IDENT_ENABLE",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Radio_Navigation_Events.htm"
+    },
+    {
+      "name": "RADIO_ADF_IDENT_SET RADIO_ADF2_IDENT_SET",
+      "description": "[0]: True/False (1, 0)",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Radio_Navigation_Events.htm"
+    },
+    {
+      "name": "RADIO_ADF_IDENT_TOGGLE RADIO_ADF2_IDENT_TOGGLE",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Radio_Navigation_Events.htm"
+    },
+    {
+      "name": "AUTO_HOVER_OFF",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Helicopter_Specific_Events.htm"
+    },
+    {
+      "name": "AUTO_HOVER_ON",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Helicopter_Specific_Events.htm"
+    },
+    {
+      "name": "AUTO_HOVER_SET",
+      "description": "[0]: True/False (1, 0)",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Helicopter_Specific_Events.htm"
+    },
+    {
+      "name": "AUTO_HOVER_TOGGLE",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Helicopter_Specific_Events.htm"
+    },
+    {
+      "name": "AXIS_COLLECTIVE_SET",
+      "description": "[0]: Set the collective (0 to 16384)",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Helicopter_Specific_Events.htm"
+    },
+    {
+      "name": "AXIS_STEERING_SET (helicopters)",
+      "description": "[0]: Set the steering amount (-16384 to 16384)",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Helicopter_Specific_Events.htm"
+    },
+    {
+      "name": "AXIS_TAIL_ROTOR_SET",
+      "description": "[0]: Set tail rotor speed (0 to 16384)",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Helicopter_Specific_Events.htm"
+    },
+    {
+      "name": "COLLECTIVE_DECR",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Helicopter_Specific_Events.htm"
+    },
+    {
+      "name": "COLLECTIVE_INCR",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Helicopter_Specific_Events.htm"
+    },
+    {
+      "name": "DECREASE_HELO_GOV_BEEP",
+      "description": "[0]: value [1]: engine",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Helicopter_Specific_Events.htm"
+    },
+    {
+      "name": "INCREASE_HELO_GOV_BEEP",
+      "description": "[0]: value [1]: engine",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Helicopter_Specific_Events.htm"
+    },
+    {
+      "name": "SET_HELO_GOV_BEEP",
+      "description": "[0]: value [1]: engine",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Helicopter_Specific_Events.htm"
+    },
+    {
+      "name": "DEMO_RECORD_1_SEC",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Miscellaneous_Events.htm"
+    },
+    {
+      "name": "DEMO_RECORD_5_SEC",
+      "description": "N/A",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Miscellaneous_Events.htm"
+    },
+    {
+      "name": "DEMO_RECORD_STOP",
+      "description": "",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Miscellaneous_Events.htm"
+    },
+    {
+      "name": "DEMO_STOP",
+      "description": "",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Miscellaneous_Events.htm"
+    },
+    {
+      "name": "REPLAY_STOP",
+      "description": "",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Miscellaneous_Events.htm"
+    },
+    {
+      "name": "AXIS_PAN_PITCH",
+      "description": "",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/View_Camera_Events.htm"
+    },
+    {
+      "name": "AXIS_PAN_HEADING",
+      "description": "",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/View_Camera_Events.htm"
+    },
+    {
+      "name": "AXIS_PAN_TILT",
+      "description": "",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/View_Camera_Events.htm"
+    },
+    {
+      "name": "VIEW_AXIS_INDICATOR_CYCLE",
+      "description": "",
+      "versions": [
+        "2020"
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/View_Camera_Events.htm"
     }
   ],
   "functions": [],

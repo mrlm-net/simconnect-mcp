@@ -41,36 +41,36 @@ var background = context.Background()
 // ── SimVarCount / EventCount ──────────────────────────────────────────────────
 
 func TestDocStore_SimVarCount_Both(t *testing.T) {
-	// "both" merges 2020 (5 vars) + 2024 (5 vars) with 3 shared → 7 unique
+	// "both" merges 2020 and 2024 unique simvar names (387+ shared, 400+ total)
 	store := newBothStore(t)
 	got := store.SimVarCount()
-	if got != 7 {
-		t.Errorf("SimVarCount() = %d, want 7", got)
+	if got < 100 {
+		t.Errorf("SimVarCount() = %d, want >= 100", got)
 	}
 }
 
 func TestDocStore_EventCount_Both(t *testing.T) {
-	// "both" merges 2020 (5 events) + 2024 (5 events) with 2 shared → 8 unique
+	// "both" merges 2020 and 2024 unique event names
 	store := newBothStore(t)
 	got := store.EventCount()
-	if got != 8 {
-		t.Errorf("EventCount() = %d, want 8", got)
+	if got < 100 {
+		t.Errorf("EventCount() = %d, want >= 100", got)
 	}
 }
 
 func TestDocStore_SimVarCount_2020(t *testing.T) {
 	store := new2020Store(t)
 	got := store.SimVarCount()
-	if got != 5 {
-		t.Errorf("SimVarCount() = %d, want 5", got)
+	if got < 100 {
+		t.Errorf("SimVarCount() = %d, want >= 100", got)
 	}
 }
 
 func TestDocStore_EventCount_2020(t *testing.T) {
 	store := new2020Store(t)
 	got := store.EventCount()
-	if got != 5 {
-		t.Errorf("EventCount() = %d, want 5", got)
+	if got < 100 {
+		t.Errorf("EventCount() = %d, want >= 100", got)
 	}
 }
 
@@ -89,11 +89,11 @@ func TestDocStore_ListSimVars_Page1(t *testing.T) {
 	if len(page.Items) != 3 {
 		t.Errorf("len(Items) = %d, want 3", len(page.Items))
 	}
-	if page.TotalItems != 7 {
-		t.Errorf("TotalItems = %d, want 7", page.TotalItems)
+	if page.TotalItems < 100 {
+		t.Errorf("TotalItems = %d, want >= 100 (real corpus)", page.TotalItems)
 	}
-	if page.TotalPages != 3 {
-		t.Errorf("TotalPages = %d, want 3 (ceil(7/3))", page.TotalPages)
+	if page.TotalPages < 10 {
+		t.Errorf("TotalPages = %d, want >= 10 (ceil(TotalItems/3))", page.TotalPages)
 	}
 }
 
@@ -115,28 +115,39 @@ func TestDocStore_ListSimVars_Page2(t *testing.T) {
 func TestDocStore_ListSimVars_LastPage(t *testing.T) {
 	store := newBothStore(t)
 
-	// page 3 with pageSize 3: 7 items → last page has 1 item
-	page, err := store.ListSimVars(background, "", 3, 3)
+	// Determine the actual last page dynamically from TotalPages.
+	first, err := store.ListSimVars(background, "", 1, 3)
+	if err != nil {
+		t.Fatalf("ListSimVars first page: %v", err)
+	}
+	if first.TotalPages == 0 {
+		t.Fatal("expected at least one page of simvars")
+	}
+
+	page, err := store.ListSimVars(background, "", first.TotalPages, 3)
 	if err != nil {
 		t.Fatalf("ListSimVars last page: %v", err)
 	}
-	if len(page.Items) != 1 {
-		t.Errorf("len(Items) = %d, want 1", len(page.Items))
+	if len(page.Items) == 0 {
+		t.Error("last page must have at least 1 item")
+	}
+	if len(page.Items) > 3 {
+		t.Errorf("last page: len(Items) = %d, want <= 3", len(page.Items))
 	}
 }
 
 func TestDocStore_ListSimVars_BeyondLastPage(t *testing.T) {
 	store := newBothStore(t)
 
-	page, err := store.ListSimVars(background, "", 100, 10)
+	page, err := store.ListSimVars(background, "", 100000, 10)
 	if err != nil {
 		t.Fatalf("ListSimVars beyond last page: %v", err)
 	}
 	if len(page.Items) != 0 {
 		t.Errorf("len(Items) = %d, want 0 for out-of-bounds page", len(page.Items))
 	}
-	if page.TotalItems != 7 {
-		t.Errorf("TotalItems = %d, want 7", page.TotalItems)
+	if page.TotalItems < 100 {
+		t.Errorf("TotalItems = %d, want >= 100", page.TotalItems)
 	}
 }
 
@@ -162,9 +173,8 @@ func TestDocStore_ListSimVars_ZeroTotal(t *testing.T) {
 func TestDocStore_ListSimVars_CategoryFilter(t *testing.T) {
 	store := newBothStore(t)
 
-	// "Aircraft Position and Speed" contains PLANE ALTITUDE, AIRSPEED INDICATED,
-	// PLANE HEADING DEGREES MAGNETIC (2020-only), and AIRSPEED TRUE CALIBRATE (2024-only).
-	page, err := store.ListSimVars(background, "Aircraft Position and Speed", 1, 20)
+	// "AIRCRAFT AUTOPILOT/ASSISTANT VARIABLES" is the first scraped category.
+	page, err := store.ListSimVars(background, "AIRCRAFT AUTOPILOT/ASSISTANT VARIABLES", 1, 20)
 	if err != nil {
 		t.Fatalf("ListSimVars category filter: %v", err)
 	}
@@ -172,7 +182,7 @@ func TestDocStore_ListSimVars_CategoryFilter(t *testing.T) {
 		t.Errorf("expected at least 1 item in category, got %d", page.TotalItems)
 	}
 	for _, sv := range page.Items {
-		if !strings.EqualFold(sv.Category, "Aircraft Position and Speed") {
+		if !strings.EqualFold(sv.Category, "AIRCRAFT AUTOPILOT/ASSISTANT VARIABLES") {
 			t.Errorf("item %q has unexpected category %q", sv.Name, sv.Category)
 		}
 	}
@@ -181,8 +191,8 @@ func TestDocStore_ListSimVars_CategoryFilter(t *testing.T) {
 func TestDocStore_ListSimVars_CategoryFilter_CaseInsensitive(t *testing.T) {
 	store := newBothStore(t)
 
-	upper, _ := store.ListSimVars(background, "AIRCRAFT POSITION AND SPEED", 1, 20)
-	lower, _ := store.ListSimVars(background, "aircraft position and speed", 1, 20)
+	upper, _ := store.ListSimVars(background, "AIRCRAFT AUTOPILOT/ASSISTANT VARIABLES", 1, 20)
+	lower, _ := store.ListSimVars(background, "aircraft autopilot/assistant variables", 1, 20)
 
 	if upper.TotalItems != lower.TotalItems {
 		t.Errorf("category filter not case-insensitive: upper=%d lower=%d",
@@ -235,24 +245,24 @@ func TestDocStore_ListSimVars_MaxPageSizeClamped(t *testing.T) {
 func TestDocStore_GetSimVar_Found(t *testing.T) {
 	store := newBothStore(t)
 
-	sv, err := store.GetSimVar(background, "PLANE ALTITUDE")
+	sv, err := store.GetSimVar(background, "AUTOPILOT AIRSPEED ACQUISITION")
 	if err != nil {
 		t.Fatalf("GetSimVar found: %v", err)
 	}
-	if sv.Name != "PLANE ALTITUDE" {
-		t.Errorf("Name = %q, want %q", sv.Name, "PLANE ALTITUDE")
+	if sv.Name != "AUTOPILOT AIRSPEED ACQUISITION" {
+		t.Errorf("Name = %q, want %q", sv.Name, "AUTOPILOT AIRSPEED ACQUISITION")
 	}
 }
 
 func TestDocStore_GetSimVar_CaseInsensitive(t *testing.T) {
 	store := newBothStore(t)
 
-	sv, err := store.GetSimVar(background, "plane altitude")
+	sv, err := store.GetSimVar(background, "autopilot airspeed acquisition")
 	if err != nil {
 		t.Fatalf("GetSimVar case-insensitive: %v", err)
 	}
-	if sv.Name != "PLANE ALTITUDE" {
-		t.Errorf("Name = %q, want %q", sv.Name, "PLANE ALTITUDE")
+	if sv.Name != "AUTOPILOT AIRSPEED ACQUISITION" {
+		t.Errorf("Name = %q, want %q", sv.Name, "AUTOPILOT AIRSPEED ACQUISITION")
 	}
 }
 
@@ -274,8 +284,8 @@ func TestDocStore_ListEvents_Page1(t *testing.T) {
 	if err != nil {
 		t.Fatalf("ListEvents page 1: %v", err)
 	}
-	if page.TotalItems != 8 {
-		t.Errorf("TotalItems = %d, want 8", page.TotalItems)
+	if page.TotalItems < 100 {
+		t.Errorf("TotalItems = %d, want >= 100", page.TotalItems)
 	}
 	if len(page.Items) != 5 {
 		t.Errorf("len(Items) = %d, want 5", len(page.Items))
@@ -299,12 +309,12 @@ func TestDocStore_ListEvents_BeyondLastPage(t *testing.T) {
 func TestDocStore_GetEvent_Found(t *testing.T) {
 	store := newBothStore(t)
 
-	ev, err := store.GetEvent(background, "BRAKES")
+	ev, err := store.GetEvent(background, "AP_AIRSPEED_HOLD")
 	if err != nil {
 		t.Fatalf("GetEvent found: %v", err)
 	}
-	if ev.Name != "BRAKES" {
-		t.Errorf("Name = %q, want %q", ev.Name, "BRAKES")
+	if ev.Name != "AP_AIRSPEED_HOLD" {
+		t.Errorf("Name = %q, want %q", ev.Name, "AP_AIRSPEED_HOLD")
 	}
 }
 
@@ -326,12 +336,12 @@ func TestDocStore_ListFunctions_Page1(t *testing.T) {
 	if err != nil {
 		t.Fatalf("ListFunctions page 1: %v", err)
 	}
-	// fixture has 3 functions
-	if page.TotalItems != 3 {
-		t.Errorf("TotalItems = %d, want 3", page.TotalItems)
+	// real corpus has 7 functions scraped
+	if page.TotalItems < 3 {
+		t.Errorf("TotalItems = %d, want >= 3", page.TotalItems)
 	}
-	if len(page.Items) != 3 {
-		t.Errorf("len(Items) = %d, want 3", len(page.Items))
+	if len(page.Items) < 3 {
+		t.Errorf("len(Items) = %d, want >= 3", len(page.Items))
 	}
 }
 
@@ -379,9 +389,9 @@ func TestDocStore_ListStructures_Page1(t *testing.T) {
 	if err != nil {
 		t.Fatalf("ListStructures page 1: %v", err)
 	}
-	// fixture has 2 structures
-	if page.TotalItems != 2 {
-		t.Errorf("TotalItems = %d, want 2", page.TotalItems)
+	// real corpus has 5 structures scraped
+	if page.TotalItems < 2 {
+		t.Errorf("TotalItems = %d, want >= 2", page.TotalItems)
 	}
 }
 
@@ -429,9 +439,9 @@ func TestDocStore_ListErrorCodes_Page1(t *testing.T) {
 	if err != nil {
 		t.Fatalf("ListErrorCodes page 1: %v", err)
 	}
-	// fixture has 5 error codes
-	if page.TotalItems != 5 {
-		t.Errorf("TotalItems = %d, want 5", page.TotalItems)
+	// real corpus has 44 error codes scraped
+	if page.TotalItems < 10 {
+		t.Errorf("TotalItems = %d, want >= 10", page.TotalItems)
 	}
 }
 
@@ -493,7 +503,7 @@ func TestDocStore_Search_EmptyQuery(t *testing.T) {
 func TestDocStore_Search_TypeSimVar(t *testing.T) {
 	store := newBothStore(t)
 
-	// "altitude" matches PLANE ALTITUDE and GROUND ALTITUDE descriptions/names
+	// "altitude" matches autopilot altitude vars (AUTOPILOT ALTITUDE LOCK VAR, etc.)
 	res, err := store.Search(background, "altitude", "simvar", 20)
 	if err != nil {
 		t.Fatalf("Search type=simvar: %v", err)
@@ -511,13 +521,13 @@ func TestDocStore_Search_TypeSimVar(t *testing.T) {
 func TestDocStore_Search_TypeEvent(t *testing.T) {
 	store := newBothStore(t)
 
-	// "brakes" matches BRAKES and PARKING_BRAKES
-	res, err := store.Search(background, "brakes", "event", 20)
+	// "airspeed" matches AP_AIRSPEED_HOLD, AP_AIRSPEED_ON, AP_AIRSPEED_OFF, etc.
+	res, err := store.Search(background, "airspeed", "event", 20)
 	if err != nil {
 		t.Fatalf("Search type=event: %v", err)
 	}
 	if res.Total == 0 {
-		t.Error("expected at least one event result for 'brakes'")
+		t.Error("expected at least one event result for 'airspeed'")
 	}
 	for _, r := range res.Results {
 		if r.Type != "event" {
@@ -635,11 +645,11 @@ func TestDocStore_ConcurrentReads_NoRace(t *testing.T) {
 		go func() {
 			defer wg.Done()
 
-			// Mix of List and Get operations
+			// Mix of List and Get operations using real scraped data names.
 			_, _ = store.ListSimVars(background, "", 1, 5)
-			_, _ = store.GetSimVar(background, "PLANE ALTITUDE")
+			_, _ = store.GetSimVar(background, "AUTOPILOT AIRSPEED ACQUISITION")
 			_, _ = store.ListEvents(background, 1, 5)
-			_, _ = store.GetEvent(background, "BRAKES")
+			_, _ = store.GetEvent(background, "AP_AIRSPEED_HOLD")
 			_, _ = store.ListFunctions(background, 1, 10)
 			_, _ = store.GetFunction(background, "SimConnect_Open")
 			_, _ = store.ListStructures(background, 1, 10)

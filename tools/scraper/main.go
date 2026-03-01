@@ -23,54 +23,95 @@ type pageSpec struct {
 	category string
 }
 
+// ── 2020 base URLs ────────────────────────────────────────────────────────────
+const (
+	base2020SimVars  = "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/"
+	base2020Events   = "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/"
+	base2020SimConn  = "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/"
+)
+
+// ── 2024 base URLs ────────────────────────────────────────────────────────────
+const (
+	base2024SimVars = "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/SimVars/"
+	base2024Events  = "https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Key_Events/"
+)
+
 var simvarPages2020 = []pageSpec{
-	{
-		url:      "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Position_And_Speed_Variables.htm",
-		category: "Aircraft Position and Speed",
-	},
-	{
-		url:      "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm",
-		category: "Aircraft Engine",
-	},
-	{
-		url:      "https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Miscellaneous_Variables.htm",
-		category: "Miscellaneous",
-	},
+	{url: base2020SimVars + "Aircraft_SimVars/Aircraft_AutopilotAssistant_Variables.htm", category: "Autopilot and Assistant"},
+	{url: base2020SimVars + "Aircraft_SimVars/Aircraft_Brake_Landing_Gear_Variables.htm", category: "Brakes and Landing Gear"},
+	{url: base2020SimVars + "Aircraft_SimVars/Aircraft_Control_Variables.htm", category: "Controls"},
+	{url: base2020SimVars + "Aircraft_SimVars/Aircraft_Electrics_Variables.htm", category: "Electrics"},
+	{url: base2020SimVars + "Aircraft_SimVars/Aircraft_Engine_Variables.htm", category: "Engine"},
+	{url: base2020SimVars + "Aircraft_SimVars/Aircraft_FlightModel_Variables.htm", category: "Flight Model"},
+	{url: base2020SimVars + "Aircraft_SimVars/Aircraft_Fuel_Variables.htm", category: "Fuel"},
+	{url: base2020SimVars + "Aircraft_SimVars/Aircraft_Misc_Variables.htm", category: "Miscellaneous"},
+	{url: base2020SimVars + "Aircraft_SimVars/Aircraft_RadioNavigation_Variables.htm", category: "Radio Navigation"},
+	{url: base2020SimVars + "Aircraft_SimVars/Aircraft_System_Variables.htm", category: "System"},
+	{url: base2020SimVars + "Helicopter_Variables.htm", category: "Helicopter"},
 }
 
 var simvarPages2024 = []pageSpec{
-	{
-		url:      "https://docs.flightsimulator.com/msfs2024/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Position_And_Speed_Variables.htm",
-		category: "Aircraft Position and Speed",
-	},
-	{
-		url:      "https://docs.flightsimulator.com/msfs2024/html/Programming_Tools/SimVars/Aircraft_SimVars/Aircraft_Engine_Variables.htm",
-		category: "Aircraft Engine",
-	},
+	{url: base2024SimVars + "Aircraft_SimVars/Aircraft_AutopilotAssistant_Variables.htm", category: "Autopilot and Assistant"},
+	{url: base2024SimVars + "Aircraft_SimVars/Aircraft_Brake_Landing_Gear_Variables.htm", category: "Brakes and Landing Gear"},
+	{url: base2024SimVars + "Aircraft_SimVars/Aircraft_Control_Variables.htm", category: "Controls"},
+	{url: base2024SimVars + "Aircraft_SimVars/Aircraft_Electrics_Variables.htm", category: "Electrics"},
+	{url: base2024SimVars + "Aircraft_SimVars/Aircraft_Engine_Variables.htm", category: "Engine"},
+	{url: base2024SimVars + "Aircraft_SimVars/Aircraft_FlightModel_Variables.htm", category: "Flight Model"},
+	{url: base2024SimVars + "Aircraft_SimVars/Aircraft_Fuel_Variables.htm", category: "Fuel"},
+	{url: base2024SimVars + "Aircraft_SimVars/Aircraft_Misc_Variables.htm", category: "Miscellaneous"},
+	{url: base2024SimVars + "Aircraft_SimVars/Aircraft_RadioNavigation_Variables.htm", category: "Radio Navigation"},
+	{url: base2024SimVars + "Aircraft_SimVars/Aircraft_System_Variables.htm", category: "System"},
 }
 
 var eventPages2020 = []pageSpec{
-	{url: "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"},
-	{url: "https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/Aircraft_Lighting_Events.htm"},
+	{url: base2020Events + "Aircraft_Autopilot_Flight_Assist_Events.htm"},
+	{url: base2020Events + "Aircraft_Electrical_Events.htm"},
+	{url: base2020Events + "Aircraft_Engine_Events.htm"},
+	{url: base2020Events + "Aircraft_Flight_Control_Events.htm"},
+	{url: base2020Events + "Aircraft_Fuel_System_Events.htm"},
+	{url: base2020Events + "Aircraft_Instrumentation_Events.htm"},
+	{url: base2020Events + "Aircraft_Misc_Events.htm"},
+	{url: base2020Events + "Aircraft_Radio_Navigation_Events.htm"},
+	{url: base2020Events + "Helicopter_Specific_Events.htm"},
+	{url: base2020Events + "Miscellaneous_Events.htm"},
+	{url: base2020Events + "View_Camera_Events.htm"},
 }
 
 var eventPages2024 = []pageSpec{
-	{url: "https://docs.flightsimulator.com/msfs2024/html/Programming_Tools/Event_IDs/Aircraft_Autopilot_Flight_Assist_Events.htm"},
+	{url: base2024Events + "Aircraft_Autopilot_Flight_Assist_Events.htm"},
+	{url: base2024Events + "Aircraft_Electrical_Events.htm"},
+	{url: base2024Events + "Aircraft_Engine_Events.htm"},
+	{url: base2024Events + "Aircraft_Flight_Control_Events.htm"},
+	{url: base2024Events + "Aircraft_Fuel_System_Events.htm"},
+	{url: base2024Events + "Aircraft_General_Systems.htm"},
+	{url: base2024Events + "Aircraft_Instrumentation_Events.htm"},
+	{url: base2024Events + "Aircraft_Misc_Events.htm"},
+	{url: base2024Events + "Aircraft_Radio_Navigation_Events.htm"},
+	{url: base2024Events + "Helicopter_Specific_Events.htm"},
+	{url: base2024Events + "Balloon_Airship_Events.htm"},
+	{url: base2024Events + "Miscellaneous_Events.htm"},
+	{url: base2024Events + "View_Camera_Events.htm"},
 }
 
 var functionPages = []string{
-	"https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/General/SimConnect_Open.htm",
-	"https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/General/SimConnect_Close.htm",
-	"https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Simulation_Variables/SimConnect_RequestDataOnSimObject.htm",
-	"https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Simulation_Variables/SimConnect_AddToDataDefinition.htm",
+	base2020SimConn + "API_Reference/General/SimConnect_Open.htm",
+	base2020SimConn + "API_Reference/General/SimConnect_Close.htm",
+	base2020SimConn + "API_Reference/Events_And_Data/SimConnect_MapClientEventToSimEvent.htm",
+	base2020SimConn + "API_Reference/Events_And_Data/SimConnect_TransmitClientEvent.htm",
+	base2020SimConn + "API_Reference/Events_And_Data/SimConnect_RequestDataOnSimObject.htm",
+	base2020SimConn + "API_Reference/Events_And_Data/SimConnect_AddToDataDefinition.htm",
+	base2020SimConn + "API_Reference/Events_And_Data/SimConnect_SetDataOnSimObject.htm",
 }
 
 var structurePages = []string{
-	"https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_RECV.htm",
-	"https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_DATA_INITPOSITION.htm",
+	base2020SimConn + "API_Reference/Structures_And_Enumerations/SIMCONNECT_RECV.htm",
+	base2020SimConn + "API_Reference/Structures_And_Enumerations/SIMCONNECT_RECV_SIMOBJECT_DATA.htm",
+	base2020SimConn + "API_Reference/Structures_And_Enumerations/SIMCONNECT_RECV_EXCEPTION.htm",
+	base2020SimConn + "API_Reference/Structures_And_Enumerations/SIMCONNECT_DATA_INITPOSITION.htm",
+	base2020SimConn + "API_Reference/Structures_And_Enumerations/SIMCONNECT_DATA_LATLONALT.htm",
 }
 
-var errorCodePage = "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_EXCEPTION.htm"
+var errorCodePage = base2020SimConn + "API_Reference/Structures_And_Enumerations/SIMCONNECT_EXCEPTION.htm"
 
 // ── scrapeResult bundles a file write outcome ─────────────────────────────────
 

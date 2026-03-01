@@ -1,80 +1,169 @@
 {
-  "scraped_at": "2025-01-01T00:00:00Z",
-  "sdk_version": "0.21.1",
+  "scraped_at": "2026-03-01T11:25:39.6857839Z",
+  "sdk_version": "",
   "simvars": [],
   "events": [],
   "functions": [],
   "structures": [
     {
-      "name": "SIMCONNECT_DATA_INITPOSITION",
-      "description": "Defines the initial position and orientation used to place an aircraft or object in the simulation world. This structure is used with SimConnect_SetDataOnSimObject and AI creation functions to set a complete 6-degree-of-freedom starting state.",
-      "fields": [
-        {
-          "name": "Latitude",
-          "type": "double",
-          "description": "Latitude of the position in decimal degrees. Positive values are north of the equator; negative values are south. Valid range is -90.0 to +90.0."
-        },
-        {
-          "name": "Longitude",
-          "type": "double",
-          "description": "Longitude of the position in decimal degrees. Positive values are east of the prime meridian; negative values are west. Valid range is -180.0 to +180.0."
-        },
-        {
-          "name": "Altitude",
-          "type": "double",
-          "description": "Altitude above mean sea level in feet. The aircraft is placed at this MSL altitude regardless of terrain elevation at the specified latitude and longitude."
-        },
-        {
-          "name": "Pitch",
-          "type": "double",
-          "description": "Pitch angle in degrees. Positive values represent nose-up pitch; negative values represent nose-down pitch. Valid range is -90.0 to +90.0."
-        },
-        {
-          "name": "Bank",
-          "type": "double",
-          "description": "Bank (roll) angle in degrees. Positive values represent a right-wing-down (clockwise when viewed from behind) bank; negative values represent a left-wing-down bank. Valid range is -180.0 to +180.0."
-        },
-        {
-          "name": "Heading",
-          "type": "double",
-          "description": "True heading in degrees. The direction the aircraft nose points, measured clockwise from true north. Valid range is 0.0 to 360.0."
-        },
-        {
-          "name": "OnGround",
-          "type": "DWORD",
-          "description": "Specifies whether the aircraft should be placed on the ground surface. Set to 1 to place on the ground (the simulator will adjust altitude to the ground elevation); set to 0 to use the Altitude field as specified."
-        },
-        {
-          "name": "Airspeed",
-          "type": "DWORD",
-          "description": "Initial indicated airspeed in knots. The aircraft is given this airspeed at placement. Set to 0 to place the aircraft stationary."
-        }
-      ],
-      "remarks": "When OnGround is set to 1 the Altitude field is ignored and the simulator places the aircraft on the terrain surface at the specified latitude and longitude. All angular values use degrees, not radians.",
-      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_DATA_INITPOSITION.htm"
-    },
-    {
       "name": "SIMCONNECT_RECV",
-      "description": "Base header structure that begins every message packet received from the SimConnect server. All SIMCONNECT_RECV_* structures begin with the fields defined here, allowing the client to determine the message type and size before casting to the appropriate specific type.",
+      "description": "",
       "fields": [
         {
           "name": "dwSize",
-          "type": "DWORD",
-          "description": "Total size of the complete received structure in bytes, including this header and any variable-length data appended at the end of specific packet types."
+          "type": "",
+          "description": "The total size of the returned structure in bytes (that is, not usually the size of the SIMCONNECT_RECV structure, but of the structure that inherits it)."
         },
         {
           "name": "dwVersion",
-          "type": "DWORD",
-          "description": "SimConnect protocol version number of the server that sent this packet. Clients can use this to detect version mismatches between the client library and the simulator."
+          "type": "",
+          "description": "The version number of the SimConnect server."
         },
         {
           "name": "dwID",
-          "type": "DWORD",
-          "description": "Identifies the type of received message. This value is one of the SIMCONNECT_RECV_ID enumeration values and determines which SIMCONNECT_RECV_* structure the packet should be cast to."
+          "type": "",
+          "description": "The ID of the returned structure. One member of SIMCONNECT_RECV_ID."
         }
       ],
-      "remarks": "All receive packet handlers should begin by reading dwID from this base structure to determine the packet type. The dwSize field must be checked before accessing variable-length fields to avoid buffer overruns.",
       "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_RECV.htm"
+    },
+    {
+      "name": "SIMCONNECT_RECV_SIMOBJECT_DATA",
+      "description": "",
+      "fields": [
+        {
+          "name": "dwRequestID",
+          "type": "",
+          "description": "The ID of the client defined request."
+        },
+        {
+          "name": "dwObjectID",
+          "type": "",
+          "description": "The ID of the client defined object."
+        },
+        {
+          "name": "dwDefineID",
+          "type": "",
+          "description": "The ID of the client defined data definition."
+        },
+        {
+          "name": "dwFlags",
+          "type": "",
+          "description": "The flags that were set for this data request, see SimConnect_RequestDataOnSimObject for a description of the flags. This parameter will always be set to zero if the call was SimConnect_RequestDataOnSimObjectType."
+        },
+        {
+          "name": "dwentrynumber",
+          "type": "",
+          "description": "If multiple objects are being returned, this is the index number of this object out of a total of dwoutof. This will always be 1 if the call was SimConnect_RequestDataOnSimObject, and can be 0 or more if the call was SimConnect_RequestDataOnSimObjectType."
+        },
+        {
+          "name": "dwoutof",
+          "type": "",
+          "description": "The total number of objects being returned. Note that dwentrynumber and dwoutof start with 1 not 0, so if two objects are being returned dwentrynumber and dwoutof pairs will be 1,2 and 2,2 for the two objects. This will always be 1 if the call was SimConnect_RequestDataOnSimObject, and can be 0 or more if the call was SimConnect_RequestDataOnSimObjectType."
+        },
+        {
+          "name": "dwDefineCount",
+          "type": "",
+          "description": "The number of 8-byte elements in the dwData array."
+        },
+        {
+          "name": "dwData",
+          "type": "",
+          "description": "A data array containing information on a specified object in 8-byte (double word) elements. The length of the array is dwDefineCount."
+        }
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_RECV_SIMOBJECT_DATA.htm"
+    },
+    {
+      "name": "SIMCONNECT_RECV_EXCEPTION",
+      "description": "",
+      "fields": [
+        {
+          "name": "dwException",
+          "type": "",
+          "description": "One member of the SIMCONNECT_EXCEPTION enumeration type, indicating which error has occurred."
+        },
+        {
+          "name": "dwSendID",
+          "type": "",
+          "description": "The ID of the packet that contained the error, see Remarks below."
+        },
+        {
+          "name": "dwIndex",
+          "type": "",
+          "description": "The index number (starting at 1) of the first parameter that caused an error. Special case: UNKNOWN_INDEX = 0."
+        }
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_RECV_EXCEPTION.htm"
+    },
+    {
+      "name": "SIMCONNECT_DATA_INITPOSITION",
+      "description": "",
+      "fields": [
+        {
+          "name": "Latitude",
+          "type": "",
+          "description": "Latitude in degrees."
+        },
+        {
+          "name": "Longitude",
+          "type": "",
+          "description": "Longitude in degrees."
+        },
+        {
+          "name": "Altitude",
+          "type": "",
+          "description": "Altitude in feet."
+        },
+        {
+          "name": "Pitch",
+          "type": "",
+          "description": "Pitch in degrees."
+        },
+        {
+          "name": "Bank",
+          "type": "",
+          "description": "Bank in degrees."
+        },
+        {
+          "name": "Heading",
+          "type": "",
+          "description": "Heading in degrees."
+        },
+        {
+          "name": "OnGround",
+          "type": "",
+          "description": "Set this to 1 to place the object on the ground, or 0 if the object is to be airborne."
+        },
+        {
+          "name": "Airspeed",
+          "type": "",
+          "description": "The airspeed in knots, or one of the following special values: INITPOSITION_AIRSPEED_CRUISE (-1): The aircraft's design cruising speed. INITPOSITION_AIRSPEED_KEEP (-2): Maintain the current airspeed."
+        }
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_DATA_INITPOSITION.htm"
+    },
+    {
+      "name": "SIMCONNECT_DATA_LATLONALT",
+      "description": "",
+      "fields": [
+        {
+          "name": "Latitude",
+          "type": "",
+          "description": "Latitude in degrees."
+        },
+        {
+          "name": "Longitude",
+          "type": "",
+          "description": "Longitude in degrees."
+        },
+        {
+          "name": "Altitude",
+          "type": "",
+          "description": "Altitude in feet."
+        }
+      ],
+      "source_url": "https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_DATA_LATLONALT.htm"
     }
   ],
   "error_codes": []

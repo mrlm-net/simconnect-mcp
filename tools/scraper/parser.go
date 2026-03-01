@@ -218,13 +218,14 @@ func ParseErrorCodePage(htmlBytes []byte, sdkVersion, sourceURL string) ([]corpu
 
 	var codes []corpus.ErrorCode
 
+	valueCounter := 0
 	for i, row := range rows {
 		if i == 0 {
 			continue
 		}
 		cells := extractCells(row)
-		if len(cells) < 3 {
-			log.Printf("errorcode row %d: expected >=3 cells, got %d — skipping", i, len(cells))
+		if len(cells) < 2 {
+			log.Printf("errorcode row %d: expected >=2 cells, got %d — skipping", i, len(cells))
 			continue
 		}
 
@@ -234,14 +235,26 @@ func ParseErrorCodePage(htmlBytes []byte, sdkVersion, sourceURL string) ([]corpu
 			continue
 		}
 
-		valueStr := cleanText(cellText(cells[1]))
-		value, err := strconv.Atoi(valueStr)
-		if err != nil {
-			log.Printf("errorcode row %d %q: non-integer value %q — skipping", i, name, valueStr)
-			continue
-		}
+		var value int
+		var description string
 
-		description := cleanText(cellText(cells[2]))
+		if len(cells) >= 3 {
+			// Three-column layout: Name | Value | Description
+			valueStr := cleanText(cellText(cells[1]))
+			parsed, err := strconv.Atoi(valueStr)
+			if err != nil {
+				log.Printf("errorcode row %d %q: non-integer value %q — using counter", i, name, valueStr)
+				value = valueCounter
+			} else {
+				value = parsed
+			}
+			description = cleanText(cellText(cells[2]))
+		} else {
+			// Two-column layout: Name | Description — derive value from row order.
+			value = valueCounter
+			description = cleanText(cellText(cells[1]))
+		}
+		valueCounter++
 
 		ec := corpus.ErrorCode{
 			Name:        name,
@@ -257,25 +270,32 @@ func ParseErrorCodePage(htmlBytes []byte, sdkVersion, sourceURL string) ([]corpu
 
 // ── HTML extraction helpers ───────────────────────────────────────────────────
 
-// extractH1 returns the trimmed text content of the first <h1> element found
-// via depth-first traversal. Returns "" if none is found.
+// extractH1 returns the trimmed text content of the first heading element
+// found via depth-first traversal. It tries h1 first, then falls back to h2
+// since some SDK pages use h2 as the primary page title.
+// Returns "" if neither heading tag is found.
 func extractH1(doc *html.Node) string {
-	var text string
-	var walk func(*html.Node)
-	walk = func(n *html.Node) {
+	for _, tag := range []string{"h1", "h2"} {
+		var text string
+		var walk func(*html.Node)
+		walk = func(n *html.Node) {
+			if text != "" {
+				return
+			}
+			if n.Type == html.ElementNode && n.Data == tag {
+				text = cleanText(nodeText(n))
+				return
+			}
+			for c := n.FirstChild; c != nil; c = c.NextSibling {
+				walk(c)
+			}
+		}
+		walk(doc)
 		if text != "" {
-			return
-		}
-		if n.Type == html.ElementNode && n.Data == "h1" {
-			text = cleanText(nodeText(n))
-			return
-		}
-		for c := n.FirstChild; c != nil; c = c.NextSibling {
-			walk(c)
+			return text
 		}
 	}
-	walk(doc)
-	return text
+	return ""
 }
 
 // extractTableRows returns all <tr> nodes found in the first <table> in doc.
@@ -570,7 +590,9 @@ func extractFunctionParams(doc *html.Node) []corpus.FunctionParam {
 }
 
 // extractStructFields extracts structure member fields from the members table.
-// Expects columns: Member/Name, Type, Description.
+// Handles two layouts:
+//   - Three-column: Member | Type | Description
+//   - Two-column:   Member | Description  (Type stored as "")
 func extractStructFields(doc *html.Node) []corpus.StructField {
 	rows := extractTableRows(doc)
 	var fields []corpus.StructField
@@ -580,17 +602,22 @@ func extractStructFields(doc *html.Node) []corpus.StructField {
 			continue
 		}
 		cells := extractCells(row)
-		if len(cells) < 3 {
-			log.Printf("struct field row %d: expected >=3 cells, got %d — skipping", i, len(cells))
+		if len(cells) < 2 {
+			log.Printf("struct field row %d: expected >=2 cells, got %d — skipping", i, len(cells))
 			continue
 		}
 
 		name := cleanText(cellText(cells[0]))
-		typ := cleanText(cellText(cells[1]))
-		description := cleanText(cellText(cells[2]))
-
 		if name == "" {
 			continue
+		}
+
+		var typ, description string
+		if len(cells) >= 3 {
+			typ = cleanText(cellText(cells[1]))
+			description = cleanText(cellText(cells[2]))
+		} else {
+			description = cleanText(cellText(cells[1]))
 		}
 
 		fields = append(fields, corpus.StructField{

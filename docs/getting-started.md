@@ -5,8 +5,6 @@ order: 1
 section: getting-started
 ---
 
-# Getting Started
-
 SimConnect MCP is a [Model Context Protocol](https://modelcontextprotocol.io/) server for Microsoft Flight Simulator (MSFS 2020/2024), Prepar3D, and FSX. It operates in two modes:
 
 - **Docs mode** — serves SimConnect SDK reference documentation to MCP clients. Cross-platform, no simulator required.

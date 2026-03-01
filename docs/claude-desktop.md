@@ -5,8 +5,6 @@ order: 1
 section: integration
 ---
 
-# Claude Desktop Setup
-
 This guide walks through configuring Claude Desktop to use SimConnect MCP as an MCP server, enabling Claude to query SimConnect documentation or interact with a live flight simulator session.
 
 ## Prerequisites

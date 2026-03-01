@@ -5,8 +5,6 @@ order: 2
 section: getting-started
 ---
 
-# Configuration
-
 SimConnect MCP is configured entirely through environment variables. There are no configuration files or command-line flags. All variables have safe defaults so the server runs without any configuration in docs mode.
 
 ## Environment Variables

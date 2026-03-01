@@ -5,8 +5,6 @@ order: 1
 section: reference
 ---
 
-# MCP Tools — Docs Mode
-
 All 11 MCP tools listed here are available when the server runs with `MCP_MODE=docs`. These tools provide read-only access to the scraped SimConnect SDK documentation corpus: simulation variables, client events, API functions, data structures, and exception/error codes. The server is cross-platform in this mode — no simulator installation is required.
 
 Tools are called over the Model Context Protocol using JSON-RPC 2.0 with the `tools/call` method. Error responses are returned as text content (not JSON-RPC errors) with a prefix token followed by a colon and a human-readable message.

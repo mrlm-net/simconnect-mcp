@@ -5,8 +5,6 @@ order: 2
 section: integration
 ---
 
-# Examples
-
 The following scenarios demonstrate how Claude Desktop uses SimConnect MCP tools to answer natural language questions about the flight simulator. Each example shows the user prompt, the underlying MCP tool call, the raw response, and the reply Claude produces.
 
 All examples that read or write simulator state require SimConnect mode (`MCP_MODE=simconnect`) and an active simulator session.

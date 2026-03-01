@@ -5,8 +5,6 @@ order: 1
 section: changelog
 ---
 
-# Changelog
-
 All notable changes to SimConnect MCP are documented here.
 
 ## [Unreleased]

@@ -4,7 +4,7 @@ const sectionMeta: Record<string, { title: string; defaultOpen: boolean }> = {
     'getting-started': { title: 'Getting Started', defaultOpen: true },
     'reference':       { title: 'Reference',        defaultOpen: true },
     'integration':     { title: 'Integration',      defaultOpen: true },
-    'changelog':       { title: 'Changelog',        defaultOpen: false }
+    'changelog':       { title: 'Changelog',        defaultOpen: true }
 };
 
 const sectionOrder = ['getting-started', 'reference', 'integration', 'changelog'];

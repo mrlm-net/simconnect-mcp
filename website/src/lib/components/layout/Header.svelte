@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { base } from '$app/paths';
+	import { page } from '$app/state';
 	import type { SiteConfig } from '$lib/types/index.js';
 
 	let {
@@ -8,6 +9,10 @@
 		showMenuButton = true
 	}: { siteConfig: SiteConfig; onToggleSidebar: () => void; showMenuButton?: boolean } =
 		$props();
+
+	function isActive(prefix: string): boolean {
+		return page.url.pathname.startsWith(prefix);
+	}
 </script>
 
 <header
@@ -53,21 +58,24 @@
 		<a
 			href="{base}/docs/getting-started"
 			class="nav-link text-sm transition-colors"
-			style="color: var(--color-text-secondary);"
+			class:font-medium={isActive(`${base}/docs`)}
+			style="color: {isActive(`${base}/docs`) ? 'var(--color-text-primary)' : 'var(--color-text-secondary)'};"
 		>
 			Docs
 		</a>
 		<a
 			href="{base}/docs/examples"
 			class="nav-link text-sm transition-colors"
-			style="color: var(--color-text-secondary);"
+			class:font-medium={isActive(`${base}/docs/examples`)}
+			style="color: {isActive(`${base}/docs/examples`) ? 'var(--color-text-primary)' : 'var(--color-text-secondary)'};"
 		>
 			Examples
 		</a>
 		<a
 			href="{base}/docs/changelog"
 			class="nav-link text-sm transition-colors"
-			style="color: var(--color-text-secondary);"
+			class:font-medium={isActive(`${base}/docs/changelog`)}
+			style="color: {isActive(`${base}/docs/changelog`) ? 'var(--color-text-primary)' : 'var(--color-text-secondary)'};"
 		>
 			Changelog
 		</a>

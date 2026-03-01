@@ -48,11 +48,12 @@
 		<ul class="space-y-1 text-sm">
 			{#each headings as heading (heading.id)}
 				{@const active = activeId === heading.id}
+				{@const indent = heading.depth >= 4 ? 'padding-left: 1.5rem;' : heading.depth === 3 ? 'padding-left: 0.75rem;' : ''}
 				<li>
 					<a
 						href="#{heading.id}"
 						class="block py-0.5 transition-colors"
-						style="color: {active ? 'var(--color-link)' : 'var(--color-text-muted)'};"
+						style="color: {active ? 'var(--color-link)' : 'var(--color-text-muted)'}; {indent}"
 					>
 						{heading.text}
 					</a>

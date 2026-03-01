@@ -16,7 +16,7 @@ SimConnect MCP is a [Model Context Protocol](https://modelcontextprotocol.io/) s
 
 ### All modes
 
-- Go 1.23 or later
+- Go 1.25 or later
 
 ### SimConnect mode only
 
@@ -26,7 +26,13 @@ SimConnect MCP is a [Model Context Protocol](https://modelcontextprotocol.io/) s
 
 ## Installation
 
-### Option 1 — Install binary
+### Option 1 — Download prebuilt binary (recommended)
+
+Download the latest release for your platform from the [GitHub Releases page](https://github.com/mrlm-net/simconnect-mcp/releases).
+
+Extract the archive and place the `simconnect-mcp` binary in a directory on your `PATH`.
+
+### Option 2 — Install binary
 
 Install the latest released binary directly from the module proxy:
 
@@ -34,7 +40,7 @@ Install the latest released binary directly from the module proxy:
 go install github.com/mrlm-net/simconnect-mcp/cmd/simconnect-mcp@latest
 ```
 
-### Option 2 — Build from source
+### Option 3 — Build from source
 
 Clone the repository and build locally:
 

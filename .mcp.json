@@ -3,9 +3,9 @@
     "simconnect-mcp": {
       "type": "stdio",
       "command": "go",
-      "args": ["run", "./cmd/simconnect-mcp/"],
+      "args": ["run", ".\\cmd\\simconnect-mcp\\"],
       "env": {
-        "MCP_MODE": "docs",
+        "MCP_MODE": "both",
         "DOCS_MSFS_VERSION": "2024"
       }
     }

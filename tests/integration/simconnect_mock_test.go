@@ -132,6 +132,7 @@ func TestSimconnectToolsList(t *testing.T) {
 	want := []string{
 		"get_simvar_value",
 		"get_simvar_values",
+		"set_simvar_value",
 		"transmit_event",
 		"get_sim_state",
 	}

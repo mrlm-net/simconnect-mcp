@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"sync"
 	"sync/atomic"
+	"unsafe"
 
 	"github.com/mrlm-net/simconnect/pkg/engine"
 	"github.com/mrlm-net/simconnect/pkg/manager"
@@ -63,6 +64,10 @@ type simconnectBridge struct {
 	// flightFile caches the last known flight file path delivered by the FlightLoaded
 	// event.  Populated asynchronously; protected by mu.
 	flightFile string
+
+	// simVersion caches the simulator application version string captured from
+	// the SIMCONNECT_RECV_OPEN packet. Protected by mu.
+	simVersion string
 }
 
 // NewSimConnectBridge constructs a simconnectBridge.  The bridge is idle until
@@ -107,6 +112,19 @@ func (b *simconnectBridge) Open(ctx context.Context, appName string) error {
 	// Wire up the message handler so we can receive SimObject data responses
 	// for GetSimVar / GetSimVars.
 	mgr.OnMessage(b.handleMessage)
+
+	// Capture simulator application version on connection open.
+	mgr.OnOpen(func(data types.ConnectionOpenData) {
+		v := fmt.Sprintf("%d.%d.%d.%d",
+			data.ApplicationVersionMajor,
+			data.ApplicationVersionMinor,
+			data.ApplicationBuildMajor,
+			data.ApplicationBuildMinor,
+		)
+		b.mu.Lock()
+		b.simVersion = v
+		b.mu.Unlock()
+	})
 
 	// Wire up lifecycle events that feed SimEvents().
 	mgr.OnFlightLoaded(func(filename string) {
@@ -322,7 +340,7 @@ func (b *simconnectBridge) TransmitEvent(ctx context.Context, name string, value
 		eventID,
 		value,
 		groupID,
-		types.SIMCONNECT_EVENT_FLAG_DEFAULT,
+		types.SIMCONNECT_EVENT_FLAG_GROUPID_IS_PRIORITY,
 	); err != nil {
 		return fmt.Errorf("bridge: TransmitClientEvent %s: %w", name, err)
 	}
@@ -330,6 +348,41 @@ func (b *simconnectBridge) TransmitEvent(ctx context.Context, name string, value
 	// Clean up — remove the event from the notification group so its ID can be
 	// logically reused without accumulating stale group entries.
 	_ = mgr.RemoveClientEvent(groupID, eventID)
+	return nil
+}
+
+// SetSimVar writes a numeric simulation variable to the user aircraft.
+// It registers a one-shot data definition, pushes the value via SetDataOnSimObject,
+// and cleans up the definition. Only writable SimVars will take effect in the sim.
+func (b *simconnectBridge) SetSimVar(ctx context.Context, name, unit string, value float64) error {
+	if b.State() != StateConnected {
+		return ErrNotConnected
+	}
+
+	b.mu.RLock()
+	mgr := b.mgr
+	b.mu.RUnlock()
+	if mgr == nil {
+		return ErrNotConnected
+	}
+
+	defID, _ := b.allocIDs()
+
+	if err := mgr.AddToDataDefinition(defID, name, unit, types.SIMCONNECT_DATATYPE_FLOAT64, 0, 0); err != nil {
+		return fmt.Errorf("bridge: AddToDataDefinition %s: %w", name, err)
+	}
+	defer func() { _ = mgr.ClearDataDefinition(defID) }()
+
+	if err := mgr.SetDataOnSimObject(
+		defID,
+		types.SIMCONNECT_OBJECT_ID_USER,
+		types.SIMCONNECT_DATA_SET_FLAG_DEFAULT,
+		0,
+		uint32(unsafe.Sizeof(value)),
+		unsafe.Pointer(&value),
+	); err != nil {
+		return fmt.Errorf("bridge: SetDataOnSimObject %s: %w", name, err)
+	}
 	return nil
 }
 
@@ -351,6 +404,7 @@ func (b *simconnectBridge) GetSimState(ctx context.Context) (SimState, error) {
 	b.mu.RLock()
 	mgr := b.mgr
 	flightFile := b.flightFile
+	simVersion := b.simVersion
 	b.mu.RUnlock()
 
 	connected := b.State() == StateConnected
@@ -365,7 +419,15 @@ func (b *simconnectBridge) GetSimState(ctx context.Context) (SimState, error) {
 		Paused:           mgrState.Paused,
 		CurrentFlight:    flightFile,
 		SimTime:          mgrState.ZuluTime,
-		SimulatorVersion: "", // not available without OnOpen tracking; see issue #43 comment
+		SimulatorVersion: simVersion,
+		Latitude:         mgrState.Latitude,
+		Longitude:        mgrState.Longitude,
+		Altitude:         mgrState.Altitude,
+		GroundSpeed:      mgrState.GroundSpeed,
+		IndicatedAirspeed: mgrState.IndicatedAirspeed,
+		VerticalSpeed:    mgrState.VerticalSpeed * 60, // fps → fpm
+		TrueHeading:      mgrState.TrueHeading,
+		OnGround:         mgrState.SimOnGround,
 	}, nil
 }
 

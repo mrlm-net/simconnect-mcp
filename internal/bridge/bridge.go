@@ -63,6 +63,22 @@ type SimState struct {
 	CurrentFlight    string  `json:"current_flight"`
 	SimTime          float64 `json:"sim_time"`
 	SimulatorVersion string  `json:"simulator_version"`
+
+	// Aircraft position
+	Latitude  float64 `json:"latitude,omitempty"`
+	Longitude float64 `json:"longitude,omitempty"`
+	Altitude  float64 `json:"altitude_ft,omitempty"`
+
+	// Aircraft speed
+	GroundSpeed       float64 `json:"ground_speed_kts,omitempty"`
+	IndicatedAirspeed float64 `json:"indicated_airspeed_kts,omitempty"`
+	VerticalSpeed     float64 `json:"vertical_speed_fpm,omitempty"` // feet per minute
+
+	// Aircraft orientation
+	TrueHeading float64 `json:"true_heading_deg,omitempty"`
+
+	// Status
+	OnGround bool `json:"on_ground"`
 }
 
 // SimEvent represents a simulator lifecycle notification.
@@ -98,6 +114,10 @@ type Bridge interface {
 	// TransmitEvent sends a named client event to the simulator.
 	// value is the DWORD data attached to the event (0 for events that ignore data).
 	TransmitEvent(ctx context.Context, name string, value uint32) error
+
+	// SetSimVar writes a numeric simulation variable to the user aircraft.
+	// Only writable SimVars (e.g. autopilot settings) will take effect.
+	SetSimVar(ctx context.Context, name, unit string, value float64) error
 
 	// GetSimState returns a snapshot of top-level simulator state.
 	GetSimState(ctx context.Context) (SimState, error)

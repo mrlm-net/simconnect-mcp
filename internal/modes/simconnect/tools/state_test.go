@@ -140,6 +140,60 @@ func TestGetSimState_Connected(t *testing.T) {
 	}
 }
 
+// TestGetSimState_RichFields verifies that position, speed, and heading fields
+// are included in the connected state response.
+func TestGetSimState_RichFields(t *testing.T) {
+	mb := &bridge.MockBridge{
+		MockState: bridge.StateConnected,
+		MockSimState: bridge.SimState{
+			Latitude:          48.3534,
+			Longitude:         14.1921,
+			Altitude:          35000,
+			GroundSpeed:       450,
+			IndicatedAirspeed: 280,
+			VerticalSpeed:     1200,
+			TrueHeading:       270,
+			OnGround:          false,
+		},
+	}
+	srv := newStateServer(t, mb)
+
+	resp := callToolState(t, srv.URL, "get_sim_state", map[string]any{})
+
+	if isErrorState(t, resp) {
+		t.Fatalf("expected success but got error: %s", contentTextState(t, resp))
+	}
+
+	text := contentTextState(t, resp)
+	var got map[string]any
+	if err := json.Unmarshal([]byte(text), &got); err != nil {
+		t.Fatalf("parse content JSON: %v\ntext: %s", err, text)
+	}
+
+	checks := map[string]float64{
+		"latitude":               48.3534,
+		"longitude":              14.1921,
+		"altitude_ft":            35000,
+		"ground_speed_kts":       450,
+		"indicated_airspeed_kts": 280,
+		"vertical_speed_fpm":     1200,
+		"true_heading_deg":       270,
+	}
+	for key, want := range checks {
+		v, ok := got[key].(float64)
+		if !ok {
+			t.Errorf("%s: missing or wrong type: %v", key, got[key])
+			continue
+		}
+		if v != want {
+			t.Errorf("%s: got %v, want %v", key, v, want)
+		}
+	}
+	if got["on_ground"] != false {
+		t.Errorf("on_ground: got %v, want false", got["on_ground"])
+	}
+}
+
 // TestGetSimState_Disconnected verifies that a disconnected bridge returns
 // {connected: false} as a successful (non-error) result — not an error response.
 // LLM clients must be able to safely poll get_sim_state without triggering error-recovery flows.

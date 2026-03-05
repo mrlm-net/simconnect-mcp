@@ -39,6 +39,16 @@ type MockBridge struct {
 		Name  string
 		Value uint32
 	}
+
+	// MockSetSimVarError is returned by SetSimVar when non-nil.
+	MockSetSimVarError error
+
+	// SetSimVarCalls records arguments passed to SetSimVar.
+	SetSimVarCalls []struct {
+		Name  string
+		Unit  string
+		Value float64
+	}
 }
 
 // Compile-time assertion: MockBridge must implement Bridge.
@@ -104,6 +114,17 @@ func (m *MockBridge) TransmitEvent(_ context.Context, name string, value uint32)
 		Value uint32
 	}{Name: name, Value: value})
 	return m.MockError
+}
+
+func (m *MockBridge) SetSimVar(_ context.Context, name, unit string, value float64) error {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	m.SetSimVarCalls = append(m.SetSimVarCalls, struct {
+		Name  string
+		Unit  string
+		Value float64
+	}{Name: name, Unit: unit, Value: value})
+	return m.MockSetSimVarError
 }
 
 func (m *MockBridge) GetSimState(_ context.Context) (SimState, error) {

@@ -25,6 +25,7 @@ func (m *simconnectMode) buildMCPServer(ctx context.Context) (*mcpadapter.Server
 	}
 	mcp := mcpadapter.NewServer("simconnect-mcp", "1.0.0")
 	tools.RegisterSimVarTools(mcp, b)
+	tools.RegisterSetSimVarTool(mcp, b)
 	tools.RegisterEventTools(mcp, b)
 	tools.RegisterStateTools(mcp, b)
 	return mcp, b, nil
@@ -59,6 +60,7 @@ func (m *simconnectMode) MountWithBridge(r *gin.Engine, b bridge.Bridge) error {
 
 	mcp := mcpadapter.NewServer("simconnect-mcp", "1.0.0")
 	tools.RegisterSimVarTools(mcp, b)
+	tools.RegisterSetSimVarTool(mcp, b)
 	tools.RegisterEventTools(mcp, b)
 	tools.RegisterStateTools(mcp, b)
 

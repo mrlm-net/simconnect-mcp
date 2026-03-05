@@ -17,7 +17,7 @@ import (
 // at any connection state.
 func RegisterStateTools(mcp *mcpadapter.Server, b bridge.Bridge) {
 	tool := mcpadapter.NewTool("get_sim_state").
-		Description("Return a snapshot of the current simulator connection state and flight status.").
+		Description("Return a snapshot of the current simulator connection state, flight status, and aircraft position/speed/heading.").
 		Build()
 
 	mcp.AddTool(tool, func(ctx context.Context, args map[string]any) (*mcpadapter.CallToolResult, error) {
@@ -35,11 +35,19 @@ func RegisterStateTools(mcp *mcpadapter.Server, b bridge.Bridge) {
 		}
 
 		return mcpadapter.JSONResult(map[string]any{
-			"connected":         state.Connected,
-			"paused":            state.Paused,
-			"current_flight":    state.CurrentFlight,
-			"sim_time":          state.SimTime,
-			"simulator_version": state.SimulatorVersion,
+			"connected":              state.Connected,
+			"paused":                 state.Paused,
+			"current_flight":         state.CurrentFlight,
+			"sim_time":               state.SimTime,
+			"simulator_version":      state.SimulatorVersion,
+			"latitude":               state.Latitude,
+			"longitude":              state.Longitude,
+			"altitude_ft":            state.Altitude,
+			"ground_speed_kts":       state.GroundSpeed,
+			"indicated_airspeed_kts": state.IndicatedAirspeed,
+			"vertical_speed_fpm":     state.VerticalSpeed,
+			"true_heading_deg":       state.TrueHeading,
+			"on_ground":              state.OnGround,
 		})
 	})
 }

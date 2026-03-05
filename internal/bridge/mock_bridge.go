@@ -49,6 +49,12 @@ type MockBridge struct {
 		Unit  string
 		Value float64
 	}
+
+	// MockTrafficResults is returned by GetTraffic when MockTrafficError is nil.
+	MockTrafficResults []TrafficEntry
+
+	// MockTrafficError is returned by GetTraffic when non-nil.
+	MockTrafficError error
 }
 
 // Compile-time assertion: MockBridge must implement Bridge.
@@ -133,6 +139,15 @@ func (m *MockBridge) GetSimState(_ context.Context) (SimState, error) {
 	state := m.MockSimState
 	state.Connected = m.MockState == StateConnected
 	return state, nil
+}
+
+func (m *MockBridge) GetTraffic(_ context.Context, _ uint32) ([]TrafficEntry, error) {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+	if m.MockTrafficError != nil {
+		return nil, m.MockTrafficError
+	}
+	return m.MockTrafficResults, nil
 }
 
 func (m *MockBridge) SimEvents() <-chan SimEvent {

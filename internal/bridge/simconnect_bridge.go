@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"sync"
 	"sync/atomic"
+	"time"
 	"unsafe"
 
 	"github.com/mrlm-net/simconnect/pkg/engine"
@@ -23,6 +24,29 @@ var _ Bridge = (*simconnectBridge)(nil)
 // SimConnect returns a FLOAT64 value for every numeric variable.
 type simVarDataStruct struct {
 	Value float64
+}
+
+// trafficDataStruct defines the wire-format layout for a traffic scan entry.
+// All numeric fields use SIMCONNECT_DATATYPE_FLOAT64 and are placed before the
+// string fields to avoid Go struct alignment padding between numeric types.
+// Field order must match the AddToDataDefinition calls in GetTraffic exactly.
+//
+// Layout (240 bytes total, multiple of 8):
+//
+//	[0–47]   6×float64 — Lat, Lon, Alt, Head, GndSpd, OnGround
+//	[48–79]  [32]byte  — ATC ID
+//	[80–111] [32]byte  — ATC Airline
+//	[112–239][128]byte — Title
+type trafficDataStruct struct {
+	Lat        float64
+	Lon        float64
+	Alt        float64
+	Head       float64
+	GndSpd     float64
+	OnGround   float64   // requested as FLOAT64 to avoid int32 alignment gap
+	AtcID      [32]byte  // SIMCONNECT_DATATYPE_STRING32
+	AtcAirline [32]byte  // SIMCONNECT_DATATYPE_STRING32
+	Title      [128]byte // SIMCONNECT_DATATYPE_STRING128
 }
 
 // simconnectBridge wraps the mrlm-net/simconnect Manager to satisfy the Bridge
@@ -322,8 +346,9 @@ func (b *simconnectBridge) TransmitEvent(ctx context.Context, name string, value
 	}
 
 	// Allocate a fresh event ID for this named event.
+	// Group ID 3000 with priority 1000 and DEFAULT flag matches the SDK examples.
 	eventID := b.eventIDCounter.Add(1)
-	const groupID uint32 = 1
+	const groupID uint32 = 3000
 
 	if err := mgr.MapClientEventToSimEvent(eventID, name); err != nil {
 		return fmt.Errorf("bridge: MapClientEventToSimEvent %s: %w", name, err)
@@ -340,7 +365,7 @@ func (b *simconnectBridge) TransmitEvent(ctx context.Context, name string, value
 		eventID,
 		value,
 		groupID,
-		types.SIMCONNECT_EVENT_FLAG_GROUPID_IS_PRIORITY,
+		types.SIMCONNECT_EVENT_FLAG_DEFAULT,
 	); err != nil {
 		return fmt.Errorf("bridge: TransmitClientEvent %s: %w", name, err)
 	}
@@ -430,6 +455,107 @@ func (b *simconnectBridge) GetSimState(ctx context.Context) (SimState, error) {
 		TrueHeading:       mgrState.TrueHeading,
 		OnGround:          mgrState.SimOnGround,
 	}, nil
+}
+
+// GetTraffic returns nearby aircraft within radiusMeters of the user aircraft.
+// It issues a one-shot RequestDataOnSimObjectType call and collects all
+// SIMOBJECT_DATA_BYTYPE responses until the batch is complete or the context
+// is cancelled.  The player aircraft is included in the results.
+func (b *simconnectBridge) GetTraffic(ctx context.Context, radiusMeters uint32) ([]TrafficEntry, error) {
+	if b.State() != StateConnected {
+		return nil, ErrNotConnected
+	}
+
+	b.mu.RLock()
+	mgr := b.mgr
+	b.mu.RUnlock()
+	if mgr == nil {
+		return nil, ErrNotConnected
+	}
+
+	defID, reqID := b.allocIDs()
+
+	// Register the data definition.  Field order mirrors trafficDataStruct.
+	defs := []struct {
+		name, unit string
+		typ        types.SIMCONNECT_DATATYPE
+	}{
+		{"PLANE LATITUDE", "degrees", types.SIMCONNECT_DATATYPE_FLOAT64},
+		{"PLANE LONGITUDE", "degrees", types.SIMCONNECT_DATATYPE_FLOAT64},
+		{"PLANE ALTITUDE", "feet", types.SIMCONNECT_DATATYPE_FLOAT64},
+		{"PLANE HEADING DEGREES TRUE", "degrees", types.SIMCONNECT_DATATYPE_FLOAT64},
+		{"GROUND VELOCITY", "knots", types.SIMCONNECT_DATATYPE_FLOAT64},
+		{"SIM ON GROUND", "bool", types.SIMCONNECT_DATATYPE_FLOAT64},
+		{"ATC ID", "", types.SIMCONNECT_DATATYPE_STRING32},
+		{"ATC AIRLINE", "", types.SIMCONNECT_DATATYPE_STRING32},
+		{"TITLE", "", types.SIMCONNECT_DATATYPE_STRING128},
+	}
+	for i, d := range defs {
+		if err := mgr.AddToDataDefinition(defID, d.name, d.unit, d.typ, 0, uint32(i)); err != nil {
+			_ = mgr.ClearDataDefinition(defID)
+			return nil, fmt.Errorf("bridge: AddToDataDefinition %s: %w", d.name, err)
+		}
+	}
+	defer func() { _ = mgr.ClearDataDefinition(defID) }()
+
+	// Subscribe to BYTYPE messages only, so we don't interfere with the main
+	// OnMessage handler that serves GetSimVar requests.
+	sub := mgr.SubscribeWithType("", 128, []types.SIMCONNECT_RECV_ID{
+		types.SIMCONNECT_RECV_ID_SIMOBJECT_DATA_BYTYPE,
+	})
+	defer sub.Unsubscribe()
+
+	if err := mgr.RequestDataOnSimObjectType(reqID, defID, radiusMeters, types.SIMCONNECT_SIMOBJECT_TYPE_AIRCRAFT); err != nil {
+		return nil, fmt.Errorf("bridge: RequestDataOnSimObjectType: %w", err)
+	}
+
+	var results []TrafficEntry
+	var expected uint32
+
+	// 3-second timeout — if no response arrives, assume no traffic.
+	deadline := time.NewTimer(3 * time.Second)
+	defer deadline.Stop()
+
+	for {
+		select {
+		case <-ctx.Done():
+			return results, nil
+		case <-deadline.C:
+			return results, nil
+		case msg, ok := <-sub.Messages():
+			if !ok {
+				return results, nil
+			}
+			simObjData := msg.AsSimObjectDataBType()
+			if simObjData == nil || uint32(simObjData.DwRequestID) != reqID {
+				continue
+			}
+			if simObjData.DwOutOf == 0 {
+				// No aircraft in range.
+				return nil, nil
+			}
+			if expected == 0 {
+				expected = uint32(simObjData.DwOutOf)
+				results = make([]TrafficEntry, 0, expected)
+			}
+			data := engine.CastDataAs[trafficDataStruct](&simObjData.DwData)
+			results = append(results, TrafficEntry{
+				ObjectID:    uint32(simObjData.DwObjectID),
+				Title:       engine.BytesToString(data.Title[:]),
+				ATCID:       engine.BytesToString(data.AtcID[:]),
+				ATCAirline:  engine.BytesToString(data.AtcAirline[:]),
+				Latitude:    data.Lat,
+				Longitude:   data.Lon,
+				AltitudeFt:  data.Alt,
+				TrueHeading: data.Head,
+				GroundSpeed: data.GndSpd,
+				OnGround:    data.OnGround != 0,
+			})
+			if uint32(len(results)) >= expected {
+				return results, nil
+			}
+		}
+	}
 }
 
 // SimEvents returns a read-only channel that receives lifecycle events.

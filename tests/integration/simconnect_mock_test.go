@@ -135,6 +135,7 @@ func TestSimconnectToolsList(t *testing.T) {
 		"set_simvar_value",
 		"transmit_event",
 		"get_sim_state",
+		"get_nearby_traffic",
 	}
 
 	if len(toolsRaw) != len(want) {

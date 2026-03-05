@@ -87,6 +87,20 @@ type SimEvent struct {
 	Value uint32 `json:"value,omitempty"`
 }
 
+// TrafficEntry is one aircraft returned by a nearby-traffic scan.
+type TrafficEntry struct {
+	ObjectID    uint32  `json:"object_id"`
+	Title       string  `json:"title"`
+	ATCID       string  `json:"atc_id"`
+	ATCAirline  string  `json:"atc_airline"`
+	Latitude    float64 `json:"latitude"`
+	Longitude   float64 `json:"longitude"`
+	AltitudeFt  float64 `json:"altitude_ft"`
+	TrueHeading float64 `json:"true_heading_deg"`
+	GroundSpeed float64 `json:"ground_speed_kts"`
+	OnGround    bool    `json:"on_ground"`
+}
+
 // Bridge abstracts all SimConnect SDK calls needed by the four MCP tools.
 // Implementations must be safe to call from multiple goroutines concurrently.
 type Bridge interface {
@@ -121,6 +135,10 @@ type Bridge interface {
 
 	// GetSimState returns a snapshot of top-level simulator state.
 	GetSimState(ctx context.Context) (SimState, error)
+
+	// GetTraffic returns nearby aircraft within the given radius (metres).
+	// The player aircraft is included in the results.
+	GetTraffic(ctx context.Context, radiusMeters uint32) ([]TrafficEntry, error)
 
 	// SimEvents returns a read-only channel that receives lifecycle events.
 	SimEvents() <-chan SimEvent

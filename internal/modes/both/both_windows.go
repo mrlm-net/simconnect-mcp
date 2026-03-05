@@ -90,6 +90,7 @@ func (m *bothMode) buildMCPServer(ctx context.Context) (*mcpadapter.Server, erro
 		sctools.RegisterSetSimVarTool(mcp, b)
 		sctools.RegisterEventTools(mcp, b)
 		sctools.RegisterStateTools(mcp, b)
+		sctools.RegisterTrafficTool(mcp, b)
 	}
 	return mcp, nil
 }

@@ -4,6 +4,24 @@ All notable changes to SimConnect MCP are documented here. The format follows [K
 
 Full release history with release notes is also available on the [GitHub Releases page](https://github.com/mrlm-net/simconnect-mcp/releases).
 
+## [0.2.0] - 2026-03-05
+
+### Added
+
+- `set_simvar_value` — write a numeric simulation variable to the user aircraft (autopilot targets, flight controls, and other writable SimVars)
+- `get_sim_state` now returns full aircraft position (latitude, longitude, altitude), speed (ground speed, indicated airspeed, vertical speed), true heading, and on-ground flag
+- `get_sim_state` now returns `simulator_version` string captured on connection open
+
+### Fixed
+
+- `get_sim_state` position, speed, and heading fields returned garbage values due to a struct alignment bug in the underlying SDK — fixed by upgrading to SDK v0.4.2 which uses a uniform float64 layout
+- `transmit_event` events now reliably reach the simulator; previously used an incorrect event flag that caused events to be silently discarded in some scenarios
+- `.mcp.json` Claude Code integration now runs in `both` mode, exposing documentation and live SimConnect tools simultaneously
+
+### Changed
+
+- Updated `github.com/mrlm-net/simconnect` SDK dependency from v0.3.7 to v0.4.2
+
 ## [0.1.1] - 2026-03-01
 
 ### Fixed

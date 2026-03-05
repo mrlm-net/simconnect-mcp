@@ -414,20 +414,43 @@ func (b *simconnectBridge) GetSimState(ctx context.Context) (SimState, error) {
 	}
 
 	mgrState := mgr.SimState()
+
+	// The Manager's internal SimState has struct alignment issues with position/speed
+	// fields on the current SDK — reading them gives garbage values. Fetch them
+	// directly via SimConnect using a single batch request instead.
+	posVars := []SimVarRequest{
+		{Name: "PLANE LATITUDE", Unit: "degrees"},
+		{Name: "PLANE LONGITUDE", Unit: "degrees"},
+		{Name: "PLANE ALTITUDE", Unit: "feet"},
+		{Name: "GROUND VELOCITY", Unit: "knots"},
+		{Name: "AIRSPEED INDICATED", Unit: "knots"},
+		{Name: "VERTICAL SPEED", Unit: "feet per minute"},
+		{Name: "PLANE HEADING DEGREES TRUE", Unit: "degrees"},
+		{Name: "SIM ON GROUND", Unit: "bool"},
+	}
+	posResults, _ := b.GetSimVars(ctx, posVars)
+
+	pick := func(i int) float64 {
+		if i < len(posResults) && posResults[i].Error == "" {
+			return posResults[i].Value
+		}
+		return 0
+	}
+
 	return SimState{
-		Connected:        connected,
-		Paused:           mgrState.Paused,
-		CurrentFlight:    flightFile,
-		SimTime:          mgrState.ZuluTime,
-		SimulatorVersion: simVersion,
-		Latitude:         mgrState.Latitude,
-		Longitude:        mgrState.Longitude,
-		Altitude:         mgrState.Altitude,
-		GroundSpeed:      mgrState.GroundSpeed,
-		IndicatedAirspeed: mgrState.IndicatedAirspeed,
-		VerticalSpeed:    mgrState.VerticalSpeed * 60, // fps → fpm
-		TrueHeading:      mgrState.TrueHeading,
-		OnGround:         mgrState.SimOnGround,
+		Connected:         connected,
+		Paused:            mgrState.Paused,
+		CurrentFlight:     flightFile,
+		SimTime:           mgrState.ZuluTime,
+		SimulatorVersion:  simVersion,
+		Latitude:          pick(0),
+		Longitude:         pick(1),
+		Altitude:          pick(2),
+		GroundSpeed:       pick(3),
+		IndicatedAirspeed: pick(4),
+		VerticalSpeed:     pick(5), // "feet per minute" unit — no conversion needed
+		TrueHeading:       pick(6),
+		OnGround:          pick(7) != 0,
 	}, nil
 }
 

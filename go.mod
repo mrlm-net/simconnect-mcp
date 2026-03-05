@@ -6,7 +6,7 @@ toolchain go1.25.7
 
 require (
 	github.com/gin-gonic/gin v1.10.0
-	github.com/mrlm-net/simconnect v0.4.1
+	github.com/mrlm-net/simconnect v0.4.2
 	golang.org/x/net v0.51.0
 )
 

@@ -4,6 +4,14 @@ All notable changes to SimConnect MCP are documented here. The format follows [K
 
 Full release history with release notes is also available on the [GitHub Releases page](https://github.com/mrlm-net/simconnect-mcp/releases).
 
+## [0.3.4] - 2026-03-07
+
+### Fixed
+
+- `get_airport_details` now returns correct `runway_count` and `stand_count` even when the response arrives via the timeout path (previously counts were always 0 on timeout)
+- Subscription buffer increased from 64 → 512 messages to prevent silent message loss at large airports (e.g. LKPR with 100+ parking stands); the SDK dispatcher drops messages silently when the buffer is full
+- Timeout increased from 5 s → 15 s to allow large airports enough time to deliver all four `FACILITY_DATA_END` acknowledgements
+
 ## [0.3.3] - 2026-03-07
 
 ### Changed

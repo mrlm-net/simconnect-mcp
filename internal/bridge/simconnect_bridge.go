@@ -1080,7 +1080,11 @@ func (b *simconnectBridge) GetAirportDetails(ctx context.Context, icao, region s
 		}
 	}
 
-	sub := mgr.SubscribeWithType("", 64, []types.SIMCONNECT_RECV_ID{
+	// Buffer must be large enough for busy airports (LKPR has 100+ stands).
+	// Each RequestFacilityData call produces N FACILITY_DATA + 1 FACILITY_DATA_END,
+	// so 4 requests at a large airport can easily exceed 200 messages total.
+	// The SDK dispatcher drops messages when the channel is full, so use 512.
+	sub := mgr.SubscribeWithType("", 512, []types.SIMCONNECT_RECV_ID{
 		types.SIMCONNECT_RECV_ID_FACILITY_DATA,
 		types.SIMCONNECT_RECV_ID_FACILITY_DATA_END,
 	})
@@ -1105,18 +1109,23 @@ func (b *simconnectBridge) GetAirportDetails(ctx context.Context, icao, region s
 	endCount := 0
 	foundBase := false
 
-	deadline := time.NewTimer(5 * time.Second)
+	// 15 seconds to accommodate large airports with many stands (100+).
+	deadline := time.NewTimer(15 * time.Second)
 	defer deadline.Stop()
 
 	for {
 		select {
 		case <-ctx.Done():
+			details.RunwayCount = len(details.Runways)
+			details.StandCount = len(details.Stands)
 			if !foundBase {
 				return nil, nil
 			}
 			return details, nil
 
 		case <-deadline.C:
+			details.RunwayCount = len(details.Runways)
+			details.StandCount = len(details.Stands)
 			if !foundBase {
 				return nil, fmt.Errorf("bridge: airport %q not found (timeout)", icao)
 			}

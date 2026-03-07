@@ -100,6 +100,178 @@ type airportFacilityData struct {
 	Name64    [64]byte
 }
 
+// runwayFacilityData mirrors the OPEN RUNWAY field sequence:
+//
+//	LATITUDE(f64), LONGITUDE(f64), ALTITUDE(f64),
+//	HEADING(f32), LENGTH(f32, feet), WIDTH(f32, feet), SURFACE(int32)
+//
+// Total wire size: 3×8 + 4×4 = 40 bytes.
+type runwayFacilityData struct {
+	Latitude  float64
+	Longitude float64
+	Altitude  float64
+	Heading   float32
+	Length    float32 // feet
+	Width     float32 // feet
+	Surface   int32
+}
+
+// parkingFacilityData mirrors the OPEN TAXI_PARKING field sequence:
+//
+//	TYPE, TAXI_POINT_TYPE, NAME, SUFFIX, NUMBER, ORIENTATION, HEADING, RADIUS, BIAS_X, BIAS_Z
+//	(all int32/uint32/float32 — 10×4 = 40 bytes)
+type parkingFacilityData struct {
+	Type          int32
+	TaxiPointType int32
+	Name          int32
+	Suffix        int32
+	Number        uint32
+	Orientation   float32
+	Heading       float32
+	Radius        float32
+	BiasX         float32
+	BiasZ         float32
+}
+
+// frequencyFacilityData mirrors the OPEN FREQUENCY field sequence:
+//
+//	TYPE(int32), FREQUENCY(int32, Hz), NAME([64]byte) = 72 bytes
+type frequencyFacilityData struct {
+	Type      int32
+	Frequency int32
+	Name      [64]byte
+}
+
+// runwaySurfaceName maps SimConnect SURFACE integer to a human-readable label.
+func runwaySurfaceName(s int32) string {
+	switch s {
+	case 0:
+		return "Concrete"
+	case 1:
+		return "Grass"
+	case 2:
+		return "Water"
+	case 3:
+		return "Grass Bumpy"
+	case 4:
+		return "Asphalt"
+	case 7:
+		return "Clay"
+	case 8:
+		return "Snow"
+	case 9:
+		return "Ice"
+	case 10:
+		return "Dirt"
+	case 11:
+		return "Coral"
+	case 12:
+		return "Gravel"
+	case 13:
+		return "Oil Treated"
+	case 14:
+		return "Steel Mats"
+	case 15:
+		return "Bituminous"
+	case 16:
+		return "Brick"
+	case 17:
+		return "Macadam"
+	case 18:
+		return "Planks"
+	case 19:
+		return "Sand"
+	case 20:
+		return "Shale"
+	case 21:
+		return "Tarmac"
+	case 22:
+		return "Wright Flyer Track"
+	default:
+		return fmt.Sprintf("Surface(%d)", s)
+	}
+}
+
+// parkingTypeName maps SimConnect parking TYPE integer to a human-readable label.
+func parkingTypeName(t int32) string {
+	switch t {
+	case 0:
+		return "None"
+	case 1:
+		return "Ramp GA"
+	case 2:
+		return "Ramp GA Small"
+	case 3:
+		return "Ramp GA Medium"
+	case 4:
+		return "Ramp GA Large"
+	case 5:
+		return "Ramp Cargo"
+	case 6:
+		return "Ramp Mil Cargo"
+	case 7:
+		return "Ramp Mil Combat"
+	case 8:
+		return "Gate Small"
+	case 9:
+		return "Gate Medium"
+	case 10:
+		return "Gate Heavy"
+	case 11:
+		return "Dock GA"
+	case 12:
+		return "Fuel"
+	case 13:
+		return "Vehicle"
+	case 14:
+		return "Ramp GA Extra"
+	case 15:
+		return "Gate Extra"
+	default:
+		return fmt.Sprintf("Type(%d)", t)
+	}
+}
+
+// frequencyTypeName maps SimConnect frequency TYPE integer to a human-readable label.
+func frequencyTypeName(t int32) string {
+	switch t {
+	case 0:
+		return "None"
+	case 1:
+		return "ATIS"
+	case 2:
+		return "Multicom"
+	case 3:
+		return "UNICOM"
+	case 4:
+		return "CTAF"
+	case 5:
+		return "Ground"
+	case 6:
+		return "Tower"
+	case 7:
+		return "Clearance"
+	case 8:
+		return "Approach"
+	case 9:
+		return "Departure"
+	case 10:
+		return "Center"
+	case 11:
+		return "FSS"
+	case 12:
+		return "AWOS"
+	case 13:
+		return "ASOS"
+	case 14:
+		return "Clearance Pre-Taxi"
+	case 15:
+		return "Remote Clearance Delivery"
+	default:
+		return fmt.Sprintf("Freq(%d)", t)
+	}
+}
+
 // simconnectBridge wraps the mrlm-net/simconnect Manager to satisfy the Bridge
 // interface.  Each instance manages one Manager lifecycle.
 //
@@ -846,8 +1018,8 @@ func (b *simconnectBridge) GetNearestAirport(ctx context.Context) (*AirportEntry
 }
 
 // GetAirportDetails returns detailed facility data for the given ICAO airport.
-// It issues AddToFacilityDefinition + RequestFacilityData calls and collects
-// the FACILITY_DATA response, returning when FACILITY_DATA_END is received.
+// Issues four parallel RequestFacilityData calls (airport info, runways, stands,
+// frequencies) and waits until all four FACILITY_DATA_END messages are received.
 func (b *simconnectBridge) GetAirportDetails(ctx context.Context, icao, region string) (*AirportDetails, error) {
 	if b.State() != StateConnected {
 		return nil, ErrNotConnected
@@ -860,30 +1032,78 @@ func (b *simconnectBridge) GetAirportDetails(ctx context.Context, icao, region s
 		return nil, ErrNotConnected
 	}
 
-	defID, reqID := b.allocIDs()
+	// Allocate four independent (defID, reqID) pairs.
+	baseDefID, baseReqID := b.allocIDs()
+	rwDefID, rwReqID := b.allocIDs()
+	pkDefID, pkReqID := b.allocIDs()
+	frDefID, frReqID := b.allocIDs()
 
-	// Register airport facility definition: OPEN/CLOSE markers bracket the fields.
-	for _, field := range []string{
-		"OPEN AIRPORT",
-		"LATITUDE", "LONGITUDE", "ALTITUDE", "ICAO", "NAME", "NAME64",
-		"CLOSE AIRPORT",
+	// Register: airport basic info.
+	for _, f := range []string{
+		"OPEN AIRPORT", "LATITUDE", "LONGITUDE", "ALTITUDE", "ICAO", "NAME", "NAME64", "CLOSE AIRPORT",
 	} {
-		if err := mgr.AddToFacilityDefinition(defID, field); err != nil {
-			return nil, fmt.Errorf("bridge: AddToFacilityDefinition %q: %w", field, err)
+		if err := mgr.AddToFacilityDefinition(baseDefID, f); err != nil {
+			return nil, fmt.Errorf("bridge: AddToFacilityDefinition %q: %w", f, err)
 		}
 	}
 
-	sub := mgr.SubscribeWithType("", 32, []types.SIMCONNECT_RECV_ID{
+	// Register: runways.
+	for _, f := range []string{
+		"OPEN AIRPORT", "OPEN RUNWAY",
+		"LATITUDE", "LONGITUDE", "ALTITUDE", "HEADING", "LENGTH", "WIDTH", "SURFACE",
+		"CLOSE RUNWAY", "CLOSE AIRPORT",
+	} {
+		if err := mgr.AddToFacilityDefinition(rwDefID, f); err != nil {
+			return nil, fmt.Errorf("bridge: AddToFacilityDefinition runway %q: %w", f, err)
+		}
+	}
+
+	// Register: parking stands.
+	for _, f := range []string{
+		"OPEN AIRPORT", "OPEN TAXI_PARKING",
+		"TYPE", "TAXI_POINT_TYPE", "NAME", "SUFFIX", "NUMBER", "ORIENTATION", "HEADING", "RADIUS", "BIAS_X", "BIAS_Z",
+		"CLOSE TAXI_PARKING", "CLOSE AIRPORT",
+	} {
+		if err := mgr.AddToFacilityDefinition(pkDefID, f); err != nil {
+			return nil, fmt.Errorf("bridge: AddToFacilityDefinition parking %q: %w", f, err)
+		}
+	}
+
+	// Register: ATC frequencies.
+	for _, f := range []string{
+		"OPEN AIRPORT", "OPEN FREQUENCY",
+		"TYPE", "FREQUENCY", "NAME",
+		"CLOSE FREQUENCY", "CLOSE AIRPORT",
+	} {
+		if err := mgr.AddToFacilityDefinition(frDefID, f); err != nil {
+			return nil, fmt.Errorf("bridge: AddToFacilityDefinition frequency %q: %w", f, err)
+		}
+	}
+
+	sub := mgr.SubscribeWithType("", 64, []types.SIMCONNECT_RECV_ID{
 		types.SIMCONNECT_RECV_ID_FACILITY_DATA,
 		types.SIMCONNECT_RECV_ID_FACILITY_DATA_END,
 	})
 	defer sub.Unsubscribe()
 
-	if err := mgr.RequestFacilityData(defID, reqID, icao, region); err != nil {
-		return nil, fmt.Errorf("bridge: RequestFacilityData %s: %w", icao, err)
+	for _, pair := range [][2]uint32{{baseDefID, baseReqID}, {rwDefID, rwReqID}, {pkDefID, pkReqID}, {frDefID, frReqID}} {
+		if err := mgr.RequestFacilityData(pair[0], pair[1], icao, region); err != nil {
+			return nil, fmt.Errorf("bridge: RequestFacilityData %s defID=%d: %w", icao, pair[0], err)
+		}
 	}
 
-	var details *AirportDetails
+	// Accumulate results.
+	details := &AirportDetails{
+		Region:      region,
+		Runways:     []AirportRunway{},
+		Stands:      []AirportStand{},
+		Frequencies: []AirportFrequency{},
+	}
+
+	// Track how many of the 4 END messages we've received.
+	endIDs := map[uint32]bool{baseReqID: false, rwReqID: false, pkReqID: false, frReqID: false}
+	endCount := 0
+	foundBase := false
 
 	deadline := time.NewTimer(5 * time.Second)
 	defer deadline.Stop()
@@ -891,41 +1111,94 @@ func (b *simconnectBridge) GetAirportDetails(ctx context.Context, icao, region s
 	for {
 		select {
 		case <-ctx.Done():
+			if !foundBase {
+				return nil, nil
+			}
 			return details, nil
+
 		case <-deadline.C:
-			if details == nil {
+			if !foundBase {
 				return nil, fmt.Errorf("bridge: airport %q not found (timeout)", icao)
 			}
 			return details, nil
+
 		case msg, ok := <-sub.Messages():
 			if !ok {
+				if !foundBase {
+					return nil, nil
+				}
 				return details, nil
 			}
+
 			switch types.SIMCONNECT_RECV_ID(msg.DwID) {
 			case types.SIMCONNECT_RECV_ID_FACILITY_DATA:
 				fd := msg.AsFacilityData()
-				if fd == nil || uint32(fd.UserRequestId) != reqID {
+				if fd == nil {
 					continue
 				}
-				if fd.Type != types.SIMCONNECT_FACILITY_DATA_AIRPORT {
-					continue
+				userReqID := uint32(fd.UserRequestId)
+				switch userReqID {
+				case baseReqID:
+					if fd.Type == types.SIMCONNECT_FACILITY_DATA_AIRPORT {
+						data := engine.CastDataAs[airportFacilityData](&fd.Data)
+						details.ICAO = engine.BytesToString(data.ICAO[:])
+						details.Name = engine.BytesToString(data.Name[:])
+						details.Name64 = engine.BytesToString(data.Name64[:])
+						details.Latitude = data.Latitude
+						details.Longitude = data.Longitude
+						details.AltitudeM = data.Altitude
+						foundBase = true
+					}
+				case rwReqID:
+					if fd.Type == types.SIMCONNECT_FACILITY_DATA_RUNWAY {
+						data := engine.CastDataAs[runwayFacilityData](&fd.Data)
+						details.Runways = append(details.Runways, AirportRunway{
+							Heading:  float64(data.Heading),
+							LengthFt: float64(data.Length),
+							WidthFt:  float64(data.Width),
+							Surface:  runwaySurfaceName(data.Surface),
+						})
+					}
+				case pkReqID:
+					if fd.Type == types.SIMCONNECT_FACILITY_DATA_TAXI_PARKING {
+						data := engine.CastDataAs[parkingFacilityData](&fd.Data)
+						if data.Number > 0 {
+							details.Stands = append(details.Stands, AirportStand{
+								Number:  int(data.Number),
+								Type:    parkingTypeName(data.Type),
+								Heading: float64(data.Heading),
+							})
+						}
+					}
+				case frReqID:
+					if fd.Type == types.SIMCONNECT_FACILITY_DATA_FREQUENCY {
+						data := engine.CastDataAs[frequencyFacilityData](&fd.Data)
+						details.Frequencies = append(details.Frequencies, AirportFrequency{
+							Type:    frequencyTypeName(data.Type),
+							FreqMHz: float64(data.Frequency) / 1_000_000.0,
+							Name:    engine.BytesToString(data.Name[:]),
+						})
+					}
 				}
-				data := engine.CastDataAs[airportFacilityData](&fd.Data)
-				details = &AirportDetails{
-					ICAO:      engine.BytesToString(data.ICAO[:]),
-					Region:    region,
-					Name:      engine.BytesToString(data.Name[:]),
-					Name64:    engine.BytesToString(data.Name64[:]),
-					Latitude:  data.Latitude,
-					Longitude: data.Longitude,
-					AltitudeM: data.Altitude,
-				}
+
 			case types.SIMCONNECT_RECV_ID_FACILITY_DATA_END:
 				fd := msg.AsFacilityDataEnd()
-				if fd == nil || uint32(fd.RequestId) != reqID {
+				if fd == nil {
 					continue
 				}
-				return details, nil
+				rid := uint32(fd.RequestId)
+				if _, tracked := endIDs[rid]; tracked && !endIDs[rid] {
+					endIDs[rid] = true
+					endCount++
+				}
+				if endCount == 4 {
+					details.RunwayCount = len(details.Runways)
+					details.StandCount = len(details.Stands)
+					if !foundBase {
+						return nil, nil
+					}
+					return details, nil
+				}
 			}
 		}
 	}

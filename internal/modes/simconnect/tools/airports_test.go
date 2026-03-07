@@ -194,6 +194,19 @@ func TestGetAirportDetails_Found(t *testing.T) {
 			Latitude:  32.697,
 			Longitude: -16.778,
 			AltitudeM: 58,
+			RunwayCount: 1,
+			Runways: []bridge.AirportRunway{
+				{Heading: 54.0, LengthFt: 9124, WidthFt: 148, Surface: "Asphalt"},
+			},
+			StandCount: 2,
+			Stands: []bridge.AirportStand{
+				{Number: 1, Type: "Gate Small", Heading: 180},
+				{Number: 2, Type: "Gate Small", Heading: 0},
+			},
+			Frequencies: []bridge.AirportFrequency{
+				{Type: "Tower", FreqMHz: 118.1, Name: "LPMA TWR"},
+				{Type: "ATIS", FreqMHz: 127.8, Name: "LPMA ATIS"},
+			},
 		},
 	}
 	srv := newAirportServer(t, mb)
@@ -206,6 +219,16 @@ func TestGetAirportDetails_Found(t *testing.T) {
 	}
 	if got["name"] != "Madeira" {
 		t.Errorf("expected name=Madeira, got %v", got["name"])
+	}
+	if got["runway_count"].(float64) != 1 {
+		t.Errorf("expected runway_count=1, got %v", got["runway_count"])
+	}
+	if got["stand_count"].(float64) != 2 {
+		t.Errorf("expected stand_count=2, got %v", got["stand_count"])
+	}
+	freqs, _ := got["frequencies"].([]any)
+	if len(freqs) != 2 {
+		t.Errorf("expected 2 frequencies, got %v", len(freqs))
 	}
 }
 

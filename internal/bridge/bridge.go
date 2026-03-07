@@ -134,15 +134,42 @@ type AirportEntry struct {
 	DistanceKM float64 `json:"distance_km"`
 }
 
+// AirportRunway holds data for a single runway at an airport.
+type AirportRunway struct {
+	Heading  float64 `json:"heading_deg"`
+	LengthFt float64 `json:"length_ft"`
+	WidthFt  float64 `json:"width_ft"`
+	Surface  string  `json:"surface"`
+}
+
+// AirportStand holds data for a single parking stand / gate.
+type AirportStand struct {
+	Number  int     `json:"number"`
+	Type    string  `json:"type"`
+	Heading float64 `json:"heading_deg"`
+}
+
+// AirportFrequency holds a single ATC frequency at an airport.
+type AirportFrequency struct {
+	Type    string  `json:"type"`
+	FreqMHz float64 `json:"freq_mhz"`
+	Name    string  `json:"name"`
+}
+
 // AirportDetails holds detailed facility data for a specific airport.
 type AirportDetails struct {
-	ICAO      string  `json:"icao"`
-	Region    string  `json:"region"`
-	Name      string  `json:"name"`
-	Name64    string  `json:"name64"`
-	Latitude  float64 `json:"latitude"`
-	Longitude float64 `json:"longitude"`
-	AltitudeM float64 `json:"altitude_m"`
+	ICAO        string             `json:"icao"`
+	Region      string             `json:"region"`
+	Name        string             `json:"name"`
+	Name64      string             `json:"name64"`
+	Latitude    float64            `json:"latitude"`
+	Longitude   float64            `json:"longitude"`
+	AltitudeM   float64            `json:"altitude_m"`
+	RunwayCount int                `json:"runway_count"`
+	Runways     []AirportRunway    `json:"runways"`
+	StandCount  int                `json:"stand_count"`
+	Stands      []AirportStand     `json:"stands"`
+	Frequencies []AirportFrequency `json:"frequencies"`
 }
 
 // Bridge abstracts all SimConnect SDK calls needed by the four MCP tools.

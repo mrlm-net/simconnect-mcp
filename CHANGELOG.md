@@ -4,6 +4,12 @@ All notable changes to SimConnect MCP are documented here. The format follows [K
 
 Full release history with release notes is also available on the [GitHub Releases page](https://github.com/mrlm-net/simconnect-mcp/releases).
 
+## [0.3.1] - 2026-03-07
+
+### Fixed
+
+- SDK manager logger now writes to stderr instead of stdout; previously the default `slog.TextHandler(os.Stdout)` inside the SimConnect SDK would inject log lines into the stdio MCP pipe, causing Claude Desktop to receive non-JSON output and drop or time out `get_simvar_value` / `get_simvar_values` calls
+
 ## [0.3.0] - 2026-03-07
 
 ### Added

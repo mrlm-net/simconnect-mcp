@@ -4,6 +4,13 @@ All notable changes to SimConnect MCP are documented here. The format follows [K
 
 Full release history with release notes is also available on the [GitHub Releases page](https://github.com/mrlm-net/simconnect-mcp/releases).
 
+## [0.3.5] - 2026-03-07
+
+### Fixed
+
+- `get_airport_details` runways no longer intermittently return empty for large airports (LKPR, EDDM). SimConnect dispatches `FACILITY_DATA` records and `FACILITY_DATA_END` from different internal paths; runway records can be queued in the channel *after* their `FACILITY_DATA_END`. The fix drains the channel non-blockingly after all four END messages are received so no late-arriving data records are abandoned.
+- Extracted `applyFacilityData` helper to share decoding logic between the main receive loop and the post-END drain loop.
+
 ## [0.3.4] - 2026-03-07
 
 ### Fixed

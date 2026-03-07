@@ -1109,8 +1109,8 @@ func (b *simconnectBridge) GetAirportDetails(ctx context.Context, icao, region s
 	endCount := 0
 	foundBase := false
 
-	// 15 seconds to accommodate large airports with many stands (100+).
-	deadline := time.NewTimer(15 * time.Second)
+	// 45 seconds to accommodate very large airports (EDDM, LKPR) with 200+ stands.
+	deadline := time.NewTimer(45 * time.Second)
 	defer deadline.Stop()
 
 	for {
@@ -1141,54 +1141,7 @@ func (b *simconnectBridge) GetAirportDetails(ctx context.Context, icao, region s
 
 			switch types.SIMCONNECT_RECV_ID(msg.DwID) {
 			case types.SIMCONNECT_RECV_ID_FACILITY_DATA:
-				fd := msg.AsFacilityData()
-				if fd == nil {
-					continue
-				}
-				userReqID := uint32(fd.UserRequestId)
-				switch userReqID {
-				case baseReqID:
-					if fd.Type == types.SIMCONNECT_FACILITY_DATA_AIRPORT {
-						data := engine.CastDataAs[airportFacilityData](&fd.Data)
-						details.ICAO = engine.BytesToString(data.ICAO[:])
-						details.Name = engine.BytesToString(data.Name[:])
-						details.Name64 = engine.BytesToString(data.Name64[:])
-						details.Latitude = data.Latitude
-						details.Longitude = data.Longitude
-						details.AltitudeM = data.Altitude
-						foundBase = true
-					}
-				case rwReqID:
-					if fd.Type == types.SIMCONNECT_FACILITY_DATA_RUNWAY {
-						data := engine.CastDataAs[runwayFacilityData](&fd.Data)
-						details.Runways = append(details.Runways, AirportRunway{
-							Heading:  float64(data.Heading),
-							LengthFt: float64(data.Length),
-							WidthFt:  float64(data.Width),
-							Surface:  runwaySurfaceName(data.Surface),
-						})
-					}
-				case pkReqID:
-					if fd.Type == types.SIMCONNECT_FACILITY_DATA_TAXI_PARKING {
-						data := engine.CastDataAs[parkingFacilityData](&fd.Data)
-						if data.Number > 0 {
-							details.Stands = append(details.Stands, AirportStand{
-								Number:  int(data.Number),
-								Type:    parkingTypeName(data.Type),
-								Heading: float64(data.Heading),
-							})
-						}
-					}
-				case frReqID:
-					if fd.Type == types.SIMCONNECT_FACILITY_DATA_FREQUENCY {
-						data := engine.CastDataAs[frequencyFacilityData](&fd.Data)
-						details.Frequencies = append(details.Frequencies, AirportFrequency{
-							Type:    frequencyTypeName(data.Type),
-							FreqMHz: float64(data.Frequency) / 1_000_000.0,
-							Name:    engine.BytesToString(data.Name[:]),
-						})
-					}
-				}
+				applyFacilityData(msg, details, baseReqID, rwReqID, pkReqID, frReqID, &foundBase)
 
 			case types.SIMCONNECT_RECV_ID_FACILITY_DATA_END:
 				fd := msg.AsFacilityDataEnd()
@@ -1201,6 +1154,25 @@ func (b *simconnectBridge) GetAirportDetails(ctx context.Context, icao, region s
 					endCount++
 				}
 				if endCount == 4 {
+					// All four FACILITY_DATA_END messages received.
+					// SimConnect may have queued FACILITY_DATA records in the channel
+					// after their corresponding END (dispatch-ordering artefact).
+					// Drain the channel non-blockingly before returning so we never
+					// miss runway or other records that arrived out of order.
+				drainLoop:
+					for {
+						select {
+						case m, ok := <-sub.Messages():
+							if !ok {
+								break drainLoop
+							}
+							if types.SIMCONNECT_RECV_ID(m.DwID) == types.SIMCONNECT_RECV_ID_FACILITY_DATA {
+								applyFacilityData(m, details, baseReqID, rwReqID, pkReqID, frReqID, &foundBase)
+							}
+						default:
+							break drainLoop
+						}
+					}
 					details.RunwayCount = len(details.Runways)
 					details.StandCount = len(details.Stands)
 					if !foundBase {
@@ -1209,6 +1181,64 @@ func (b *simconnectBridge) GetAirportDetails(ctx context.Context, icao, region s
 					return details, nil
 				}
 			}
+		}
+	}
+}
+
+// applyFacilityData decodes a single SIMCONNECT_RECV_ID_FACILITY_DATA message
+// and appends the result to the appropriate slice in details.
+func applyFacilityData(
+	msg engine.Message,
+	details *AirportDetails,
+	baseReqID, rwReqID, pkReqID, frReqID uint32,
+	foundBase *bool,
+) {
+	fd := msg.AsFacilityData()
+	if fd == nil {
+		return
+	}
+	userReqID := uint32(fd.UserRequestId)
+	switch userReqID {
+	case baseReqID:
+		if fd.Type == types.SIMCONNECT_FACILITY_DATA_AIRPORT {
+			data := engine.CastDataAs[airportFacilityData](&fd.Data)
+			details.ICAO = engine.BytesToString(data.ICAO[:])
+			details.Name = engine.BytesToString(data.Name[:])
+			details.Name64 = engine.BytesToString(data.Name64[:])
+			details.Latitude = data.Latitude
+			details.Longitude = data.Longitude
+			details.AltitudeM = data.Altitude
+			*foundBase = true
+		}
+	case rwReqID:
+		if fd.Type == types.SIMCONNECT_FACILITY_DATA_RUNWAY {
+			data := engine.CastDataAs[runwayFacilityData](&fd.Data)
+			details.Runways = append(details.Runways, AirportRunway{
+				Heading:  float64(data.Heading),
+				LengthFt: float64(data.Length),
+				WidthFt:  float64(data.Width),
+				Surface:  runwaySurfaceName(data.Surface),
+			})
+		}
+	case pkReqID:
+		if fd.Type == types.SIMCONNECT_FACILITY_DATA_TAXI_PARKING {
+			data := engine.CastDataAs[parkingFacilityData](&fd.Data)
+			if data.Number > 0 {
+				details.Stands = append(details.Stands, AirportStand{
+					Number:  int(data.Number),
+					Type:    parkingTypeName(data.Type),
+					Heading: float64(data.Heading),
+				})
+			}
+		}
+	case frReqID:
+		if fd.Type == types.SIMCONNECT_FACILITY_DATA_FREQUENCY {
+			data := engine.CastDataAs[frequencyFacilityData](&fd.Data)
+			details.Frequencies = append(details.Frequencies, AirportFrequency{
+				Type:    frequencyTypeName(data.Type),
+				FreqMHz: float64(data.Frequency) / 1_000_000.0,
+				Name:    engine.BytesToString(data.Name[:]),
+			})
 		}
 	}
 }

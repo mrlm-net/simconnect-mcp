@@ -135,10 +135,11 @@ type AirportEntry struct {
 }
 
 // AirportRunway holds data for a single runway at an airport.
+// SimConnect's LENGTH and WIDTH fields are returned in metres.
 type AirportRunway struct {
 	Heading  float64 `json:"heading_deg"`
-	LengthFt float64 `json:"length_ft"`
-	WidthFt  float64 `json:"width_ft"`
+	LengthM  float64 `json:"length_m"`
+	WidthM   float64 `json:"width_m"`
 	Surface  string  `json:"surface"`
 }
 

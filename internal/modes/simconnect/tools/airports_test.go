@@ -196,7 +196,7 @@ func TestGetAirportDetails_Found(t *testing.T) {
 			AltitudeM: 58,
 			RunwayCount: 1,
 			Runways: []bridge.AirportRunway{
-				{Heading: 54.0, LengthFt: 9124, WidthFt: 148, Surface: "Asphalt"},
+				{Heading: 54.0, LengthM: 2781, WidthM: 45, Surface: "Asphalt"},
 			},
 			StandCount: 2,
 			Stands: []bridge.AirportStand{

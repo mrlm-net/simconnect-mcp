@@ -115,8 +115,10 @@ func registerGetNearestAirport(mcp *mcpadapter.Server, b bridge.Bridge) {
 func registerGetAirportDetails(mcp *mcpadapter.Server, b bridge.Bridge) {
 	tool := mcpadapter.NewTool("get_airport_details").
 		Description("Return detailed facility data for a specific airport by ICAO code. " +
-			"Includes name, lat/lon, altitude (metres MSL). " +
-			"Optionally supply region (e.g. \"LP\" for Portugal) to disambiguate airports with the same ICAO in different regions.").
+			"Returns name, lat/lon, altitude (metres MSL), runways (heading, length_m, width_m, surface), " +
+			"parking stands (number, type, heading), and ATC frequencies. " +
+			"Leave region empty (default) for best results — SimConnect's region filter is strict and " +
+			"will silently fail if the region code does not match the simulator's internal value exactly.").
 		StringParam("icao", "ICAO airport code (e.g. \"LPMA\", \"EDDM\").").
 		StringParam("region", "Optional ICAO region code (e.g. \"LP\", \"ED\"). Leave empty to match any region.").
 		Build()

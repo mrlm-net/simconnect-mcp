@@ -1215,8 +1215,8 @@ func applyFacilityData(
 			data := engine.CastDataAs[runwayFacilityData](&fd.Data)
 			details.Runways = append(details.Runways, AirportRunway{
 				Heading:  float64(data.Heading),
-				LengthFt: float64(data.Length),
-				WidthFt:  float64(data.Width),
+				LengthM: float64(data.Length),
+				WidthM:  float64(data.Width),
 				Surface:  runwaySurfaceName(data.Surface),
 			})
 		}

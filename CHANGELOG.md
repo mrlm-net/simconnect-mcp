@@ -4,6 +4,13 @@ All notable changes to SimConnect MCP are documented here. The format follows [K
 
 Full release history with release notes is also available on the [GitHub Releases page](https://github.com/mrlm-net/simconnect-mcp/releases).
 
+## [0.3.6] - 2026-03-07
+
+### Fixed
+
+- `get_airport_details` runway `length_ft` / `width_ft` fields renamed to `length_m` / `width_m` — SimConnect's `LENGTH` and `WIDTH` fields return **metres**, not feet (empirically confirmed: EDDM runways report 4 000, matching their 4 000 m length)
+- `get_airport_details` tool description now warns that the `region` parameter must match the simulator's internal value exactly; omitting it (the default) is strongly recommended
+
 ## [0.3.5] - 2026-03-07
 
 ### Fixed

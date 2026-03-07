@@ -4,6 +4,16 @@ All notable changes to SimConnect MCP are documented here. The format follows [K
 
 Full release history with release notes is also available on the [GitHub Releases page](https://github.com/mrlm-net/simconnect-mcp/releases).
 
+## [0.3.0] - 2026-03-07
+
+### Added
+
+- `get_nearby_traffic` — scan for AI and multiplayer aircraft within a configurable radius (default 25 km, max 200 km); returns object ID, title, ATC callsign, airline, position, speed, heading, and on-ground flag
+- `get_traffic_with_phase` — enriched traffic scan in a single SimConnect round-trip; adds vertical speed (fpm), actual ground track (from velocity vectors), inferred flight phase (PARKED / TAXI / CLIMB / CLIMB SHALLOW / LEVEL / DESCENT / APPROACH / FINAL), parking state, runway occupancy, and aircraft category
+- `get_airports_in_range` — list airports in the simulator's reality bubble sorted by distance from the player; configurable radius (default 50 km, max 500 km)
+- `get_nearest_airport` — return the single closest airport with ICAO, region, lat/lon, altitude (metres MSL), and distance (km)
+- `get_airport_details` — query detailed facility data for a specific ICAO airport; returns full name, lat/lon, altitude (metres MSL); optional region parameter for disambiguation
+
 ## [0.2.0] - 2026-03-05
 
 ### Added

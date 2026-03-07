@@ -4,6 +4,16 @@ All notable changes to SimConnect MCP are documented here. The format follows [K
 
 Full release history with release notes is also available on the [GitHub Releases page](https://github.com/mrlm-net/simconnect-mcp/releases).
 
+## [0.3.2] - 2026-03-07
+
+### Changed
+
+- `get_airports_in_range` now returns only standard ICAO airports by default (exactly 4 uppercase letters, e.g. `EDDM`, `ETSE`). Non-standard identifiers such as `EDB1`, `EDF8V`, or `GSAD3/EDB3` are excluded unless `expanded=true` is passed.
+
+### Added
+
+- `expanded` boolean parameter on `get_airports_in_range`: set to `true` to include all entries from the simulator's reality bubble (private fields, military strips, simulator-only codes).
+
 ## [0.3.1] - 2026-03-07
 
 ### Fixed

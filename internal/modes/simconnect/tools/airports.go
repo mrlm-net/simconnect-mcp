@@ -5,10 +5,14 @@ package tools
 import (
 	"context"
 	"fmt"
+	"regexp"
 
 	"github.com/mrlm-net/simconnect-mcp/internal/bridge"
 	"github.com/mrlm-net/simconnect-mcp/internal/mcpadapter"
 )
+
+// icaoPattern matches standard ICAO airport designators: exactly 4 uppercase letters.
+var icaoPattern = regexp.MustCompile(`^[A-Z]{4}$`)
 
 // RegisterAirportTools registers the get_airports_in_range, get_nearest_airport,
 // and get_airport_details MCP tools onto the provided server.
@@ -23,8 +27,11 @@ func registerGetAirportsInRange(mcp *mcpadapter.Server, b bridge.Bridge) {
 		Description("Return a list of airports in the simulator's reality bubble (loaded scenery area), " +
 			"sorted by distance from the player aircraft. Each entry includes ICAO code, region, " +
 			"lat/lon, altitude (metres MSL), and distance (km). " +
+			"By default only standard ICAO airports are returned (4 uppercase letters, e.g. EDDM). " +
+			"Set expanded=true to include all entries (private fields, military strips, simulator-only identifiers). " +
 			"Use radius_km to limit results; defaults to 50 km, maximum 500 km.").
 		NumberParam("radius_km", "Maximum distance from player aircraft in kilometres (default 50, max 500).").
+		BoolParam("expanded", "When true, include non-standard identifiers (private fields, simulator-only codes). Default false.").
 		Build()
 
 	mcp.AddTool(tool, func(ctx context.Context, args map[string]any) (*mcpadapter.CallToolResult, error) {
@@ -37,6 +44,8 @@ func registerGetAirportsInRange(mcp *mcpadapter.Server, b bridge.Bridge) {
 				maxDistKM = n
 			}
 		}
+
+		expanded, _ := args["expanded"].(bool)
 
 		if b.State() != bridge.StateConnected {
 			return mcpadapter.JSONResult(map[string]any{
@@ -53,16 +62,21 @@ func registerGetAirportsInRange(mcp *mcpadapter.Server, b bridge.Bridge) {
 			})
 		}
 
-		// Filter by radius.
+		// Filter by radius and, unless expanded, by valid ICAO format.
 		filtered := make([]bridge.AirportEntry, 0, len(all))
 		for _, a := range all {
-			if a.DistanceKM <= maxDistKM {
-				filtered = append(filtered, a)
+			if a.DistanceKM > maxDistKM {
+				continue
 			}
+			if !expanded && !icaoPattern.MatchString(a.ICAO) {
+				continue
+			}
+			filtered = append(filtered, a)
 		}
 
 		return mcpadapter.JSONResult(map[string]any{
 			"radius_km": maxDistKM,
+			"expanded":  expanded,
 			"count":     len(filtered),
 			"airports":  filtered,
 		})

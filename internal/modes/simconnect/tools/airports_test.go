@@ -90,6 +90,51 @@ func TestGetAirportsInRange_DefaultRadius(t *testing.T) {
 	}
 }
 
+func TestGetAirportsInRange_FilterNonICAO(t *testing.T) {
+	mb := &bridge.MockBridge{
+		MockState: bridge.StateConnected,
+		MockAirports: []bridge.AirportEntry{
+			{ICAO: "EDDM", Region: "ED", DistanceKM: 1.0},   // valid — kept
+			{ICAO: "EDB1", Region: "ED", DistanceKM: 2.0},   // digit — filtered
+			{ICAO: "EDF8V", Region: "ED", DistanceKM: 3.0},  // 5 chars + digit — filtered
+			{ICAO: "ETSE", Region: "ET", DistanceKM: 12.0},  // valid — kept
+		},
+	}
+	srv := newAirportServer(t, mb)
+
+	// Default (expanded=false): only 4-letter all-caps codes.
+	resp := callToolEvent(t, srv.URL, "get_airports_in_range", map[string]any{"radius_km": float64(50)})
+	got := parseAirportJSON(t, resp)
+	if got["count"].(float64) != 2 {
+		t.Errorf("expected count=2 (only valid ICAO), got %v", got["count"])
+	}
+}
+
+func TestGetAirportsInRange_Expanded(t *testing.T) {
+	mb := &bridge.MockBridge{
+		MockState: bridge.StateConnected,
+		MockAirports: []bridge.AirportEntry{
+			{ICAO: "EDDM", Region: "ED", DistanceKM: 1.0},
+			{ICAO: "EDB1", Region: "ED", DistanceKM: 2.0},
+			{ICAO: "EDF8V", Region: "ED", DistanceKM: 3.0},
+		},
+	}
+	srv := newAirportServer(t, mb)
+
+	// expanded=true: all entries within radius are returned.
+	resp := callToolEvent(t, srv.URL, "get_airports_in_range", map[string]any{
+		"radius_km": float64(50),
+		"expanded":  true,
+	})
+	got := parseAirportJSON(t, resp)
+	if got["count"].(float64) != 3 {
+		t.Errorf("expected count=3 (all entries with expanded=true), got %v", got["count"])
+	}
+	if got["expanded"].(bool) != true {
+		t.Errorf("expected expanded=true in response, got %v", got["expanded"])
+	}
+}
+
 func TestGetAirportsInRange_Disconnected(t *testing.T) {
 	mb := &bridge.MockBridge{MockState: bridge.StateDisconnected}
 	srv := newAirportServer(t, mb)

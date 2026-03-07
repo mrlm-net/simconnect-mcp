@@ -136,6 +136,10 @@ func TestSimconnectToolsList(t *testing.T) {
 		"transmit_event",
 		"get_sim_state",
 		"get_nearby_traffic",
+		"get_traffic_with_phase",
+		"get_airports_in_range",
+		"get_nearest_airport",
+		"get_airport_details",
 	}
 
 	if len(toolsRaw) != len(want) {

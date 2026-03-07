@@ -55,6 +55,24 @@ type MockBridge struct {
 
 	// MockTrafficError is returned by GetTraffic when non-nil.
 	MockTrafficError error
+
+	// MockEnrichedTrafficResults is returned by GetEnrichedTraffic when MockEnrichedTrafficError is nil.
+	MockEnrichedTrafficResults []EnrichedTrafficEntry
+
+	// MockEnrichedTrafficError is returned by GetEnrichedTraffic when non-nil.
+	MockEnrichedTrafficError error
+
+	// MockAirports is returned by GetAirports and GetNearestAirport when MockAirportsError is nil.
+	MockAirports []AirportEntry
+
+	// MockAirportsError is returned by GetAirports and GetNearestAirport when non-nil.
+	MockAirportsError error
+
+	// MockAirportDetails is returned by GetAirportDetails when MockAirportDetailsError is nil.
+	MockAirportDetails *AirportDetails
+
+	// MockAirportDetailsError is returned by GetAirportDetails when non-nil.
+	MockAirportDetailsError error
 }
 
 // Compile-time assertion: MockBridge must implement Bridge.
@@ -148,6 +166,46 @@ func (m *MockBridge) GetTraffic(_ context.Context, _ uint32) ([]TrafficEntry, er
 		return nil, m.MockTrafficError
 	}
 	return m.MockTrafficResults, nil
+}
+
+func (m *MockBridge) GetEnrichedTraffic(_ context.Context, _ uint32) ([]EnrichedTrafficEntry, error) {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+	if m.MockEnrichedTrafficError != nil {
+		return nil, m.MockEnrichedTrafficError
+	}
+	return m.MockEnrichedTrafficResults, nil
+}
+
+func (m *MockBridge) GetAirports(_ context.Context) ([]AirportEntry, error) {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+	if m.MockAirportsError != nil {
+		return nil, m.MockAirportsError
+	}
+	return m.MockAirports, nil
+}
+
+func (m *MockBridge) GetNearestAirport(_ context.Context) (*AirportEntry, error) {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+	if m.MockAirportsError != nil {
+		return nil, m.MockAirportsError
+	}
+	if len(m.MockAirports) == 0 {
+		return nil, nil
+	}
+	entry := m.MockAirports[0]
+	return &entry, nil
+}
+
+func (m *MockBridge) GetAirportDetails(_ context.Context, _, _ string) (*AirportDetails, error) {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+	if m.MockAirportDetailsError != nil {
+		return nil, m.MockAirportDetailsError
+	}
+	return m.MockAirportDetails, nil
 }
 
 func (m *MockBridge) SimEvents() <-chan SimEvent {

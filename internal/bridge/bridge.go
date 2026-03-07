@@ -101,6 +101,50 @@ type TrafficEntry struct {
 	OnGround    bool    `json:"on_ground"`
 }
 
+// EnrichedTrafficEntry extends TrafficEntry with velocity-derived fields:
+// vertical speed, actual ground track, and inferred flight phase.
+// It also includes the parking-state and runway-occupancy flags.
+type EnrichedTrafficEntry struct {
+	ObjectID         uint32  `json:"object_id"`
+	Title            string  `json:"title"`
+	ATCID            string  `json:"atc_id"`
+	ATCAirline       string  `json:"atc_airline"`
+	Category         string  `json:"category"`
+	Latitude         float64 `json:"latitude"`
+	Longitude        float64 `json:"longitude"`
+	AltitudeFt       float64 `json:"altitude_ft"`
+	TrueHeading      float64 `json:"true_heading_deg"`
+	TrackDeg         float64 `json:"track_deg"`          // actual ground track (from velocity vectors)
+	GroundSpeed      float64 `json:"ground_speed_kts"`
+	VerticalSpeedFPM float64 `json:"vertical_speed_fpm"` // VELOCITY WORLD Y × 60
+	OnGround         bool    `json:"on_ground"`
+	InParkingState   bool    `json:"in_parking_state"`
+	OnAnyRunway      bool    `json:"on_any_runway"`
+	FlightPhase      string  `json:"flight_phase"` // PARKED/TAXI/CLIMB/LEVEL/DESCENT/APPROACH/FINAL
+}
+
+// AirportEntry holds basic airport info from a facilities list scan.
+// DistanceKM is the Haversine distance from the player aircraft's current position.
+type AirportEntry struct {
+	ICAO       string  `json:"icao"`
+	Region     string  `json:"region"`
+	Latitude   float64 `json:"latitude"`
+	Longitude  float64 `json:"longitude"`
+	AltitudeM  float64 `json:"altitude_m"`
+	DistanceKM float64 `json:"distance_km"`
+}
+
+// AirportDetails holds detailed facility data for a specific airport.
+type AirportDetails struct {
+	ICAO      string  `json:"icao"`
+	Region    string  `json:"region"`
+	Name      string  `json:"name"`
+	Name64    string  `json:"name64"`
+	Latitude  float64 `json:"latitude"`
+	Longitude float64 `json:"longitude"`
+	AltitudeM float64 `json:"altitude_m"`
+}
+
 // Bridge abstracts all SimConnect SDK calls needed by the four MCP tools.
 // Implementations must be safe to call from multiple goroutines concurrently.
 type Bridge interface {
@@ -139,6 +183,25 @@ type Bridge interface {
 	// GetTraffic returns nearby aircraft within the given radius (metres).
 	// The player aircraft is included in the results.
 	GetTraffic(ctx context.Context, radiusMeters uint32) ([]TrafficEntry, error)
+
+	// GetEnrichedTraffic returns nearby aircraft with additional velocity-derived
+	// fields: vertical_speed_fpm, track_deg, flight_phase, in_parking_state,
+	// on_any_runway, and category.  Uses a single RequestDataOnSimObjectType call
+	// with an expanded data definition — same latency as GetTraffic.
+	GetEnrichedTraffic(ctx context.Context, radiusMeters uint32) ([]EnrichedTrafficEntry, error)
+
+	// GetAirports returns airports in the simulator's reality bubble, sorted by
+	// Haversine distance from the player aircraft. DistanceKM is populated on
+	// each entry. Returns nil if no airports are found.
+	GetAirports(ctx context.Context) ([]AirportEntry, error)
+
+	// GetNearestAirport returns the single closest airport to the player aircraft.
+	// Returns nil, nil if no airports are in the reality bubble.
+	GetNearestAirport(ctx context.Context) (*AirportEntry, error)
+
+	// GetAirportDetails returns detailed facility data for the given ICAO airport.
+	// Pass region="" to match any region. Returns nil if the airport is not found.
+	GetAirportDetails(ctx context.Context, icao, region string) (*AirportDetails, error)
 
 	// SimEvents returns a read-only channel that receives lifecycle events.
 	SimEvents() <-chan SimEvent

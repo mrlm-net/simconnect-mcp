@@ -7,11 +7,13 @@ package bridge
 import (
 	"context"
 	"fmt"
+	"sort"
 	"sync"
 	"sync/atomic"
 	"time"
 	"unsafe"
 
+	"github.com/mrlm-net/simconnect/pkg/calc"
 	"github.com/mrlm-net/simconnect/pkg/engine"
 	"github.com/mrlm-net/simconnect/pkg/manager"
 	"github.com/mrlm-net/simconnect/pkg/types"
@@ -47,6 +49,53 @@ type trafficDataStruct struct {
 	AtcID      [32]byte  // SIMCONNECT_DATATYPE_STRING32
 	AtcAirline [32]byte  // SIMCONNECT_DATATYPE_STRING32
 	Title      [128]byte // SIMCONNECT_DATATYPE_STRING128
+}
+
+// enrichedTrafficDataStruct defines the wire-format layout for an enriched
+// traffic scan entry.  All float64 fields are placed before string fields to
+// avoid Go struct alignment padding.
+//
+// Field order must match the AddToDataDefinition calls in GetEnrichedTraffic exactly.
+//
+// Layout (320 bytes total):
+//
+//	[0–95]    12×float64 — Lat, Lon, Alt, Head, GndSpd, OnGround,
+//	                       VelY, VelX, VelZ, TotalVel, InParking, OnRunway
+//	[96–127]  [32]byte   — ATC ID (STRING32)
+//	[128–159] [32]byte   — ATC Airline (STRING32)
+//	[160–287] [128]byte  — Title (STRING128)
+//	[288–319] [32]byte   — Category (STRING32)
+type enrichedTrafficDataStruct struct {
+	Lat       float64    // PLANE LATITUDE
+	Lon       float64    // PLANE LONGITUDE
+	Alt       float64    // PLANE ALTITUDE
+	Head      float64    // PLANE HEADING DEGREES TRUE
+	GndSpd    float64    // GROUND VELOCITY
+	OnGround  float64    // SIM ON GROUND (as FLOAT64 to avoid int32 padding)
+	VelY      float64    // VELOCITY WORLD Y (fps, vertical — up positive)
+	VelX      float64    // VELOCITY WORLD X (fps, east positive)
+	VelZ      float64    // VELOCITY WORLD Z (fps, north positive)
+	TotalVel  float64    // TOTAL WORLD VELOCITY
+	InParking float64    // PLANE IN PARKING STATE
+	OnRunway  float64    // ON ANY RUNWAY
+	AtcID      [32]byte  // ATC ID        (STRING32)
+	AtcAirline [32]byte  // ATC AIRLINE   (STRING32)
+	Title      [128]byte // TITLE         (STRING128)
+	Category   [32]byte  // CATEGORY      (STRING32)
+}
+
+// airportFacilityData mirrors the AddToFacilityDefinition sequence used in
+// GetAirportDetails. Field order must match exactly:
+//
+//	LATITUDE → float64, LONGITUDE → float64, ALTITUDE → float64,
+//	ICAO → [8]byte, NAME → [32]byte, NAME64 → [64]byte
+type airportFacilityData struct {
+	Latitude  float64
+	Longitude float64
+	Altitude  float64
+	ICAO      [8]byte
+	Name      [32]byte
+	Name64    [64]byte
 }
 
 // simconnectBridge wraps the mrlm-net/simconnect Manager to satisfy the Bridge
@@ -553,6 +602,324 @@ func (b *simconnectBridge) GetTraffic(ctx context.Context, radiusMeters uint32) 
 			})
 			if uint32(len(results)) >= expected {
 				return results, nil
+			}
+		}
+	}
+}
+
+// GetEnrichedTraffic returns nearby aircraft with velocity-derived fields.
+// It issues a single RequestDataOnSimObjectType call with an expanded data
+// definition that includes VELOCITY WORLD Y/X/Z, TOTAL WORLD VELOCITY,
+// PLANE IN PARKING STATE, ON ANY RUNWAY, and CATEGORY in addition to the
+// fields returned by GetTraffic.  Track bearing and flight phase are derived
+// from the velocity vectors before returning.
+func (b *simconnectBridge) GetEnrichedTraffic(ctx context.Context, radiusMeters uint32) ([]EnrichedTrafficEntry, error) {
+	if b.State() != StateConnected {
+		return nil, ErrNotConnected
+	}
+
+	b.mu.RLock()
+	mgr := b.mgr
+	b.mu.RUnlock()
+	if mgr == nil {
+		return nil, ErrNotConnected
+	}
+
+	defID, reqID := b.allocIDs()
+
+	// Field order must mirror enrichedTrafficDataStruct exactly.
+	defs := []struct {
+		name, unit string
+		typ        types.SIMCONNECT_DATATYPE
+	}{
+		{"PLANE LATITUDE", "degrees", types.SIMCONNECT_DATATYPE_FLOAT64},
+		{"PLANE LONGITUDE", "degrees", types.SIMCONNECT_DATATYPE_FLOAT64},
+		{"PLANE ALTITUDE", "feet", types.SIMCONNECT_DATATYPE_FLOAT64},
+		{"PLANE HEADING DEGREES TRUE", "degrees", types.SIMCONNECT_DATATYPE_FLOAT64},
+		{"GROUND VELOCITY", "knots", types.SIMCONNECT_DATATYPE_FLOAT64},
+		{"SIM ON GROUND", "bool", types.SIMCONNECT_DATATYPE_FLOAT64},
+		{"VELOCITY WORLD Y", "feet per second", types.SIMCONNECT_DATATYPE_FLOAT64},
+		{"VELOCITY WORLD X", "feet per second", types.SIMCONNECT_DATATYPE_FLOAT64},
+		{"VELOCITY WORLD Z", "feet per second", types.SIMCONNECT_DATATYPE_FLOAT64},
+		{"TOTAL WORLD VELOCITY", "feet per second", types.SIMCONNECT_DATATYPE_FLOAT64},
+		{"PLANE IN PARKING STATE", "bool", types.SIMCONNECT_DATATYPE_FLOAT64},
+		{"ON ANY RUNWAY", "bool", types.SIMCONNECT_DATATYPE_FLOAT64},
+		{"ATC ID", "", types.SIMCONNECT_DATATYPE_STRING32},
+		{"ATC AIRLINE", "", types.SIMCONNECT_DATATYPE_STRING32},
+		{"TITLE", "", types.SIMCONNECT_DATATYPE_STRING128},
+		{"CATEGORY", "", types.SIMCONNECT_DATATYPE_STRING32},
+	}
+	for i, d := range defs {
+		if err := mgr.AddToDataDefinition(defID, d.name, d.unit, d.typ, 0, uint32(i)); err != nil {
+			_ = mgr.ClearDataDefinition(defID)
+			return nil, fmt.Errorf("bridge: AddToDataDefinition %s: %w", d.name, err)
+		}
+	}
+	defer func() { _ = mgr.ClearDataDefinition(defID) }()
+
+	sub := mgr.SubscribeWithType("", 128, []types.SIMCONNECT_RECV_ID{
+		types.SIMCONNECT_RECV_ID_SIMOBJECT_DATA_BYTYPE,
+	})
+	defer sub.Unsubscribe()
+
+	if err := mgr.RequestDataOnSimObjectType(reqID, defID, radiusMeters, types.SIMCONNECT_SIMOBJECT_TYPE_AIRCRAFT); err != nil {
+		return nil, fmt.Errorf("bridge: RequestDataOnSimObjectType: %w", err)
+	}
+
+	var results []EnrichedTrafficEntry
+	var expected uint32
+
+	deadline := time.NewTimer(3 * time.Second)
+	defer deadline.Stop()
+
+	for {
+		select {
+		case <-ctx.Done():
+			return results, nil
+		case <-deadline.C:
+			return results, nil
+		case msg, ok := <-sub.Messages():
+			if !ok {
+				return results, nil
+			}
+			simObjData := msg.AsSimObjectDataBType()
+			if simObjData == nil || uint32(simObjData.DwRequestID) != reqID {
+				continue
+			}
+			if simObjData.DwOutOf == 0 {
+				return nil, nil
+			}
+			if expected == 0 {
+				expected = uint32(simObjData.DwOutOf)
+				results = make([]EnrichedTrafficEntry, 0, expected)
+			}
+			data := engine.CastDataAs[enrichedTrafficDataStruct](&simObjData.DwData)
+			onGround := data.OnGround != 0
+			vsFPM := data.VelY * 60.0
+			results = append(results, EnrichedTrafficEntry{
+				ObjectID:         uint32(simObjData.DwObjectID),
+				Title:            engine.BytesToString(data.Title[:]),
+				ATCID:            engine.BytesToString(data.AtcID[:]),
+				ATCAirline:       engine.BytesToString(data.AtcAirline[:]),
+				Category:         engine.BytesToString(data.Category[:]),
+				Latitude:         data.Lat,
+				Longitude:        data.Lon,
+				AltitudeFt:       data.Alt,
+				TrueHeading:      data.Head,
+				TrackDeg:         computeTrackDeg(data.VelX, data.VelZ),
+				GroundSpeed:      data.GndSpd,
+				VerticalSpeedFPM: vsFPM,
+				OnGround:         onGround,
+				InParkingState:   data.InParking != 0,
+				OnAnyRunway:      data.OnRunway != 0,
+				FlightPhase:      computeFlightPhase(onGround, data.GndSpd, vsFPM),
+			})
+			if uint32(len(results)) >= expected {
+				return results, nil
+			}
+		}
+	}
+}
+
+// GetAirports returns all airports in the simulator's reality bubble, sorted
+// by Haversine distance from the player aircraft.  It issues a one-shot
+// RequestFacilitiesListEX1 call and collects AIRPORT_LIST response packets
+// until all batches have arrived or the context is cancelled.
+//
+// Airport entry size differs between MSFS 2020 (33 bytes) and MSFS 2024 (36/40/41
+// bytes); the implementation derives field offsets at runtime from the message
+// stride, matching the read-facilities SDK example.
+func (b *simconnectBridge) GetAirports(ctx context.Context) ([]AirportEntry, error) {
+	if b.State() != StateConnected {
+		return nil, ErrNotConnected
+	}
+
+	b.mu.RLock()
+	mgr := b.mgr
+	b.mu.RUnlock()
+	if mgr == nil {
+		return nil, ErrNotConnected
+	}
+
+	// Get player position for distance computation.
+	state := mgr.SimState()
+	playerLat := state.Latitude
+	playerLon := state.Longitude
+
+	listID, _ := b.allocIDs()
+
+	sub := mgr.SubscribeWithType("", 256, []types.SIMCONNECT_RECV_ID{
+		types.SIMCONNECT_RECV_ID_AIRPORT_LIST,
+	})
+	defer sub.Unsubscribe()
+
+	if err := mgr.RequestFacilitiesListEX1(listID, types.SIMCONNECT_FACILITY_LIST_AIRPORT); err != nil {
+		return nil, fmt.Errorf("bridge: RequestFacilitiesListEX1: %w", err)
+	}
+
+	var airports []AirportEntry
+
+	deadline := time.NewTimer(10 * time.Second)
+	defer deadline.Stop()
+
+	for {
+		select {
+		case <-ctx.Done():
+			return airports, nil
+		case <-deadline.C:
+			return airports, nil
+		case msg, ok := <-sub.Messages():
+			if !ok {
+				return airports, nil
+			}
+			list := msg.AsAirportList()
+			if list == nil || uint32(list.DwRequestID) != listID {
+				continue
+			}
+
+			if list.DwArraySize > 0 {
+				// Derive field offsets from the actual wire stride.
+				// MSFS 2020: ident[6] + region[3] + 3×float64 = 33 bytes
+				// MSFS 2024: ident[9] + region[3] + 3×float64 = 36 bytes (±trailing pad)
+				headerSize := unsafe.Sizeof(types.SIMCONNECT_RECV_FACILITIES_LIST{})
+				actualDataSize := uintptr(msg.DwSize) - headerSize
+				actualEntrySize := actualDataSize / uintptr(list.DwArraySize)
+
+				var identLen, latOff, lonOff, altOff uintptr
+				switch actualEntrySize {
+				case 33:
+					identLen, latOff, lonOff, altOff = 6, 9, 17, 25
+				case 36, 40, 41:
+					identLen, latOff, lonOff, altOff = 9, 12, 20, 28
+				}
+
+				if identLen > 0 {
+					dataStart := unsafe.Pointer(uintptr(unsafe.Pointer(list)) + headerSize)
+					for i := uint32(0); i < uint32(list.DwArraySize); i++ {
+						entryPtr := unsafe.Pointer(uintptr(dataStart) + uintptr(i)*actualEntrySize)
+						identBytes := (*[9]byte)(entryPtr)
+						regionBytes := (*[3]byte)(unsafe.Pointer(uintptr(entryPtr) + identLen))
+						lat := *(*float64)(unsafe.Pointer(uintptr(entryPtr) + latOff))
+						lon := *(*float64)(unsafe.Pointer(uintptr(entryPtr) + lonOff))
+						alt := *(*float64)(unsafe.Pointer(uintptr(entryPtr) + altOff))
+						airports = append(airports, AirportEntry{
+							ICAO:       engine.BytesToString(identBytes[:identLen]),
+							Region:     engine.BytesToString(regionBytes[:]),
+							Latitude:   lat,
+							Longitude:  lon,
+							AltitudeM:  alt,
+							DistanceKM: calc.HaversineKM(playerLat, playerLon, lat, lon),
+						})
+					}
+				}
+			}
+
+			// Done when this is the last (or only) packet.
+			if uint32(list.DwEntryNumber)+1 >= uint32(list.DwOutOf) {
+				sort.Slice(airports, func(i, j int) bool {
+					return airports[i].DistanceKM < airports[j].DistanceKM
+				})
+				return airports, nil
+			}
+		}
+	}
+}
+
+// GetNearestAirport returns the closest airport to the player aircraft.
+// It calls GetAirports and returns the first element (shortest distance).
+func (b *simconnectBridge) GetNearestAirport(ctx context.Context) (*AirportEntry, error) {
+	airports, err := b.GetAirports(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if len(airports) == 0 {
+		return nil, nil
+	}
+	entry := airports[0]
+	return &entry, nil
+}
+
+// GetAirportDetails returns detailed facility data for the given ICAO airport.
+// It issues AddToFacilityDefinition + RequestFacilityData calls and collects
+// the FACILITY_DATA response, returning when FACILITY_DATA_END is received.
+func (b *simconnectBridge) GetAirportDetails(ctx context.Context, icao, region string) (*AirportDetails, error) {
+	if b.State() != StateConnected {
+		return nil, ErrNotConnected
+	}
+
+	b.mu.RLock()
+	mgr := b.mgr
+	b.mu.RUnlock()
+	if mgr == nil {
+		return nil, ErrNotConnected
+	}
+
+	defID, reqID := b.allocIDs()
+
+	// Register airport facility definition: OPEN/CLOSE markers bracket the fields.
+	for _, field := range []string{
+		"OPEN AIRPORT",
+		"LATITUDE", "LONGITUDE", "ALTITUDE", "ICAO", "NAME", "NAME64",
+		"CLOSE AIRPORT",
+	} {
+		if err := mgr.AddToFacilityDefinition(defID, field); err != nil {
+			return nil, fmt.Errorf("bridge: AddToFacilityDefinition %q: %w", field, err)
+		}
+	}
+
+	sub := mgr.SubscribeWithType("", 32, []types.SIMCONNECT_RECV_ID{
+		types.SIMCONNECT_RECV_ID_FACILITY_DATA,
+		types.SIMCONNECT_RECV_ID_FACILITY_DATA_END,
+	})
+	defer sub.Unsubscribe()
+
+	if err := mgr.RequestFacilityData(defID, reqID, icao, region); err != nil {
+		return nil, fmt.Errorf("bridge: RequestFacilityData %s: %w", icao, err)
+	}
+
+	var details *AirportDetails
+
+	deadline := time.NewTimer(5 * time.Second)
+	defer deadline.Stop()
+
+	for {
+		select {
+		case <-ctx.Done():
+			return details, nil
+		case <-deadline.C:
+			if details == nil {
+				return nil, fmt.Errorf("bridge: airport %q not found (timeout)", icao)
+			}
+			return details, nil
+		case msg, ok := <-sub.Messages():
+			if !ok {
+				return details, nil
+			}
+			switch types.SIMCONNECT_RECV_ID(msg.DwID) {
+			case types.SIMCONNECT_RECV_ID_FACILITY_DATA:
+				fd := msg.AsFacilityData()
+				if fd == nil || uint32(fd.UserRequestId) != reqID {
+					continue
+				}
+				if fd.Type != types.SIMCONNECT_FACILITY_DATA_AIRPORT {
+					continue
+				}
+				data := engine.CastDataAs[airportFacilityData](&fd.Data)
+				details = &AirportDetails{
+					ICAO:      engine.BytesToString(data.ICAO[:]),
+					Region:    region,
+					Name:      engine.BytesToString(data.Name[:]),
+					Name64:    engine.BytesToString(data.Name64[:]),
+					Latitude:  data.Latitude,
+					Longitude: data.Longitude,
+					AltitudeM: data.Altitude,
+				}
+			case types.SIMCONNECT_RECV_ID_FACILITY_DATA_END:
+				fd := msg.AsFacilityDataEnd()
+				if fd == nil || uint32(fd.RequestId) != reqID {
+					continue
+				}
+				return details, nil
 			}
 		}
 	}

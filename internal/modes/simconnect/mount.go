@@ -29,6 +29,8 @@ func (m *simconnectMode) buildMCPServer(ctx context.Context) (*mcpadapter.Server
 	tools.RegisterEventTools(mcp, b)
 	tools.RegisterStateTools(mcp, b)
 	tools.RegisterTrafficTool(mcp, b)
+	tools.RegisterEnrichedTrafficTool(mcp, b)
+	tools.RegisterAirportTools(mcp, b)
 	return mcp, b, nil
 }
 
@@ -65,6 +67,8 @@ func (m *simconnectMode) MountWithBridge(r *gin.Engine, b bridge.Bridge) error {
 	tools.RegisterEventTools(mcp, b)
 	tools.RegisterStateTools(mcp, b)
 	tools.RegisterTrafficTool(mcp, b)
+	tools.RegisterEnrichedTrafficTool(mcp, b)
+	tools.RegisterAirportTools(mcp, b)
 
 	mcp.MountStreamableHTTP(r, "/mcp")
 	mcp.MountSSE(r, "/sse", "/message")

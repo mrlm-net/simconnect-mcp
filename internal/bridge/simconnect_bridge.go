@@ -7,6 +7,8 @@ package bridge
 import (
 	"context"
 	"fmt"
+	"log/slog"
+	"os"
 	"sort"
 	"sync"
 	"sync/atomic"
@@ -173,12 +175,16 @@ func (b *simconnectBridge) Open(ctx context.Context, appName string) error {
 	mgrCtx, cancel := context.WithCancel(context.Background())
 	b.cancelMgr = cancel
 
+	// Redirect SDK logs to stderr so they don't corrupt the stdio MCP transport.
+	stderrLogger := slog.New(slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{Level: slog.LevelWarn}))
+
 	mgr := manager.New(
 		appName,
 		manager.WithContext(mgrCtx),
 		manager.WithAutoReconnect(true),
 		manager.WithAutoDetect(),
 		manager.WithSimStatePeriod(types.SIMCONNECT_PERIOD_SECOND),
+		manager.WithLogger(stderrLogger),
 	)
 	b.mgr = mgr
 

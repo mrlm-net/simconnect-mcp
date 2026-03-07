@@ -4,6 +4,19 @@ All notable changes to SimConnect MCP are documented here. The format follows [K
 
 Full release history with release notes is also available on the [GitHub Releases page](https://github.com/mrlm-net/simconnect-mcp/releases).
 
+## [0.3.3] - 2026-03-07
+
+### Changed
+
+- `get_airport_details` now issues four parallel `RequestFacilityData` calls (airport base info, runways, parking stands, ATC frequencies) instead of one, and waits for all four `FACILITY_DATA_END` messages before returning.
+
+### Added
+
+- `get_airport_details` response now includes:
+  - `runway_count` and `runways[]` — each with `heading_deg`, `length_ft`, `width_ft`, `surface`
+  - `stand_count` and `stands[]` — each with `number`, `type` (Gate Small / Ramp GA / …), `heading_deg`
+  - `frequencies[]` — each with `type` (Tower / ATIS / Ground / …), `freq_mhz`, `name`
+
 ## [0.3.2] - 2026-03-07
 
 ### Changed

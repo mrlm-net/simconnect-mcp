@@ -4,6 +4,13 @@ All notable changes to SimConnect MCP are documented here. The format follows [K
 
 Full release history with release notes is also available on the [GitHub Releases page](https://github.com/mrlm-net/simconnect-mcp/releases).
 
+## [0.3.12] - 2026-03-08
+
+### Fixed
+
+- `get_simvar_value` and `get_simvar_values` no longer hang indefinitely when an unknown variable name or unit is requested — each call now has a 5-second per-request deadline; if SimConnect sends no response (typically because it dispatched a `SIMCONNECT_RECV_EXCEPTION` whose packet sequence number cannot be correlated back to the waiting goroutine), the call returns an error instead of blocking forever
+- `get_simvar_values` now fetches all variables in parallel instead of sequentially — a 20-variable batch completes in roughly one round-trip instead of twenty
+
 ## [0.3.11] - 2026-03-08
 
 ### Fixed

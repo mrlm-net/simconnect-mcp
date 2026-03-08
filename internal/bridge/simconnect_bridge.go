@@ -781,7 +781,14 @@ func (b *simconnectBridge) GetSimVar(ctx context.Context, name, unit string) (Si
 		return SimVar{}, fmt.Errorf("bridge: RequestDataOnSimObject %s: %w", name, err)
 	}
 
-	// Wait for the response or context cancellation.
+	// Wait for the response, context cancellation, or a per-request deadline.
+	// The 5 s deadline covers invalid SimVar names and unrecognised units: SimConnect
+	// sends SIMCONNECT_RECV_EXCEPTION in those cases but the exception carries only a
+	// packet-sequence number (DwSendID), not a request ID, so we cannot route it back
+	// to the waiting goroutine directly — the timeout is the most reliable signal.
+	reqDeadline := time.NewTimer(5 * time.Second)
+	defer reqDeadline.Stop()
+
 	var value float64
 	var ok bool
 	select {
@@ -791,6 +798,12 @@ func (b *simconnectBridge) GetSimVar(ctx context.Context, name, unit string) (Si
 		b.pendingMu.Unlock()
 		_ = mgr.ClearDataDefinition(defID)
 		return SimVar{}, fmt.Errorf("bridge: %w", ErrTimeout)
+	case <-reqDeadline.C:
+		b.pendingMu.Lock()
+		delete(b.pending, reqID)
+		b.pendingMu.Unlock()
+		_ = mgr.ClearDataDefinition(defID)
+		return SimVar{}, fmt.Errorf("bridge: simvar %q: no response from simulator (unknown variable or unit)", name)
 	case value, ok = <-resultCh:
 		if !ok {
 			// Channel was closed by Close() — bridge shutting down.
@@ -805,26 +818,27 @@ func (b *simconnectBridge) GetSimVar(ctx context.Context, name, unit string) (Si
 	return SimVar{Name: name, Value: value, Unit: unit}, nil
 }
 
-// GetSimVars reads up to 20 simulation variables in a sequential batch.
+// GetSimVars reads up to 20 simulation variables in parallel.
+// Each variable is fetched in its own goroutine so all round-trips overlap;
+// the batch completes as soon as every goroutine finishes (or times out).
 // Per-variable errors are embedded in SimVarResult.Error rather than aborting
 // the batch.
 func (b *simconnectBridge) GetSimVars(ctx context.Context, vars []SimVarRequest) ([]SimVarResult, error) {
 	results := make([]SimVarResult, len(vars))
+	var wg sync.WaitGroup
 	for i, v := range vars {
-		sv, err := b.GetSimVar(ctx, v.Name, v.Unit)
-		results[i] = SimVarResult{
-			Name:  v.Name,
-			Unit:  v.Unit,
-			Value: sv.Value,
-		}
-		if err != nil {
-			results[i].Error = err.Error()
-		}
-		// Bail out if the caller's context was cancelled.
-		if ctx.Err() != nil {
-			break
-		}
+		i, v := i, v // capture loop vars for goroutine
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			sv, err := b.GetSimVar(ctx, v.Name, v.Unit)
+			results[i] = SimVarResult{Name: v.Name, Unit: v.Unit, Value: sv.Value}
+			if err != nil {
+				results[i].Error = err.Error()
+			}
+		}()
 	}
+	wg.Wait()
 	return results, nil
 }
 

@@ -4,6 +4,16 @@ All notable changes to SimConnect MCP are documented here. The format follows [K
 
 Full release history with release notes is also available on the [GitHub Releases page](https://github.com/mrlm-net/simconnect-mcp/releases).
 
+## [0.3.14] - 2026-03-08
+
+### Fixed
+
+- `get_airport_details` 200 ms post-END drain window is now context-aware — if the caller's context is cancelled during the drain, the wait is cut short immediately instead of always burning a fixed 200 ms regardless of cancellation
+
+### Changed
+
+- Added inline comments documenting the `Close()`-vs-`handleMessage` channel-close safety invariant, the `DwOutOf==0` airport-list completion edge case, the intentionally over-wide `[9]byte` ICAO cast for the MSFS 2020 33-byte stride, and the in-place `[:0]` filter idiom used in `deduplicateDetails`
+
 ## [0.3.13] - 2026-03-08
 
 ### Fixed

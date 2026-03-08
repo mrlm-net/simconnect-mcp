@@ -630,7 +630,17 @@ func (b *simconnectBridge) Close() error {
 		return nil
 	}
 
-	// Drain any waiting requests with a disconnection error so callers unblock.
+	// Drain pending callers so they unblock before mgr.Stop() terminates the
+	// dispatch goroutine. Ordering matters: we close all waiting channels first
+	// (so GetSimVar goroutines unblock and observe ErrNotConnected), then call
+	// mgr.Stop() which tears down the dispatch loop. After Stop() returns, no
+	// further handleMessage calls can occur.
+	//
+	// Close()-vs-handleMessage safety: handleMessage deletes a channel from
+	// b.pending (under pendingMu) before sending to it. Close() only closes
+	// channels it finds in the map (under the same lock). The two critical
+	// sections are mutually exclusive, so handleMessage can never send to a
+	// channel that Close() has already closed.
 	b.pendingMu.Lock()
 	for id, ch := range b.pending {
 		close(ch)
@@ -1464,7 +1474,12 @@ func (b *simconnectBridge) GetAirportDetails(ctx context.Context, icao, region s
 		// All expected ENDs received. Wait a short window for late DATA records —
 		// SimConnect dispatches DATA and END via different internal paths, so a few
 		// DATA records may arrive after all ENDs have been seen.
-		time.Sleep(200 * time.Millisecond)
+		// Use a context-aware select so the drain window can be cut short if the
+		// caller cancels rather than always burning a fixed 200 ms.
+		select {
+		case <-ctx.Done():
+		case <-time.After(200 * time.Millisecond):
+		}
 	case <-ctx.Done():
 		// Context cancelled — return whatever has been collected so far.
 	case <-deadline.C:
@@ -1526,6 +1541,9 @@ func copyAirportDetails(src *AirportDetails) *AirportDetails {
 // SimConnect can return when an airport scenery database has repeated records.
 func deduplicateDetails(d *AirportDetails) {
 	seen := make(map[string]struct{})
+	// In-place filter: [:0] reuses the backing array. range captures the original
+	// slice header (pointer + len) at entry, so appending to unique cannot
+	// overwrite elements that haven't been examined yet (len(unique) <= i always).
 	unique := d.Runways[:0]
 	for _, r := range d.Runways {
 		k := fmt.Sprintf("%s|%.2f|%.2f|%s", r.Name, r.LengthM, r.WidthM, r.Surface)
@@ -1774,6 +1792,14 @@ func (b *simconnectBridge) handleMessage(msg engine.Message) {
 		}
 		// The first 8 bytes of DwData are the float64 we requested.
 		data := engine.CastDataAs[simVarDataStruct](&simObjData.DwData)
+		// Non-blocking send: ch is buffered (cap 1) and only one PERIOD_ONCE
+		// packet can arrive per request ID, so the channel is always empty here.
+		// The default branch exists purely as a safety valve and is never taken.
+		//
+		// Close() safety: Close() only closes channels it finds in b.pending while
+		// holding pendingMu. We deleted ch from b.pending above — under the same
+		// lock — so Close() can never see this channel in the map and cannot close
+		// it. Sending to ch here is therefore safe regardless of concurrent Close().
 		select {
 		case ch <- data.Value:
 		default:
@@ -1807,6 +1833,11 @@ func (b *simconnectBridge) handleMessage(msg engine.Message) {
 					dataStart := unsafe.Pointer(uintptr(unsafe.Pointer(list)) + headerSize)
 					for i := uint32(0); i < uint32(list.DwArraySize); i++ {
 						entryPtr := unsafe.Pointer(uintptr(dataStart) + uintptr(i)*actualEntrySize)
+						// Cast to [9]byte for both stride variants. For the 33-byte (MSFS
+						// 2020) case identLen==6, so bytes [6..8] of the cast overlap the
+						// region field — they are not padding or an adjacent entry. Only
+						// identBytes[:identLen] is passed to BytesToString, so the over-wide
+						// cast is intentional and safe.
 						identBytes := (*[9]byte)(entryPtr)
 						regionBytes := (*[3]byte)(unsafe.Pointer(uintptr(entryPtr) + identLen))
 						lat := *(*float64)(unsafe.Pointer(uintptr(entryPtr) + latOff))
@@ -1823,6 +1854,9 @@ func (b *simconnectBridge) handleMessage(msg engine.Message) {
 					}
 				}
 			}
+			// DwEntryNumber is 0-based; fires true on the last packet.
+			// When DwOutOf==0 (empty list) uint32 wrap makes 0+1>=0 → true:
+			// done is correctly signalled immediately for an empty result set.
 			allDone = uint32(list.DwEntryNumber)+1 >= uint32(list.DwOutOf)
 			astate.mu.Unlock()
 			if allDone {

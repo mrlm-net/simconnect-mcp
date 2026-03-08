@@ -235,6 +235,36 @@ type facilityCallState struct {
 	doneOnce  sync.Once
 }
 
+// airportCallState holds per-call state for GetAirports.
+// handleMessage decodes AIRPORT_LIST packets directly into this struct under mu,
+// keeping all buffer reads inside the dispatch goroutine (before Release()).
+type airportCallState struct {
+	mu        sync.Mutex
+	airports  []AirportEntry
+	playerLat float64
+	playerLon float64
+	done      chan struct{}
+	doneOnce  sync.Once
+}
+
+// trafficCallState holds per-call state for GetTraffic.
+type trafficCallState struct {
+	mu       sync.Mutex
+	results  []TrafficEntry
+	expected uint32
+	done     chan struct{}
+	doneOnce sync.Once
+}
+
+// enrichedCallState holds per-call state for GetEnrichedTraffic.
+type enrichedCallState struct {
+	mu       sync.Mutex
+	results  []EnrichedTrafficEntry
+	expected uint32
+	done     chan struct{}
+	doneOnce sync.Once
+}
+
 // noReq is a sentinel request ID used for slots that are not active in a given call.
 // It is 0xFFFFFFFF, well above the valid user ID range (1–999_999_899).
 const noReq = ^uint32(0)
@@ -452,6 +482,18 @@ type simconnectBridge struct {
 	// directly into the state struct under state.mu.
 	facilityPending map[uint32]*facilityCallState
 
+	// airportPending maps listID -> per-call state for GetAirports.
+	airportMu      sync.Mutex
+	airportPending map[uint32]*airportCallState
+
+	// trafficPending maps reqID -> per-call state for GetTraffic.
+	trafficMu      sync.Mutex
+	trafficPending map[uint32]*trafficCallState
+
+	// enrichedPending maps reqID -> per-call state for GetEnrichedTraffic.
+	enrichedMu      sync.Mutex
+	enrichedPending map[uint32]*enrichedCallState
+
 	// idCounter provides unique definition / request IDs.
 	// Each request consumes two IDs: (counter*2) for definition, (counter*2+1) for request.
 	// We start from 1 to stay well within IsValidUserID range.
@@ -478,6 +520,9 @@ func NewSimConnectBridge() Bridge {
 		simEventCh:      make(chan SimEvent, 64),
 		pending:         make(map[uint32]chan float64),
 		facilityPending: make(map[uint32]*facilityCallState),
+		airportPending:  make(map[uint32]*airportCallState),
+		trafficPending:  make(map[uint32]*trafficCallState),
+		enrichedPending: make(map[uint32]*enrichedCallState),
 	}
 	b.eventIDCounter.Store(100_000)
 	return b
@@ -599,6 +644,27 @@ func (b *simconnectBridge) Close() error {
 		delete(b.facilityPending, id)
 	}
 	b.facilityMu.Unlock()
+
+	b.airportMu.Lock()
+	for id, state := range b.airportPending {
+		state.doneOnce.Do(func() { close(state.done) })
+		delete(b.airportPending, id)
+	}
+	b.airportMu.Unlock()
+
+	b.trafficMu.Lock()
+	for id, state := range b.trafficPending {
+		state.doneOnce.Do(func() { close(state.done) })
+		delete(b.trafficPending, id)
+	}
+	b.trafficMu.Unlock()
+
+	b.enrichedMu.Lock()
+	for id, state := range b.enrichedPending {
+		state.doneOnce.Do(func() { close(state.done) })
+		delete(b.enrichedPending, id)
+	}
+	b.enrichedMu.Unlock()
 
 	if err := mgr.Stop(); err != nil {
 		cancel()
@@ -890,9 +956,9 @@ func (b *simconnectBridge) GetSimState(ctx context.Context) (SimState, error) {
 }
 
 // GetTraffic returns nearby aircraft within radiusMeters of the user aircraft.
-// It issues a one-shot RequestDataOnSimObjectType call and collects all
-// SIMOBJECT_DATA_BYTYPE responses until the batch is complete or the context
-// is cancelled.  The player aircraft is included in the results.
+// It issues a one-shot RequestDataOnSimObjectType call; handleMessage decodes
+// each SIMOBJECT_DATA_BYTYPE response inline (while the SDK pool buffer is still
+// valid) and stores results in a per-call trafficCallState.
 func (b *simconnectBridge) GetTraffic(ctx context.Context, radiusMeters uint32) ([]TrafficEntry, error) {
 	if b.State() != StateConnected {
 		return nil, ErrNotConnected
@@ -930,72 +996,40 @@ func (b *simconnectBridge) GetTraffic(ctx context.Context, radiusMeters uint32) 
 	}
 	defer func() { _ = mgr.ClearDataDefinition(defID) }()
 
-	// Subscribe to BYTYPE messages only, so we don't interfere with the main
-	// OnMessage handler that serves GetSimVar requests.
-	sub := mgr.SubscribeWithType("", 128, []types.SIMCONNECT_RECV_ID{
-		types.SIMCONNECT_RECV_ID_SIMOBJECT_DATA_BYTYPE,
-	})
-	defer sub.Unsubscribe()
+	state := &trafficCallState{done: make(chan struct{})}
+
+	b.trafficMu.Lock()
+	b.trafficPending[reqID] = state
+	b.trafficMu.Unlock()
+	defer func() {
+		b.trafficMu.Lock()
+		delete(b.trafficPending, reqID)
+		b.trafficMu.Unlock()
+	}()
 
 	if err := mgr.RequestDataOnSimObjectType(reqID, defID, radiusMeters, types.SIMCONNECT_SIMOBJECT_TYPE_AIRCRAFT); err != nil {
 		return nil, fmt.Errorf("bridge: RequestDataOnSimObjectType: %w", err)
 	}
 
-	var results []TrafficEntry
-	var expected uint32
-
-	// 3-second timeout — if no response arrives, assume no traffic.
 	deadline := time.NewTimer(3 * time.Second)
 	defer deadline.Stop()
 
-	for {
-		select {
-		case <-ctx.Done():
-			return results, nil
-		case <-deadline.C:
-			return results, nil
-		case msg, ok := <-sub.Messages():
-			if !ok {
-				return results, nil
-			}
-			simObjData := msg.AsSimObjectDataBType()
-			if simObjData == nil || uint32(simObjData.DwRequestID) != reqID {
-				continue
-			}
-			if simObjData.DwOutOf == 0 {
-				// No aircraft in range.
-				return nil, nil
-			}
-			if expected == 0 {
-				expected = uint32(simObjData.DwOutOf)
-				results = make([]TrafficEntry, 0, expected)
-			}
-			data := engine.CastDataAs[trafficDataStruct](&simObjData.DwData)
-			results = append(results, TrafficEntry{
-				ObjectID:    uint32(simObjData.DwObjectID),
-				Title:       engine.BytesToString(data.Title[:]),
-				ATCID:       engine.BytesToString(data.AtcID[:]),
-				ATCAirline:  engine.BytesToString(data.AtcAirline[:]),
-				Latitude:    data.Lat,
-				Longitude:   data.Lon,
-				AltitudeFt:  data.Alt,
-				TrueHeading: data.Head,
-				GroundSpeed: data.GndSpd,
-				OnGround:    data.OnGround != 0,
-			})
-			if uint32(len(results)) >= expected {
-				return results, nil
-			}
-		}
+	select {
+	case <-state.done:
+	case <-ctx.Done():
+	case <-deadline.C:
 	}
+
+	state.mu.Lock()
+	results := state.results
+	state.mu.Unlock()
+	return results, nil
 }
 
 // GetEnrichedTraffic returns nearby aircraft with velocity-derived fields.
-// It issues a single RequestDataOnSimObjectType call with an expanded data
-// definition that includes VELOCITY WORLD Y/X/Z, TOTAL WORLD VELOCITY,
-// PLANE IN PARKING STATE, ON ANY RUNWAY, and CATEGORY in addition to the
-// fields returned by GetTraffic.  Track bearing and flight phase are derived
-// from the velocity vectors before returning.
+// It issues a single RequestDataOnSimObjectType call; handleMessage decodes
+// each SIMOBJECT_DATA_BYTYPE response inline (while the SDK pool buffer is still
+// valid) and stores results in a per-call enrichedCallState.
 func (b *simconnectBridge) GetEnrichedTraffic(ctx context.Context, radiusMeters uint32) ([]EnrichedTrafficEntry, error) {
 	if b.State() != StateConnected {
 		return nil, ErrNotConnected
@@ -1040,78 +1074,44 @@ func (b *simconnectBridge) GetEnrichedTraffic(ctx context.Context, radiusMeters 
 	}
 	defer func() { _ = mgr.ClearDataDefinition(defID) }()
 
-	sub := mgr.SubscribeWithType("", 128, []types.SIMCONNECT_RECV_ID{
-		types.SIMCONNECT_RECV_ID_SIMOBJECT_DATA_BYTYPE,
-	})
-	defer sub.Unsubscribe()
+	state := &enrichedCallState{done: make(chan struct{})}
+
+	b.enrichedMu.Lock()
+	b.enrichedPending[reqID] = state
+	b.enrichedMu.Unlock()
+	defer func() {
+		b.enrichedMu.Lock()
+		delete(b.enrichedPending, reqID)
+		b.enrichedMu.Unlock()
+	}()
 
 	if err := mgr.RequestDataOnSimObjectType(reqID, defID, radiusMeters, types.SIMCONNECT_SIMOBJECT_TYPE_AIRCRAFT); err != nil {
 		return nil, fmt.Errorf("bridge: RequestDataOnSimObjectType: %w", err)
 	}
 
-	var results []EnrichedTrafficEntry
-	var expected uint32
-
 	deadline := time.NewTimer(3 * time.Second)
 	defer deadline.Stop()
 
-	for {
-		select {
-		case <-ctx.Done():
-			return results, nil
-		case <-deadline.C:
-			return results, nil
-		case msg, ok := <-sub.Messages():
-			if !ok {
-				return results, nil
-			}
-			simObjData := msg.AsSimObjectDataBType()
-			if simObjData == nil || uint32(simObjData.DwRequestID) != reqID {
-				continue
-			}
-			if simObjData.DwOutOf == 0 {
-				return nil, nil
-			}
-			if expected == 0 {
-				expected = uint32(simObjData.DwOutOf)
-				results = make([]EnrichedTrafficEntry, 0, expected)
-			}
-			data := engine.CastDataAs[enrichedTrafficDataStruct](&simObjData.DwData)
-			onGround := data.OnGround != 0
-			vsFPM := data.VelY * 60.0
-			results = append(results, EnrichedTrafficEntry{
-				ObjectID:         uint32(simObjData.DwObjectID),
-				Title:            engine.BytesToString(data.Title[:]),
-				ATCID:            engine.BytesToString(data.AtcID[:]),
-				ATCAirline:       engine.BytesToString(data.AtcAirline[:]),
-				Category:         engine.BytesToString(data.Category[:]),
-				Latitude:         data.Lat,
-				Longitude:        data.Lon,
-				AltitudeFt:       data.Alt,
-				TrueHeading:      data.Head,
-				TrackDeg:         computeTrackDeg(data.VelX, data.VelZ),
-				GroundSpeed:      data.GndSpd,
-				VerticalSpeedFPM: vsFPM,
-				OnGround:         onGround,
-				InParkingState:   data.InParking != 0,
-				OnAnyRunway:      data.OnRunway != 0,
-				FlightPhase:      computeFlightPhase(onGround, data.GndSpd, vsFPM),
-			})
-			if uint32(len(results)) >= expected {
-				return results, nil
-			}
-		}
+	select {
+	case <-state.done:
+	case <-ctx.Done():
+	case <-deadline.C:
 	}
+
+	state.mu.Lock()
+	results := state.results
+	state.mu.Unlock()
+	return results, nil
 }
 
 // GetAirports returns all airports in the simulator's reality bubble, sorted
 // by Haversine distance from the player aircraft.  It issues a one-shot
-// RequestFacilitiesListEX1 call and collects AIRPORT_LIST response packets
-// until all batches have arrived or the context is cancelled.
+// RequestFacilitiesListEX1 call; handleMessage decodes each AIRPORT_LIST packet
+// inline (while the SDK pool buffer is still valid) and stores results in a
+// per-call airportCallState.
 //
 // Airport entry size differs between MSFS 2020 (33 bytes) and MSFS 2024 (36/40/41
-// bytes); the implementation derives field offsets at runtime from the message
-// stride, matching the read-facilities SDK example.
+// bytes); field offsets are derived at runtime from the message stride.
 func (b *simconnectBridge) GetAirports(ctx context.Context) ([]AirportEntry, error) {
 	if b.State() != StateConnected {
 		return nil, ErrNotConnected
@@ -1124,100 +1124,57 @@ func (b *simconnectBridge) GetAirports(ctx context.Context) ([]AirportEntry, err
 		return nil, ErrNotConnected
 	}
 
-	// Get player position for distance computation.
-	state := mgr.SimState()
-	playerLat := state.Latitude
-	playerLon := state.Longitude
-
+	mgrState := mgr.SimState()
 	listID, _ := b.allocIDs()
 
-	sub := mgr.SubscribeWithType("", 512, []types.SIMCONNECT_RECV_ID{
-		types.SIMCONNECT_RECV_ID_AIRPORT_LIST,
-	})
-	defer sub.Unsubscribe()
+	state := &airportCallState{
+		playerLat: mgrState.Latitude,
+		playerLon: mgrState.Longitude,
+		done:      make(chan struct{}),
+	}
+
+	b.airportMu.Lock()
+	b.airportPending[listID] = state
+	b.airportMu.Unlock()
+	defer func() {
+		b.airportMu.Lock()
+		delete(b.airportPending, listID)
+		b.airportMu.Unlock()
+	}()
 
 	if err := mgr.RequestFacilitiesListEX1(listID, types.SIMCONNECT_FACILITY_LIST_AIRPORT); err != nil {
 		return nil, fmt.Errorf("bridge: RequestFacilitiesListEX1: %w", err)
 	}
 
-	var airports []AirportEntry
-
 	deadline := time.NewTimer(10 * time.Second)
 	defer deadline.Stop()
 
-	for {
-		select {
-		case <-ctx.Done():
-			return airports, nil
-		case <-deadline.C:
-			return airports, nil
-		case msg, ok := <-sub.Messages():
-			if !ok {
-				return airports, nil
-			}
-			list := msg.AsAirportList()
-			if list == nil || uint32(list.DwRequestID) != listID {
-				continue
-			}
+	select {
+	case <-state.done:
+	case <-ctx.Done():
+	case <-deadline.C:
+	}
 
-			if list.DwArraySize > 0 {
-				// Derive field offsets from the actual wire stride.
-				// MSFS 2020: ident[6] + region[3] + 3×float64 = 33 bytes
-				// MSFS 2024: ident[9] + region[3] + 3×float64 = 36 bytes (±trailing pad)
-				headerSize := unsafe.Sizeof(types.SIMCONNECT_RECV_FACILITIES_LIST{})
-				actualDataSize := uintptr(msg.DwSize) - headerSize
-				actualEntrySize := actualDataSize / uintptr(list.DwArraySize)
+	state.mu.Lock()
+	airports := make([]AirportEntry, len(state.airports))
+	copy(airports, state.airports)
+	state.mu.Unlock()
 
-				var identLen, latOff, lonOff, altOff uintptr
-				switch actualEntrySize {
-				case 33:
-					identLen, latOff, lonOff, altOff = 6, 9, 17, 25
-				case 36, 40, 41:
-					identLen, latOff, lonOff, altOff = 9, 12, 20, 28
-				}
-
-				if identLen > 0 {
-					dataStart := unsafe.Pointer(uintptr(unsafe.Pointer(list)) + headerSize)
-					for i := uint32(0); i < uint32(list.DwArraySize); i++ {
-						entryPtr := unsafe.Pointer(uintptr(dataStart) + uintptr(i)*actualEntrySize)
-						identBytes := (*[9]byte)(entryPtr)
-						regionBytes := (*[3]byte)(unsafe.Pointer(uintptr(entryPtr) + identLen))
-						lat := *(*float64)(unsafe.Pointer(uintptr(entryPtr) + latOff))
-						lon := *(*float64)(unsafe.Pointer(uintptr(entryPtr) + lonOff))
-						alt := *(*float64)(unsafe.Pointer(uintptr(entryPtr) + altOff))
-						airports = append(airports, AirportEntry{
-							ICAO:       engine.BytesToString(identBytes[:identLen]),
-							Region:     engine.BytesToString(regionBytes[:]),
-							Latitude:   lat,
-							Longitude:  lon,
-							AltitudeM:  alt,
-							DistanceKM: calc.HaversineKM(playerLat, playerLon, lat, lon),
-						})
-					}
-				}
-			}
-
-			// Done when this is the last (or only) packet.
-			if uint32(list.DwEntryNumber)+1 >= uint32(list.DwOutOf) {
-				// Deduplicate by ICAO — the list can contain the same
-				// airport multiple times under the same identifier.
-				seen := make(map[string]struct{}, len(airports))
-				unique := airports[:0]
-				for _, a := range airports {
-					if _, ok := seen[a.ICAO]; !ok {
-						seen[a.ICAO] = struct{}{}
-						unique = append(unique, a)
-					}
-				}
-				airports = unique
-
-				sort.Slice(airports, func(i, j int) bool {
-					return airports[i].DistanceKM < airports[j].DistanceKM
-				})
-				return airports, nil
-			}
+	// Deduplicate by ICAO — the list can contain the same airport multiple times.
+	seen := make(map[string]struct{}, len(airports))
+	unique := make([]AirportEntry, 0, len(airports))
+	for _, a := range airports {
+		if _, ok := seen[a.ICAO]; !ok {
+			seen[a.ICAO] = struct{}{}
+			unique = append(unique, a)
 		}
 	}
+	airports = unique
+
+	sort.Slice(airports, func(i, j int) bool {
+		return airports[i].DistanceKM < airports[j].DistanceKM
+	})
+	return airports, nil
 }
 
 // GetNearestAirport returns the closest airport to the player aircraft.
@@ -1768,6 +1725,142 @@ func (b *simconnectBridge) handleMessage(msg engine.Message) {
 		select {
 		case ch <- data.Value:
 		default:
+		}
+
+	case types.SIMCONNECT_RECV_ID_AIRPORT_LIST:
+		// Decode all airport entries inline — pool buffer is valid here but will be
+		// released immediately after handleMessage returns.
+		list := msg.AsAirportList()
+		if list == nil {
+			return
+		}
+		b.airportMu.Lock()
+		astate := b.airportPending[uint32(list.DwRequestID)]
+		b.airportMu.Unlock()
+		if astate != nil {
+			allDone := false
+			astate.mu.Lock()
+			if list.DwArraySize > 0 {
+				headerSize := unsafe.Sizeof(types.SIMCONNECT_RECV_FACILITIES_LIST{})
+				actualDataSize := uintptr(msg.DwSize) - headerSize
+				actualEntrySize := actualDataSize / uintptr(list.DwArraySize)
+				var identLen, latOff, lonOff, altOff uintptr
+				switch actualEntrySize {
+				case 33:
+					identLen, latOff, lonOff, altOff = 6, 9, 17, 25
+				case 36, 40, 41:
+					identLen, latOff, lonOff, altOff = 9, 12, 20, 28
+				}
+				if identLen > 0 {
+					dataStart := unsafe.Pointer(uintptr(unsafe.Pointer(list)) + headerSize)
+					for i := uint32(0); i < uint32(list.DwArraySize); i++ {
+						entryPtr := unsafe.Pointer(uintptr(dataStart) + uintptr(i)*actualEntrySize)
+						identBytes := (*[9]byte)(entryPtr)
+						regionBytes := (*[3]byte)(unsafe.Pointer(uintptr(entryPtr) + identLen))
+						lat := *(*float64)(unsafe.Pointer(uintptr(entryPtr) + latOff))
+						lon := *(*float64)(unsafe.Pointer(uintptr(entryPtr) + lonOff))
+						alt := *(*float64)(unsafe.Pointer(uintptr(entryPtr) + altOff))
+						astate.airports = append(astate.airports, AirportEntry{
+							ICAO:       engine.BytesToString(identBytes[:identLen]),
+							Region:     engine.BytesToString(regionBytes[:]),
+							Latitude:   lat,
+							Longitude:  lon,
+							AltitudeM:  alt,
+							DistanceKM: calc.HaversineKM(astate.playerLat, astate.playerLon, lat, lon),
+						})
+					}
+				}
+			}
+			allDone = uint32(list.DwEntryNumber)+1 >= uint32(list.DwOutOf)
+			astate.mu.Unlock()
+			if allDone {
+				astate.doneOnce.Do(func() { close(astate.done) })
+			}
+		}
+
+	case types.SIMCONNECT_RECV_ID_SIMOBJECT_DATA_BYTYPE:
+		// Decode inline for GetTraffic and GetEnrichedTraffic calls.
+		simObjData := msg.AsSimObjectDataBType()
+		if simObjData == nil {
+			return
+		}
+		reqID := uint32(simObjData.DwRequestID)
+
+		b.trafficMu.Lock()
+		tstate := b.trafficPending[reqID]
+		b.trafficMu.Unlock()
+		if tstate != nil {
+			allDone := false
+			tstate.mu.Lock()
+			if simObjData.DwOutOf == 0 {
+				allDone = true
+			} else {
+				if tstate.expected == 0 {
+					tstate.expected = uint32(simObjData.DwOutOf)
+					tstate.results = make([]TrafficEntry, 0, tstate.expected)
+				}
+				data := engine.CastDataAs[trafficDataStruct](&simObjData.DwData)
+				tstate.results = append(tstate.results, TrafficEntry{
+					ObjectID:    uint32(simObjData.DwObjectID),
+					Title:       engine.BytesToString(data.Title[:]),
+					ATCID:       engine.BytesToString(data.AtcID[:]),
+					ATCAirline:  engine.BytesToString(data.AtcAirline[:]),
+					Latitude:    data.Lat,
+					Longitude:   data.Lon,
+					AltitudeFt:  data.Alt,
+					TrueHeading: data.Head,
+					GroundSpeed: data.GndSpd,
+					OnGround:    data.OnGround != 0,
+				})
+				allDone = uint32(len(tstate.results)) >= tstate.expected
+			}
+			tstate.mu.Unlock()
+			if allDone {
+				tstate.doneOnce.Do(func() { close(tstate.done) })
+			}
+			return
+		}
+
+		b.enrichedMu.Lock()
+		estate := b.enrichedPending[reqID]
+		b.enrichedMu.Unlock()
+		if estate != nil {
+			allDone := false
+			estate.mu.Lock()
+			if simObjData.DwOutOf == 0 {
+				allDone = true
+			} else {
+				if estate.expected == 0 {
+					estate.expected = uint32(simObjData.DwOutOf)
+					estate.results = make([]EnrichedTrafficEntry, 0, estate.expected)
+				}
+				data := engine.CastDataAs[enrichedTrafficDataStruct](&simObjData.DwData)
+				onGround := data.OnGround != 0
+				vsFPM := data.VelY * 60.0
+				estate.results = append(estate.results, EnrichedTrafficEntry{
+					ObjectID:         uint32(simObjData.DwObjectID),
+					Title:            engine.BytesToString(data.Title[:]),
+					ATCID:            engine.BytesToString(data.AtcID[:]),
+					ATCAirline:       engine.BytesToString(data.AtcAirline[:]),
+					Category:         engine.BytesToString(data.Category[:]),
+					Latitude:         data.Lat,
+					Longitude:        data.Lon,
+					AltitudeFt:       data.Alt,
+					TrueHeading:      data.Head,
+					TrackDeg:         computeTrackDeg(data.VelX, data.VelZ),
+					GroundSpeed:      data.GndSpd,
+					VerticalSpeedFPM: vsFPM,
+					OnGround:         onGround,
+					InParkingState:   data.InParking != 0,
+					OnAnyRunway:      data.OnRunway != 0,
+					FlightPhase:      computeFlightPhase(onGround, data.GndSpd, vsFPM),
+				})
+				allDone = uint32(len(estate.results)) >= estate.expected
+			}
+			estate.mu.Unlock()
+			if allDone {
+				estate.doneOnce.Do(func() { close(estate.done) })
+			}
 		}
 
 	case types.SIMCONNECT_RECV_ID_FACILITY_DATA:

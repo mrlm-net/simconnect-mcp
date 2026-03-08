@@ -4,6 +4,13 @@ All notable changes to SimConnect MCP are documented here. The format follows [K
 
 Full release history with release notes is also available on the [GitHub Releases page](https://github.com/mrlm-net/simconnect-mcp/releases).
 
+## [0.3.11] - 2026-03-08
+
+### Fixed
+
+- `get_airports_in_range` and `get_nearest_airport` no longer have the same pool use-after-free race that affected `get_airport_details` — `AIRPORT_LIST` packets are now decoded inline in the SDK dispatch goroutine (inside `handleMessage`) before the pool buffer is released, instead of being forwarded through a subscription channel where the buffer pointer was no longer valid
+- `get_nearby_traffic` and `get_traffic_with_phase` have the same fix applied — `SIMOBJECT_DATA_BYTYPE` packets are decoded inline in `handleMessage`; both tools previously used `SubscribeWithType` which forwarded raw pool-buffer-backed message pointers to a channel, where they were read after `Release()` had been called
+
 ## [0.3.10] - 2026-03-08
 
 ### Fixed

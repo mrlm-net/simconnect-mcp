@@ -213,6 +213,10 @@ type facilityReqSet struct {
 	base, rw, fr, pk, hp, ap, dp, ar uint32
 }
 
+// noReq is a sentinel request ID used for slots that are not active in a given call.
+// It is 0xFFFFFFFF, well above the valid user ID range (1–999_999_899).
+const noReq = ^uint32(0)
+
 // runwayDesignatorLetter maps SimConnect designator int to its letter suffix.
 func runwayDesignatorLetter(d int32) string {
 	switch d {
@@ -1327,7 +1331,10 @@ func (b *simconnectBridge) GetAirportDetails(ctx context.Context, icao, region s
 		}
 	}
 
-	ids := facilityReqSet{base: baseReqID, rw: rwReqID, fr: frReqID}
+	ids := facilityReqSet{
+		base: baseReqID, rw: rwReqID, fr: frReqID,
+		pk: noReq, hp: noReq, ap: noReq, dp: noReq, ar: noReq,
+	}
 	if expanded {
 		ids.pk = pkReqID
 		ids.hp = hpReqID
@@ -1338,12 +1345,14 @@ func (b *simconnectBridge) GetAirportDetails(ctx context.Context, icao, region s
 	details := &AirportDetails{
 		Region:      region,
 		Runways:     []AirportRunway{},
-		Stands:      []AirportStand{},
 		Frequencies: []AirportFrequency{},
-		Helipads:    []AirportHelipad{},
-		Approaches:  []AirportApproach{},
-		Departures:  []AirportProcedure{},
-		Arrivals:    []AirportProcedure{},
+	}
+	if expanded {
+		details.Stands = []AirportStand{}
+		details.Helipads = []AirportHelipad{}
+		details.Approaches = []AirportApproach{}
+		details.Departures = []AirportProcedure{}
+		details.Arrivals = []AirportProcedure{}
 	}
 	foundBase := false
 	endIDs := map[uint32]bool{baseReqID: false, rwReqID: false, frReqID: false}
@@ -1442,17 +1451,19 @@ func deduplicateDetails(d *AirportDetails) {
 	d.Runways = unique
 	d.RunwayCount = len(d.Runways)
 
-	seen = make(map[string]struct{})
-	uniqS := d.Stands[:0]
-	for _, s := range d.Stands {
-		k := fmt.Sprintf("%d|%s|%.2f", s.Number, s.Type, s.Heading)
-		if _, ok := seen[k]; !ok {
-			seen[k] = struct{}{}
-			uniqS = append(uniqS, s)
+	if d.Stands != nil {
+		seen = make(map[string]struct{})
+		uniqS := d.Stands[:0]
+		for _, s := range d.Stands {
+			k := fmt.Sprintf("%d|%s|%.2f", s.Number, s.Type, s.Heading)
+			if _, ok := seen[k]; !ok {
+				seen[k] = struct{}{}
+				uniqS = append(uniqS, s)
+			}
 		}
+		d.Stands = uniqS
+		d.StandCount = len(d.Stands)
 	}
-	d.Stands = uniqS
-	d.StandCount = len(d.Stands)
 
 	seen = make(map[string]struct{})
 	uniqF := d.Frequencies[:0]
@@ -1465,51 +1476,59 @@ func deduplicateDetails(d *AirportDetails) {
 	}
 	d.Frequencies = uniqF
 
-	seen = make(map[string]struct{})
-	uniqH := d.Helipads[:0]
-	for _, h := range d.Helipads {
-		k := fmt.Sprintf("%.6f|%.6f", h.Latitude, h.Longitude)
-		if _, ok := seen[k]; !ok {
-			seen[k] = struct{}{}
-			uniqH = append(uniqH, h)
+	if d.Helipads != nil {
+		seen = make(map[string]struct{})
+		uniqH := d.Helipads[:0]
+		for _, h := range d.Helipads {
+			k := fmt.Sprintf("%.6f|%.6f", h.Latitude, h.Longitude)
+			if _, ok := seen[k]; !ok {
+				seen[k] = struct{}{}
+				uniqH = append(uniqH, h)
+			}
 		}
+		d.Helipads = uniqH
+		d.HelipadCount = len(d.Helipads)
 	}
-	d.Helipads = uniqH
-	d.HelipadCount = len(d.Helipads)
 
-	seen = make(map[string]struct{})
-	uniqAp := d.Approaches[:0]
-	for _, a := range d.Approaches {
-		k := fmt.Sprintf("%s|%s", a.Type, a.Runway)
-		if _, ok := seen[k]; !ok {
-			seen[k] = struct{}{}
-			uniqAp = append(uniqAp, a)
+	if d.Approaches != nil {
+		seen = make(map[string]struct{})
+		uniqAp := d.Approaches[:0]
+		for _, a := range d.Approaches {
+			k := fmt.Sprintf("%s|%s", a.Type, a.Runway)
+			if _, ok := seen[k]; !ok {
+				seen[k] = struct{}{}
+				uniqAp = append(uniqAp, a)
+			}
 		}
+		d.Approaches = uniqAp
+		d.ApproachCount = len(d.Approaches)
 	}
-	d.Approaches = uniqAp
-	d.ApproachCount = len(d.Approaches)
 
-	seen = make(map[string]struct{})
-	uniqDp := d.Departures[:0]
-	for _, dep := range d.Departures {
-		if _, ok := seen[dep.Name]; !ok {
-			seen[dep.Name] = struct{}{}
-			uniqDp = append(uniqDp, dep)
+	if d.Departures != nil {
+		seen = make(map[string]struct{})
+		uniqDp := d.Departures[:0]
+		for _, dep := range d.Departures {
+			if _, ok := seen[dep.Name]; !ok {
+				seen[dep.Name] = struct{}{}
+				uniqDp = append(uniqDp, dep)
+			}
 		}
+		d.Departures = uniqDp
+		d.DepartureCount = len(d.Departures)
 	}
-	d.Departures = uniqDp
-	d.DepartureCount = len(d.Departures)
 
-	seen = make(map[string]struct{})
-	uniqAr := d.Arrivals[:0]
-	for _, arr := range d.Arrivals {
-		if _, ok := seen[arr.Name]; !ok {
-			seen[arr.Name] = struct{}{}
-			uniqAr = append(uniqAr, arr)
+	if d.Arrivals != nil {
+		seen = make(map[string]struct{})
+		uniqAr := d.Arrivals[:0]
+		for _, arr := range d.Arrivals {
+			if _, ok := seen[arr.Name]; !ok {
+				seen[arr.Name] = struct{}{}
+				uniqAr = append(uniqAr, arr)
+			}
 		}
+		d.Arrivals = uniqAr
+		d.ArrivalCount = len(d.Arrivals)
 	}
-	d.Arrivals = uniqAr
-	d.ArrivalCount = len(d.Arrivals)
 }
 
 // applyFacilityData decodes a single SIMCONNECT_RECV_ID_FACILITY_DATA message

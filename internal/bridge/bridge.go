@@ -198,19 +198,19 @@ type AirportDetails struct {
 	AltitudeM   float64            `json:"altitude_m"`
 	MagVar      float64            `json:"magvar_deg"`
 	IsClosed    bool               `json:"is_closed"`
-	RunwayCount int                `json:"runway_count"`
-	Runways     []AirportRunway    `json:"runways"`
-	StandCount  int                `json:"stand_count"`
-	Stands      []AirportStand     `json:"stands"`
-	Frequencies []AirportFrequency `json:"frequencies"`
-	HelipadCount   int                `json:"helipad_count"`
-	Helipads       []AirportHelipad   `json:"helipads"`
-	ApproachCount  int                `json:"approach_count"`
-	Approaches     []AirportApproach  `json:"approaches"`
-	DepartureCount int                `json:"departure_count"`
-	Departures     []AirportProcedure `json:"departures"`
-	ArrivalCount   int                `json:"arrival_count"`
-	Arrivals       []AirportProcedure `json:"arrivals"`
+	RunwayCount  int                `json:"runway_count"`
+	Runways      []AirportRunway    `json:"runways"`
+	Frequencies  []AirportFrequency `json:"frequencies"`
+	StandCount   int                `json:"stand_count,omitempty"`
+	Stands       []AirportStand     `json:"stands,omitempty"`
+	HelipadCount int                `json:"helipad_count,omitempty"`
+	Helipads     []AirportHelipad   `json:"helipads,omitempty"`
+	ApproachCount  int                `json:"approach_count,omitempty"`
+	Approaches     []AirportApproach  `json:"approaches,omitempty"`
+	DepartureCount int                `json:"departure_count,omitempty"`
+	Departures     []AirportProcedure `json:"departures,omitempty"`
+	ArrivalCount   int                `json:"arrival_count,omitempty"`
+	Arrivals       []AirportProcedure `json:"arrivals,omitempty"`
 }
 
 // Bridge abstracts all SimConnect SDK calls needed by the four MCP tools.

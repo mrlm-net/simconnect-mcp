@@ -4,6 +4,12 @@ All notable changes to SimConnect MCP are documented here. The format follows [K
 
 Full release history with release notes is also available on the [GitHub Releases page](https://github.com/mrlm-net/simconnect-mcp/releases).
 
+## [0.3.13] - 2026-03-08
+
+### Fixed
+
+- `get_airport_details` now returns a deep copy of the facility data snapshot instead of a raw pointer into the live per-call state — eliminates a theoretical Go data race where a late `FACILITY_DATA` packet (dispatched after the 200 ms drain window but before the pending-map cleanup) could write to the shared struct concurrently with the caller serialising the result to JSON; all slice fields (`runways`, `frequencies`, `stands`, `helipads`, `approaches`, `departures`, `arrivals`) are copied into independent backing arrays under `state.mu` before the lock is released
+
 ## [0.3.12] - 2026-03-08
 
 ### Fixed

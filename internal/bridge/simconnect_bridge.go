@@ -1473,15 +1473,53 @@ func (b *simconnectBridge) GetAirportDetails(ctx context.Context, icao, region s
 
 	// Read results under lock — handleMessage may still be writing during the
 	// 200ms drain window and we need a consistent snapshot.
+	//
+	// We return a deep copy rather than the shared state.details pointer so that
+	// any concurrent handleMessage write that already holds a reference to state
+	// (acquired from facilityPending before the deferred cleanup fires) cannot
+	// race with the caller's JSON serialisation.
 	state.mu.Lock()
 	deduplicateDetails(state.details)
+	snapshot := copyAirportDetails(state.details)
 	foundBase := state.foundBase
 	state.mu.Unlock()
 
 	if !foundBase {
 		return nil, nil
 	}
-	return state.details, nil
+	return snapshot, nil
+}
+
+// copyAirportDetails returns a deep copy of d so the caller has exclusive
+// ownership and concurrent handleMessage writes to the original struct cannot
+// cause a data race.  All slice fields are copied into fresh backing arrays.
+func copyAirportDetails(src *AirportDetails) *AirportDetails {
+	if src == nil {
+		return nil
+	}
+	dst := *src // copy all scalar fields
+	if src.Runways != nil {
+		dst.Runways = append([]AirportRunway(nil), src.Runways...)
+	}
+	if src.Frequencies != nil {
+		dst.Frequencies = append([]AirportFrequency(nil), src.Frequencies...)
+	}
+	if src.Stands != nil {
+		dst.Stands = append([]AirportStand(nil), src.Stands...)
+	}
+	if src.Helipads != nil {
+		dst.Helipads = append([]AirportHelipad(nil), src.Helipads...)
+	}
+	if src.Approaches != nil {
+		dst.Approaches = append([]AirportApproach(nil), src.Approaches...)
+	}
+	if src.Departures != nil {
+		dst.Departures = append([]AirportProcedure(nil), src.Departures...)
+	}
+	if src.Arrivals != nil {
+		dst.Arrivals = append([]AirportProcedure(nil), src.Arrivals...)
+	}
+	return &dst
 }
 
 // deduplicateDetails removes duplicate runway, stand, and frequency entries that

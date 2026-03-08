@@ -835,27 +835,23 @@ func (b *simconnectBridge) GetSimVar(ctx context.Context, name, unit string) (Si
 	return SimVar{Name: name, Value: value, Unit: unit}, nil
 }
 
-// GetSimVars reads up to 20 simulation variables in parallel.
-// Each variable is fetched in its own goroutine so all round-trips overlap;
-// the batch completes as soon as every goroutine finishes (or times out).
-// Per-variable errors are embedded in SimVarResult.Error rather than aborting
-// the batch.
+// GetSimVars reads up to 20 simulation variables sequentially.
+// SimConnect does not support concurrent AddToDataDefinition /
+// RequestDataOnSimObject calls from multiple goroutines — doing so causes
+// some requests to be silently dropped or rejected with E_FAIL (0x80004005).
+// Sequential execution keeps the SimConnect session clean at the cost of
+// cumulative latency; the batch is still valuable because it saves N MCP
+// round-trips.  Per-variable errors are embedded in SimVarResult.Error
+// rather than aborting the batch.
 func (b *simconnectBridge) GetSimVars(ctx context.Context, vars []SimVarRequest) ([]SimVarResult, error) {
 	results := make([]SimVarResult, len(vars))
-	var wg sync.WaitGroup
 	for i, v := range vars {
-		i, v := i, v // capture loop vars for goroutine
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
-			sv, err := b.GetSimVar(ctx, v.Name, v.Unit)
-			results[i] = SimVarResult{Name: v.Name, Unit: v.Unit, Value: sv.Value}
-			if err != nil {
-				results[i].Error = err.Error()
-			}
-		}()
+		sv, err := b.GetSimVar(ctx, v.Name, v.Unit)
+		results[i] = SimVarResult{Name: v.Name, Unit: v.Unit, Value: sv.Value}
+		if err != nil {
+			results[i].Error = err.Error()
+		}
 	}
-	wg.Wait()
 	return results, nil
 }
 

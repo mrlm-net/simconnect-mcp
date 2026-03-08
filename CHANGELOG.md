@@ -4,6 +4,12 @@ All notable changes to SimConnect MCP are documented here. The format follows [K
 
 Full release history with release notes is also available on the [GitHub Releases page](https://github.com/mrlm-net/simconnect-mcp/releases).
 
+## [0.3.19] - 2026-03-08
+
+### Fixed
+
+- `get_simvar_values` batch now executes sequentially instead of in parallel — SimConnect does not support concurrent `AddToDataDefinition` / `RequestDataOnSimObject` calls from multiple goroutines; parallel execution caused requests to be silently dropped or rejected with `E_FAIL (0x80004005)`, resulting in timeouts for all variables in the batch including ones that work correctly when fetched individually
+
 ## [0.3.18] - 2026-03-08
 
 ### Fixed

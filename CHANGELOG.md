@@ -4,6 +4,13 @@ All notable changes to SimConnect MCP are documented here. The format follows [K
 
 Full release history with release notes is also available on the [GitHub Releases page](https://github.com/mrlm-net/simconnect-mcp/releases).
 
+## [0.3.15] - 2026-03-08
+
+### Fixed
+
+- `ParseSimVarPage` now processes **all tables** on a page instead of only the first one — SimVar pages like `Aircraft_Misc_Variables.htm` have multiple named sections (Aircraft States, Aircraft Position, Airspeed, Temperature, etc.) each rendered as a separate `<table>`; previously only the first table was parsed, silently dropping all remaining sections including fundamental variables such as `PLANE ALTITUDE`, `PLANE LATITUDE`, `PLANE LONGITUDE`, and over 150 others
+- Re-scraped both corpora with the corrected parser: MSFS 2020 simvar corpus grew from 895 → 1 861 entries; MSFS 2024 from 929 → 2 042 entries
+
 ## [0.3.14] - 2026-03-08
 
 ### Fixed

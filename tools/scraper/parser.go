@@ -31,59 +31,65 @@ func ParseSimVarPage(htmlBytes []byte, sdkVersion, sourceURL string) ([]corpus.S
 	}
 
 	category := extractH1(doc)
-	rows := extractTableRows(doc)
+	// Use all tables — some pages (e.g. Aircraft_Misc_Variables.htm) have
+	// multiple section tables on a single page; previously only the first table
+	// was parsed, dropping all subsequent sections.
+	tables := findAllTables(doc)
 
 	var simvars []corpus.SimVar
 
-	// rows[0] is the header row — skip it.
-	for i, row := range rows {
-		if i == 0 {
-			continue
-		}
-		cells := extractCells(row)
-		if len(cells) < 3 {
-			log.Printf("simvar row %d: expected >=3 cells, got %d — skipping", i, len(cells))
-			continue
-		}
+	for _, table := range tables {
+		rows := rowsFromTable(table)
+		// rows[0] is the header row of each table — skip it.
+		for i, row := range rows {
+			if i == 0 {
+				continue
+			}
+			cells := extractCells(row)
+			if len(cells) < 3 {
+				log.Printf("simvar row %d: expected >=3 cells, got %d — skipping", i, len(cells))
+				continue
+			}
 
-		name := cleanText(cellText(cells[0]))
-		if name == "" {
-			log.Printf("simvar row %d: empty name — skipping", i)
-			continue
+			name := cleanText(cellText(cells[0]))
+			if name == "" {
+				log.Printf("simvar row %d: empty name — skipping", i)
+				continue
+			}
+
+			descCell := cells[1]
+			description := cleanText(cellText(descCell))
+			deprecated, deprecatedReason := extractDeprecated(descCell, description)
+
+			units := parseUnitList(cleanText(cellText(cells[2])))
+
+			settable := false
+			if len(cells) >= 4 {
+				settable = strings.EqualFold(strings.TrimSpace(cellText(cells[3])), "yes")
+			}
+
+			// Indexed variables have ":index" in the name.
+			indexedBy := ""
+			if strings.Contains(strings.ToLower(name), ":index") {
+				name = strings.Replace(name, ":index", "", 1)
+				name = strings.TrimRight(name, " ")
+				indexedBy = "1-indexed"
+			}
+
+			sv := corpus.SimVar{
+				Name:             name,
+				Description:      description,
+				Units:            units,
+				Settable:         settable,
+				Category:         category,
+				Versions:         []string{sdkVersion},
+				IndexedBy:        indexedBy,
+				Deprecated:       deprecated,
+				DeprecatedReason: deprecatedReason,
+				SourceURL:        sourceURL,
+			}
+			simvars = append(simvars, sv)
 		}
-
-		descCell := cells[1]
-		description := cleanText(cellText(descCell))
-		deprecated, deprecatedReason := extractDeprecated(descCell, description)
-
-		units := parseUnitList(cleanText(cellText(cells[2])))
-
-		settable := false
-		if len(cells) >= 4 {
-			settable = strings.EqualFold(strings.TrimSpace(cellText(cells[3])), "yes")
-		}
-
-		// Indexed variables have ":index" in the name.
-		indexedBy := ""
-		if strings.Contains(strings.ToLower(name), ":index") {
-			name = strings.Replace(name, ":index", "", 1)
-			name = strings.TrimRight(name, " ")
-			indexedBy = "1-indexed"
-		}
-
-		sv := corpus.SimVar{
-			Name:             name,
-			Description:      description,
-			Units:            units,
-			Settable:         settable,
-			Category:         category,
-			Versions:         []string{sdkVersion},
-			IndexedBy:        indexedBy,
-			Deprecated:       deprecated,
-			DeprecatedReason: deprecatedReason,
-			SourceURL:        sourceURL,
-		}
-		simvars = append(simvars, sv)
 	}
 
 	return simvars, nil

@@ -167,6 +167,52 @@ type helipadFacilityData struct {
 	Type      int32
 }
 
+// approachFacilityData mirrors the OPEN APPROACH field sequence:
+//
+//	TYPE(i32), SUFFIX(i32), RUNWAY_NUMBER(i32), RUNWAY_DESIGNATOR(i32),
+//	FAF_ICAO([8]byte), FAF_REGION([8]byte),
+//	FAF_HEADING(f32), FAF_ALTITUDE(f32), FAF_TYPE(i32), MISSED_ALTITUDE(f32),
+//	HAS_LNAV(i32), HAS_LNAVVNAV(i32), HAS_LP(i32), HAS_LPV(i32),
+//	N_TRANSITIONS(i32), N_FINAL_APPROACH_LEGS(i32), N_MISSED_APPROACH_LEGS(i32)
+//
+// Total wire size: 4×4 + 8×2 + 11×4 = 76 bytes.
+type approachFacilityData struct {
+	Type                int32
+	Suffix              int32
+	RunwayNumber        int32
+	RunwayDesignator    int32
+	FAFICAO             [8]byte
+	FAFRegion           [8]byte
+	FAFHeading          float32
+	FAFAltitude         float32
+	FAFType             int32
+	MissedAltitude      float32
+	HasLNAV             int32
+	HasLNAVVNAV         int32
+	HasLP               int32
+	HasLPV              int32
+	NTransitions        int32
+	NFinalApproachLegs  int32
+	NMissedApproachLegs int32
+}
+
+// departureFacilityData mirrors the OPEN DEPARTURE / OPEN ARRIVAL field sequence:
+//
+//	NAME([8]byte), N_RUNWAY_TRANSITIONS(i32), N_ENROUTE_TRANSITIONS(i32), N_APPROACH_LEGS(i32)
+//
+// Total wire size: 8 + 3×4 = 20 bytes.
+type departureFacilityData struct {
+	Name                [8]byte
+	NRunwayTransitions  int32
+	NEnrouteTransitions int32
+	NApproachLegs       int32
+}
+
+// facilityReqSet groups all request IDs used in a single GetAirportDetails call.
+type facilityReqSet struct {
+	base, rw, fr, pk, hp, ap, dp, ar uint32
+}
+
 // runwayDesignatorLetter maps SimConnect designator int to its letter suffix.
 func runwayDesignatorLetter(d int32) string {
 	switch d {
@@ -534,6 +580,45 @@ func (b *simconnectBridge) State() ConnectionState {
 	default:
 		return StateDisconnected
 	}
+}
+
+// approachTypeName converts a SimConnect approach type int to a string label.
+func approachTypeName(t int32) string {
+	switch t {
+	case 1:
+		return "GPS"
+	case 2:
+		return "VOR"
+	case 3:
+		return "NDB"
+	case 4:
+		return "ILS"
+	case 5:
+		return "LOCALIZER"
+	case 6:
+		return "SDF"
+	case 7:
+		return "LDA"
+	case 8:
+		return "VORDME"
+	case 9:
+		return "NDBDME"
+	case 10:
+		return "RNAV"
+	case 11:
+		return "LOCALIZER_BACK_COURSE"
+	default:
+		return "UNKNOWN"
+	}
+}
+
+// approachRunwayName builds a runway string (e.g. "08L") from SimConnect approach fields.
+// Returns an empty string for circling approaches (runway number 0).
+func approachRunwayName(number, designator int32) string {
+	if number == 0 {
+		return ""
+	}
+	return fmt.Sprintf("%02d%s", number, runwayDesignatorLetter(designator))
 }
 
 // GetSimVar reads a single simulation variable by name and unit.
@@ -1102,7 +1187,7 @@ func (b *simconnectBridge) GetNearestAirport(ctx context.Context) (*AirportEntry
 // GetAirportDetails returns detailed facility data for the given ICAO airport.
 // Issues two RequestFacilityData calls (basic airport info + runways) and waits
 // until both FACILITY_DATA_END messages are received.
-func (b *simconnectBridge) GetAirportDetails(ctx context.Context, icao, region string) (*AirportDetails, error) {
+func (b *simconnectBridge) GetAirportDetails(ctx context.Context, icao, region string, expanded bool) (*AirportDetails, error) {
 	if b.State() != StateConnected {
 		return nil, ErrNotConnected
 	}
@@ -1116,9 +1201,7 @@ func (b *simconnectBridge) GetAirportDetails(ctx context.Context, icao, region s
 
 	baseDefID, baseReqID := b.allocIDs()
 	rwDefID, rwReqID := b.allocIDs()
-	pkDefID, pkReqID := b.allocIDs()
 	frDefID, frReqID := b.allocIDs()
-	hpDefID, hpReqID := b.allocIDs()
 
 	for _, f := range []string{
 		"OPEN AIRPORT", "LATITUDE", "LONGITUDE", "ALTITUDE", "ICAO", "NAME", "NAME64",
@@ -1135,7 +1218,6 @@ func (b *simconnectBridge) GetAirportDetails(ctx context.Context, icao, region s
 		"HEADING", "LENGTH", "WIDTH", "SURFACE",
 		"PRIMARY_NUMBER", "PRIMARY_DESIGNATOR",
 		"SECONDARY_NUMBER", "SECONDARY_DESIGNATOR",
-
 		"CLOSE RUNWAY", "CLOSE AIRPORT",
 	} {
 		if err := mgr.AddToFacilityDefinition(rwDefID, f); err != nil {
@@ -1153,47 +1235,129 @@ func (b *simconnectBridge) GetAirportDetails(ctx context.Context, icao, region s
 		}
 	}
 
-	for _, f := range []string{
-		"OPEN AIRPORT", "OPEN HELIPAD",
-		"LATITUDE", "LONGITUDE", "ALTITUDE", "HEADING", "LENGTH", "WIDTH", "SURFACE", "TYPE",
-		"CLOSE HELIPAD", "CLOSE AIRPORT",
-	} {
-		if err := mgr.AddToFacilityDefinition(hpDefID, f); err != nil {
-			return nil, fmt.Errorf("bridge: AddToFacilityDefinition helipad %q: %w", f, err)
+	// Expanded-only: parking stands, helipads, approaches, departures, arrivals.
+	var pkDefID, pkReqID, hpDefID, hpReqID uint32
+	var apDefID, apReqID, dpDefID, dpReqID, arDefID, arReqID uint32
+	if expanded {
+		pkDefID, pkReqID = b.allocIDs()
+		hpDefID, hpReqID = b.allocIDs()
+		apDefID, apReqID = b.allocIDs()
+		dpDefID, dpReqID = b.allocIDs()
+		arDefID, arReqID = b.allocIDs()
+
+		for _, f := range []string{
+			"OPEN AIRPORT", "OPEN TAXI_PARKING",
+			"NAME", "NUMBER", "HEADING", "TYPE", "BIAS_X", "BIAS_Z",
+			"CLOSE TAXI_PARKING", "CLOSE AIRPORT",
+		} {
+			if err := mgr.AddToFacilityDefinition(pkDefID, f); err != nil {
+				return nil, fmt.Errorf("bridge: AddToFacilityDefinition parking %q: %w", f, err)
+			}
+		}
+
+		for _, f := range []string{
+			"OPEN AIRPORT", "OPEN HELIPAD",
+			"LATITUDE", "LONGITUDE", "ALTITUDE", "HEADING", "LENGTH", "WIDTH", "SURFACE", "TYPE",
+			"CLOSE HELIPAD", "CLOSE AIRPORT",
+		} {
+			if err := mgr.AddToFacilityDefinition(hpDefID, f); err != nil {
+				return nil, fmt.Errorf("bridge: AddToFacilityDefinition helipad %q: %w", f, err)
+			}
+		}
+
+		for _, f := range []string{
+			"OPEN AIRPORT", "OPEN APPROACH",
+			"TYPE", "SUFFIX", "RUNWAY_NUMBER", "RUNWAY_DESIGNATOR",
+			"FAF_ICAO", "FAF_REGION", "FAF_HEADING", "FAF_ALTITUDE", "FAF_TYPE", "MISSED_ALTITUDE",
+			"HAS_LNAV", "HAS_LNAVVNAV", "HAS_LP", "HAS_LPV",
+			"N_TRANSITIONS", "N_FINAL_APPROACH_LEGS", "N_MISSED_APPROACH_LEGS",
+			"CLOSE APPROACH", "CLOSE AIRPORT",
+		} {
+			if err := mgr.AddToFacilityDefinition(apDefID, f); err != nil {
+				return nil, fmt.Errorf("bridge: AddToFacilityDefinition approach %q: %w", f, err)
+			}
+		}
+
+		for _, f := range []string{
+			"OPEN AIRPORT", "OPEN DEPARTURE",
+			"NAME", "N_RUNWAY_TRANSITIONS", "N_ENROUTE_TRANSITIONS", "N_APPROACH_LEGS",
+			"CLOSE DEPARTURE", "CLOSE AIRPORT",
+		} {
+			if err := mgr.AddToFacilityDefinition(dpDefID, f); err != nil {
+				return nil, fmt.Errorf("bridge: AddToFacilityDefinition departure %q: %w", f, err)
+			}
+		}
+
+		for _, f := range []string{
+			"OPEN AIRPORT", "OPEN ARRIVAL",
+			"NAME", "N_RUNWAY_TRANSITIONS", "N_ENROUTE_TRANSITIONS", "N_APPROACH_LEGS",
+			"CLOSE ARRIVAL", "CLOSE AIRPORT",
+		} {
+			if err := mgr.AddToFacilityDefinition(arDefID, f); err != nil {
+				return nil, fmt.Errorf("bridge: AddToFacilityDefinition arrival %q: %w", f, err)
+			}
 		}
 	}
 
-	for _, f := range []string{
-		"OPEN AIRPORT", "OPEN TAXI_PARKING",
-		"NAME", "NUMBER", "HEADING", "TYPE", "BIAS_X", "BIAS_Z",
-		"CLOSE TAXI_PARKING", "CLOSE AIRPORT",
-	} {
-		if err := mgr.AddToFacilityDefinition(pkDefID, f); err != nil {
-			return nil, fmt.Errorf("bridge: AddToFacilityDefinition parking %q: %w", f, err)
-		}
+	bufSize := 256
+	if expanded {
+		bufSize = 1024
 	}
-
-	sub := mgr.SubscribeWithType("", 512, []types.SIMCONNECT_RECV_ID{
+	sub := mgr.SubscribeWithType("", bufSize, []types.SIMCONNECT_RECV_ID{
 		types.SIMCONNECT_RECV_ID_FACILITY_DATA,
 		types.SIMCONNECT_RECV_ID_FACILITY_DATA_END,
 	})
 	defer sub.Unsubscribe()
 
-	for _, pair := range [][2]uint32{{baseDefID, baseReqID}, {rwDefID, rwReqID}, {pkDefID, pkReqID}, {frDefID, frReqID}, {hpDefID, hpReqID}} {
+	// Always fire base, runway, frequency requests.
+	for _, pair := range [][2]uint32{{baseDefID, baseReqID}, {rwDefID, rwReqID}, {frDefID, frReqID}} {
 		if err := mgr.RequestFacilityData(pair[0], pair[1], icao, region); err != nil {
 			return nil, fmt.Errorf("bridge: RequestFacilityData %s: %w", icao, err)
 		}
 	}
+	// Fire expanded-only requests when requested.
+	if expanded {
+		for _, pair := range [][2]uint32{
+			{pkDefID, pkReqID}, {hpDefID, hpReqID},
+			{apDefID, apReqID}, {dpDefID, dpReqID}, {arDefID, arReqID},
+		} {
+			if err := mgr.RequestFacilityData(pair[0], pair[1], icao, region); err != nil {
+				return nil, fmt.Errorf("bridge: RequestFacilityData %s: %w", icao, err)
+			}
+		}
+	}
 
+	ids := facilityReqSet{base: baseReqID, rw: rwReqID, fr: frReqID}
+	if expanded {
+		ids.pk = pkReqID
+		ids.hp = hpReqID
+		ids.ap = apReqID
+		ids.dp = dpReqID
+		ids.ar = arReqID
+	}
 	details := &AirportDetails{
 		Region:      region,
 		Runways:     []AirportRunway{},
 		Stands:      []AirportStand{},
 		Frequencies: []AirportFrequency{},
 		Helipads:    []AirportHelipad{},
+		Approaches:  []AirportApproach{},
+		Departures:  []AirportProcedure{},
+		Arrivals:    []AirportProcedure{},
 	}
 	foundBase := false
-	endIDs := map[uint32]bool{baseReqID: false, rwReqID: false, pkReqID: false, frReqID: false, hpReqID: false}
+	endIDs := map[uint32]bool{baseReqID: false, rwReqID: false, frReqID: false}
+	if expanded {
+		endIDs[pkReqID] = false
+		endIDs[hpReqID] = false
+		endIDs[apReqID] = false
+		endIDs[dpReqID] = false
+		endIDs[arReqID] = false
+	}
+	expectedEnds := 3
+	if expanded {
+		expectedEnds = 8
+	}
 	endCount := 0
 
 	deadline := time.NewTimer(45 * time.Second)
@@ -1225,7 +1389,7 @@ func (b *simconnectBridge) GetAirportDetails(ctx context.Context, icao, region s
 
 			switch types.SIMCONNECT_RECV_ID(msg.DwID) {
 			case types.SIMCONNECT_RECV_ID_FACILITY_DATA:
-				applyFacilityData(msg, details, baseReqID, rwReqID, pkReqID, frReqID, hpReqID, &foundBase)
+				applyFacilityData(msg, details, ids, &foundBase)
 
 			case types.SIMCONNECT_RECV_ID_FACILITY_DATA_END:
 				fd := msg.AsFacilityDataEnd()
@@ -1237,7 +1401,7 @@ func (b *simconnectBridge) GetAirportDetails(ctx context.Context, icao, region s
 					endIDs[rid] = true
 					endCount++
 				}
-				if endCount == 5 {
+				if endCount == expectedEnds {
 				drainLoop:
 					for {
 						select {
@@ -1246,7 +1410,7 @@ func (b *simconnectBridge) GetAirportDetails(ctx context.Context, icao, region s
 								break drainLoop
 							}
 							if types.SIMCONNECT_RECV_ID(m.DwID) == types.SIMCONNECT_RECV_ID_FACILITY_DATA {
-								applyFacilityData(m, details, baseReqID, rwReqID, pkReqID, frReqID, hpReqID, &foundBase)
+								applyFacilityData(m, details, ids, &foundBase)
 							}
 						default:
 							break drainLoop
@@ -1312,6 +1476,40 @@ func deduplicateDetails(d *AirportDetails) {
 	}
 	d.Helipads = uniqH
 	d.HelipadCount = len(d.Helipads)
+
+	seen = make(map[string]struct{})
+	uniqAp := d.Approaches[:0]
+	for _, a := range d.Approaches {
+		k := fmt.Sprintf("%s|%s", a.Type, a.Runway)
+		if _, ok := seen[k]; !ok {
+			seen[k] = struct{}{}
+			uniqAp = append(uniqAp, a)
+		}
+	}
+	d.Approaches = uniqAp
+	d.ApproachCount = len(d.Approaches)
+
+	seen = make(map[string]struct{})
+	uniqDp := d.Departures[:0]
+	for _, dep := range d.Departures {
+		if _, ok := seen[dep.Name]; !ok {
+			seen[dep.Name] = struct{}{}
+			uniqDp = append(uniqDp, dep)
+		}
+	}
+	d.Departures = uniqDp
+	d.DepartureCount = len(d.Departures)
+
+	seen = make(map[string]struct{})
+	uniqAr := d.Arrivals[:0]
+	for _, arr := range d.Arrivals {
+		if _, ok := seen[arr.Name]; !ok {
+			seen[arr.Name] = struct{}{}
+			uniqAr = append(uniqAr, arr)
+		}
+	}
+	d.Arrivals = uniqAr
+	d.ArrivalCount = len(d.Arrivals)
 }
 
 // applyFacilityData decodes a single SIMCONNECT_RECV_ID_FACILITY_DATA message
@@ -1319,7 +1517,7 @@ func deduplicateDetails(d *AirportDetails) {
 func applyFacilityData(
 	msg engine.Message,
 	details *AirportDetails,
-	baseReqID, rwReqID, pkReqID, frReqID, hpReqID uint32,
+	ids facilityReqSet,
 	foundBase *bool,
 ) {
 	fd := msg.AsFacilityData()
@@ -1328,7 +1526,7 @@ func applyFacilityData(
 	}
 	userReqID := uint32(fd.UserRequestId)
 	switch userReqID {
-	case baseReqID:
+	case ids.base:
 		if fd.Type == types.SIMCONNECT_FACILITY_DATA_AIRPORT {
 			data := engine.CastDataAs[airportFacilityData](&fd.Data)
 			details.ICAO = engine.BytesToString(data.ICAO[:])
@@ -1342,7 +1540,7 @@ func applyFacilityData(
 			details.IsClosed = data.IsClosed != 0
 			*foundBase = true
 		}
-	case rwReqID:
+	case ids.rw:
 		if fd.Type == types.SIMCONNECT_FACILITY_DATA_RUNWAY {
 			data := engine.CastDataAs[runwayFacilityData](&fd.Data)
 			details.Runways = append(details.Runways, AirportRunway{
@@ -1353,7 +1551,7 @@ func applyFacilityData(
 				Surface: runwaySurfaceName(data.Surface),
 			})
 		}
-	case pkReqID:
+	case ids.pk:
 		if fd.Type == types.SIMCONNECT_FACILITY_DATA_TAXI_PARKING {
 			data := engine.CastDataAs[parkingFacilityData](&fd.Data)
 			if data.Number > 0 {
@@ -1364,7 +1562,7 @@ func applyFacilityData(
 				})
 			}
 		}
-	case frReqID:
+	case ids.fr:
 		if fd.Type == types.SIMCONNECT_FACILITY_DATA_FREQUENCY {
 			data := engine.CastDataAs[frequencyFacilityData](&fd.Data)
 			details.Frequencies = append(details.Frequencies, AirportFrequency{
@@ -1373,7 +1571,7 @@ func applyFacilityData(
 				Name:    engine.BytesToString(data.Name[:]),
 			})
 		}
-	case hpReqID:
+	case ids.hp:
 		if fd.Type == types.SIMCONNECT_FACILITY_DATA_HELIPAD {
 			data := engine.CastDataAs[helipadFacilityData](&fd.Data)
 			details.Helipads = append(details.Helipads, AirportHelipad{
@@ -1385,6 +1583,36 @@ func applyFacilityData(
 				WidthM:    float64(data.Width),
 				Surface:   runwaySurfaceName(data.Surface),
 				Type:      helipadTypeName(data.Type),
+			})
+		}
+	case ids.ap:
+		if fd.Type == types.SIMCONNECT_FACILITY_DATA_APPROACH {
+			data := engine.CastDataAs[approachFacilityData](&fd.Data)
+			details.Approaches = append(details.Approaches, AirportApproach{
+				Type:        approachTypeName(data.Type),
+				Runway:      approachRunwayName(data.RunwayNumber, data.RunwayDesignator),
+				HasLNAV:     data.HasLNAV != 0,
+				HasLNAVVNAV: data.HasLNAVVNAV != 0,
+				HasLP:       data.HasLP != 0,
+				HasLPV:      data.HasLPV != 0,
+			})
+		}
+	case ids.dp:
+		if fd.Type == types.SIMCONNECT_FACILITY_DATA_DEPARTURE {
+			data := engine.CastDataAs[departureFacilityData](&fd.Data)
+			details.Departures = append(details.Departures, AirportProcedure{
+				Name:               engine.BytesToString(data.Name[:]),
+				RunwayTransitions:  int(data.NRunwayTransitions),
+				EnrouteTransitions: int(data.NEnrouteTransitions),
+			})
+		}
+	case ids.ar:
+		if fd.Type == types.SIMCONNECT_FACILITY_DATA_ARRIVAL {
+			data := engine.CastDataAs[departureFacilityData](&fd.Data)
+			details.Arrivals = append(details.Arrivals, AirportProcedure{
+				Name:               engine.BytesToString(data.Name[:]),
+				RunwayTransitions:  int(data.NRunwayTransitions),
+				EnrouteTransitions: int(data.NEnrouteTransitions),
 			})
 		}
 	}

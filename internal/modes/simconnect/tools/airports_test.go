@@ -95,14 +95,14 @@ func TestGetAirportsInRange_FilterNonICAO(t *testing.T) {
 		MockState: bridge.StateConnected,
 		MockAirports: []bridge.AirportEntry{
 			{ICAO: "EDDM", Region: "ED", DistanceKM: 1.0},   // valid — kept
-			{ICAO: "EDB1", Region: "ED", DistanceKM: 2.0},   // digit — filtered
-			{ICAO: "EDF8V", Region: "ED", DistanceKM: 3.0},  // 5 chars + digit — filtered
+			{ICAO: "IABX", Region: "ED", DistanceKM: 2.0},   // starts with 'I' (excluded) — filtered
+			{ICAO: "EDF8V", Region: "ED", DistanceKM: 3.0},  // 5 chars — filtered (len != 4)
 			{ICAO: "ETSE", Region: "ET", DistanceKM: 12.0},  // valid — kept
 		},
 	}
 	srv := newAirportServer(t, mb)
 
-	// Default (expanded=false): only 4-letter all-caps codes.
+	// Default (expanded=false): filter by IsICAOCode (4 chars, valid first letter).
 	resp := callToolEvent(t, srv.URL, "get_airports_in_range", map[string]any{"radius_km": float64(50)})
 	got := parseAirportJSON(t, resp)
 	if got["count"].(float64) != 2 {

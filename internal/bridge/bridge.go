@@ -170,6 +170,23 @@ type AirportFrequency struct {
 	Name    string  `json:"name"`
 }
 
+// AirportApproach holds summary data for one instrument approach procedure.
+type AirportApproach struct {
+	Type        string `json:"type"`         // GPS/ILS/VOR/RNAV/NDB/LOCALIZER/SDF/LDA/VORDME/NDBDME/LOCALIZER_BACK_COURSE
+	Runway      string `json:"runway"`        // e.g. "08L"; empty for circling approaches
+	HasLNAV     bool   `json:"has_lnav"`
+	HasLNAVVNAV bool   `json:"has_lnavvnav"`
+	HasLP       bool   `json:"has_lp"`
+	HasLPV      bool   `json:"has_lpv"`
+}
+
+// AirportProcedure holds summary data for one SID (departure) or STAR (arrival).
+type AirportProcedure struct {
+	Name               string `json:"name"`
+	RunwayTransitions  int    `json:"runway_transitions"`
+	EnrouteTransitions int    `json:"enroute_transitions"`
+}
+
 // AirportDetails holds detailed facility data for a specific airport.
 type AirportDetails struct {
 	ICAO        string             `json:"icao"`
@@ -186,8 +203,14 @@ type AirportDetails struct {
 	StandCount  int                `json:"stand_count"`
 	Stands      []AirportStand     `json:"stands"`
 	Frequencies []AirportFrequency `json:"frequencies"`
-	HelipadCount int               `json:"helipad_count"`
-	Helipads    []AirportHelipad   `json:"helipads"`
+	HelipadCount   int                `json:"helipad_count"`
+	Helipads       []AirportHelipad   `json:"helipads"`
+	ApproachCount  int                `json:"approach_count"`
+	Approaches     []AirportApproach  `json:"approaches"`
+	DepartureCount int                `json:"departure_count"`
+	Departures     []AirportProcedure `json:"departures"`
+	ArrivalCount   int                `json:"arrival_count"`
+	Arrivals       []AirportProcedure `json:"arrivals"`
 }
 
 // Bridge abstracts all SimConnect SDK calls needed by the four MCP tools.
@@ -246,7 +269,9 @@ type Bridge interface {
 
 	// GetAirportDetails returns detailed facility data for the given ICAO airport.
 	// Pass region="" to match any region. Returns nil if the airport is not found.
-	GetAirportDetails(ctx context.Context, icao, region string) (*AirportDetails, error)
+	// When expanded=false: base info, runways, and frequencies are returned (3 requests).
+	// When expanded=true: stands and helipads are also included (5 requests).
+	GetAirportDetails(ctx context.Context, icao, region string, expanded bool) (*AirportDetails, error)
 
 	// SimEvents returns a read-only channel that receives lifecycle events.
 	SimEvents() <-chan SimEvent

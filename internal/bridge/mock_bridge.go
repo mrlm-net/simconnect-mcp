@@ -199,7 +199,7 @@ func (m *MockBridge) GetNearestAirport(_ context.Context) (*AirportEntry, error)
 	return &entry, nil
 }
 
-func (m *MockBridge) GetAirportDetails(_ context.Context, _, _ string) (*AirportDetails, error) {
+func (m *MockBridge) GetAirportDetails(_ context.Context, _, _ string, _ bool) (*AirportDetails, error) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
 	if m.MockAirportDetailsError != nil {

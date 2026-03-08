@@ -112,14 +112,15 @@ func registerGetNearestAirport(mcp *mcpadapter.Server, b bridge.Bridge) {
 func registerGetAirportDetails(mcp *mcpadapter.Server, b bridge.Bridge) {
 	tool := mcpadapter.NewTool("get_airport_details").
 		Description("Return detailed facility data for a specific airport by ICAO code. " +
-			"Returns name, lat/lon, altitude (metres MSL), magnetic variation, closed status, " +
-			"runways (heading, length_m, width_m, surface, lighting, closure flags), and helipads. " +
-			"Set expanded=true to also include ATC frequencies. " +
+			"Default response includes name, lat/lon, altitude (metres MSL), magnetic variation, closed status, " +
+			"runways (heading, length_m, width_m, surface), and ATC frequencies. " +
+			"Set expanded=true to also include parking stands, helipads, instrument approaches, " +
+			"departure procedures (SIDs), and arrival procedures (STARs). " +
 			"Leave region empty (default) for best results — SimConnect's region filter is strict and " +
 			"will silently fail if the region code does not match the simulator's internal value exactly.").
 		StringParam("icao", "ICAO airport code (e.g. \"LPMA\", \"EDDM\").").
 		StringParam("region", "Optional ICAO region code (e.g. \"LP\", \"ED\"). Leave empty to match any region.").
-		BoolParam("expanded", "When true, also include ATC frequencies. Default false.").
+		BoolParam("expanded", "When true, also include stands, helipads, approaches, SIDs, and STARs. Default false.").
 		Build()
 
 	mcp.AddTool(tool, func(ctx context.Context, args map[string]any) (*mcpadapter.CallToolResult, error) {
@@ -134,16 +135,12 @@ func registerGetAirportDetails(mcp *mcpadapter.Server, b bridge.Bridge) {
 			return mcpadapter.ErrorResult("BRIDGE_DISCONNECTED: not connected to simulator"), nil
 		}
 
-		details, err := b.GetAirportDetails(ctx, icao, region)
+		details, err := b.GetAirportDetails(ctx, icao, region, expanded)
 		if err != nil {
 			return mcpadapter.ErrorResult(fmt.Sprintf("AIRPORT_DETAILS_ERROR: %v", err)), nil
 		}
 		if details == nil {
 			return mcpadapter.ErrorResult(fmt.Sprintf("AIRPORT_NOT_FOUND: airport %q not found", icao)), nil
-		}
-
-		if !expanded {
-			details.Frequencies = nil
 		}
 
 		return mcpadapter.JSONResult(details)

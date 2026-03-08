@@ -4,6 +4,13 @@ All notable changes to SimConnect MCP are documented here. The format follows [K
 
 Full release history with release notes is also available on the [GitHub Releases page](https://github.com/mrlm-net/simconnect-mcp/releases).
 
+## [0.3.17] - 2026-03-08
+
+### Fixed
+
+- `Settable` detection now uses `checkmark_stem` CSS class instead of the outer `checkmark` wrapper — both the green tick (✓ settable) and the red X (✗ not settable) share an outer `<span class="checkmark">`, so the previous detection incorrectly marked every variable with any checkmark icon as settable; `checkmark_stem` only appears in the green tick variant, correctly distinguishing settable from read-only variables
+- Re-scraped both corpora with the corrected settable detection: MSFS 2020 377 settable variables, MSFS 2024 366 settable variables
+
 ## [0.3.16] - 2026-03-08
 
 ### Fixed

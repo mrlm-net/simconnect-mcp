@@ -134,10 +134,15 @@ func ParseSimVarPage(htmlBytes []byte, sdkVersion, sourceURL string) ([]corpus.S
 
 			settable := false
 			if cols.settable != -1 && cols.settable < len(cells) {
-				// The Settable column uses a CSS checkmark (<span class="checkmark">)
-				// rather than plain text; "yes"/"no" is never present. Presence of
-				// the checkmark class indicates the variable is settable.
-				settable = findFirstWithClass(cells[cols.settable], "span", "checkmark") != nil ||
+				// The Settable column uses CSS icon spans rather than plain text.
+				// Two variants exist:
+				//   ✓ settable:     checkmark_circle + checkmark_stem   (green tick)
+				//   ✗ not settable: checkmark_circle_red + checkmark_right + checkmark_left (red X)
+				// Both share an outer <span class="checkmark"> wrapper, so detecting
+				// that class alone would mark red-X entries as settable. Instead we
+				// look for checkmark_stem, which only appears in the green tick.
+				// A plain-text "yes" fallback handles any page that uses text instead.
+				settable = findFirstWithClass(cells[cols.settable], "span", "checkmark_stem") != nil ||
 					strings.EqualFold(strings.TrimSpace(cellText(cells[cols.settable])), "yes")
 			}
 

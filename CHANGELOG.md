@@ -4,6 +4,24 @@ All notable changes to SimConnect MCP are documented here. The format follows [K
 
 Full release history with release notes is also available on the [GitHub Releases page](https://github.com/mrlm-net/simconnect-mcp/releases).
 
+## [0.3.8] - 2026-03-08
+
+### Added
+
+- `get_airport_details` with `expanded=true` now also returns instrument approaches (`approaches[]`), departure procedures / SIDs (`departures[]`), and arrival procedures / STARs (`arrivals[]`)
+  - Each approach includes type (ILS/VOR/RNAV/GPS/…), runway (e.g. `"08L"`), and navigation capability flags (`has_lnav`, `has_lnavvnav`, `has_lp`, `has_lpv`)
+  - Each SID/STAR includes name (e.g. `"AGOL1A"`), runway transition count, and enroute transition count
+  - `approach_count`, `departure_count`, `arrival_count` fields added at the top level
+
+### Changed
+
+- `get_airport_details` expanded mode now fires 8 facility requests (was 5); buffer increased to 1 024 messages to handle airports with many procedures
+- `get_airport_details` `expanded=false` default now always includes ATC frequencies (moved from expanded-only to default); stands, helipads, approaches, SIDs, and STARs remain expanded-only
+
+### Fixed
+
+- `get_airports_in_range` test corrected: `IsICAOCode` accepts any 4-character code whose first letter is in the ICAO prefix table — codes like `EDB1` are valid and were never filtered by the SDK function
+
 ## [0.3.7] - 2026-03-08
 
 ### Added

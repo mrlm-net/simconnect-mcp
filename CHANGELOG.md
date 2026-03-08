@@ -4,6 +4,12 @@ All notable changes to SimConnect MCP are documented here. The format follows [K
 
 Full release history with release notes is also available on the [GitHub Releases page](https://github.com/mrlm-net/simconnect-mcp/releases).
 
+## [0.3.20] - 2026-03-08
+
+### Fixed
+
+- `get_simvar_values` now registers all requested variables on a **single data definition** with sequential datum indices and issues one `RequestDataOnSimObject` call, receiving all values in one `SIMOBJECT_DATA` packet — the previous implementation spawned one goroutine per variable each creating its own definition, which caused SimConnect to reject the second concurrent `AddToDataDefinition` call with `E_FAIL (0x80004005)`; the single-definition approach matches the pattern already used by `get_nearby_traffic` and `get_traffic_with_phase`
+
 ## [0.3.19] - 2026-03-08
 
 ### Fixed

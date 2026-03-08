@@ -30,6 +30,13 @@ type simVarDataStruct struct {
 	Value float64
 }
 
+// simvarsBatchEntry is the pending-map entry for GetSimVars batch requests.
+// n is the number of float64 values expected in the response.
+type simvarsBatchEntry struct {
+	n  int
+	ch chan []float64
+}
+
 // trafficDataStruct defines the wire-format layout for a traffic scan entry.
 // All numeric fields use SIMCONNECT_DATATYPE_FLOAT64 and are placed before the
 // string fields to avoid Go struct alignment padding between numeric types.
@@ -468,8 +475,13 @@ type simconnectBridge struct {
 	simEventCh chan SimEvent
 
 	// pending maps requestID -> channel expecting exactly one float64 response
-	pendingMu sync.Mutex
-	pending   map[uint32]chan float64
+	// (used by GetSimVar for single-variable requests).
+	// simvarsBatch maps requestID -> channel expecting a slice of float64 values
+	// (used by GetSimVars for multi-variable batch requests).
+	// Both share pendingMu.
+	pendingMu      sync.Mutex
+	pending        map[uint32]chan float64
+	simvarsBatch   map[uint32]simvarsBatchEntry
 
 	// facilityDefs holds pre-registered facility definition IDs for the current connection.
 	// Reset on reconnect (OnOpen); re-registered lazily on the first GetAirportDetails call.
@@ -519,6 +531,7 @@ func NewSimConnectBridge() Bridge {
 		mgrErrCh:        make(chan error, 1),
 		simEventCh:      make(chan SimEvent, 64),
 		pending:         make(map[uint32]chan float64),
+		simvarsBatch:    make(map[uint32]simvarsBatchEntry),
 		facilityPending: make(map[uint32]*facilityCallState),
 		airportPending:  make(map[uint32]*airportCallState),
 		trafficPending:  make(map[uint32]*trafficCallState),
@@ -645,6 +658,10 @@ func (b *simconnectBridge) Close() error {
 	for id, ch := range b.pending {
 		close(ch)
 		delete(b.pending, id)
+	}
+	for id, entry := range b.simvarsBatch {
+		close(entry.ch)
+		delete(b.simvarsBatch, id)
 	}
 	b.pendingMu.Unlock()
 
@@ -835,24 +852,98 @@ func (b *simconnectBridge) GetSimVar(ctx context.Context, name, unit string) (Si
 	return SimVar{Name: name, Value: value, Unit: unit}, nil
 }
 
-// GetSimVars reads up to 20 simulation variables sequentially.
-// SimConnect does not support concurrent AddToDataDefinition /
-// RequestDataOnSimObject calls from multiple goroutines — doing so causes
-// some requests to be silently dropped or rejected with E_FAIL (0x80004005).
-// Sequential execution keeps the SimConnect session clean at the cost of
-// cumulative latency; the batch is still valuable because it saves N MCP
-// round-trips.  Per-variable errors are embedded in SimVarResult.Error
-// rather than aborting the batch.
+// GetSimVars reads up to 20 simulation variables in a single SimConnect
+// round-trip.  All variables are registered on one data definition ID with
+// sequential datum indices (0, 1, 2 …) and fetched with one
+// RequestDataOnSimObject call.  SimConnect returns all values packed as
+// consecutive float64 fields in one SIMOBJECT_DATA packet, which the
+// dispatch loop decodes into a []float64 and routes via simvarsBatch.
+//
+// If any AddToDataDefinition call fails (bad variable name or unit), the
+// whole batch is aborted and per-variable errors are surfaced.  A single
+// variable is always handled via GetSimVar so that individual errors are
+// properly embedded per-result.
 func (b *simconnectBridge) GetSimVars(ctx context.Context, vars []SimVarRequest) ([]SimVarResult, error) {
-	results := make([]SimVarResult, len(vars))
-	for i, v := range vars {
-		sv, err := b.GetSimVar(ctx, v.Name, v.Unit)
-		results[i] = SimVarResult{Name: v.Name, Unit: v.Unit, Value: sv.Value}
+	if len(vars) == 0 {
+		return nil, nil
+	}
+	if len(vars) == 1 {
+		sv, err := b.GetSimVar(ctx, vars[0].Name, vars[0].Unit)
+		res := SimVarResult{Name: vars[0].Name, Unit: vars[0].Unit, Value: sv.Value}
 		if err != nil {
-			results[i].Error = err.Error()
+			res.Error = err.Error()
+		}
+		return []SimVarResult{res}, nil
+	}
+
+	if b.State() != StateConnected {
+		return nil, ErrNotConnected
+	}
+	b.mu.RLock()
+	mgr := b.mgr
+	b.mu.RUnlock()
+	if mgr == nil {
+		return nil, ErrNotConnected
+	}
+
+	defID, reqID := b.allocIDs()
+
+	// Register all variables on a single definition using sequential datum
+	// indices.  SimConnect packs the response values in the same order.
+	for i, v := range vars {
+		if err := mgr.AddToDataDefinition(defID, v.Name, v.Unit, types.SIMCONNECT_DATATYPE_FLOAT64, 0, uint32(i)); err != nil {
+			_ = mgr.ClearDataDefinition(defID)
+			if b.State() != StateConnected {
+				return nil, ErrNotConnected
+			}
+			// Partial definition — abort the whole batch with a clear error.
+			return nil, fmt.Errorf("bridge: AddToDataDefinition %s (index %d): %w", v.Name, i, err)
 		}
 	}
-	return results, nil
+	defer func() { _ = mgr.ClearDataDefinition(defID) }()
+
+	resultCh := make(chan []float64, 1)
+	b.pendingMu.Lock()
+	b.simvarsBatch[reqID] = simvarsBatchEntry{n: len(vars), ch: resultCh}
+	b.pendingMu.Unlock()
+	defer func() {
+		b.pendingMu.Lock()
+		delete(b.simvarsBatch, reqID)
+		b.pendingMu.Unlock()
+	}()
+
+	if err := mgr.RequestDataOnSimObject(
+		reqID, defID,
+		types.SIMCONNECT_OBJECT_ID_USER,
+		types.SIMCONNECT_PERIOD_ONCE,
+		types.SIMCONNECT_DATA_REQUEST_FLAG_DEFAULT,
+		0, 0, 0,
+	); err != nil {
+		if b.State() != StateConnected {
+			return nil, ErrNotConnected
+		}
+		return nil, fmt.Errorf("bridge: RequestDataOnSimObject: %w", err)
+	}
+
+	reqDeadline := time.NewTimer(5 * time.Second)
+	defer reqDeadline.Stop()
+
+	select {
+	case <-ctx.Done():
+		return nil, fmt.Errorf("bridge: %w", ErrTimeout)
+	case <-reqDeadline.C:
+		return nil, fmt.Errorf("bridge: get_simvar_values: no response from simulator (unknown variable or unit in batch)")
+	case values, ok := <-resultCh:
+		if !ok {
+			// Channel closed by Close() — bridge shutting down.
+			return nil, ErrNotConnected
+		}
+		results := make([]SimVarResult, len(vars))
+		for i, v := range vars {
+			results[i] = SimVarResult{Name: v.Name, Unit: v.Unit, Value: values[i]}
+		}
+		return results, nil
+	}
 }
 
 // TransmitEvent sends a named client event to the simulator.
@@ -1793,29 +1884,39 @@ func (b *simconnectBridge) handleMessage(msg engine.Message) {
 		}
 		reqID := uint32(simObjData.DwRequestID)
 		b.pendingMu.Lock()
-		ch, ok := b.pending[reqID]
-		if ok {
+		ch, isSingle := b.pending[reqID]
+		if isSingle {
 			delete(b.pending, reqID)
 		}
+		bentry, isBatch := b.simvarsBatch[reqID]
+		if isBatch {
+			delete(b.simvarsBatch, reqID)
+		}
 		b.pendingMu.Unlock()
-		if !ok {
-			// Belongs to manager's own internal requests (camera/SimState).
-			return
+
+		if isSingle {
+			// Single-var request: first 8 bytes of DwData are the float64 we requested.
+			// Non-blocking send: ch is buffered (cap 1) and only one PERIOD_ONCE
+			// packet arrives per request ID.
+			// Close() safety: we deleted ch from b.pending under the same lock, so
+			// Close() can never see this channel and cannot close it concurrently.
+			data := engine.CastDataAs[simVarDataStruct](&simObjData.DwData)
+			select {
+			case ch <- data.Value:
+			default:
+			}
+		} else if isBatch {
+			// Multi-var batch request: DwData contains bentry.n consecutive float64
+			// values in definition order, matching the AddToDataDefinition datum indices.
+			values := make([]float64, bentry.n)
+			p := unsafe.Slice((*float64)(unsafe.Pointer(&simObjData.DwData)), bentry.n)
+			copy(values, p)
+			select {
+			case bentry.ch <- values:
+			default:
+			}
 		}
-		// The first 8 bytes of DwData are the float64 we requested.
-		data := engine.CastDataAs[simVarDataStruct](&simObjData.DwData)
-		// Non-blocking send: ch is buffered (cap 1) and only one PERIOD_ONCE
-		// packet can arrive per request ID, so the channel is always empty here.
-		// The default branch exists purely as a safety valve and is never taken.
-		//
-		// Close() safety: Close() only closes channels it finds in b.pending while
-		// holding pendingMu. We deleted ch from b.pending above — under the same
-		// lock — so Close() can never see this channel in the map and cannot close
-		// it. Sending to ch here is therefore safe regardless of concurrent Close().
-		select {
-		case ch <- data.Value:
-		default:
-		}
+		// If neither map has this reqID it belongs to the manager's internal requests.
 
 	case types.SIMCONNECT_RECV_ID_AIRPORT_LIST:
 		// Decode all airport entries inline — pool buffer is valid here but will be

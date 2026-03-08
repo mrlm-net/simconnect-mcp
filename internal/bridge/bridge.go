@@ -137,10 +137,27 @@ type AirportEntry struct {
 // AirportRunway holds data for a single runway at an airport.
 // SimConnect's LENGTH and WIDTH fields are returned in metres.
 type AirportRunway struct {
-	Heading  float64 `json:"heading_deg"`
-	LengthM  float64 `json:"length_m"`
-	WidthM   float64 `json:"width_m"`
-	Surface  string  `json:"surface"`
+	Name            string  `json:"name"`             // e.g. "08L/26R"
+	Heading         float64 `json:"heading_deg"`
+	LengthM         float64 `json:"length_m"`
+	WidthM          float64 `json:"width_m"`
+	Surface         string  `json:"surface"`
+	EdgeLights      string  `json:"edge_lights"`      // None / Low / Medium / High
+	CenterLights    bool    `json:"center_lights"`
+	PrimaryClosed   bool    `json:"primary_closed"`
+	SecondaryClosed bool    `json:"secondary_closed"`
+}
+
+// AirportHelipad holds data for a single helipad at an airport.
+type AirportHelipad struct {
+	Latitude  float64 `json:"latitude"`
+	Longitude float64 `json:"longitude"`
+	AltitudeM float64 `json:"altitude_m"`
+	Heading   float64 `json:"heading_deg"`
+	LengthM   float64 `json:"length_m"`
+	WidthM    float64 `json:"width_m"`
+	Surface   string  `json:"surface"`
+	Type      string  `json:"type"` // None / H / Square / Circle / Medical
 }
 
 // AirportStand holds data for a single parking stand / gate.
@@ -166,11 +183,15 @@ type AirportDetails struct {
 	Latitude    float64            `json:"latitude"`
 	Longitude   float64            `json:"longitude"`
 	AltitudeM   float64            `json:"altitude_m"`
+	MagVar      float64            `json:"magvar_deg"`
+	IsClosed    bool               `json:"is_closed"`
 	RunwayCount int                `json:"runway_count"`
 	Runways     []AirportRunway    `json:"runways"`
 	StandCount  int                `json:"stand_count"`
 	Stands      []AirportStand     `json:"stands"`
 	Frequencies []AirportFrequency `json:"frequencies"`
+	HelipadCount int               `json:"helipad_count"`
+	Helipads    []AirportHelipad   `json:"helipads"`
 }
 
 // Bridge abstracts all SimConnect SDK calls needed by the four MCP tools.

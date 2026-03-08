@@ -124,21 +124,21 @@ type runwayFacilityData struct {
 	SecondaryDesignator int32
 }
 
-// parkingFacilityData mirrors the OPEN TAXI_PARKING field sequence:
+// parkingFacilityData mirrors the OPEN TAXI_PARKING field sequence used in
+// GetAirportDetails. Field order matches the SDK airport-details example exactly:
 //
-//	TYPE, TAXI_POINT_TYPE, NAME, SUFFIX, NUMBER, ORIENTATION, HEADING, RADIUS, BIAS_X, BIAS_Z
-//	(all int32/uint32/float32 — 10×4 = 40 bytes)
+//	NAME(uint32), NUMBER(uint32), HEADING(float32), TYPE(uint32),
+//	BIAS_X(float32), BIAS_Z(float32), N_AIRLINES(uint32)
+//
+// Total wire size: 7×4 = 28 bytes.
 type parkingFacilityData struct {
-	Type          int32
-	TaxiPointType int32
-	Name          int32
-	Suffix        int32
-	Number        uint32
-	Orientation   float32
-	Heading       float32
-	Radius        float32
-	BiasX         float32
-	BiasZ         float32
+	Name      uint32
+	Number    uint32
+	Heading   float32
+	Type      uint32
+	BiasX     float32
+	BiasZ     float32
+	NAirlines uint32
 }
 
 // frequencyFacilityData mirrors the OPEN FREQUENCY field sequence:
@@ -997,7 +997,7 @@ func (b *simconnectBridge) GetAirports(ctx context.Context) ([]AirportEntry, err
 
 	listID, _ := b.allocIDs()
 
-	sub := mgr.SubscribeWithType("", 256, []types.SIMCONNECT_RECV_ID{
+	sub := mgr.SubscribeWithType("", 512, []types.SIMCONNECT_RECV_ID{
 		types.SIMCONNECT_RECV_ID_AIRPORT_LIST,
 	})
 	defer sub.Unsubscribe()
@@ -1117,6 +1117,7 @@ func (b *simconnectBridge) GetAirportDetails(ctx context.Context, icao, region s
 
 	baseDefID, baseReqID := b.allocIDs()
 	rwDefID, rwReqID := b.allocIDs()
+	pkDefID, pkReqID := b.allocIDs()
 	frDefID, frReqID := b.allocIDs()
 	hpDefID, hpReqID := b.allocIDs()
 
@@ -1163,13 +1164,23 @@ func (b *simconnectBridge) GetAirportDetails(ctx context.Context, icao, region s
 		}
 	}
 
+	for _, f := range []string{
+		"OPEN AIRPORT", "OPEN TAXI_PARKING",
+		"NAME", "NUMBER", "HEADING", "TYPE", "BIAS_X", "BIAS_Z", "N_AIRLINES",
+		"CLOSE TAXI_PARKING", "CLOSE AIRPORT",
+	} {
+		if err := mgr.AddToFacilityDefinition(pkDefID, f); err != nil {
+			return nil, fmt.Errorf("bridge: AddToFacilityDefinition parking %q: %w", f, err)
+		}
+	}
+
 	sub := mgr.SubscribeWithType("", 256, []types.SIMCONNECT_RECV_ID{
 		types.SIMCONNECT_RECV_ID_FACILITY_DATA,
 		types.SIMCONNECT_RECV_ID_FACILITY_DATA_END,
 	})
 	defer sub.Unsubscribe()
 
-	for _, pair := range [][2]uint32{{baseDefID, baseReqID}, {rwDefID, rwReqID}, {frDefID, frReqID}, {hpDefID, hpReqID}} {
+	for _, pair := range [][2]uint32{{baseDefID, baseReqID}, {rwDefID, rwReqID}, {pkDefID, pkReqID}, {frDefID, frReqID}, {hpDefID, hpReqID}} {
 		if err := mgr.RequestFacilityData(pair[0], pair[1], icao, region); err != nil {
 			return nil, fmt.Errorf("bridge: RequestFacilityData %s: %w", icao, err)
 		}
@@ -1183,7 +1194,7 @@ func (b *simconnectBridge) GetAirportDetails(ctx context.Context, icao, region s
 		Helipads:    []AirportHelipad{},
 	}
 	foundBase := false
-	endIDs := map[uint32]bool{baseReqID: false, rwReqID: false, frReqID: false, hpReqID: false}
+	endIDs := map[uint32]bool{baseReqID: false, rwReqID: false, pkReqID: false, frReqID: false, hpReqID: false}
 	endCount := 0
 
 	deadline := time.NewTimer(45 * time.Second)
@@ -1215,7 +1226,7 @@ func (b *simconnectBridge) GetAirportDetails(ctx context.Context, icao, region s
 
 			switch types.SIMCONNECT_RECV_ID(msg.DwID) {
 			case types.SIMCONNECT_RECV_ID_FACILITY_DATA:
-				applyFacilityData(msg, details, baseReqID, rwReqID, 0, frReqID, hpReqID, &foundBase)
+				applyFacilityData(msg, details, baseReqID, rwReqID, pkReqID, frReqID, hpReqID, &foundBase)
 
 			case types.SIMCONNECT_RECV_ID_FACILITY_DATA_END:
 				fd := msg.AsFacilityDataEnd()
@@ -1227,7 +1238,7 @@ func (b *simconnectBridge) GetAirportDetails(ctx context.Context, icao, region s
 					endIDs[rid] = true
 					endCount++
 				}
-				if endCount == 4 {
+				if endCount == 5 {
 				drainLoop:
 					for {
 						select {
@@ -1236,7 +1247,7 @@ func (b *simconnectBridge) GetAirportDetails(ctx context.Context, icao, region s
 								break drainLoop
 							}
 							if types.SIMCONNECT_RECV_ID(m.DwID) == types.SIMCONNECT_RECV_ID_FACILITY_DATA {
-								applyFacilityData(m, details, baseReqID, rwReqID, 0, frReqID, hpReqID, &foundBase)
+								applyFacilityData(m, details, baseReqID, rwReqID, pkReqID, frReqID, hpReqID, &foundBase)
 							}
 						default:
 							break drainLoop
@@ -1349,7 +1360,7 @@ func applyFacilityData(
 			if data.Number > 0 {
 				details.Stands = append(details.Stands, AirportStand{
 					Number:  int(data.Number),
-					Type:    parkingTypeName(data.Type),
+					Type:    parkingTypeName(int32(data.Type)),
 					Heading: float64(data.Heading),
 				})
 			}

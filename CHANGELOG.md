@@ -4,6 +4,14 @@ All notable changes to SimConnect MCP are documented here. The format follows [K
 
 Full release history with release notes is also available on the [GitHub Releases page](https://github.com/mrlm-net/simconnect-mcp/releases).
 
+## [0.3.9] - 2026-03-08
+
+### Fixed
+
+- `get_airport_details` expanded-only fields (`stands`, `helipads`, `approaches`, `departures`, `arrivals`) are now omitted from the JSON response entirely when `expanded=false` — they previously appeared as empty arrays, which was confusing
+- Replaced zero-value defaults for inactive `facilityReqSet` slots with `noReq = 0xFFFFFFFF` sentinel; all inactive request ID slots now carry a value that can never match a real SimConnect request ID, eliminating potential switch dispatch ambiguity when multiple slots were zero
+- `deduplicateDetails` now nil-guards all expanded-only slice fields before operating on them, preventing a panic on `slice[:0]` against an uninitialised nil slice
+
 ## [0.3.8] - 2026-03-08
 
 ### Added

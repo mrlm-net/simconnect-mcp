@@ -4,6 +4,12 @@ All notable changes to SimConnect MCP are documented here. The format follows [K
 
 Full release history with release notes is also available on the [GitHub Releases page](https://github.com/mrlm-net/simconnect-mcp/releases).
 
+## [0.3.18] - 2026-03-08
+
+### Fixed
+
+- `GetSimVar`, `SetSimVar`, `GetTraffic`, and `GetEnrichedTraffic` now return `BRIDGE_DISCONNECTED` instead of a raw SimConnect `HRESULT 0x80004005` error when the connection drops between the initial state check and the `AddToDataDefinition` call; the state is re-checked immediately after any `AddToDataDefinition` failure so transient disconnections surface as a clean reconnectable error rather than an opaque internal failure
+
 ## [0.3.17] - 2026-03-08
 
 ### Fixed

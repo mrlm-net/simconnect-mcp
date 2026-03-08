@@ -766,6 +766,13 @@ func (b *simconnectBridge) GetSimVar(ctx context.Context, name, unit string) (Si
 
 	// Register one float64 datum on this definition.
 	if err := mgr.AddToDataDefinition(defID, name, unit, types.SIMCONNECT_DATATYPE_FLOAT64, 0, 0); err != nil {
+		// If the connection dropped between the state check above and this call,
+		// AddToDataDefinition returns E_FAIL (0x80004005) rather than a meaningful
+		// SimConnect error.  Surfacing the raw HRESULT is confusing; check the
+		// connection state and return ErrNotConnected when appropriate.
+		if b.State() != StateConnected {
+			return SimVar{}, ErrNotConnected
+		}
 		return SimVar{}, fmt.Errorf("bridge: AddToDataDefinition %s: %w", name, err)
 	}
 
@@ -916,6 +923,9 @@ func (b *simconnectBridge) SetSimVar(ctx context.Context, name, unit string, val
 	defID, _ := b.allocIDs()
 
 	if err := mgr.AddToDataDefinition(defID, name, unit, types.SIMCONNECT_DATATYPE_FLOAT64, 0, 0); err != nil {
+		if b.State() != StateConnected {
+			return ErrNotConnected
+		}
 		return fmt.Errorf("bridge: AddToDataDefinition %s: %w", name, err)
 	}
 	defer func() { _ = mgr.ClearDataDefinition(defID) }()
@@ -998,7 +1008,7 @@ func (b *simconnectBridge) GetTraffic(ctx context.Context, radiusMeters uint32) 
 	defID, reqID := b.allocIDs()
 
 	// Register the data definition.  Field order mirrors trafficDataStruct.
-	defs := []struct {
+	trafficDefs := []struct {
 		name, unit string
 		typ        types.SIMCONNECT_DATATYPE
 	}{
@@ -1012,9 +1022,12 @@ func (b *simconnectBridge) GetTraffic(ctx context.Context, radiusMeters uint32) 
 		{"ATC AIRLINE", "", types.SIMCONNECT_DATATYPE_STRING32},
 		{"TITLE", "", types.SIMCONNECT_DATATYPE_STRING128},
 	}
-	for i, d := range defs {
+	for i, d := range trafficDefs {
 		if err := mgr.AddToDataDefinition(defID, d.name, d.unit, d.typ, 0, uint32(i)); err != nil {
 			_ = mgr.ClearDataDefinition(defID)
+			if b.State() != StateConnected {
+				return nil, ErrNotConnected
+			}
 			return nil, fmt.Errorf("bridge: AddToDataDefinition %s: %w", d.name, err)
 		}
 	}
@@ -1093,6 +1106,9 @@ func (b *simconnectBridge) GetEnrichedTraffic(ctx context.Context, radiusMeters 
 	for i, d := range defs {
 		if err := mgr.AddToDataDefinition(defID, d.name, d.unit, d.typ, 0, uint32(i)); err != nil {
 			_ = mgr.ClearDataDefinition(defID)
+			if b.State() != StateConnected {
+				return nil, ErrNotConnected
+			}
 			return nil, fmt.Errorf("bridge: AddToDataDefinition %s: %w", d.name, err)
 		}
 	}

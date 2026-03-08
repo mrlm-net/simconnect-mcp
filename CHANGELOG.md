@@ -4,6 +4,13 @@ All notable changes to SimConnect MCP are documented here. The format follows [K
 
 Full release history with release notes is also available on the [GitHub Releases page](https://github.com/mrlm-net/simconnect-mcp/releases).
 
+## [0.3.10] - 2026-03-08
+
+### Fixed
+
+- `get_airport_details` no longer returns empty runways or missing frequencies on the first call — the previous implementation forwarded raw SimConnect buffer pointers through a Go channel, where they were read after the SDK had already returned the underlying memory to its pool (use-after-free). The bridge now decodes all facility data inline in the SDK dispatch goroutine, while the buffer is still valid, eliminating the race entirely
+- `get_airport_details` late-arriving `FACILITY_DATA` records are no longer silently dropped — SimConnect's `FACILITY_DATA_END` and `FACILITY_DATA` messages are dispatched from different internal paths, so END can arrive before all DATA records for the same request. The fix waits 200 ms after all END messages are received, allowing any lagging DATA records to be processed before the result is returned; this replaces the previous `default:` drain loop that exited immediately if the channel was momentarily empty
+
 ## [0.3.9] - 2026-03-08
 
 ### Fixed

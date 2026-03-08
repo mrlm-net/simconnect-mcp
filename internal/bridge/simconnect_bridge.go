@@ -213,6 +213,28 @@ type facilityReqSet struct {
 	base, rw, fr, pk, hp, ap, dp, ar uint32
 }
 
+// facilityDefSet holds the pre-registered facility definition IDs for the current
+// SimConnect connection. A zero base field indicates the definitions have not yet
+// been registered (or were reset after a reconnect).
+type facilityDefSet struct {
+	base, rw, fr, pk, hp, ap, dp, ar uint32
+}
+
+// facilityCallState holds per-call state for a GetAirportDetails request.
+// handleMessage writes decoded facility data directly into this struct under mu,
+// keeping all buffer reads inside the dispatch goroutine (before Release()).
+type facilityCallState struct {
+	mu        sync.Mutex
+	details   *AirportDetails
+	ids       facilityReqSet
+	foundBase bool
+	endIDs    map[uint32]bool
+	endCount  int
+	expected  int
+	done      chan struct{}
+	doneOnce  sync.Once
+}
+
 // noReq is a sentinel request ID used for slots that are not active in a given call.
 // It is 0xFFFFFFFF, well above the valid user ID range (1–999_999_899).
 const noReq = ^uint32(0)
@@ -419,6 +441,17 @@ type simconnectBridge struct {
 	pendingMu sync.Mutex
 	pending   map[uint32]chan float64
 
+	// facilityDefs holds pre-registered facility definition IDs for the current connection.
+	// Reset on reconnect (OnOpen); re-registered lazily on the first GetAirportDetails call.
+	// Protected by facilityMu.
+	facilityMu   sync.Mutex
+	facilityDefs facilityDefSet
+
+	// facilityPending maps requestID -> per-call state for facility data messages.
+	// Populated by GetAirportDetails; handleMessage decodes data inline and writes
+	// directly into the state struct under state.mu.
+	facilityPending map[uint32]*facilityCallState
+
 	// idCounter provides unique definition / request IDs.
 	// Each request consumes two IDs: (counter*2) for definition, (counter*2+1) for request.
 	// We start from 1 to stay well within IsValidUserID range.
@@ -441,9 +474,10 @@ type simconnectBridge struct {
 // Open is called.
 func NewSimConnectBridge() Bridge {
 	b := &simconnectBridge{
-		mgrErrCh:   make(chan error, 1),
-		simEventCh: make(chan SimEvent, 64),
-		pending:     make(map[uint32]chan float64),
+		mgrErrCh:        make(chan error, 1),
+		simEventCh:      make(chan SimEvent, 64),
+		pending:         make(map[uint32]chan float64),
+		facilityPending: make(map[uint32]*facilityCallState),
 	}
 	b.eventIDCounter.Store(100_000)
 	return b
@@ -485,6 +519,8 @@ func (b *simconnectBridge) Open(ctx context.Context, appName string) error {
 	mgr.OnMessage(b.handleMessage)
 
 	// Capture simulator application version on connection open.
+	// Also reset facility definitions so they are re-registered on the next call
+	// (the SimConnect session is new after a reconnect, losing all prior defs).
 	mgr.OnOpen(func(data types.ConnectionOpenData) {
 		v := fmt.Sprintf("%d.%d.%d.%d",
 			data.ApplicationVersionMajor,
@@ -495,6 +531,9 @@ func (b *simconnectBridge) Open(ctx context.Context, appName string) error {
 		b.mu.Lock()
 		b.simVersion = v
 		b.mu.Unlock()
+		b.facilityMu.Lock()
+		b.facilityDefs = facilityDefSet{}
+		b.facilityMu.Unlock()
 	})
 
 	// Wire up lifecycle events that feed SimEvents().
@@ -553,6 +592,13 @@ func (b *simconnectBridge) Close() error {
 		delete(b.pending, id)
 	}
 	b.pendingMu.Unlock()
+
+	b.facilityMu.Lock()
+	for id, state := range b.facilityPending {
+		state.doneOnce.Do(func() { close(state.done) })
+		delete(b.facilityPending, id)
+	}
+	b.facilityMu.Unlock()
 
 	if err := mgr.Stop(); err != nil {
 		cancel()
@@ -1188,6 +1234,124 @@ func (b *simconnectBridge) GetNearestAirport(ctx context.Context) (*AirportEntry
 	return &entry, nil
 }
 
+// ensureFacilityDefs registers the eight facility definition schemas once per
+// SimConnect connection and stores them in b.facilityDefs for reuse by all
+// subsequent GetAirportDetails calls — eliminating the per-call
+// AddToFacilityDefinition overhead. The definitions are reset on reconnect
+// (see OnOpen callback) and re-registered lazily on the next call.
+//
+// The facilityMu lock is held for the entire registration to prevent concurrent
+// double-registration. AddToFacilityDefinition is a non-blocking command-queue
+// call, so holding the lock briefly is safe.
+func (b *simconnectBridge) ensureFacilityDefs(mgr manager.Manager) (facilityDefSet, error) {
+	b.facilityMu.Lock()
+	defer b.facilityMu.Unlock()
+
+	if b.facilityDefs.base != 0 {
+		return b.facilityDefs, nil
+	}
+
+	baseDefID, _ := b.allocIDs()
+	rwDefID, _ := b.allocIDs()
+	frDefID, _ := b.allocIDs()
+	pkDefID, _ := b.allocIDs()
+	hpDefID, _ := b.allocIDs()
+	apDefID, _ := b.allocIDs()
+	dpDefID, _ := b.allocIDs()
+	arDefID, _ := b.allocIDs()
+
+	for _, f := range []string{
+		"OPEN AIRPORT", "LATITUDE", "LONGITUDE", "ALTITUDE", "ICAO", "NAME", "NAME64",
+		"REGION", "MAGVAR", "IS_CLOSED",
+		"CLOSE AIRPORT",
+	} {
+		if err := mgr.AddToFacilityDefinition(baseDefID, f); err != nil {
+			return facilityDefSet{}, fmt.Errorf("bridge: AddToFacilityDefinition base %q: %w", f, err)
+		}
+	}
+
+	for _, f := range []string{
+		"OPEN AIRPORT", "OPEN RUNWAY",
+		"HEADING", "LENGTH", "WIDTH", "SURFACE",
+		"PRIMARY_NUMBER", "PRIMARY_DESIGNATOR",
+		"SECONDARY_NUMBER", "SECONDARY_DESIGNATOR",
+		"CLOSE RUNWAY", "CLOSE AIRPORT",
+	} {
+		if err := mgr.AddToFacilityDefinition(rwDefID, f); err != nil {
+			return facilityDefSet{}, fmt.Errorf("bridge: AddToFacilityDefinition runway %q: %w", f, err)
+		}
+	}
+
+	for _, f := range []string{
+		"OPEN AIRPORT", "OPEN FREQUENCY",
+		"TYPE", "FREQUENCY", "NAME",
+		"CLOSE FREQUENCY", "CLOSE AIRPORT",
+	} {
+		if err := mgr.AddToFacilityDefinition(frDefID, f); err != nil {
+			return facilityDefSet{}, fmt.Errorf("bridge: AddToFacilityDefinition frequency %q: %w", f, err)
+		}
+	}
+
+	for _, f := range []string{
+		"OPEN AIRPORT", "OPEN TAXI_PARKING",
+		"NAME", "NUMBER", "HEADING", "TYPE", "BIAS_X", "BIAS_Z",
+		"CLOSE TAXI_PARKING", "CLOSE AIRPORT",
+	} {
+		if err := mgr.AddToFacilityDefinition(pkDefID, f); err != nil {
+			return facilityDefSet{}, fmt.Errorf("bridge: AddToFacilityDefinition parking %q: %w", f, err)
+		}
+	}
+
+	for _, f := range []string{
+		"OPEN AIRPORT", "OPEN HELIPAD",
+		"LATITUDE", "LONGITUDE", "ALTITUDE", "HEADING", "LENGTH", "WIDTH", "SURFACE", "TYPE",
+		"CLOSE HELIPAD", "CLOSE AIRPORT",
+	} {
+		if err := mgr.AddToFacilityDefinition(hpDefID, f); err != nil {
+			return facilityDefSet{}, fmt.Errorf("bridge: AddToFacilityDefinition helipad %q: %w", f, err)
+		}
+	}
+
+	for _, f := range []string{
+		"OPEN AIRPORT", "OPEN APPROACH",
+		"TYPE", "SUFFIX", "RUNWAY_NUMBER", "RUNWAY_DESIGNATOR",
+		"FAF_ICAO", "FAF_REGION", "FAF_HEADING", "FAF_ALTITUDE", "FAF_TYPE", "MISSED_ALTITUDE",
+		"HAS_LNAV", "HAS_LNAVVNAV", "HAS_LP", "HAS_LPV",
+		"N_TRANSITIONS", "N_FINAL_APPROACH_LEGS", "N_MISSED_APPROACH_LEGS",
+		"CLOSE APPROACH", "CLOSE AIRPORT",
+	} {
+		if err := mgr.AddToFacilityDefinition(apDefID, f); err != nil {
+			return facilityDefSet{}, fmt.Errorf("bridge: AddToFacilityDefinition approach %q: %w", f, err)
+		}
+	}
+
+	for _, f := range []string{
+		"OPEN AIRPORT", "OPEN DEPARTURE",
+		"NAME", "N_RUNWAY_TRANSITIONS", "N_ENROUTE_TRANSITIONS", "N_APPROACH_LEGS",
+		"CLOSE DEPARTURE", "CLOSE AIRPORT",
+	} {
+		if err := mgr.AddToFacilityDefinition(dpDefID, f); err != nil {
+			return facilityDefSet{}, fmt.Errorf("bridge: AddToFacilityDefinition departure %q: %w", f, err)
+		}
+	}
+
+	for _, f := range []string{
+		"OPEN AIRPORT", "OPEN ARRIVAL",
+		"NAME", "N_RUNWAY_TRANSITIONS", "N_ENROUTE_TRANSITIONS", "N_APPROACH_LEGS",
+		"CLOSE ARRIVAL", "CLOSE AIRPORT",
+	} {
+		if err := mgr.AddToFacilityDefinition(arDefID, f); err != nil {
+			return facilityDefSet{}, fmt.Errorf("bridge: AddToFacilityDefinition arrival %q: %w", f, err)
+		}
+	}
+
+	b.facilityDefs = facilityDefSet{
+		base: baseDefID, rw: rwDefID, fr: frDefID,
+		pk: pkDefID, hp: hpDefID, ap: apDefID, dp: dpDefID, ar: arDefID,
+	}
+	return b.facilityDefs, nil
+}
+
 // GetAirportDetails returns detailed facility data for the given ICAO airport.
 // Issues two RequestFacilityData calls (basic airport info + runways) and waits
 // until both FACILITY_DATA_END messages are received.
@@ -1203,132 +1367,25 @@ func (b *simconnectBridge) GetAirportDetails(ctx context.Context, icao, region s
 		return nil, ErrNotConnected
 	}
 
-	baseDefID, baseReqID := b.allocIDs()
-	rwDefID, rwReqID := b.allocIDs()
-	frDefID, frReqID := b.allocIDs()
-
-	for _, f := range []string{
-		"OPEN AIRPORT", "LATITUDE", "LONGITUDE", "ALTITUDE", "ICAO", "NAME", "NAME64",
-		"REGION", "MAGVAR", "IS_CLOSED",
-		"CLOSE AIRPORT",
-	} {
-		if err := mgr.AddToFacilityDefinition(baseDefID, f); err != nil {
-			return nil, fmt.Errorf("bridge: AddToFacilityDefinition %q: %w", f, err)
-		}
+	// Ensure facility definitions are registered once for this connection.
+	// On first call this registers 8 definitions; subsequent calls return cached IDs.
+	defs, err := b.ensureFacilityDefs(mgr)
+	if err != nil {
+		return nil, err
 	}
 
-	for _, f := range []string{
-		"OPEN AIRPORT", "OPEN RUNWAY",
-		"HEADING", "LENGTH", "WIDTH", "SURFACE",
-		"PRIMARY_NUMBER", "PRIMARY_DESIGNATOR",
-		"SECONDARY_NUMBER", "SECONDARY_DESIGNATOR",
-		"CLOSE RUNWAY", "CLOSE AIRPORT",
-	} {
-		if err := mgr.AddToFacilityDefinition(rwDefID, f); err != nil {
-			return nil, fmt.Errorf("bridge: AddToFacilityDefinition runway %q: %w", f, err)
-		}
-	}
+	// Allocate per-call request IDs (definition IDs are shared / pre-registered).
+	_, baseReqID := b.allocIDs()
+	_, rwReqID := b.allocIDs()
+	_, frReqID := b.allocIDs()
 
-	for _, f := range []string{
-		"OPEN AIRPORT", "OPEN FREQUENCY",
-		"TYPE", "FREQUENCY", "NAME",
-		"CLOSE FREQUENCY", "CLOSE AIRPORT",
-	} {
-		if err := mgr.AddToFacilityDefinition(frDefID, f); err != nil {
-			return nil, fmt.Errorf("bridge: AddToFacilityDefinition frequency %q: %w", f, err)
-		}
-	}
-
-	// Expanded-only: parking stands, helipads, approaches, departures, arrivals.
-	var pkDefID, pkReqID, hpDefID, hpReqID uint32
-	var apDefID, apReqID, dpDefID, dpReqID, arDefID, arReqID uint32
+	var pkReqID, hpReqID, apReqID, dpReqID, arReqID uint32
 	if expanded {
-		pkDefID, pkReqID = b.allocIDs()
-		hpDefID, hpReqID = b.allocIDs()
-		apDefID, apReqID = b.allocIDs()
-		dpDefID, dpReqID = b.allocIDs()
-		arDefID, arReqID = b.allocIDs()
-
-		for _, f := range []string{
-			"OPEN AIRPORT", "OPEN TAXI_PARKING",
-			"NAME", "NUMBER", "HEADING", "TYPE", "BIAS_X", "BIAS_Z",
-			"CLOSE TAXI_PARKING", "CLOSE AIRPORT",
-		} {
-			if err := mgr.AddToFacilityDefinition(pkDefID, f); err != nil {
-				return nil, fmt.Errorf("bridge: AddToFacilityDefinition parking %q: %w", f, err)
-			}
-		}
-
-		for _, f := range []string{
-			"OPEN AIRPORT", "OPEN HELIPAD",
-			"LATITUDE", "LONGITUDE", "ALTITUDE", "HEADING", "LENGTH", "WIDTH", "SURFACE", "TYPE",
-			"CLOSE HELIPAD", "CLOSE AIRPORT",
-		} {
-			if err := mgr.AddToFacilityDefinition(hpDefID, f); err != nil {
-				return nil, fmt.Errorf("bridge: AddToFacilityDefinition helipad %q: %w", f, err)
-			}
-		}
-
-		for _, f := range []string{
-			"OPEN AIRPORT", "OPEN APPROACH",
-			"TYPE", "SUFFIX", "RUNWAY_NUMBER", "RUNWAY_DESIGNATOR",
-			"FAF_ICAO", "FAF_REGION", "FAF_HEADING", "FAF_ALTITUDE", "FAF_TYPE", "MISSED_ALTITUDE",
-			"HAS_LNAV", "HAS_LNAVVNAV", "HAS_LP", "HAS_LPV",
-			"N_TRANSITIONS", "N_FINAL_APPROACH_LEGS", "N_MISSED_APPROACH_LEGS",
-			"CLOSE APPROACH", "CLOSE AIRPORT",
-		} {
-			if err := mgr.AddToFacilityDefinition(apDefID, f); err != nil {
-				return nil, fmt.Errorf("bridge: AddToFacilityDefinition approach %q: %w", f, err)
-			}
-		}
-
-		for _, f := range []string{
-			"OPEN AIRPORT", "OPEN DEPARTURE",
-			"NAME", "N_RUNWAY_TRANSITIONS", "N_ENROUTE_TRANSITIONS", "N_APPROACH_LEGS",
-			"CLOSE DEPARTURE", "CLOSE AIRPORT",
-		} {
-			if err := mgr.AddToFacilityDefinition(dpDefID, f); err != nil {
-				return nil, fmt.Errorf("bridge: AddToFacilityDefinition departure %q: %w", f, err)
-			}
-		}
-
-		for _, f := range []string{
-			"OPEN AIRPORT", "OPEN ARRIVAL",
-			"NAME", "N_RUNWAY_TRANSITIONS", "N_ENROUTE_TRANSITIONS", "N_APPROACH_LEGS",
-			"CLOSE ARRIVAL", "CLOSE AIRPORT",
-		} {
-			if err := mgr.AddToFacilityDefinition(arDefID, f); err != nil {
-				return nil, fmt.Errorf("bridge: AddToFacilityDefinition arrival %q: %w", f, err)
-			}
-		}
-	}
-
-	bufSize := 256
-	if expanded {
-		bufSize = 1024
-	}
-	sub := mgr.SubscribeWithType("", bufSize, []types.SIMCONNECT_RECV_ID{
-		types.SIMCONNECT_RECV_ID_FACILITY_DATA,
-		types.SIMCONNECT_RECV_ID_FACILITY_DATA_END,
-	})
-	defer sub.Unsubscribe()
-
-	// Always fire base, runway, frequency requests.
-	for _, pair := range [][2]uint32{{baseDefID, baseReqID}, {rwDefID, rwReqID}, {frDefID, frReqID}} {
-		if err := mgr.RequestFacilityData(pair[0], pair[1], icao, region); err != nil {
-			return nil, fmt.Errorf("bridge: RequestFacilityData %s: %w", icao, err)
-		}
-	}
-	// Fire expanded-only requests when requested.
-	if expanded {
-		for _, pair := range [][2]uint32{
-			{pkDefID, pkReqID}, {hpDefID, hpReqID},
-			{apDefID, apReqID}, {dpDefID, dpReqID}, {arDefID, arReqID},
-		} {
-			if err := mgr.RequestFacilityData(pair[0], pair[1], icao, region); err != nil {
-				return nil, fmt.Errorf("bridge: RequestFacilityData %s: %w", icao, err)
-			}
-		}
+		_, pkReqID = b.allocIDs()
+		_, hpReqID = b.allocIDs()
+		_, apReqID = b.allocIDs()
+		_, dpReqID = b.allocIDs()
+		_, arReqID = b.allocIDs()
 	}
 
 	ids := facilityReqSet{
@@ -1342,6 +1399,7 @@ func (b *simconnectBridge) GetAirportDetails(ctx context.Context, icao, region s
 		ids.dp = dpReqID
 		ids.ar = arReqID
 	}
+
 	details := &AirportDetails{
 		Region:      region,
 		Runways:     []AirportRunway{},
@@ -1354,7 +1412,7 @@ func (b *simconnectBridge) GetAirportDetails(ctx context.Context, icao, region s
 		details.Departures = []AirportProcedure{}
 		details.Arrivals = []AirportProcedure{}
 	}
-	foundBase := false
+
 	endIDs := map[uint32]bool{baseReqID: false, rwReqID: false, frReqID: false}
 	if expanded {
 		endIDs[pkReqID] = false
@@ -1367,73 +1425,92 @@ func (b *simconnectBridge) GetAirportDetails(ctx context.Context, icao, region s
 	if expanded {
 		expectedEnds = 8
 	}
-	endCount := 0
 
-	deadline := time.NewTimer(45 * time.Second)
-	defer deadline.Stop()
+	// Create per-call state. handleMessage decodes FACILITY_DATA records directly
+	// into state.details under state.mu — all buffer reads happen synchronously
+	// inside the dispatch goroutine, before the SDK pool buffer is released.
+	state := &facilityCallState{
+		details:  details,
+		ids:      ids,
+		endIDs:   endIDs,
+		expected: expectedEnds,
+		done:     make(chan struct{}),
+	}
 
-	for {
-		select {
-		case <-ctx.Done():
-			deduplicateDetails(details)
-			if !foundBase {
-				return nil, nil
-			}
-			return details, nil
+	// Register all active request IDs so handleMessage routes to this call.
+	b.facilityMu.Lock()
+	b.facilityPending[baseReqID] = state
+	b.facilityPending[rwReqID] = state
+	b.facilityPending[frReqID] = state
+	if expanded {
+		b.facilityPending[pkReqID] = state
+		b.facilityPending[hpReqID] = state
+		b.facilityPending[apReqID] = state
+		b.facilityPending[dpReqID] = state
+		b.facilityPending[arReqID] = state
+	}
+	b.facilityMu.Unlock()
 
-		case <-deadline.C:
-			deduplicateDetails(details)
-			if !foundBase {
-				return nil, fmt.Errorf("bridge: airport %q not found (timeout)", icao)
-			}
-			return details, nil
+	defer func() {
+		b.facilityMu.Lock()
+		delete(b.facilityPending, baseReqID)
+		delete(b.facilityPending, rwReqID)
+		delete(b.facilityPending, frReqID)
+		if expanded {
+			delete(b.facilityPending, pkReqID)
+			delete(b.facilityPending, hpReqID)
+			delete(b.facilityPending, apReqID)
+			delete(b.facilityPending, dpReqID)
+			delete(b.facilityPending, arReqID)
+		}
+		b.facilityMu.Unlock()
+	}()
 
-		case msg, ok := <-sub.Messages():
-			if !ok {
-				if !foundBase {
-					return nil, nil
-				}
-				return details, nil
-			}
-
-			switch types.SIMCONNECT_RECV_ID(msg.DwID) {
-			case types.SIMCONNECT_RECV_ID_FACILITY_DATA:
-				applyFacilityData(msg, details, ids, &foundBase)
-
-			case types.SIMCONNECT_RECV_ID_FACILITY_DATA_END:
-				fd := msg.AsFacilityDataEnd()
-				if fd == nil {
-					continue
-				}
-				rid := uint32(fd.RequestId)
-				if _, tracked := endIDs[rid]; tracked && !endIDs[rid] {
-					endIDs[rid] = true
-					endCount++
-				}
-				if endCount == expectedEnds {
-				drainLoop:
-					for {
-						select {
-						case m, ok := <-sub.Messages():
-							if !ok {
-								break drainLoop
-							}
-							if types.SIMCONNECT_RECV_ID(m.DwID) == types.SIMCONNECT_RECV_ID_FACILITY_DATA {
-								applyFacilityData(m, details, ids, &foundBase)
-							}
-						default:
-							break drainLoop
-						}
-					}
-					deduplicateDetails(details)
-					if !foundBase {
-						return nil, nil
-					}
-					return details, nil
-				}
+	// Fire requests using the pre-registered definition IDs.
+	for _, pair := range [][2]uint32{{defs.base, baseReqID}, {defs.rw, rwReqID}, {defs.fr, frReqID}} {
+		if err := mgr.RequestFacilityData(pair[0], pair[1], icao, region); err != nil {
+			return nil, fmt.Errorf("bridge: RequestFacilityData %s: %w", icao, err)
+		}
+	}
+	if expanded {
+		for _, pair := range [][2]uint32{
+			{defs.pk, pkReqID}, {defs.hp, hpReqID},
+			{defs.ap, apReqID}, {defs.dp, dpReqID}, {defs.ar, arReqID},
+		} {
+			if err := mgr.RequestFacilityData(pair[0], pair[1], icao, region); err != nil {
+				return nil, fmt.Errorf("bridge: RequestFacilityData %s: %w", icao, err)
 			}
 		}
 	}
+
+	// Wait for all FACILITY_DATA_END messages. handleMessage closes state.done
+	// once all expected ENDs are received.
+	deadline := time.NewTimer(45 * time.Second)
+	defer deadline.Stop()
+
+	select {
+	case <-state.done:
+		// All expected ENDs received. Wait a short window for late DATA records —
+		// SimConnect dispatches DATA and END via different internal paths, so a few
+		// DATA records may arrive after all ENDs have been seen.
+		time.Sleep(200 * time.Millisecond)
+	case <-ctx.Done():
+		// Context cancelled — return whatever has been collected so far.
+	case <-deadline.C:
+		// 45-second hard deadline.
+	}
+
+	// Read results under lock — handleMessage may still be writing during the
+	// 200ms drain window and we need a consistent snapshot.
+	state.mu.Lock()
+	deduplicateDetails(state.details)
+	foundBase := state.foundBase
+	state.mu.Unlock()
+
+	if !foundBase {
+		return nil, nil
+	}
+	return state.details, nil
 }
 
 // deduplicateDetails removes duplicate runway, stand, and frequency entries that
@@ -1657,42 +1734,81 @@ func (b *simconnectBridge) allocIDs() (defID, reqID uint32) {
 	return defID, reqID
 }
 
-// handleMessage is the Manager OnMessage callback.  It inspects incoming
-// SIMCONNECT_RECV_SIMOBJECT_DATA packets and delivers the float64 value to
-// the waiting GetSimVar request, if any.
+// handleMessage is the Manager OnMessage callback. It runs synchronously in the
+// dispatch goroutine for every message received from SimConnect.
+//
+// Routes:
+//   - SIMCONNECT_RECV_ID_SIMOBJECT_DATA       → GetSimVar pending channel (float64)
+//   - SIMCONNECT_RECV_ID_FACILITY_DATA        → GetAirportDetails per-call channel
+//   - SIMCONNECT_RECV_ID_FACILITY_DATA_END    → GetAirportDetails per-call channel
 func (b *simconnectBridge) handleMessage(msg engine.Message) {
 	if msg.Err != nil {
 		return
 	}
-	if types.SIMCONNECT_RECV_ID(msg.DwID) != types.SIMCONNECT_RECV_ID_SIMOBJECT_DATA {
-		return
-	}
 
-	simObjData := msg.AsSimObjectData()
-	if simObjData == nil {
-		return
-	}
+	switch types.SIMCONNECT_RECV_ID(msg.DwID) {
+	case types.SIMCONNECT_RECV_ID_SIMOBJECT_DATA:
+		simObjData := msg.AsSimObjectData()
+		if simObjData == nil {
+			return
+		}
+		reqID := uint32(simObjData.DwRequestID)
+		b.pendingMu.Lock()
+		ch, ok := b.pending[reqID]
+		if ok {
+			delete(b.pending, reqID)
+		}
+		b.pendingMu.Unlock()
+		if !ok {
+			// Belongs to manager's own internal requests (camera/SimState).
+			return
+		}
+		// The first 8 bytes of DwData are the float64 we requested.
+		data := engine.CastDataAs[simVarDataStruct](&simObjData.DwData)
+		select {
+		case ch <- data.Value:
+		default:
+		}
 
-	reqID := uint32(simObjData.DwRequestID)
+	case types.SIMCONNECT_RECV_ID_FACILITY_DATA:
+		// Decode inline — the SDK pool buffer is valid for the entire duration of
+		// handleMessage but will be released (returned to pool) immediately after
+		// this function returns. We must not forward msg to another goroutine.
+		fd := msg.AsFacilityData()
+		if fd == nil {
+			return
+		}
+		b.facilityMu.Lock()
+		state := b.facilityPending[uint32(fd.UserRequestId)]
+		b.facilityMu.Unlock()
+		if state != nil {
+			state.mu.Lock()
+			applyFacilityData(msg, state.details, state.ids, &state.foundBase)
+			state.mu.Unlock()
+		}
 
-	b.pendingMu.Lock()
-	ch, ok := b.pending[reqID]
-	if ok {
-		delete(b.pending, reqID)
-	}
-	b.pendingMu.Unlock()
-
-	if !ok {
-		// This message belongs to the manager's own internal requests (camera/SimState).
-		return
-	}
-
-	// The first 8 bytes of DwData are the float64 we requested.
-	data := engine.CastDataAs[simVarDataStruct](&simObjData.DwData)
-	select {
-	case ch <- data.Value:
-	default:
-		// Channel already has a value or was closed; discard.
+	case types.SIMCONNECT_RECV_ID_FACILITY_DATA_END:
+		fde := msg.AsFacilityDataEnd()
+		if fde == nil {
+			return
+		}
+		rid := uint32(fde.RequestId)
+		b.facilityMu.Lock()
+		state := b.facilityPending[rid]
+		b.facilityMu.Unlock()
+		if state != nil {
+			allDone := false
+			state.mu.Lock()
+			if _, tracked := state.endIDs[rid]; tracked && !state.endIDs[rid] {
+				state.endIDs[rid] = true
+				state.endCount++
+				allDone = state.endCount == state.expected
+			}
+			state.mu.Unlock()
+			if allDone {
+				state.doneOnce.Do(func() { close(state.done) })
+			}
+		}
 	}
 }
 

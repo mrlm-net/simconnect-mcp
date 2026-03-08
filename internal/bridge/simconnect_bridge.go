@@ -125,20 +125,19 @@ type runwayFacilityData struct {
 }
 
 // parkingFacilityData mirrors the OPEN TAXI_PARKING field sequence used in
-// GetAirportDetails. Field order matches the SDK airport-details example exactly:
+// GetAirportDetails. Fields are a confirmed subset of the SDK parking dataset.
 //
 //	NAME(uint32), NUMBER(uint32), HEADING(float32), TYPE(uint32),
-//	BIAS_X(float32), BIAS_Z(float32), N_AIRLINES(uint32)
+//	BIAS_X(float32), BIAS_Z(float32)
 //
-// Total wire size: 7×4 = 28 bytes.
+// Total wire size: 6×4 = 24 bytes.
 type parkingFacilityData struct {
-	Name      uint32
-	Number    uint32
-	Heading   float32
-	Type      uint32
-	BiasX     float32
-	BiasZ     float32
-	NAirlines uint32
+	Name    uint32
+	Number  uint32
+	Heading float32
+	Type    uint32
+	BiasX   float32
+	BiasZ   float32
 }
 
 // frequencyFacilityData mirrors the OPEN FREQUENCY field sequence:
@@ -1166,7 +1165,7 @@ func (b *simconnectBridge) GetAirportDetails(ctx context.Context, icao, region s
 
 	for _, f := range []string{
 		"OPEN AIRPORT", "OPEN TAXI_PARKING",
-		"NAME", "NUMBER", "HEADING", "TYPE", "BIAS_X", "BIAS_Z", "N_AIRLINES",
+		"NAME", "NUMBER", "HEADING", "TYPE", "BIAS_X", "BIAS_Z",
 		"CLOSE TAXI_PARKING", "CLOSE AIRPORT",
 	} {
 		if err := mgr.AddToFacilityDefinition(pkDefID, f); err != nil {
@@ -1174,7 +1173,7 @@ func (b *simconnectBridge) GetAirportDetails(ctx context.Context, icao, region s
 		}
 	}
 
-	sub := mgr.SubscribeWithType("", 256, []types.SIMCONNECT_RECV_ID{
+	sub := mgr.SubscribeWithType("", 512, []types.SIMCONNECT_RECV_ID{
 		types.SIMCONNECT_RECV_ID_FACILITY_DATA,
 		types.SIMCONNECT_RECV_ID_FACILITY_DATA_END,
 	})

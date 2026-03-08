@@ -4,6 +4,22 @@ All notable changes to SimConnect MCP are documented here. The format follows [K
 
 Full release history with release notes is also available on the [GitHub Releases page](https://github.com/mrlm-net/simconnect-mcp/releases).
 
+## [0.3.7] - 2026-03-08
+
+### Added
+
+- `get_airport_details` now returns magnetic variation (`magvar_deg`), closed status (`is_closed`), and the airport's actual region code (`region`) from SimConnect facility data
+- `get_airport_details` now includes runways by name (e.g. `08L/26R`) — standard short/long name from `PRIMARY_NUMBER` / `PRIMARY_DESIGNATOR` and `SECONDARY_NUMBER` / `SECONDARY_DESIGNATOR`
+- `get_airport_details` now returns a `helipads[]` section with lat/lon/alt, heading, dimensions, surface type, and helipad type (H / Square / Circle / Medical); `helipad_count` is included at the top level
+- `get_airport_details` accepts a new `expanded` boolean parameter; ATC frequencies are now only included when `expanded=true` (reduces default response size and request overhead)
+
+### Fixed
+
+- `get_nearby_traffic` and `get_airports_in_range` duplicate results resolved — airport list now deduplicates by ICAO before returning
+- `get_airports_in_range` standard-mode filter switched from a strict 4-uppercase-letter regex to `convert.IsICAOCode()` from the SDK, correctly admitting alphanumeric codes like `LPCC` and `LKPR` that were previously excluded
+- `get_airport_details` timeout increased from 30 s to 45 s to handle cold-cache first-call latency (SimConnect fetches facility data from disk on the first query; subsequent calls for the same airport are instant)
+- Removed `EDGE_LIGHTS`, `CENTER_LIGHTS`, `PRIMARY_CLOSED`, and `SECONDARY_CLOSED` from the runway facility definition — these are MSFS 2024-only fields that caused `AddToFacilityDefinition` to fail silently in MSFS 2020, preventing the runway request from ever completing and leaving the call stuck until timeout
+
 ## [0.3.6] - 2026-03-07
 
 ### Fixed

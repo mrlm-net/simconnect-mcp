@@ -137,15 +137,11 @@ type AirportEntry struct {
 // AirportRunway holds data for a single runway at an airport.
 // SimConnect's LENGTH and WIDTH fields are returned in metres.
 type AirportRunway struct {
-	Name            string  `json:"name"`             // e.g. "08L/26R"
-	Heading         float64 `json:"heading_deg"`
-	LengthM         float64 `json:"length_m"`
-	WidthM          float64 `json:"width_m"`
-	Surface         string  `json:"surface"`
-	EdgeLights      string  `json:"edge_lights"`      // None / Low / Medium / High
-	CenterLights    bool    `json:"center_lights"`
-	PrimaryClosed   bool    `json:"primary_closed"`
-	SecondaryClosed bool    `json:"secondary_closed"`
+	Name    string  `json:"name"`     // e.g. "08L/26R"
+	Heading float64 `json:"heading_deg"`
+	LengthM float64 `json:"length_m"`
+	WidthM  float64 `json:"width_m"`
+	Surface string  `json:"surface"`
 }
 
 // AirportHelipad holds data for a single helipad at an airport.

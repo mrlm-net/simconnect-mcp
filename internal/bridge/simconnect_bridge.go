@@ -110,10 +110,9 @@ type airportFacilityData struct {
 //
 //	HEADING(f32), LENGTH(f32, metres), WIDTH(f32, metres), SURFACE(int32),
 //	PRIMARY_NUMBER(int32), PRIMARY_DESIGNATOR(int32),
-//	SECONDARY_NUMBER(int32), SECONDARY_DESIGNATOR(int32),
-//	EDGE_LIGHTS(int8), CENTER_LIGHTS(int8), PRIMARY_CLOSED(int8), SECONDARY_CLOSED(int8)
+//	SECONDARY_NUMBER(int32), SECONDARY_DESIGNATOR(int32)
 //
-// Total wire size: 8×4 + 4×1 = 36 bytes.
+// Total wire size: 8×4 = 32 bytes.
 type runwayFacilityData struct {
 	Heading             float32
 	Length              float32 // metres
@@ -123,10 +122,6 @@ type runwayFacilityData struct {
 	PrimaryDesignator   int32
 	SecondaryNumber     int32
 	SecondaryDesignator int32
-	EdgeLights          int8
-	CenterLights        int8
-	PrimaryClosed       int8
-	SecondaryClosed     int8
 }
 
 // parkingFacilityData mirrors the OPEN TAXI_PARKING field sequence:
@@ -193,19 +188,6 @@ func runwayDesignatorLetter(d int32) string {
 	}
 }
 
-// edgeLightsName maps SimConnect EDGE_LIGHTS integer to a human-readable label.
-func edgeLightsName(intensity int8) string {
-	switch intensity {
-	case 1:
-		return "Low"
-	case 2:
-		return "Medium"
-	case 3:
-		return "High"
-	default:
-		return "None"
-	}
-}
 
 // helipadTypeName maps SimConnect helipad TYPE integer to a human-readable label.
 func helipadTypeName(t int32) string {
@@ -1153,7 +1135,7 @@ func (b *simconnectBridge) GetAirportDetails(ctx context.Context, icao, region s
 		"HEADING", "LENGTH", "WIDTH", "SURFACE",
 		"PRIMARY_NUMBER", "PRIMARY_DESIGNATOR",
 		"SECONDARY_NUMBER", "SECONDARY_DESIGNATOR",
-		"EDGE_LIGHTS", "CENTER_LIGHTS", "PRIMARY_CLOSED", "SECONDARY_CLOSED",
+
 		"CLOSE RUNWAY", "CLOSE AIRPORT",
 	} {
 		if err := mgr.AddToFacilityDefinition(rwDefID, f); err != nil {
@@ -1354,15 +1336,11 @@ func applyFacilityData(
 		if fd.Type == types.SIMCONNECT_FACILITY_DATA_RUNWAY {
 			data := engine.CastDataAs[runwayFacilityData](&fd.Data)
 			details.Runways = append(details.Runways, AirportRunway{
-				Name:            runwayName(data.PrimaryNumber, data.PrimaryDesignator, data.SecondaryNumber, data.SecondaryDesignator),
-				Heading:         float64(data.Heading),
-				LengthM:         float64(data.Length),
-				WidthM:          float64(data.Width),
-				Surface:         runwaySurfaceName(data.Surface),
-				EdgeLights:      edgeLightsName(data.EdgeLights),
-				CenterLights:    data.CenterLights != 0,
-				PrimaryClosed:   data.PrimaryClosed != 0,
-				SecondaryClosed: data.SecondaryClosed != 0,
+				Name:    runwayName(data.PrimaryNumber, data.PrimaryDesignator, data.SecondaryNumber, data.SecondaryDesignator),
+				Heading: float64(data.Heading),
+				LengthM: float64(data.Length),
+				WidthM:  float64(data.Width),
+				Surface: runwaySurfaceName(data.Surface),
 			})
 		}
 	case pkReqID:

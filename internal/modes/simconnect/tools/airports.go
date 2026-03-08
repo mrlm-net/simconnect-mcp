@@ -5,14 +5,11 @@ package tools
 import (
 	"context"
 	"fmt"
-	"regexp"
 
 	"github.com/mrlm-net/simconnect-mcp/internal/bridge"
 	"github.com/mrlm-net/simconnect-mcp/internal/mcpadapter"
+	"github.com/mrlm-net/simconnect/pkg/convert"
 )
-
-// icaoPattern matches standard ICAO airport designators: exactly 4 uppercase letters.
-var icaoPattern = regexp.MustCompile(`^[A-Z]{4}$`)
 
 // RegisterAirportTools registers the get_airports_in_range, get_nearest_airport,
 // and get_airport_details MCP tools onto the provided server.
@@ -68,7 +65,7 @@ func registerGetAirportsInRange(mcp *mcpadapter.Server, b bridge.Bridge) {
 			if a.DistanceKM > maxDistKM {
 				continue
 			}
-			if !expanded && !icaoPattern.MatchString(a.ICAO) {
+			if !expanded && !convert.IsICAOCode(a.ICAO) {
 				continue
 			}
 			filtered = append(filtered, a)

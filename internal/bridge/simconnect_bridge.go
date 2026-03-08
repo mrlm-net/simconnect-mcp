@@ -102,18 +102,14 @@ type airportFacilityData struct {
 
 // runwayFacilityData mirrors the OPEN RUNWAY field sequence:
 //
-//	LATITUDE(f64), LONGITUDE(f64), ALTITUDE(f64),
-//	HEADING(f32), LENGTH(f32, feet), WIDTH(f32, feet), SURFACE(int32)
+//	HEADING(f32), LENGTH(f32, metres), WIDTH(f32, metres), SURFACE(int32)
 //
-// Total wire size: 3×8 + 4×4 = 40 bytes.
+// Total wire size: 4×4 = 16 bytes.
 type runwayFacilityData struct {
-	Latitude  float64
-	Longitude float64
-	Altitude  float64
-	Heading   float32
-	Length    float32 // feet
-	Width     float32 // feet
-	Surface   int32
+	Heading float32
+	Length  float32 // metres
+	Width   float32 // metres
+	Surface int32
 }
 
 // parkingFacilityData mirrors the OPEN TAXI_PARKING field sequence:
@@ -994,6 +990,18 @@ func (b *simconnectBridge) GetAirports(ctx context.Context) ([]AirportEntry, err
 
 			// Done when this is the last (or only) packet.
 			if uint32(list.DwEntryNumber)+1 >= uint32(list.DwOutOf) {
+				// Deduplicate by ICAO — the list can contain the same
+				// airport multiple times under the same identifier.
+				seen := make(map[string]struct{}, len(airports))
+				unique := airports[:0]
+				for _, a := range airports {
+					if _, ok := seen[a.ICAO]; !ok {
+						seen[a.ICAO] = struct{}{}
+						unique = append(unique, a)
+					}
+				}
+				airports = unique
+
 				sort.Slice(airports, func(i, j int) bool {
 					return airports[i].DistanceKM < airports[j].DistanceKM
 				})
@@ -1018,8 +1026,8 @@ func (b *simconnectBridge) GetNearestAirport(ctx context.Context) (*AirportEntry
 }
 
 // GetAirportDetails returns detailed facility data for the given ICAO airport.
-// Issues four parallel RequestFacilityData calls (airport info, runways, stands,
-// frequencies) and waits until all four FACILITY_DATA_END messages are received.
+// Issues two RequestFacilityData calls (basic airport info + runways) and waits
+// until both FACILITY_DATA_END messages are received.
 func (b *simconnectBridge) GetAirportDetails(ctx context.Context, icao, region string) (*AirportDetails, error) {
 	if b.State() != StateConnected {
 		return nil, ErrNotConnected
@@ -1032,13 +1040,9 @@ func (b *simconnectBridge) GetAirportDetails(ctx context.Context, icao, region s
 		return nil, ErrNotConnected
 	}
 
-	// Allocate four independent (defID, reqID) pairs.
 	baseDefID, baseReqID := b.allocIDs()
 	rwDefID, rwReqID := b.allocIDs()
-	pkDefID, pkReqID := b.allocIDs()
-	frDefID, frReqID := b.allocIDs()
 
-	// Register: airport basic info.
 	for _, f := range []string{
 		"OPEN AIRPORT", "LATITUDE", "LONGITUDE", "ALTITUDE", "ICAO", "NAME", "NAME64", "CLOSE AIRPORT",
 	} {
@@ -1047,10 +1051,9 @@ func (b *simconnectBridge) GetAirportDetails(ctx context.Context, icao, region s
 		}
 	}
 
-	// Register: runways.
 	for _, f := range []string{
 		"OPEN AIRPORT", "OPEN RUNWAY",
-		"LATITUDE", "LONGITUDE", "ALTITUDE", "HEADING", "LENGTH", "WIDTH", "SURFACE",
+		"HEADING", "LENGTH", "WIDTH", "SURFACE",
 		"CLOSE RUNWAY", "CLOSE AIRPORT",
 	} {
 		if err := mgr.AddToFacilityDefinition(rwDefID, f); err != nil {
@@ -1058,74 +1061,42 @@ func (b *simconnectBridge) GetAirportDetails(ctx context.Context, icao, region s
 		}
 	}
 
-	// Register: parking stands.
-	for _, f := range []string{
-		"OPEN AIRPORT", "OPEN TAXI_PARKING",
-		"TYPE", "TAXI_POINT_TYPE", "NAME", "SUFFIX", "NUMBER", "ORIENTATION", "HEADING", "RADIUS", "BIAS_X", "BIAS_Z",
-		"CLOSE TAXI_PARKING", "CLOSE AIRPORT",
-	} {
-		if err := mgr.AddToFacilityDefinition(pkDefID, f); err != nil {
-			return nil, fmt.Errorf("bridge: AddToFacilityDefinition parking %q: %w", f, err)
-		}
-	}
-
-	// Register: ATC frequencies.
-	for _, f := range []string{
-		"OPEN AIRPORT", "OPEN FREQUENCY",
-		"TYPE", "FREQUENCY", "NAME",
-		"CLOSE FREQUENCY", "CLOSE AIRPORT",
-	} {
-		if err := mgr.AddToFacilityDefinition(frDefID, f); err != nil {
-			return nil, fmt.Errorf("bridge: AddToFacilityDefinition frequency %q: %w", f, err)
-		}
-	}
-
-	// Buffer must be large enough for busy airports (LKPR has 100+ stands).
-	// Each RequestFacilityData call produces N FACILITY_DATA + 1 FACILITY_DATA_END,
-	// so 4 requests at a large airport can easily exceed 200 messages total.
-	// The SDK dispatcher drops messages when the channel is full, so use 512.
-	sub := mgr.SubscribeWithType("", 512, []types.SIMCONNECT_RECV_ID{
+	sub := mgr.SubscribeWithType("", 128, []types.SIMCONNECT_RECV_ID{
 		types.SIMCONNECT_RECV_ID_FACILITY_DATA,
 		types.SIMCONNECT_RECV_ID_FACILITY_DATA_END,
 	})
 	defer sub.Unsubscribe()
 
-	for _, pair := range [][2]uint32{{baseDefID, baseReqID}, {rwDefID, rwReqID}, {pkDefID, pkReqID}, {frDefID, frReqID}} {
+	for _, pair := range [][2]uint32{{baseDefID, baseReqID}, {rwDefID, rwReqID}} {
 		if err := mgr.RequestFacilityData(pair[0], pair[1], icao, region); err != nil {
-			return nil, fmt.Errorf("bridge: RequestFacilityData %s defID=%d: %w", icao, pair[0], err)
+			return nil, fmt.Errorf("bridge: RequestFacilityData %s: %w", icao, err)
 		}
 	}
 
-	// Accumulate results.
 	details := &AirportDetails{
 		Region:      region,
 		Runways:     []AirportRunway{},
 		Stands:      []AirportStand{},
 		Frequencies: []AirportFrequency{},
 	}
-
-	// Track how many of the 4 END messages we've received.
-	endIDs := map[uint32]bool{baseReqID: false, rwReqID: false, pkReqID: false, frReqID: false}
-	endCount := 0
 	foundBase := false
+	endIDs := map[uint32]bool{baseReqID: false, rwReqID: false}
+	endCount := 0
 
-	// 45 seconds to accommodate very large airports (EDDM, LKPR) with 200+ stands.
-	deadline := time.NewTimer(45 * time.Second)
+	deadline := time.NewTimer(30 * time.Second)
 	defer deadline.Stop()
 
 	for {
 		select {
 		case <-ctx.Done():
-			details.RunwayCount = len(details.Runways)
-			details.StandCount = len(details.Stands)
+			deduplicateDetails(details)
 			if !foundBase {
 				return nil, nil
 			}
 			return details, nil
 
 		case <-deadline.C:
-			details.RunwayCount = len(details.Runways)
-			details.StandCount = len(details.Stands)
+			deduplicateDetails(details)
 			if !foundBase {
 				return nil, fmt.Errorf("bridge: airport %q not found (timeout)", icao)
 			}
@@ -1141,7 +1112,7 @@ func (b *simconnectBridge) GetAirportDetails(ctx context.Context, icao, region s
 
 			switch types.SIMCONNECT_RECV_ID(msg.DwID) {
 			case types.SIMCONNECT_RECV_ID_FACILITY_DATA:
-				applyFacilityData(msg, details, baseReqID, rwReqID, pkReqID, frReqID, &foundBase)
+				applyFacilityData(msg, details, baseReqID, rwReqID, 0, 0, &foundBase)
 
 			case types.SIMCONNECT_RECV_ID_FACILITY_DATA_END:
 				fd := msg.AsFacilityDataEnd()
@@ -1153,12 +1124,7 @@ func (b *simconnectBridge) GetAirportDetails(ctx context.Context, icao, region s
 					endIDs[rid] = true
 					endCount++
 				}
-				if endCount == 4 {
-					// All four FACILITY_DATA_END messages received.
-					// SimConnect may have queued FACILITY_DATA records in the channel
-					// after their corresponding END (dispatch-ordering artefact).
-					// Drain the channel non-blockingly before returning so we never
-					// miss runway or other records that arrived out of order.
+				if endCount == 2 {
 				drainLoop:
 					for {
 						select {
@@ -1167,14 +1133,13 @@ func (b *simconnectBridge) GetAirportDetails(ctx context.Context, icao, region s
 								break drainLoop
 							}
 							if types.SIMCONNECT_RECV_ID(m.DwID) == types.SIMCONNECT_RECV_ID_FACILITY_DATA {
-								applyFacilityData(m, details, baseReqID, rwReqID, pkReqID, frReqID, &foundBase)
+								applyFacilityData(m, details, baseReqID, rwReqID, 0, 0, &foundBase)
 							}
 						default:
 							break drainLoop
 						}
 					}
-					details.RunwayCount = len(details.Runways)
-					details.StandCount = len(details.Stands)
+					deduplicateDetails(details)
 					if !foundBase {
 						return nil, nil
 					}
@@ -1183,6 +1148,45 @@ func (b *simconnectBridge) GetAirportDetails(ctx context.Context, icao, region s
 			}
 		}
 	}
+}
+
+// deduplicateDetails removes duplicate runway, stand, and frequency entries that
+// SimConnect can return when an airport scenery database has repeated records.
+func deduplicateDetails(d *AirportDetails) {
+	seen := make(map[string]struct{})
+	unique := d.Runways[:0]
+	for _, r := range d.Runways {
+		k := fmt.Sprintf("%.4f|%.2f|%.2f|%s", r.Heading, r.LengthM, r.WidthM, r.Surface)
+		if _, ok := seen[k]; !ok {
+			seen[k] = struct{}{}
+			unique = append(unique, r)
+		}
+	}
+	d.Runways = unique
+	d.RunwayCount = len(d.Runways)
+
+	seen = make(map[string]struct{})
+	uniqS := d.Stands[:0]
+	for _, s := range d.Stands {
+		k := fmt.Sprintf("%d|%s|%.2f", s.Number, s.Type, s.Heading)
+		if _, ok := seen[k]; !ok {
+			seen[k] = struct{}{}
+			uniqS = append(uniqS, s)
+		}
+	}
+	d.Stands = uniqS
+	d.StandCount = len(d.Stands)
+
+	seen = make(map[string]struct{})
+	uniqF := d.Frequencies[:0]
+	for _, f := range d.Frequencies {
+		k := fmt.Sprintf("%s|%.6f", f.Type, f.FreqMHz)
+		if _, ok := seen[k]; !ok {
+			seen[k] = struct{}{}
+			uniqF = append(uniqF, f)
+		}
+	}
+	d.Frequencies = uniqF
 }
 
 // applyFacilityData decodes a single SIMCONNECT_RECV_ID_FACILITY_DATA message

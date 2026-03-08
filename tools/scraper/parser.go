@@ -24,6 +24,58 @@ import (
 // Indexed variables are identified by a ":index" suffix in the name column.
 // Deprecated variables are identified by a <span class="deprecated"> element
 // in the description cell.
+// simVarCols holds the detected column index for each logical field in a
+// simvar table. -1 means the column is absent in this table.
+type simVarCols struct {
+	name, description, units, settable int
+}
+
+// detectSimVarCols reads the header row of a simvar table and maps column
+// positions by lowercased keyword matching. Tables on the SDK docs site have
+// at least three formats:
+//
+//	3-col: Variable | Description | Units
+//	4-col: Variable | Description | Units | Settable
+//	4-col: Variable | Parameters  | Description | Units  (no Settable)
+//	5-col: Variable | Parameters  | Description | Units | Settable
+//
+// The "Parameters" column (index or qualifier) is intentionally skipped; its
+// value is not useful for the corpus and only shifts the Description/Units
+// indices right by one position.
+func detectSimVarCols(headerRow *html.Node) (simVarCols, bool) {
+	cells := extractCells(headerRow)
+	cols := simVarCols{name: -1, description: -1, units: -1, settable: -1}
+	for i, cell := range cells {
+		text := strings.ToLower(cleanText(cellText(cell)))
+		switch {
+		case strings.Contains(text, "variable") || strings.Contains(text, "name"):
+			if cols.name == -1 {
+				cols.name = i
+			}
+		case strings.Contains(text, "description"):
+			if cols.description == -1 {
+				cols.description = i
+			}
+		case strings.Contains(text, "unit"):
+			if cols.units == -1 {
+				cols.units = i
+			}
+		case strings.Contains(text, "settable"):
+			if cols.settable == -1 {
+				cols.settable = i
+			}
+		}
+	}
+	// A valid simvar table must have at least name and description columns.
+	return cols, cols.name != -1 && cols.description != -1
+}
+
+// ParseSimVarPage parses a SimVar category page from docs.flightsimulator.com.
+// The page may contain multiple HTML tables (one per section). Each table's
+// header row is inspected to detect the column layout, which varies across
+// pages and sections (3, 4, or 5 columns; presence/absence of Parameters and
+// Settable columns). Variables with ":index" in the name are annotated as
+// indexed. Deprecated variables are identified by <span class="deprecated">.
 func ParseSimVarPage(htmlBytes []byte, sdkVersion, sourceURL string) ([]corpus.SimVar, error) {
 	doc, err := html.Parse(strings.NewReader(string(htmlBytes)))
 	if err != nil {
@@ -40,32 +92,53 @@ func ParseSimVarPage(htmlBytes []byte, sdkVersion, sourceURL string) ([]corpus.S
 
 	for _, table := range tables {
 		rows := rowsFromTable(table)
-		// rows[0] is the header row of each table — skip it.
+		if len(rows) == 0 {
+			continue
+		}
+
+		// Detect column layout from the header row.
+		cols, ok := detectSimVarCols(rows[0])
+		if !ok {
+			// Not a recognisable simvar table (e.g. a note or index table) — skip.
+			continue
+		}
+
 		for i, row := range rows {
 			if i == 0 {
-				continue
+				continue // header already consumed
 			}
 			cells := extractCells(row)
-			if len(cells) < 3 {
-				log.Printf("simvar row %d: expected >=3 cells, got %d — skipping", i, len(cells))
+
+			// Require at least enough cells to cover name and description.
+			maxNeeded := cols.description + 1
+			if cols.units != -1 && cols.units+1 > maxNeeded {
+				maxNeeded = cols.units + 1
+			}
+			if len(cells) < maxNeeded {
 				continue
 			}
 
-			name := cleanText(cellText(cells[0]))
+			name := cleanText(cellText(cells[cols.name]))
 			if name == "" {
-				log.Printf("simvar row %d: empty name — skipping", i)
 				continue
 			}
 
-			descCell := cells[1]
+			descCell := cells[cols.description]
 			description := cleanText(cellText(descCell))
 			deprecated, deprecatedReason := extractDeprecated(descCell, description)
 
-			units := parseUnitList(cleanText(cellText(cells[2])))
+			var units []string
+			if cols.units != -1 && cols.units < len(cells) {
+				units = parseUnitList(cleanText(cellText(cells[cols.units])))
+			}
 
 			settable := false
-			if len(cells) >= 4 {
-				settable = strings.EqualFold(strings.TrimSpace(cellText(cells[3])), "yes")
+			if cols.settable != -1 && cols.settable < len(cells) {
+				// The Settable column uses a CSS checkmark (<span class="checkmark">)
+				// rather than plain text; "yes"/"no" is never present. Presence of
+				// the checkmark class indicates the variable is settable.
+				settable = findFirstWithClass(cells[cols.settable], "span", "checkmark") != nil ||
+					strings.EqualFold(strings.TrimSpace(cellText(cells[cols.settable])), "yes")
 			}
 
 			// Indexed variables have ":index" in the name.
@@ -157,47 +230,48 @@ func ParseGPSVarPage(htmlBytes []byte, sdkVersion, sourceURL string, pageDepreca
 }
 
 // ParseEventPage parses an Event (Key Event ID) page from docs.flightsimulator.com.
-// The page is expected to contain an HTML table with at least the columns:
-// "Event name" and "Description".
+// The page may contain multiple HTML tables (one per section). Each table's first
+// row is skipped as a header. Rows with fewer than 2 cells are skipped.
 func ParseEventPage(htmlBytes []byte, sdkVersion, sourceURL string) ([]corpus.Event, error) {
 	doc, err := html.Parse(strings.NewReader(string(htmlBytes)))
 	if err != nil {
 		return nil, fmt.Errorf("parse html: %w", err)
 	}
 
-	rows := extractTableRows(doc)
+	tables := findAllTables(doc)
 
 	var events []corpus.Event
 
-	for i, row := range rows {
-		if i == 0 {
-			continue
-		}
-		cells := extractCells(row)
-		if len(cells) < 2 {
-			log.Printf("event row %d: expected >=2 cells, got %d — skipping", i, len(cells))
-			continue
-		}
+	for _, table := range tables {
+		rows := rowsFromTable(table)
+		for i, row := range rows {
+			if i == 0 {
+				continue // skip header row of each table
+			}
+			cells := extractCells(row)
+			if len(cells) < 2 {
+				continue
+			}
 
-		name := cleanText(cellText(cells[0]))
-		if name == "" {
-			log.Printf("event row %d: empty name — skipping", i)
-			continue
-		}
+			name := cleanText(cellText(cells[0]))
+			if name == "" {
+				continue
+			}
 
-		descCell := cells[1]
-		description := cleanText(cellText(descCell))
-		deprecated, deprecatedReason := extractDeprecated(descCell, description)
+			descCell := cells[1]
+			description := cleanText(cellText(descCell))
+			deprecated, deprecatedReason := extractDeprecated(descCell, description)
 
-		ev := corpus.Event{
-			Name:             name,
-			Description:      description,
-			Versions:         []string{sdkVersion},
-			Deprecated:       deprecated,
-			DeprecatedReason: deprecatedReason,
-			SourceURL:        sourceURL,
+			ev := corpus.Event{
+				Name:             name,
+				Description:      description,
+				Versions:         []string{sdkVersion},
+				Deprecated:       deprecated,
+				DeprecatedReason: deprecatedReason,
+				SourceURL:        sourceURL,
+			}
+			events = append(events, ev)
 		}
-		events = append(events, ev)
 	}
 
 	return events, nil

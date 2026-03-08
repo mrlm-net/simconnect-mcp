@@ -4,6 +4,14 @@ All notable changes to SimConnect MCP are documented here. The format follows [K
 
 Full release history with release notes is also available on the [GitHub Releases page](https://github.com/mrlm-net/simconnect-mcp/releases).
 
+## [0.3.16] - 2026-03-08
+
+### Fixed
+
+- `ParseSimVarPage` now detects the column layout from each table's header row instead of assuming fixed column indices — pages with a `Parameters` column (e.g. `Aircraft_System_Variables.htm`) use a 5-column layout where the current parser would misread Parameters as Description and Description as Units; header-aware detection correctly maps each field regardless of column count (3, 4, or 5 columns)
+- `Settable` field now correctly reads the CSS checkmark icon (`<span class="checkmark">`) used in MSFS 2020 and 2024 docs instead of looking for literal "yes"/"no" text; previously all variables were written with `settable: false`
+- `ParseEventPage` now processes all tables per page — event pages use the same multi-table section layout as simvar pages; previously only the first table was parsed. Event corpus grew: MSFS 2020 263 → 1 403 entries, MSFS 2024 295 → 1 556 entries
+
 ## [0.3.15] - 2026-03-08
 
 ### Fixed

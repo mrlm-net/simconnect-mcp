@@ -1,8 +1,6 @@
 name: Update SimConnect Corpus
 
 on:
-  schedule:
-    - cron: '0 3 * * 1'  # Every Monday at 03:00 UTC
   workflow_dispatch:
 
 permissions:

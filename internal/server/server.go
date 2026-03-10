@@ -14,6 +14,10 @@ import (
 // NoRoute and NoMethod handlers are also registered to produce structured JSON
 // errors instead of Gin's default plain-text responses.
 func New() *gin.Engine {
+	// Release mode suppresses debug output and enforces the CORS localhost
+	// restriction regardless of whether GIN_MODE is set in the environment.
+	gin.SetMode(gin.ReleaseMode)
+
 	engine := gin.New()
 
 	engine.Use(middleware.RecoveryHandler())

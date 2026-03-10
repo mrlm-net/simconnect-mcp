@@ -3,6 +3,7 @@ package middleware
 import (
 	"crypto/rand"
 	"fmt"
+	"regexp"
 
 	"github.com/gin-gonic/gin"
 )
@@ -11,14 +12,20 @@ type contextKey string
 
 const requestIDKey contextKey = "request-id"
 
+// requestIDRe accepts only safe characters for a request ID: alphanumeric and
+// hyphens, 1–64 characters. Values that don't match are discarded and a fresh
+// UUID is generated instead, preventing log injection via the header.
+var requestIDRe = regexp.MustCompile(`^[a-zA-Z0-9\-]{1,64}$`)
+
 // RequestID is a middleware that assigns a unique request ID to every incoming
-// request. If the client supplies an X-Request-ID header the value is reused;
-// otherwise a random UUID v4 is generated. The ID is echoed back in the
-// response header and stored in the Gin context for downstream handlers.
+// request. If the client supplies an X-Request-ID header the value is reused
+// (provided it matches the allowed pattern); otherwise a random UUID v4 is
+// generated. The ID is echoed back in the response header and stored in the
+// Gin context for downstream handlers.
 func RequestID() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		id := c.GetHeader("X-Request-ID")
-		if id == "" {
+		if !requestIDRe.MatchString(id) {
 			id = newUUID()
 		}
 		c.Header("X-Request-ID", id)

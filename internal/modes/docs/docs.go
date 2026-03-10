@@ -7,6 +7,8 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -36,7 +38,18 @@ func New(cfg Config) modes.Mode {
 func (m *docsMode) buildMCPServer() (*mcpadapter.Server, error) {
 	var loader corpus.DocLoader
 	if m.cfg.OverridePath != "" {
-		loader = corpus.LoadFromPathVersion(m.cfg.OverridePath, m.cfg.MSFSVersion)
+		abs, err := filepath.Abs(m.cfg.OverridePath)
+		if err != nil {
+			return nil, fmt.Errorf("docs mode: DOCS_OVERRIDE_PATH: %w", err)
+		}
+		info, err := os.Stat(abs)
+		if err != nil {
+			return nil, fmt.Errorf("docs mode: DOCS_OVERRIDE_PATH %q: %w", abs, err)
+		}
+		if !info.IsDir() {
+			return nil, fmt.Errorf("docs mode: DOCS_OVERRIDE_PATH %q is not a directory", abs)
+		}
+		loader = corpus.LoadFromPathVersion(abs, m.cfg.MSFSVersion)
 	} else {
 		loader = corpus.LoadEmbeddedVersion(m.cfg.MSFSVersion)
 	}

@@ -11,14 +11,19 @@ import (
 )
 
 // RegisterErrorCodeTools registers list_error_codes and get_error_code on s.
-func RegisterErrorCodeTools(s *mcpadapter.Server, store corpus.DocStore) {
-	s.AddTool(
-		mcpadapter.NewTool("list_error_codes").
-			Description("List SimConnect exception/error codes. Paginate with page and page_size.").
-			NumberParam("page", "Page number, 1-indexed (default 1)").
-			NumberParam("page_size", "Results per page, max 100 (default 20)").
-			Build(),
+func RegisterErrorCodeTools(s *mcpadapter.Server, store corpus.DocStore, liveScrape bool) {
+	listBuilder := mcpadapter.NewTool("list_error_codes").
+		Description("List SimConnect exception/error codes. Paginate with page and page_size.").
+		NumberParam("page", "Page number, 1-indexed (default 1)").
+		NumberParam("page_size", "Results per page, max 100 (default 20)")
+	if liveScrape {
+		listBuilder = listBuilder.BoolParam("confirm_live_scraping", "Set to true to confirm you accept responsibility for live HTTP requests to external documentation sites. Required when DOCS_LIVE_SCRAPE=true.")
+	}
+	s.AddTool(listBuilder.Build(),
 		func(ctx context.Context, args map[string]any) (*mcpadapter.CallToolResult, error) {
+			if guard := liveScrapeGuard(args, liveScrape); guard != nil {
+				return guard, nil
+			}
 			page := intArg(args, "page", 1)
 			pageSize := intArg(args, "page_size", 20)
 			if page < 1 || pageSize < 1 || pageSize > 100 {
@@ -32,13 +37,18 @@ func RegisterErrorCodeTools(s *mcpadapter.Server, store corpus.DocStore) {
 		},
 	)
 
-	s.AddTool(
-		mcpadapter.NewTool("get_error_code").
-			Description("Get a SimConnect error code by name (e.g. \"SIMCONNECT_EXCEPTION_NONE\") or integer value (e.g. 0).").
-			StringParam("name", "Error code name (optional if value provided)").
-			NumberParam("value", "Integer error code value (optional if name provided)").
-			Build(),
+	getBuilder := mcpadapter.NewTool("get_error_code").
+		Description("Get a SimConnect error code by name (e.g. \"SIMCONNECT_EXCEPTION_NONE\") or integer value (e.g. 0).").
+		StringParam("name", "Error code name (optional if value provided)").
+		NumberParam("value", "Integer error code value (optional if name provided)")
+	if liveScrape {
+		getBuilder = getBuilder.BoolParam("confirm_live_scraping", "Set to true to confirm you accept responsibility for live HTTP requests to external documentation sites. Required when DOCS_LIVE_SCRAPE=true.")
+	}
+	s.AddTool(getBuilder.Build(),
 		func(ctx context.Context, args map[string]any) (*mcpadapter.CallToolResult, error) {
+			if guard := liveScrapeGuard(args, liveScrape); guard != nil {
+				return guard, nil
+			}
 			name, hasName := args["name"].(string)
 			_, hasValue := args["value"]
 

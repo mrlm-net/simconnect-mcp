@@ -49,12 +49,12 @@ func (m *docsMode) buildMCPServer() (*mcpadapter.Server, error) {
 	m.store = corpus.NewDocStore(c)
 
 	mcp := mcpadapter.NewServer("simconnect-mcp-docs", "1.0.0")
-	tools.RegisterSimVarTools(mcp, m.store)
-	tools.RegisterEventTools(mcp, m.store)
-	tools.RegisterFunctionTools(mcp, m.store)
-	tools.RegisterStructureTools(mcp, m.store)
-	tools.RegisterErrorCodeTools(mcp, m.store)
-	tools.RegisterSearchTool(mcp, m.store)
+	tools.RegisterSimVarTools(mcp, m.store, m.cfg.LiveScrape)
+	tools.RegisterEventTools(mcp, m.store, m.cfg.LiveScrape)
+	tools.RegisterFunctionTools(mcp, m.store, m.cfg.LiveScrape)
+	tools.RegisterStructureTools(mcp, m.store, m.cfg.LiveScrape)
+	tools.RegisterErrorCodeTools(mcp, m.store, m.cfg.LiveScrape)
+	tools.RegisterSearchTool(mcp, m.store, m.cfg.LiveScrape)
 	return mcp, nil
 }
 
@@ -90,11 +90,15 @@ func (m *docsMode) HealthInfo() map[string]any {
 	if m.cfg.OverridePath != "" {
 		source = m.cfg.OverridePath
 	}
+	if m.cfg.LiveScrape {
+		source = "live"
+	}
 	return map[string]any{
 		"status":       "ok",
 		"mode":         "docs",
 		"docs_loaded":  true,
 		"docs_source":  source,
+		"live_scrape":  m.cfg.LiveScrape,
 		"msfs_version": m.cfg.MSFSVersion,
 		"simvar_count": m.store.SimVarCount(),
 		"event_count":  m.store.EventCount(),

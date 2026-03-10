@@ -71,12 +71,12 @@ func (m *bothMode) buildMCPServer(ctx context.Context) (*mcpadapter.Server, erro
 	m.store = corpus.NewDocStore(c)
 
 	mcp := mcpadapter.NewServer("simconnect-mcp", "1.0.0")
-	doctools.RegisterSimVarTools(mcp, m.store)
-	doctools.RegisterEventTools(mcp, m.store)
-	doctools.RegisterFunctionTools(mcp, m.store)
-	doctools.RegisterStructureTools(mcp, m.store)
-	doctools.RegisterErrorCodeTools(mcp, m.store)
-	doctools.RegisterSearchTool(mcp, m.store)
+	doctools.RegisterSimVarTools(mcp, m.store, false)
+	doctools.RegisterEventTools(mcp, m.store, false)
+	doctools.RegisterFunctionTools(mcp, m.store, false)
+	doctools.RegisterStructureTools(mcp, m.store, false)
+	doctools.RegisterErrorCodeTools(mcp, m.store, false)
+	doctools.RegisterSearchTool(mcp, m.store, false)
 
 	b := bridge.NewSimConnectBridge()
 	tctx, cancel := context.WithTimeout(ctx, 10*time.Second)

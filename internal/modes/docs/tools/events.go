@@ -10,14 +10,19 @@ import (
 )
 
 // RegisterEventTools registers list_events and get_event on s.
-func RegisterEventTools(s *mcpadapter.Server, store corpus.DocStore) {
-	s.AddTool(
-		mcpadapter.NewTool("list_events").
-			Description("List SimConnect client events. Paginate with page and page_size.").
-			NumberParam("page", "Page number, 1-indexed (default 1)").
-			NumberParam("page_size", "Results per page, max 100 (default 20)").
-			Build(),
+func RegisterEventTools(s *mcpadapter.Server, store corpus.DocStore, liveScrape bool) {
+	listBuilder := mcpadapter.NewTool("list_events").
+		Description("List SimConnect client events. Paginate with page and page_size.").
+		NumberParam("page", "Page number, 1-indexed (default 1)").
+		NumberParam("page_size", "Results per page, max 100 (default 20)")
+	if liveScrape {
+		listBuilder = listBuilder.BoolParam("confirm_live_scraping", "Set to true to confirm you accept responsibility for live HTTP requests to external documentation sites. Required when DOCS_LIVE_SCRAPE=true.")
+	}
+	s.AddTool(listBuilder.Build(),
 		func(ctx context.Context, args map[string]any) (*mcpadapter.CallToolResult, error) {
+			if guard := liveScrapeGuard(args, liveScrape); guard != nil {
+				return guard, nil
+			}
 			page := intArg(args, "page", 1)
 			pageSize := intArg(args, "page_size", 20)
 			if page < 1 || pageSize < 1 || pageSize > 100 {
@@ -31,13 +36,18 @@ func RegisterEventTools(s *mcpadapter.Server, store corpus.DocStore) {
 		},
 	)
 
-	s.AddTool(
-		mcpadapter.NewTool("get_event").
-			Description("Get a single SimConnect client event by name (case-insensitive).").
-			StringParam("name", "Event name, e.g. \"BRAKES\"").
-			Required("name").
-			Build(),
+	getBuilder := mcpadapter.NewTool("get_event").
+		Description("Get a single SimConnect client event by name (case-insensitive).").
+		StringParam("name", "Event name, e.g. \"BRAKES\"").
+		Required("name")
+	if liveScrape {
+		getBuilder = getBuilder.BoolParam("confirm_live_scraping", "Set to true to confirm you accept responsibility for live HTTP requests to external documentation sites. Required when DOCS_LIVE_SCRAPE=true.")
+	}
+	s.AddTool(getBuilder.Build(),
 		func(ctx context.Context, args map[string]any) (*mcpadapter.CallToolResult, error) {
+			if guard := liveScrapeGuard(args, liveScrape); guard != nil {
+				return guard, nil
+			}
 			name, _ := args["name"].(string)
 			ev, err := store.GetEvent(ctx, name)
 			if errors.Is(err, corpus.ErrNotFound) {

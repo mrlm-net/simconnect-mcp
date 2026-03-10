@@ -10,15 +10,20 @@ import (
 )
 
 // RegisterSimVarTools registers list_simvars and get_simvar on s.
-func RegisterSimVarTools(s *mcpadapter.Server, store corpus.DocStore) {
-	s.AddTool(
-		mcpadapter.NewTool("list_simvars").
-			Description("List SimConnect simulation variables. Optionally filter by category and paginate.").
-			StringParam("category", "Filter by category (optional)").
-			NumberParam("page", "Page number, 1-indexed (default 1)").
-			NumberParam("page_size", "Results per page, max 100 (default 20)").
-			Build(),
+func RegisterSimVarTools(s *mcpadapter.Server, store corpus.DocStore, liveScrape bool) {
+	listBuilder := mcpadapter.NewTool("list_simvars").
+		Description("List SimConnect simulation variables. Optionally filter by category and paginate.").
+		StringParam("category", "Filter by category (optional)").
+		NumberParam("page", "Page number, 1-indexed (default 1)").
+		NumberParam("page_size", "Results per page, max 100 (default 20)")
+	if liveScrape {
+		listBuilder = listBuilder.BoolParam("confirm_live_scraping", "Set to true to confirm you accept responsibility for live HTTP requests to external documentation sites. Required when DOCS_LIVE_SCRAPE=true.")
+	}
+	s.AddTool(listBuilder.Build(),
 		func(ctx context.Context, args map[string]any) (*mcpadapter.CallToolResult, error) {
+			if guard := liveScrapeGuard(args, liveScrape); guard != nil {
+				return guard, nil
+			}
 			category, _ := args["category"].(string)
 			page := intArg(args, "page", 1)
 			pageSize := intArg(args, "page_size", 20)
@@ -33,13 +38,18 @@ func RegisterSimVarTools(s *mcpadapter.Server, store corpus.DocStore) {
 		},
 	)
 
-	s.AddTool(
-		mcpadapter.NewTool("get_simvar").
-			Description("Get a single SimConnect simulation variable by name (case-insensitive).").
-			StringParam("name", "SimVar name, e.g. \"PLANE ALTITUDE\"").
-			Required("name").
-			Build(),
+	getBuilder := mcpadapter.NewTool("get_simvar").
+		Description("Get a single SimConnect simulation variable by name (case-insensitive).").
+		StringParam("name", "SimVar name, e.g. \"PLANE ALTITUDE\"").
+		Required("name")
+	if liveScrape {
+		getBuilder = getBuilder.BoolParam("confirm_live_scraping", "Set to true to confirm you accept responsibility for live HTTP requests to external documentation sites. Required when DOCS_LIVE_SCRAPE=true.")
+	}
+	s.AddTool(getBuilder.Build(),
 		func(ctx context.Context, args map[string]any) (*mcpadapter.CallToolResult, error) {
+			if guard := liveScrapeGuard(args, liveScrape); guard != nil {
+				return guard, nil
+			}
 			name, _ := args["name"].(string)
 			sv, err := store.GetSimVar(ctx, name)
 			if errors.Is(err, corpus.ErrNotFound) {

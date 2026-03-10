@@ -215,6 +215,117 @@ type departureFacilityData struct {
 	NApproachLegs       int32
 }
 
+// vorFacilityData mirrors the AddToFacilityDefinition sequence used in GetVORDetails:
+//
+//	ICAO([8]byte), REGION([8]byte),
+//	VOR_LATITUDE(f64), VOR_LONGITUDE(f64), VOR_ALTITUDE(f64),
+//	FREQUENCY(uint32), MAGVAR(f32), NAV_RANGE(f32),
+//	IS_NAV(i32), IS_DME(i32), IS_TACAN(i32), HAS_GLIDE_SLOPE(i32), HAS_BACK_COURSE(i32),
+//	NAME([64]byte)
+//
+// All fields naturally aligned on amd64 — no padding inserted by Go.
+// Total wire size: 16 + 24 + 4 + 4 + 4 + 5×4 + 64 = 136 bytes.
+type vorFacilityData struct {
+	ICAO          [8]byte
+	Region        [8]byte
+	Latitude      float64 // VOR_LATITUDE
+	Longitude     float64 // VOR_LONGITUDE
+	Altitude      float64 // VOR_ALTITUDE
+	FrequencyHz   uint32  // FREQUENCY (Hz)
+	MagVar        float32 // MAGVAR
+	NavRange      float32 // NAV_RANGE (nautical miles)
+	IsNAV         int32   // IS_NAV
+	IsDME         int32   // IS_DME
+	IsTACAN       int32   // IS_TACAN
+	HasGlideSlope int32   // HAS_GLIDE_SLOPE
+	HasBackCourse int32   // HAS_BACK_COURSE
+	Name          [64]byte
+}
+
+// ndbFacilityData mirrors the AddToFacilityDefinition sequence used in GetNDBDetails:
+//
+//	ICAO([8]byte), REGION([8]byte),
+//	LATITUDE(f64), LONGITUDE(f64), ALTITUDE(f64),
+//	FREQUENCY(uint32), TYPE(i32), RANGE(f32), MAGVAR(f32), IS_TERMINAL_NDB(i32),
+//	NAME([64]byte)
+//
+// Total wire size: 16 + 24 + 4 + 4 + 4 + 4 + 4 + 64 = 124 bytes.
+type ndbFacilityData struct {
+	ICAO        [8]byte
+	Region      [8]byte
+	Latitude    float64 // LATITUDE
+	Longitude   float64 // LONGITUDE
+	Altitude    float64 // ALTITUDE
+	FrequencyHz uint32  // FREQUENCY (Hz)
+	Type        int32   // TYPE
+	Range       float32 // RANGE (nautical miles)
+	MagVar      float32 // MAGVAR
+	IsTerminal  int32   // IS_TERMINAL_NDB
+	Name        [64]byte
+}
+
+// waypointFacilityData mirrors the AddToFacilityDefinition sequence used in GetWaypointDetails:
+//
+//	LATITUDE(f64), LONGITUDE(f64), ALTITUDE(f64),
+//	TYPE(i32), MAGVAR(f32), N_ROUTES(i32),
+//	ICAO([8]byte), REGION([8]byte), IS_TERMINAL_WPT(i32)
+//
+// Total wire size: 24 + 4 + 4 + 4 + 8 + 8 + 4 = 56 bytes.
+type waypointFacilityData struct {
+	Latitude   float64 // LATITUDE
+	Longitude  float64 // LONGITUDE
+	Altitude   float64 // ALTITUDE
+	Type       int32   // TYPE
+	MagVar     float32 // MAGVAR
+	NRoutes    int32   // N_ROUTES
+	ICAO       [8]byte // ICAO
+	Region     [8]byte // REGION
+	IsTerminal int32   // IS_TERMINAL_WPT
+}
+
+// navaidDefSet holds pre-registered facility definition IDs for VOR/NDB/Waypoint
+// detail requests. Reset on reconnect; re-registered lazily on first detail call.
+type navaidDefSet struct {
+	vor, ndb, waypoint uint32
+}
+
+// navaidListState holds per-call state for GetVORs/GetNDBs/GetWaypoints list requests.
+// Only one of the three slices is populated per call, determined by the list type requested.
+type navaidListState struct {
+	mu        sync.Mutex
+	playerLat float64
+	playerLon float64
+	vors      []VOREntry
+	ndbs      []NDBEntry
+	waypoints []WaypointEntry
+	done      chan struct{}
+	doneOnce  sync.Once
+}
+
+// vorDetailState holds per-call state for GetVORDetails.
+type vorDetailState struct {
+	mu       sync.Mutex
+	details  *VORDetails
+	done     chan struct{}
+	doneOnce sync.Once
+}
+
+// ndbDetailState holds per-call state for GetNDBDetails.
+type ndbDetailState struct {
+	mu       sync.Mutex
+	details  *NDBDetails
+	done     chan struct{}
+	doneOnce sync.Once
+}
+
+// waypointDetailState holds per-call state for GetWaypointDetails.
+type waypointDetailState struct {
+	mu       sync.Mutex
+	details  *WaypointDetails
+	done     chan struct{}
+	doneOnce sync.Once
+}
+
 // facilityReqSet groups all request IDs used in a single GetAirportDetails call.
 type facilityReqSet struct {
 	base, rw, fr, pk, hp, ap, dp, ar uint32
@@ -506,6 +617,17 @@ type simconnectBridge struct {
 	enrichedMu      sync.Mutex
 	enrichedPending map[uint32]*enrichedCallState
 
+	// navaidListPending maps listID -> per-call state for GetVORs/GetNDBs/GetWaypoints.
+	navaidListMu      sync.Mutex
+	navaidListPending map[uint32]*navaidListState
+
+	// navaidMu guards navaidDefs and all three navaid detail pending maps.
+	navaidMu             sync.Mutex
+	navaidDefs           navaidDefSet
+	vorDetailPending     map[uint32]*vorDetailState
+	ndbDetailPending     map[uint32]*ndbDetailState
+	waypointDetailPending map[uint32]*waypointDetailState
+
 	// idCounter provides unique definition / request IDs.
 	// Each request consumes two IDs: (counter*2) for definition, (counter*2+1) for request.
 	// We start from 1 to stay well within IsValidUserID range.
@@ -528,14 +650,18 @@ type simconnectBridge struct {
 // Open is called.
 func NewSimConnectBridge() Bridge {
 	b := &simconnectBridge{
-		mgrErrCh:        make(chan error, 1),
-		simEventCh:      make(chan SimEvent, 64),
-		pending:         make(map[uint32]chan float64),
-		simvarsBatch:    make(map[uint32]simvarsBatchEntry),
-		facilityPending: make(map[uint32]*facilityCallState),
-		airportPending:  make(map[uint32]*airportCallState),
-		trafficPending:  make(map[uint32]*trafficCallState),
-		enrichedPending: make(map[uint32]*enrichedCallState),
+		mgrErrCh:              make(chan error, 1),
+		simEventCh:            make(chan SimEvent, 64),
+		pending:               make(map[uint32]chan float64),
+		simvarsBatch:          make(map[uint32]simvarsBatchEntry),
+		facilityPending:       make(map[uint32]*facilityCallState),
+		airportPending:        make(map[uint32]*airportCallState),
+		trafficPending:        make(map[uint32]*trafficCallState),
+		enrichedPending:       make(map[uint32]*enrichedCallState),
+		navaidListPending:     make(map[uint32]*navaidListState),
+		vorDetailPending:      make(map[uint32]*vorDetailState),
+		ndbDetailPending:      make(map[uint32]*ndbDetailState),
+		waypointDetailPending: make(map[uint32]*waypointDetailState),
 	}
 	b.eventIDCounter.Store(100_000)
 	return b
@@ -592,6 +718,9 @@ func (b *simconnectBridge) Open(ctx context.Context, appName string) error {
 		b.facilityMu.Lock()
 		b.facilityDefs = facilityDefSet{}
 		b.facilityMu.Unlock()
+		b.navaidMu.Lock()
+		b.navaidDefs = navaidDefSet{}
+		b.navaidMu.Unlock()
 	})
 
 	// Wire up lifecycle events that feed SimEvents().
@@ -692,6 +821,28 @@ func (b *simconnectBridge) Close() error {
 		delete(b.enrichedPending, id)
 	}
 	b.enrichedMu.Unlock()
+
+	b.navaidListMu.Lock()
+	for id, state := range b.navaidListPending {
+		state.doneOnce.Do(func() { close(state.done) })
+		delete(b.navaidListPending, id)
+	}
+	b.navaidListMu.Unlock()
+
+	b.navaidMu.Lock()
+	for id, state := range b.vorDetailPending {
+		state.doneOnce.Do(func() { close(state.done) })
+		delete(b.vorDetailPending, id)
+	}
+	for id, state := range b.ndbDetailPending {
+		state.doneOnce.Do(func() { close(state.done) })
+		delete(b.ndbDetailPending, id)
+	}
+	for id, state := range b.waypointDetailPending {
+		state.doneOnce.Do(func() { close(state.done) })
+		delete(b.waypointDetailPending, id)
+	}
+	b.navaidMu.Unlock()
 
 	if err := mgr.Stop(); err != nil {
 		cancel()
@@ -1316,6 +1467,408 @@ func (b *simconnectBridge) GetNearestAirport(ctx context.Context) (*AirportEntry
 	}
 	entry := airports[0]
 	return &entry, nil
+}
+
+// ensureNavaidDefs registers facility definitions for VOR, NDB, and Waypoint detail
+// requests once per SimConnect connection. Cached in b.navaidDefs; reset on reconnect.
+func (b *simconnectBridge) ensureNavaidDefs(mgr manager.Manager) (navaidDefSet, error) {
+	b.navaidMu.Lock()
+	defer b.navaidMu.Unlock()
+
+	if b.navaidDefs.vor != 0 {
+		return b.navaidDefs, nil
+	}
+
+	vorDefID, _ := b.allocIDs()
+	ndbDefID, _ := b.allocIDs()
+	wptDefID, _ := b.allocIDs()
+
+	// VOR definition: ICAO, REGION, lat/lon/alt, freq, magvar, range, booleans, name.
+	for _, f := range []string{
+		"OPEN VOR",
+		"ICAO", "REGION",
+		"VOR_LATITUDE", "VOR_LONGITUDE", "VOR_ALTITUDE",
+		"FREQUENCY", "MAGVAR", "NAV_RANGE",
+		"IS_NAV", "IS_DME", "IS_TACAN", "HAS_GLIDE_SLOPE", "HAS_BACK_COURSE",
+		"NAME",
+		"CLOSE VOR",
+	} {
+		if err := mgr.AddToFacilityDefinition(vorDefID, f); err != nil {
+			return navaidDefSet{}, fmt.Errorf("bridge: AddToFacilityDefinition VOR %q: %w", f, err)
+		}
+	}
+
+	// NDB definition: ICAO, REGION, lat/lon/alt, freq, type, range, magvar, terminal, name.
+	for _, f := range []string{
+		"OPEN NDB",
+		"ICAO", "REGION",
+		"LATITUDE", "LONGITUDE", "ALTITUDE",
+		"FREQUENCY", "TYPE", "RANGE", "MAGVAR", "IS_TERMINAL_NDB",
+		"NAME",
+		"CLOSE NDB",
+	} {
+		if err := mgr.AddToFacilityDefinition(ndbDefID, f); err != nil {
+			return navaidDefSet{}, fmt.Errorf("bridge: AddToFacilityDefinition NDB %q: %w", f, err)
+		}
+	}
+
+	// Waypoint definition: lat/lon/alt, type, magvar, n_routes, ICAO, REGION, terminal.
+	for _, f := range []string{
+		"OPEN WAYPOINT",
+		"LATITUDE", "LONGITUDE", "ALTITUDE",
+		"TYPE", "MAGVAR", "N_ROUTES",
+		"ICAO", "REGION", "IS_TERMINAL_WPT",
+		"CLOSE WAYPOINT",
+	} {
+		if err := mgr.AddToFacilityDefinition(wptDefID, f); err != nil {
+			return navaidDefSet{}, fmt.Errorf("bridge: AddToFacilityDefinition Waypoint %q: %w", f, err)
+		}
+	}
+
+	b.navaidDefs = navaidDefSet{vor: vorDefID, ndb: ndbDefID, waypoint: wptDefID}
+	return b.navaidDefs, nil
+}
+
+// GetVORs returns all VOR stations in the simulator's reality bubble, sorted by
+// Haversine distance from the player aircraft.
+func (b *simconnectBridge) GetVORs(ctx context.Context) ([]VOREntry, error) {
+	if b.State() != StateConnected {
+		return nil, ErrNotConnected
+	}
+	b.mu.RLock()
+	mgr := b.mgr
+	b.mu.RUnlock()
+	if mgr == nil {
+		return nil, ErrNotConnected
+	}
+
+	mgrState := mgr.SimState()
+	listID, _ := b.allocIDs()
+
+	state := &navaidListState{
+		playerLat: mgrState.Latitude,
+		playerLon: mgrState.Longitude,
+		done:      make(chan struct{}),
+	}
+
+	b.navaidListMu.Lock()
+	b.navaidListPending[listID] = state
+	b.navaidListMu.Unlock()
+	defer func() {
+		b.navaidListMu.Lock()
+		delete(b.navaidListPending, listID)
+		b.navaidListMu.Unlock()
+	}()
+
+	if err := mgr.RequestFacilitiesListEX1(listID, types.SIMCONNECT_FACILITY_LIST_TYPE_VOR); err != nil {
+		return nil, fmt.Errorf("bridge: RequestFacilitiesListEX1 VOR: %w", err)
+	}
+
+	deadline := time.NewTimer(10 * time.Second)
+	defer deadline.Stop()
+	select {
+	case <-state.done:
+	case <-ctx.Done():
+	case <-deadline.C:
+	}
+
+	state.mu.Lock()
+	result := make([]VOREntry, len(state.vors))
+	copy(result, state.vors)
+	state.mu.Unlock()
+
+	// Deduplicate by ICAO.
+	seen := make(map[string]struct{}, len(result))
+	unique := result[:0]
+	for _, v := range result {
+		if _, ok := seen[v.ICAO]; !ok {
+			seen[v.ICAO] = struct{}{}
+			unique = append(unique, v)
+		}
+	}
+	result = unique
+
+	sort.Slice(result, func(i, j int) bool {
+		return result[i].DistanceKM < result[j].DistanceKM
+	})
+	return result, nil
+}
+
+// GetNDBs returns all NDB stations in the simulator's reality bubble, sorted by
+// Haversine distance from the player aircraft.
+func (b *simconnectBridge) GetNDBs(ctx context.Context) ([]NDBEntry, error) {
+	if b.State() != StateConnected {
+		return nil, ErrNotConnected
+	}
+	b.mu.RLock()
+	mgr := b.mgr
+	b.mu.RUnlock()
+	if mgr == nil {
+		return nil, ErrNotConnected
+	}
+
+	mgrState := mgr.SimState()
+	listID, _ := b.allocIDs()
+
+	state := &navaidListState{
+		playerLat: mgrState.Latitude,
+		playerLon: mgrState.Longitude,
+		done:      make(chan struct{}),
+	}
+
+	b.navaidListMu.Lock()
+	b.navaidListPending[listID] = state
+	b.navaidListMu.Unlock()
+	defer func() {
+		b.navaidListMu.Lock()
+		delete(b.navaidListPending, listID)
+		b.navaidListMu.Unlock()
+	}()
+
+	if err := mgr.RequestFacilitiesListEX1(listID, types.SIMCONNECT_FACILITY_LIST_TYPE_NDB); err != nil {
+		return nil, fmt.Errorf("bridge: RequestFacilitiesListEX1 NDB: %w", err)
+	}
+
+	deadline := time.NewTimer(10 * time.Second)
+	defer deadline.Stop()
+	select {
+	case <-state.done:
+	case <-ctx.Done():
+	case <-deadline.C:
+	}
+
+	state.mu.Lock()
+	result := make([]NDBEntry, len(state.ndbs))
+	copy(result, state.ndbs)
+	state.mu.Unlock()
+
+	// Deduplicate by ICAO.
+	seen := make(map[string]struct{}, len(result))
+	unique := result[:0]
+	for _, v := range result {
+		if _, ok := seen[v.ICAO]; !ok {
+			seen[v.ICAO] = struct{}{}
+			unique = append(unique, v)
+		}
+	}
+	result = unique
+
+	sort.Slice(result, func(i, j int) bool {
+		return result[i].DistanceKM < result[j].DistanceKM
+	})
+	return result, nil
+}
+
+// GetWaypoints returns all waypoints in the simulator's reality bubble, sorted by
+// Haversine distance from the player aircraft.
+func (b *simconnectBridge) GetWaypoints(ctx context.Context) ([]WaypointEntry, error) {
+	if b.State() != StateConnected {
+		return nil, ErrNotConnected
+	}
+	b.mu.RLock()
+	mgr := b.mgr
+	b.mu.RUnlock()
+	if mgr == nil {
+		return nil, ErrNotConnected
+	}
+
+	mgrState := mgr.SimState()
+	listID, _ := b.allocIDs()
+
+	state := &navaidListState{
+		playerLat: mgrState.Latitude,
+		playerLon: mgrState.Longitude,
+		done:      make(chan struct{}),
+	}
+
+	b.navaidListMu.Lock()
+	b.navaidListPending[listID] = state
+	b.navaidListMu.Unlock()
+	defer func() {
+		b.navaidListMu.Lock()
+		delete(b.navaidListPending, listID)
+		b.navaidListMu.Unlock()
+	}()
+
+	if err := mgr.RequestFacilitiesListEX1(listID, types.SIMCONNECT_FACILITY_LIST_WAYPOINT); err != nil {
+		return nil, fmt.Errorf("bridge: RequestFacilitiesListEX1 Waypoint: %w", err)
+	}
+
+	deadline := time.NewTimer(10 * time.Second)
+	defer deadline.Stop()
+	select {
+	case <-state.done:
+	case <-ctx.Done():
+	case <-deadline.C:
+	}
+
+	state.mu.Lock()
+	result := make([]WaypointEntry, len(state.waypoints))
+	copy(result, state.waypoints)
+	state.mu.Unlock()
+
+	// Deduplicate by ICAO.
+	seen := make(map[string]struct{}, len(result))
+	unique := result[:0]
+	for _, v := range result {
+		if _, ok := seen[v.ICAO]; !ok {
+			seen[v.ICAO] = struct{}{}
+			unique = append(unique, v)
+		}
+	}
+	result = unique
+
+	sort.Slice(result, func(i, j int) bool {
+		return result[i].DistanceKM < result[j].DistanceKM
+	})
+	return result, nil
+}
+
+// GetVORDetails returns detailed facility data for the given VOR ICAO.
+// Uses RequestFacilityDataEX1 with type 'V' to filter for VOR facilities only.
+func (b *simconnectBridge) GetVORDetails(ctx context.Context, icao, region string) (*VORDetails, error) {
+	if b.State() != StateConnected {
+		return nil, ErrNotConnected
+	}
+	b.mu.RLock()
+	mgr := b.mgr
+	b.mu.RUnlock()
+	if mgr == nil {
+		return nil, ErrNotConnected
+	}
+
+	defs, err := b.ensureNavaidDefs(mgr)
+	if err != nil {
+		return nil, err
+	}
+
+	_, reqID := b.allocIDs()
+
+	state := &vorDetailState{done: make(chan struct{})}
+
+	b.navaidMu.Lock()
+	b.vorDetailPending[reqID] = state
+	b.navaidMu.Unlock()
+	defer func() {
+		b.navaidMu.Lock()
+		delete(b.vorDetailPending, reqID)
+		b.navaidMu.Unlock()
+	}()
+
+	if err := mgr.RequestFacilityDataEX1(defs.vor, reqID, icao, region, 'V'); err != nil {
+		return nil, fmt.Errorf("bridge: RequestFacilityDataEX1 VOR %s: %w", icao, err)
+	}
+
+	deadline := time.NewTimer(15 * time.Second)
+	defer deadline.Stop()
+	select {
+	case <-state.done:
+	case <-ctx.Done():
+	case <-deadline.C:
+	}
+
+	state.mu.Lock()
+	details := state.details
+	state.mu.Unlock()
+	return details, nil
+}
+
+// GetNDBDetails returns detailed facility data for the given NDB ICAO.
+// Uses RequestFacilityDataEX1 with type 'N' to filter for NDB facilities only.
+func (b *simconnectBridge) GetNDBDetails(ctx context.Context, icao, region string) (*NDBDetails, error) {
+	if b.State() != StateConnected {
+		return nil, ErrNotConnected
+	}
+	b.mu.RLock()
+	mgr := b.mgr
+	b.mu.RUnlock()
+	if mgr == nil {
+		return nil, ErrNotConnected
+	}
+
+	defs, err := b.ensureNavaidDefs(mgr)
+	if err != nil {
+		return nil, err
+	}
+
+	_, reqID := b.allocIDs()
+
+	state := &ndbDetailState{done: make(chan struct{})}
+
+	b.navaidMu.Lock()
+	b.ndbDetailPending[reqID] = state
+	b.navaidMu.Unlock()
+	defer func() {
+		b.navaidMu.Lock()
+		delete(b.ndbDetailPending, reqID)
+		b.navaidMu.Unlock()
+	}()
+
+	if err := mgr.RequestFacilityDataEX1(defs.ndb, reqID, icao, region, 'N'); err != nil {
+		return nil, fmt.Errorf("bridge: RequestFacilityDataEX1 NDB %s: %w", icao, err)
+	}
+
+	deadline := time.NewTimer(15 * time.Second)
+	defer deadline.Stop()
+	select {
+	case <-state.done:
+	case <-ctx.Done():
+	case <-deadline.C:
+	}
+
+	state.mu.Lock()
+	details := state.details
+	state.mu.Unlock()
+	return details, nil
+}
+
+// GetWaypointDetails returns detailed facility data for the given waypoint ICAO.
+// Uses RequestFacilityDataEX1 with type 'W' to filter for waypoint facilities only.
+func (b *simconnectBridge) GetWaypointDetails(ctx context.Context, icao, region string) (*WaypointDetails, error) {
+	if b.State() != StateConnected {
+		return nil, ErrNotConnected
+	}
+	b.mu.RLock()
+	mgr := b.mgr
+	b.mu.RUnlock()
+	if mgr == nil {
+		return nil, ErrNotConnected
+	}
+
+	defs, err := b.ensureNavaidDefs(mgr)
+	if err != nil {
+		return nil, err
+	}
+
+	_, reqID := b.allocIDs()
+
+	state := &waypointDetailState{done: make(chan struct{})}
+
+	b.navaidMu.Lock()
+	b.waypointDetailPending[reqID] = state
+	b.navaidMu.Unlock()
+	defer func() {
+		b.navaidMu.Lock()
+		delete(b.waypointDetailPending, reqID)
+		b.navaidMu.Unlock()
+	}()
+
+	if err := mgr.RequestFacilityDataEX1(defs.waypoint, reqID, icao, region, 'W'); err != nil {
+		return nil, fmt.Errorf("bridge: RequestFacilityDataEX1 Waypoint %s: %w", icao, err)
+	}
+
+	deadline := time.NewTimer(15 * time.Second)
+	defer deadline.Stop()
+	select {
+	case <-state.done:
+	case <-ctx.Done():
+	case <-deadline.C:
+	}
+
+	state.mu.Lock()
+	details := state.details
+	state.mu.Unlock()
+	return details, nil
 }
 
 // ensureFacilityDefs registers the eight facility definition schemas once per
@@ -1977,6 +2530,166 @@ func (b *simconnectBridge) handleMessage(msg engine.Message) {
 			}
 		}
 
+	case types.SIMCONNECT_RECV_ID_VOR_LIST:
+		list := msg.AsFacilityList()
+		if list == nil {
+			return
+		}
+		b.navaidListMu.Lock()
+		nstate := b.navaidListPending[uint32(list.DwRequestID)]
+		b.navaidListMu.Unlock()
+		if nstate != nil {
+			allDone := false
+			nstate.mu.Lock()
+			if list.DwArraySize > 0 {
+				headerSize := unsafe.Sizeof(types.SIMCONNECT_RECV_FACILITIES_LIST{})
+				actualDataSize := uintptr(msg.DwSize) - headerSize
+				actualEntrySize := actualDataSize / uintptr(list.DwArraySize)
+				// VOR wire sizes: MSFS2020 = 89 (6-char ICAO), MSFS2024 = 92 (9-char ICAO)
+				var identLen, latOff, lonOff, altOff, magOff, freqOff uintptr
+				switch actualEntrySize {
+				case 89:
+					identLen, latOff, lonOff, altOff, magOff, freqOff = 6, 9, 17, 25, 33, 41
+				case 92:
+					identLen, latOff, lonOff, altOff, magOff, freqOff = 9, 12, 20, 28, 36, 44
+				}
+				if identLen > 0 {
+					dataStart := unsafe.Pointer(uintptr(unsafe.Pointer(list)) + headerSize)
+					for i := uint32(0); i < uint32(list.DwArraySize); i++ {
+						entryPtr := unsafe.Pointer(uintptr(dataStart) + uintptr(i)*actualEntrySize)
+						identBytes := (*[9]byte)(entryPtr)
+						regionBytes := (*[3]byte)(unsafe.Pointer(uintptr(entryPtr) + identLen))
+						lat := *(*float64)(unsafe.Pointer(uintptr(entryPtr) + latOff))
+						lon := *(*float64)(unsafe.Pointer(uintptr(entryPtr) + lonOff))
+						alt := *(*float64)(unsafe.Pointer(uintptr(entryPtr) + altOff))
+						magVar := *(*float64)(unsafe.Pointer(uintptr(entryPtr) + magOff))
+						freqHz := *(*uint32)(unsafe.Pointer(uintptr(entryPtr) + freqOff))
+						nstate.vors = append(nstate.vors, VOREntry{
+							ICAO:        engine.BytesToString(identBytes[:identLen]),
+							Region:      engine.BytesToString(regionBytes[:]),
+							Latitude:    lat,
+							Longitude:   lon,
+							AltitudeM:   alt,
+							FrequencyHz: freqHz,
+							MagVar:      magVar,
+							DistanceKM:  calc.HaversineKM(nstate.playerLat, nstate.playerLon, lat, lon),
+						})
+					}
+				}
+			}
+			allDone = uint32(list.DwEntryNumber)+1 >= uint32(list.DwOutOf)
+			nstate.mu.Unlock()
+			if allDone {
+				nstate.doneOnce.Do(func() { close(nstate.done) })
+			}
+		}
+
+	case types.SIMCONNECT_RECV_ID_NDB_LIST:
+		list := msg.AsFacilityList()
+		if list == nil {
+			return
+		}
+		b.navaidListMu.Lock()
+		nstate := b.navaidListPending[uint32(list.DwRequestID)]
+		b.navaidListMu.Unlock()
+		if nstate != nil {
+			allDone := false
+			nstate.mu.Lock()
+			if list.DwArraySize > 0 {
+				headerSize := unsafe.Sizeof(types.SIMCONNECT_RECV_FACILITIES_LIST{})
+				actualDataSize := uintptr(msg.DwSize) - headerSize
+				actualEntrySize := actualDataSize / uintptr(list.DwArraySize)
+				// NDB wire sizes: MSFS2020 = 45 (6-char ICAO), MSFS2024 = 48 (9-char ICAO)
+				var identLen, latOff, lonOff, altOff, magOff, freqOff uintptr
+				switch actualEntrySize {
+				case 45:
+					identLen, latOff, lonOff, altOff, magOff, freqOff = 6, 9, 17, 25, 33, 41
+				case 48:
+					identLen, latOff, lonOff, altOff, magOff, freqOff = 9, 12, 20, 28, 36, 44
+				}
+				if identLen > 0 {
+					dataStart := unsafe.Pointer(uintptr(unsafe.Pointer(list)) + headerSize)
+					for i := uint32(0); i < uint32(list.DwArraySize); i++ {
+						entryPtr := unsafe.Pointer(uintptr(dataStart) + uintptr(i)*actualEntrySize)
+						identBytes := (*[9]byte)(entryPtr)
+						regionBytes := (*[3]byte)(unsafe.Pointer(uintptr(entryPtr) + identLen))
+						lat := *(*float64)(unsafe.Pointer(uintptr(entryPtr) + latOff))
+						lon := *(*float64)(unsafe.Pointer(uintptr(entryPtr) + lonOff))
+						alt := *(*float64)(unsafe.Pointer(uintptr(entryPtr) + altOff))
+						magVar := *(*float64)(unsafe.Pointer(uintptr(entryPtr) + magOff))
+						freqHz := *(*uint32)(unsafe.Pointer(uintptr(entryPtr) + freqOff))
+						nstate.ndbs = append(nstate.ndbs, NDBEntry{
+							ICAO:        engine.BytesToString(identBytes[:identLen]),
+							Region:      engine.BytesToString(regionBytes[:]),
+							Latitude:    lat,
+							Longitude:   lon,
+							AltitudeM:   alt,
+							FrequencyHz: freqHz,
+							MagVar:      magVar,
+							DistanceKM:  calc.HaversineKM(nstate.playerLat, nstate.playerLon, lat, lon),
+						})
+					}
+				}
+			}
+			allDone = uint32(list.DwEntryNumber)+1 >= uint32(list.DwOutOf)
+			nstate.mu.Unlock()
+			if allDone {
+				nstate.doneOnce.Do(func() { close(nstate.done) })
+			}
+		}
+
+	case types.SIMCONNECT_RECV_ID_WAYPOINT_LIST:
+		list := msg.AsFacilityList()
+		if list == nil {
+			return
+		}
+		b.navaidListMu.Lock()
+		nstate := b.navaidListPending[uint32(list.DwRequestID)]
+		b.navaidListMu.Unlock()
+		if nstate != nil {
+			allDone := false
+			nstate.mu.Lock()
+			if list.DwArraySize > 0 {
+				headerSize := unsafe.Sizeof(types.SIMCONNECT_RECV_FACILITIES_LIST{})
+				actualDataSize := uintptr(msg.DwSize) - headerSize
+				actualEntrySize := actualDataSize / uintptr(list.DwArraySize)
+				// Waypoint wire sizes: MSFS2020 = 41 (6-char ICAO), MSFS2024 = 44 (9-char ICAO)
+				var identLen, latOff, lonOff, altOff, magOff uintptr
+				switch actualEntrySize {
+				case 41:
+					identLen, latOff, lonOff, altOff, magOff = 6, 9, 17, 25, 33
+				case 44:
+					identLen, latOff, lonOff, altOff, magOff = 9, 12, 20, 28, 36
+				}
+				if identLen > 0 {
+					dataStart := unsafe.Pointer(uintptr(unsafe.Pointer(list)) + headerSize)
+					for i := uint32(0); i < uint32(list.DwArraySize); i++ {
+						entryPtr := unsafe.Pointer(uintptr(dataStart) + uintptr(i)*actualEntrySize)
+						identBytes := (*[9]byte)(entryPtr)
+						regionBytes := (*[3]byte)(unsafe.Pointer(uintptr(entryPtr) + identLen))
+						lat := *(*float64)(unsafe.Pointer(uintptr(entryPtr) + latOff))
+						lon := *(*float64)(unsafe.Pointer(uintptr(entryPtr) + lonOff))
+						alt := *(*float64)(unsafe.Pointer(uintptr(entryPtr) + altOff))
+						magVar := *(*float64)(unsafe.Pointer(uintptr(entryPtr) + magOff))
+						nstate.waypoints = append(nstate.waypoints, WaypointEntry{
+							ICAO:       engine.BytesToString(identBytes[:identLen]),
+							Region:     engine.BytesToString(regionBytes[:]),
+							Latitude:   lat,
+							Longitude:  lon,
+							AltitudeM:  alt,
+							MagVar:     magVar,
+							DistanceKM: calc.HaversineKM(nstate.playerLat, nstate.playerLon, lat, lon),
+						})
+					}
+				}
+			}
+			allDone = uint32(list.DwEntryNumber)+1 >= uint32(list.DwOutOf)
+			nstate.mu.Unlock()
+			if allDone {
+				nstate.doneOnce.Do(func() { close(nstate.done) })
+			}
+		}
+
 	case types.SIMCONNECT_RECV_ID_SIMOBJECT_DATA_BYTYPE:
 		// Decode inline for GetTraffic and GetEnrichedTraffic calls.
 		simObjData := msg.AsSimObjectDataBType()
@@ -2070,13 +2783,83 @@ func (b *simconnectBridge) handleMessage(msg engine.Message) {
 		if fd == nil {
 			return
 		}
+		rid := uint32(fd.UserRequestId)
+
+		// Route to airport facility pending.
 		b.facilityMu.Lock()
-		state := b.facilityPending[uint32(fd.UserRequestId)]
+		astate := b.facilityPending[rid]
 		b.facilityMu.Unlock()
-		if state != nil {
-			state.mu.Lock()
-			applyFacilityData(msg, state.details, state.ids, &state.foundBase)
-			state.mu.Unlock()
+		if astate != nil {
+			astate.mu.Lock()
+			applyFacilityData(msg, astate.details, astate.ids, &astate.foundBase)
+			astate.mu.Unlock()
+			return
+		}
+
+		// Route to navaid detail pending.
+		b.navaidMu.Lock()
+		vstate := b.vorDetailPending[rid]
+		nstate := b.ndbDetailPending[rid]
+		wstate := b.waypointDetailPending[rid]
+		b.navaidMu.Unlock()
+
+		if vstate != nil && fd.Type == types.SIMCONNECT_FACILITY_DATA_VOR {
+			data := engine.CastDataAs[vorFacilityData](&fd.Data)
+			d := &VORDetails{
+				ICAO:          engine.BytesToString(data.ICAO[:]),
+				Region:        engine.BytesToString(data.Region[:]),
+				Name:          engine.BytesToString(data.Name[:]),
+				Latitude:      data.Latitude,
+				Longitude:     data.Longitude,
+				AltitudeM:     data.Altitude,
+				FrequencyHz:   data.FrequencyHz,
+				FrequencyMHz:  float64(data.FrequencyHz) / 1_000_000.0,
+				MagVar:        float64(data.MagVar),
+				NavRangeNM:    float64(data.NavRange),
+				IsNAV:         data.IsNAV != 0,
+				IsDME:         data.IsDME != 0,
+				IsTACAN:       data.IsTACAN != 0,
+				HasGlideSlope: data.HasGlideSlope != 0,
+				HasBackCourse: data.HasBackCourse != 0,
+			}
+			vstate.mu.Lock()
+			vstate.details = d
+			vstate.mu.Unlock()
+		} else if nstate != nil && fd.Type == types.SIMCONNECT_FACILITY_DATA_NDB {
+			data := engine.CastDataAs[ndbFacilityData](&fd.Data)
+			d := &NDBDetails{
+				ICAO:         engine.BytesToString(data.ICAO[:]),
+				Region:       engine.BytesToString(data.Region[:]),
+				Name:         engine.BytesToString(data.Name[:]),
+				Latitude:     data.Latitude,
+				Longitude:    data.Longitude,
+				AltitudeM:    data.Altitude,
+				FrequencyHz:  data.FrequencyHz,
+				FrequencyKHz: float64(data.FrequencyHz) / 1000.0,
+				Type:         data.Type,
+				RangeNM:      float64(data.Range),
+				MagVar:       float64(data.MagVar),
+				IsTerminal:   data.IsTerminal != 0,
+			}
+			nstate.mu.Lock()
+			nstate.details = d
+			nstate.mu.Unlock()
+		} else if wstate != nil && fd.Type == types.SIMCONNECT_FACILITY_DATA_WAYPOINT {
+			data := engine.CastDataAs[waypointFacilityData](&fd.Data)
+			d := &WaypointDetails{
+				ICAO:       engine.BytesToString(data.ICAO[:]),
+				Region:     engine.BytesToString(data.Region[:]),
+				Latitude:   data.Latitude,
+				Longitude:  data.Longitude,
+				AltitudeM:  data.Altitude,
+				Type:       data.Type,
+				MagVar:     float64(data.MagVar),
+				NRoutes:    data.NRoutes,
+				IsTerminal: data.IsTerminal != 0,
+			}
+			wstate.mu.Lock()
+			wstate.details = d
+			wstate.mu.Unlock()
 		}
 
 	case types.SIMCONNECT_RECV_ID_FACILITY_DATA_END:
@@ -2085,21 +2868,38 @@ func (b *simconnectBridge) handleMessage(msg engine.Message) {
 			return
 		}
 		rid := uint32(fde.RequestId)
+
+		// Route to airport facility pending.
 		b.facilityMu.Lock()
-		state := b.facilityPending[rid]
+		astate := b.facilityPending[rid]
 		b.facilityMu.Unlock()
-		if state != nil {
+		if astate != nil {
 			allDone := false
-			state.mu.Lock()
-			if _, tracked := state.endIDs[rid]; tracked && !state.endIDs[rid] {
-				state.endIDs[rid] = true
-				state.endCount++
-				allDone = state.endCount == state.expected
+			astate.mu.Lock()
+			if _, tracked := astate.endIDs[rid]; tracked && !astate.endIDs[rid] {
+				astate.endIDs[rid] = true
+				astate.endCount++
+				allDone = astate.endCount == astate.expected
 			}
-			state.mu.Unlock()
+			astate.mu.Unlock()
 			if allDone {
-				state.doneOnce.Do(func() { close(state.done) })
+				astate.doneOnce.Do(func() { close(astate.done) })
 			}
+			return
+		}
+
+		// Route to navaid detail pending.
+		b.navaidMu.Lock()
+		vstate := b.vorDetailPending[rid]
+		nstate := b.ndbDetailPending[rid]
+		wstate := b.waypointDetailPending[rid]
+		b.navaidMu.Unlock()
+		if vstate != nil {
+			vstate.doneOnce.Do(func() { close(vstate.done) })
+		} else if nstate != nil {
+			nstate.doneOnce.Do(func() { close(nstate.done) })
+		} else if wstate != nil {
+			wstate.doneOnce.Do(func() { close(wstate.done) })
 		}
 	}
 }

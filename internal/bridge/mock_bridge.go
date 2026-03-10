@@ -73,6 +73,42 @@ type MockBridge struct {
 
 	// MockAirportDetailsError is returned by GetAirportDetails when non-nil.
 	MockAirportDetailsError error
+
+	// MockVORs is returned by GetVORs when MockVORsError is nil.
+	MockVORs []VOREntry
+
+	// MockVORsError is returned by GetVORs when non-nil.
+	MockVORsError error
+
+	// MockVORDetails is returned by GetVORDetails when MockVORDetailsError is nil.
+	MockVORDetails *VORDetails
+
+	// MockVORDetailsError is returned by GetVORDetails when non-nil.
+	MockVORDetailsError error
+
+	// MockNDBs is returned by GetNDBs when MockNDBsError is nil.
+	MockNDBs []NDBEntry
+
+	// MockNDBsError is returned by GetNDBs when non-nil.
+	MockNDBsError error
+
+	// MockNDBDetails is returned by GetNDBDetails when MockNDBDetailsError is nil.
+	MockNDBDetails *NDBDetails
+
+	// MockNDBDetailsError is returned by GetNDBDetails when non-nil.
+	MockNDBDetailsError error
+
+	// MockWaypoints is returned by GetWaypoints when MockWaypointsError is nil.
+	MockWaypoints []WaypointEntry
+
+	// MockWaypointsError is returned by GetWaypoints when non-nil.
+	MockWaypointsError error
+
+	// MockWaypointDetails is returned by GetWaypointDetails when MockWaypointDetailsError is nil.
+	MockWaypointDetails *WaypointDetails
+
+	// MockWaypointDetailsError is returned by GetWaypointDetails when non-nil.
+	MockWaypointDetailsError error
 }
 
 // Compile-time assertion: MockBridge must implement Bridge.
@@ -206,6 +242,60 @@ func (m *MockBridge) GetAirportDetails(_ context.Context, _, _ string, _ bool) (
 		return nil, m.MockAirportDetailsError
 	}
 	return m.MockAirportDetails, nil
+}
+
+func (m *MockBridge) GetVORs(_ context.Context) ([]VOREntry, error) {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+	if m.MockVORsError != nil {
+		return nil, m.MockVORsError
+	}
+	return m.MockVORs, nil
+}
+
+func (m *MockBridge) GetVORDetails(_ context.Context, _, _ string) (*VORDetails, error) {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+	if m.MockVORDetailsError != nil {
+		return nil, m.MockVORDetailsError
+	}
+	return m.MockVORDetails, nil
+}
+
+func (m *MockBridge) GetNDBs(_ context.Context) ([]NDBEntry, error) {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+	if m.MockNDBsError != nil {
+		return nil, m.MockNDBsError
+	}
+	return m.MockNDBs, nil
+}
+
+func (m *MockBridge) GetNDBDetails(_ context.Context, _, _ string) (*NDBDetails, error) {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+	if m.MockNDBDetailsError != nil {
+		return nil, m.MockNDBDetailsError
+	}
+	return m.MockNDBDetails, nil
+}
+
+func (m *MockBridge) GetWaypoints(_ context.Context) ([]WaypointEntry, error) {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+	if m.MockWaypointsError != nil {
+		return nil, m.MockWaypointsError
+	}
+	return m.MockWaypoints, nil
+}
+
+func (m *MockBridge) GetWaypointDetails(_ context.Context, _, _ string) (*WaypointDetails, error) {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+	if m.MockWaypointDetailsError != nil {
+		return nil, m.MockWaypointDetailsError
+	}
+	return m.MockWaypointDetails, nil
 }
 
 func (m *MockBridge) SimEvents() <-chan SimEvent {

@@ -187,6 +187,92 @@ type AirportProcedure struct {
 	EnrouteTransitions int    `json:"enroute_transitions"`
 }
 
+// VOREntry holds basic VOR station info from a facilities list scan.
+// DistanceKM is the Haversine distance from the player aircraft's current position.
+type VOREntry struct {
+	ICAO        string  `json:"icao"`
+	Region      string  `json:"region"`
+	Latitude    float64 `json:"latitude"`
+	Longitude   float64 `json:"longitude"`
+	AltitudeM   float64 `json:"altitude_m"`
+	FrequencyHz uint32  `json:"frequency_hz"`
+	MagVar      float64 `json:"magvar_deg"`
+	DistanceKM  float64 `json:"distance_km"`
+}
+
+// VORDetails holds detailed facility data for a specific VOR station.
+type VORDetails struct {
+	ICAO          string  `json:"icao"`
+	Region        string  `json:"region"`
+	Name          string  `json:"name"`
+	Latitude      float64 `json:"latitude"`
+	Longitude     float64 `json:"longitude"`
+	AltitudeM     float64 `json:"altitude_m"`
+	FrequencyHz   uint32  `json:"frequency_hz"`
+	FrequencyMHz  float64 `json:"frequency_mhz"`
+	MagVar        float64 `json:"magvar_deg"`
+	NavRangeNM    float64 `json:"nav_range_nm"`
+	IsNAV         bool    `json:"is_nav"`
+	IsDME         bool    `json:"is_dme"`
+	IsTACAN       bool    `json:"is_tacan"`
+	HasGlideSlope bool    `json:"has_glide_slope"`
+	HasBackCourse bool    `json:"has_back_course"`
+}
+
+// NDBEntry holds basic NDB station info from a facilities list scan.
+// DistanceKM is the Haversine distance from the player aircraft's current position.
+type NDBEntry struct {
+	ICAO        string  `json:"icao"`
+	Region      string  `json:"region"`
+	Latitude    float64 `json:"latitude"`
+	Longitude   float64 `json:"longitude"`
+	AltitudeM   float64 `json:"altitude_m"`
+	FrequencyHz uint32  `json:"frequency_hz"`
+	MagVar      float64 `json:"magvar_deg"`
+	DistanceKM  float64 `json:"distance_km"`
+}
+
+// NDBDetails holds detailed facility data for a specific NDB station.
+type NDBDetails struct {
+	ICAO        string  `json:"icao"`
+	Region      string  `json:"region"`
+	Name        string  `json:"name"`
+	Latitude    float64 `json:"latitude"`
+	Longitude   float64 `json:"longitude"`
+	AltitudeM   float64 `json:"altitude_m"`
+	FrequencyHz uint32  `json:"frequency_hz"`
+	FrequencyKHz float64 `json:"frequency_khz"`
+	Type        int32   `json:"type"`
+	RangeNM     float64 `json:"range_nm"`
+	MagVar      float64 `json:"magvar_deg"`
+	IsTerminal  bool    `json:"is_terminal"`
+}
+
+// WaypointEntry holds basic waypoint info from a facilities list scan.
+// DistanceKM is the Haversine distance from the player aircraft's current position.
+type WaypointEntry struct {
+	ICAO       string  `json:"icao"`
+	Region     string  `json:"region"`
+	Latitude   float64 `json:"latitude"`
+	Longitude  float64 `json:"longitude"`
+	AltitudeM  float64 `json:"altitude_m"`
+	MagVar     float64 `json:"magvar_deg"`
+	DistanceKM float64 `json:"distance_km"`
+}
+
+// WaypointDetails holds detailed facility data for a specific waypoint.
+type WaypointDetails struct {
+	ICAO       string  `json:"icao"`
+	Region     string  `json:"region"`
+	Latitude   float64 `json:"latitude"`
+	Longitude  float64 `json:"longitude"`
+	AltitudeM  float64 `json:"altitude_m"`
+	Type       int32   `json:"type"`
+	MagVar     float64 `json:"magvar_deg"`
+	NRoutes    int32   `json:"n_routes"`
+	IsTerminal bool    `json:"is_terminal"`
+}
+
 // AirportDetails holds detailed facility data for a specific airport.
 type AirportDetails struct {
 	ICAO        string             `json:"icao"`
@@ -272,6 +358,30 @@ type Bridge interface {
 	// When expanded=false: base info, runways, and frequencies are returned (3 requests).
 	// When expanded=true: stands and helipads are also included (5 requests).
 	GetAirportDetails(ctx context.Context, icao, region string, expanded bool) (*AirportDetails, error)
+
+	// GetVORs returns VOR stations in the simulator's reality bubble, sorted by
+	// Haversine distance from the player aircraft. Returns nil if none found.
+	GetVORs(ctx context.Context) ([]VOREntry, error)
+
+	// GetVORDetails returns detailed facility data for the given VOR ICAO.
+	// Pass region="" to match any region. Returns nil if the VOR is not found.
+	GetVORDetails(ctx context.Context, icao, region string) (*VORDetails, error)
+
+	// GetNDBs returns NDB stations in the simulator's reality bubble, sorted by
+	// Haversine distance from the player aircraft. Returns nil if none found.
+	GetNDBs(ctx context.Context) ([]NDBEntry, error)
+
+	// GetNDBDetails returns detailed facility data for the given NDB ICAO.
+	// Pass region="" to match any region. Returns nil if the NDB is not found.
+	GetNDBDetails(ctx context.Context, icao, region string) (*NDBDetails, error)
+
+	// GetWaypoints returns waypoints in the simulator's reality bubble, sorted by
+	// Haversine distance from the player aircraft. Returns nil if none found.
+	GetWaypoints(ctx context.Context) ([]WaypointEntry, error)
+
+	// GetWaypointDetails returns detailed facility data for the given waypoint ICAO.
+	// Pass region="" to match any region. Returns nil if the waypoint is not found.
+	GetWaypointDetails(ctx context.Context, icao, region string) (*WaypointDetails, error)
 
 	// SimEvents returns a read-only channel that receives lifecycle events.
 	SimEvents() <-chan SimEvent

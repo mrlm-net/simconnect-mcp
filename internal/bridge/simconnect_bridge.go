@@ -249,7 +249,9 @@ type vorFacilityData struct {
 //	FREQUENCY(uint32), TYPE(i32), RANGE(f32), MAGVAR(f32), IS_TERMINAL_NDB(i32),
 //	NAME([64]byte)
 //
-// Total wire size: 16 + 24 + 4 + 4 + 4 + 4 + 4 + 64 = 124 bytes.
+// SimConnect wire size: 16 + 24 + 4 + 4 + 4 + 4 + 4 + 64 = 124 bytes.
+// Go struct size: 128 bytes (4 bytes tail padding; struct alignment = 8 due to float64 fields).
+// The 4 tail bytes are never read — all data fields are within the first 124 bytes.
 type ndbFacilityData struct {
 	ICAO        [8]byte
 	Region      [8]byte
@@ -282,6 +284,13 @@ type waypointFacilityData struct {
 	Region     [8]byte // REGION
 	IsTerminal int32   // IS_TERMINAL_WPT
 }
+
+// Compile-time wire-size assertions — catch any accidental padding insertion.
+var (
+	_ = [1]struct{}{}[unsafe.Sizeof(vorFacilityData{})-136]
+	_ = [1]struct{}{}[unsafe.Sizeof(ndbFacilityData{})-128] // 128 = 124 wire + 4 tail padding
+	_ = [1]struct{}{}[unsafe.Sizeof(waypointFacilityData{})-56]
+)
 
 // navaidDefSet holds pre-registered facility definition IDs for VOR/NDB/Waypoint
 // detail requests. Reset on reconnect; re-registered lazily on first detail call.
@@ -567,8 +576,8 @@ func frequencyTypeName(t int32) string {
 //
 // ID allocation strategy (must not overlap manager's reserved 999_999_900–999_999_999):
 //
-//	Definition IDs : 1_000_000 + slot*2     (one per in-flight request slot)
-//	Request IDs    : 1_000_001 + slot*2
+//	Definition IDs : n*2     (n = idCounter, starts at 1 → def=2, 4, 6, …)
+//	Request IDs    : n*2+1   (same n → req=3, 5, 7, …)
 //	Notification group ID : 1
 //	Event ID base  : 100_000 (incremented per TransmitEvent call)
 //
@@ -2132,9 +2141,11 @@ func (b *simconnectBridge) GetAirportDetails(ctx context.Context, icao, region s
 		// DATA records may arrive after all ENDs have been seen.
 		// Use a context-aware select so the drain window can be cut short if the
 		// caller cancels rather than always burning a fixed 200 ms.
+		drainTimer := time.NewTimer(200 * time.Millisecond)
 		select {
 		case <-ctx.Done():
-		case <-time.After(200 * time.Millisecond):
+			drainTimer.Stop()
+		case <-drainTimer.C:
 		}
 	case <-ctx.Done():
 		// Context cancelled — return whatever has been collected so far.

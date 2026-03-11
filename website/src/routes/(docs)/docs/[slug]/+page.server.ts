@@ -5,7 +5,9 @@ import { error } from '@sveltejs/kit';
 export const prerender = true;
 
 export const entries: EntryGenerator = () => {
-	return loadAllSlugs().map((slug) => ({ slug }));
+	return loadAllSlugs()
+		.filter((slug) => slug !== 'changelog')
+		.map((slug) => ({ slug }));
 };
 
 export const load: PageServerLoad = async ({ params }) => {

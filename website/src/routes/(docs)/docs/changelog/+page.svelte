@@ -7,7 +7,7 @@
 
 	const groups: ChangelogGroup[] = $derived(data.groups);
 
-	let activeMinor = $state(groups[0]?.minor ?? '');
+	let activeMinor = $state(groups?.[0]?.minor ?? '');
 
 	const activeGroup: ChangelogGroup | undefined = $derived(
 		groups.find((g) => g.minor === activeMinor)

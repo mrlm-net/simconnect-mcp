@@ -7,6 +7,44 @@ section: changelog
 
 All notable changes to SimConnect MCP are documented here.
 
+## [0.4.0] - 2026-03-11
+
+### Added
+
+- `get_vors_in_range` — list VOR navigation stations in the simulator's reality bubble sorted by distance; configurable radius (default 200 km, max 500 km); each entry includes ICAO, region, lat/lon, altitude (metres MSL), frequency (Hz), magnetic variation, and distance (km)
+- `get_vor_details` — query detailed VOR data by ICAO code; returns position, frequency (Hz and MHz), magnetic variation, nav range (NM), and capability flags (`is_nav`, `is_dme`, `is_tacan`, `has_glide_slope`, `has_back_course`)
+- `get_ndbs_in_range` — list NDB navigation stations sorted by distance; configurable radius (default 200 km, max 500 km)
+- `get_ndb_details` — query detailed NDB data by ICAO code; returns position, frequency (Hz and kHz), type, range, magnetic variation, name, and terminal flag
+- `get_waypoints_in_range` — list waypoints sorted by distance; configurable radius (default 100 km, max 500 km) and count limit (default 200, max 1000)
+- `get_waypoint_details` — query detailed waypoint data by ICAO code; returns position, type, magnetic variation, number of airways routes, and terminal flag
+
+## [0.3.20] - 2026-03-08
+
+### Fixed
+
+- `get_simvar_values` now registers all requested variables on a single data definition and issues one `RequestDataOnSimObject` call, fixing `E_FAIL (0x80004005)` errors caused by concurrent `AddToDataDefinition` calls in the previous per-variable goroutine approach
+
+## [0.3.0] - 2026-03-07
+
+### Added
+
+- `get_nearby_traffic` — scan for AI and multiplayer aircraft within a configurable radius (default 25 km, max 200 km)
+- `get_traffic_with_phase` — enriched traffic scan with vertical speed, ground track, inferred flight phase, parking state, runway occupancy, and aircraft category
+- `get_airports_in_range` — list airports in the simulator's reality bubble sorted by distance; configurable radius (default 50 km, max 500 km)
+- `get_nearest_airport` — return the single closest airport with ICAO, region, lat/lon, altitude (metres MSL), and distance (km)
+- `get_airport_details` — query detailed facility data for a specific ICAO airport including name, coordinates, runways, ATC frequencies, and optional stands/approaches/SIDs/STARs
+
+## [0.2.0] - 2026-03-05
+
+### Added
+
+- Live SimConnect mode (`MCP_MODE=simconnect`, Windows only) — CGo/FFI bridge to SimConnect.dll via `github.com/mrlm-net/simconnect` SDK
+- `get_simvar_value` — read a single live simulation variable from the running simulator
+- `get_simvar_values` — batch read up to 20 simulation variables in one call
+- `set_simvar_value` — write a numeric simulation variable to the user aircraft
+- `transmit_event` — send a named SimConnect client event to the simulator
+- `get_sim_state` — simulator connection state snapshot with auto-reconnect on simulator restart
+
 ## [0.1.1] - 2026-03-01
 
 ### Fixed

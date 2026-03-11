@@ -1,11 +1,11 @@
 ---
 title: "MCP Tools — SimConnect Mode"
-description: Reference for the 10 live-data MCP tools in SimConnect mode (MCP_MODE=simconnect, Windows only).
+description: Reference for the 16 live-data MCP tools in SimConnect mode (MCP_MODE=simconnect, Windows only).
 order: 2
 section: reference
 ---
 
-All 10 MCP tools listed here are available when the server runs with `MCP_MODE=simconnect`. This mode provides live simulator data via the SimConnect SDK.
+All 16 MCP tools listed here are available when the server runs with `MCP_MODE=simconnect`. This mode provides live simulator data via the SimConnect SDK.
 
 **Requirements**: Windows only. Microsoft Flight Simulator 2020 or 2024 must be running with SimConnect enabled before issuing any read or transmit calls. The `get_sim_state` tool is safe to call at any time regardless of connection state.
 
@@ -25,6 +25,12 @@ Tools are called over the Model Context Protocol using JSON-RPC 2.0 with the `to
 | [`get_airports_in_range`](#get_airports_in_range) | List airports in the simulator's loaded scenery area sorted by distance |
 | [`get_nearest_airport`](#get_nearest_airport) | Return the single closest airport to the player aircraft |
 | [`get_airport_details`](#get_airport_details) | Return detailed facility data for a specific airport by ICAO code |
+| [`get_vors_in_range`](#get_vors_in_range) | List VOR navigation stations sorted by distance from the player aircraft |
+| [`get_vor_details`](#get_vor_details) | Return detailed data for a specific VOR by ICAO code |
+| [`get_ndbs_in_range`](#get_ndbs_in_range) | List NDB navigation stations sorted by distance from the player aircraft |
+| [`get_ndb_details`](#get_ndb_details) | Return detailed data for a specific NDB by ICAO code |
+| [`get_waypoints_in_range`](#get_waypoints_in_range) | List waypoints sorted by distance from the player aircraft |
+| [`get_waypoint_details`](#get_waypoint_details) | Return detailed data for a specific waypoint by ICAO code |
 
 ---
 
@@ -741,3 +747,229 @@ Return detailed facility data for a specific airport by ICAO code. The default r
 - `INVALID_ARGUMENT`: `icao` was not provided or is empty.
 - `AIRPORT_NOT_FOUND`: No airport matching the given ICAO code was found.
 - `AIRPORT_DETAILS_ERROR`: SimConnect returned an error while fetching facility data.
+
+---
+
+## get_vors_in_range
+
+Return a list of VOR navigation stations in the simulator's reality bubble, sorted by distance from the player aircraft.
+
+**Requirements**: Windows + MSFS 2020 or 2024 running with SimConnect enabled.
+
+**Parameters**
+
+| Name | Type | Required | Default | Description |
+|------|------|----------|---------|-------------|
+| `radius_km` | number | No | `200` | Maximum distance from the player aircraft in kilometres. Maximum `500`. |
+
+**Returns**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `radius_km` | number | The radius used for filtering |
+| `count` | number | Number of VORs returned |
+| `vors` | array | Array of VOR entries (see below) |
+
+Each entry in `vors`:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `icao` | string | ICAO identifier |
+| `region` | string | ICAO region prefix |
+| `latitude` | number | Latitude in decimal degrees |
+| `longitude` | number | Longitude in decimal degrees |
+| `altitude_m` | number | Elevation in metres MSL |
+| `frequency_hz` | number | VOR frequency in Hz |
+| `magvar_deg` | number | Magnetic variation in degrees |
+| `distance_km` | number | Haversine distance from the player aircraft in kilometres |
+
+**Error codes**: None. Errors (not connected) are embedded as an `error` field in the response body.
+
+---
+
+## get_vor_details
+
+Return detailed data for a specific VOR navigation station by ICAO code.
+
+**Requirements**: Windows + MSFS 2020 or 2024 running with SimConnect enabled.
+
+**Parameters**
+
+| Name | Type | Required | Default | Description |
+|------|------|----------|---------|-------------|
+| `icao` | string | Yes | — | ICAO identifier of the VOR, e.g. `"OPO"`. |
+| `region` | string | No | `""` | ICAO region code. Leave empty for best results. |
+
+**Returns**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `icao` | string | ICAO identifier |
+| `region` | string | ICAO region prefix |
+| `name` | string | Station name |
+| `latitude` | number | Latitude in decimal degrees |
+| `longitude` | number | Longitude in decimal degrees |
+| `altitude_m` | number | Elevation in metres MSL |
+| `frequency_hz` | number | Frequency in Hz |
+| `frequency_mhz` | number | Frequency in MHz |
+| `magvar_deg` | number | Magnetic variation in degrees |
+| `nav_range_nm` | number | Navigational range in nautical miles |
+| `is_nav` | boolean | `true` when the station transmits a VOR signal |
+| `is_dme` | boolean | `true` when the station has DME |
+| `is_tacan` | boolean | `true` when the station is TACAN |
+| `has_glide_slope` | boolean | `true` when the station has a glide slope (ILS) |
+| `has_back_course` | boolean | `true` when the station has a back course |
+
+**Error codes**
+
+- `BRIDGE_DISCONNECTED`: Not connected to the simulator.
+- `INVALID_ARGUMENT`: `icao` was not provided or is empty.
+- `VOR_NOT_FOUND`: No VOR matching the given ICAO code was found.
+
+---
+
+## get_ndbs_in_range
+
+Return a list of NDB navigation stations in the simulator's reality bubble, sorted by distance from the player aircraft.
+
+**Requirements**: Windows + MSFS 2020 or 2024 running with SimConnect enabled.
+
+**Parameters**
+
+| Name | Type | Required | Default | Description |
+|------|------|----------|---------|-------------|
+| `radius_km` | number | No | `200` | Maximum distance from the player aircraft in kilometres. Maximum `500`. |
+
+**Returns**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `radius_km` | number | The radius used for filtering |
+| `count` | number | Number of NDBs returned |
+| `ndbs` | array | Array of NDB entries (see below) |
+
+Each entry in `ndbs`:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `icao` | string | ICAO identifier |
+| `region` | string | ICAO region prefix |
+| `latitude` | number | Latitude in decimal degrees |
+| `longitude` | number | Longitude in decimal degrees |
+| `altitude_m` | number | Elevation in metres MSL |
+| `frequency_hz` | number | NDB frequency in Hz |
+| `magvar_deg` | number | Magnetic variation in degrees |
+| `distance_km` | number | Haversine distance from the player aircraft in kilometres |
+
+**Error codes**: None. Errors are embedded as an `error` field in the response body.
+
+---
+
+## get_ndb_details
+
+Return detailed data for a specific NDB navigation station by ICAO code.
+
+**Requirements**: Windows + MSFS 2020 or 2024 running with SimConnect enabled.
+
+**Parameters**
+
+| Name | Type | Required | Default | Description |
+|------|------|----------|---------|-------------|
+| `icao` | string | Yes | — | ICAO identifier of the NDB, e.g. `"LIS"`. |
+| `region` | string | No | `""` | ICAO region code. Leave empty for best results. |
+
+**Returns**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `icao` | string | ICAO identifier |
+| `region` | string | ICAO region prefix |
+| `name` | string | Station name |
+| `latitude` | number | Latitude in decimal degrees |
+| `longitude` | number | Longitude in decimal degrees |
+| `altitude_m` | number | Elevation in metres MSL |
+| `frequency_hz` | number | Frequency in Hz |
+| `frequency_khz` | number | Frequency in kHz |
+| `type` | number | NDB type code from SimConnect |
+| `range_nm` | number | Navigational range in nautical miles |
+| `magvar_deg` | number | Magnetic variation in degrees |
+| `is_terminal` | boolean | `true` when this is a terminal NDB |
+
+**Error codes**
+
+- `BRIDGE_DISCONNECTED`: Not connected to the simulator.
+- `INVALID_ARGUMENT`: `icao` was not provided or is empty.
+- `NDB_NOT_FOUND`: No NDB matching the given ICAO code was found.
+
+---
+
+## get_waypoints_in_range
+
+Return a list of waypoints in the simulator's reality bubble, sorted by distance from the player aircraft.
+
+**Requirements**: Windows + MSFS 2020 or 2024 running with SimConnect enabled.
+
+**Parameters**
+
+| Name | Type | Required | Default | Description |
+|------|------|----------|---------|-------------|
+| `radius_km` | number | No | `100` | Maximum distance from the player aircraft in kilometres. Maximum `500`. |
+| `limit` | number | No | `200` | Maximum number of waypoints to return. Maximum `1000`. |
+
+**Returns**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `radius_km` | number | The radius used for filtering |
+| `limit` | number | The count cap applied |
+| `count` | number | Number of waypoints returned |
+| `waypoints` | array | Array of waypoint entries (see below) |
+
+Each entry in `waypoints`:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `icao` | string | ICAO identifier |
+| `region` | string | ICAO region prefix |
+| `latitude` | number | Latitude in decimal degrees |
+| `longitude` | number | Longitude in decimal degrees |
+| `altitude_m` | number | Elevation in metres MSL |
+| `magvar_deg` | number | Magnetic variation in degrees |
+| `distance_km` | number | Haversine distance from the player aircraft in kilometres |
+
+**Error codes**: None. Errors are embedded as an `error` field in the response body.
+
+---
+
+## get_waypoint_details
+
+Return detailed data for a specific waypoint by ICAO code.
+
+**Requirements**: Windows + MSFS 2020 or 2024 running with SimConnect enabled.
+
+**Parameters**
+
+| Name | Type | Required | Default | Description |
+|------|------|----------|---------|-------------|
+| `icao` | string | Yes | — | ICAO identifier of the waypoint, e.g. `"ABRIX"`. |
+| `region` | string | No | `""` | ICAO region code. Leave empty for best results. |
+
+**Returns**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `icao` | string | ICAO identifier |
+| `region` | string | ICAO region prefix |
+| `latitude` | number | Latitude in decimal degrees |
+| `longitude` | number | Longitude in decimal degrees |
+| `altitude_m` | number | Elevation in metres MSL |
+| `type` | number | Waypoint type code from SimConnect |
+| `magvar_deg` | number | Magnetic variation in degrees |
+| `n_routes` | number | Number of airways routes passing through this waypoint |
+| `is_terminal` | boolean | `true` when this is a terminal waypoint |
+
+**Error codes**
+
+- `BRIDGE_DISCONNECTED`: Not connected to the simulator.
+- `INVALID_ARGUMENT`: `icao` was not provided or is empty.
+- `WAYPOINT_NOT_FOUND`: No waypoint matching the given ICAO code was found.

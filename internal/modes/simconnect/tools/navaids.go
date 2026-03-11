@@ -5,9 +5,15 @@ package tools
 import (
 	"context"
 	"fmt"
+	"regexp"
 
 	"github.com/mrlm-net/simconnect-mcp/internal/bridge"
 	"github.com/mrlm-net/simconnect-mcp/internal/mcpadapter"
+)
+
+var (
+	icaoRe   = regexp.MustCompile(`^[A-Z0-9]{1,9}$`)
+	regionRe = regexp.MustCompile(`^[A-Z0-9]{0,4}$`)
 )
 
 // RegisterNavaidTools registers the six navaid MCP tools onto the provided server:
@@ -84,10 +90,13 @@ func registerGetVORDetails(mcp *mcpadapter.Server, b bridge.Bridge) {
 
 	mcp.AddTool(tool, func(ctx context.Context, args map[string]any) (*mcpadapter.CallToolResult, error) {
 		icao, _ := args["icao"].(string)
-		if icao == "" {
-			return mcpadapter.ErrorResult("INVALID_ARGUMENT: icao is required"), nil
+		if !icaoRe.MatchString(icao) {
+			return mcpadapter.ErrorResult("INVALID_ARGUMENT: icao must be 1–9 uppercase alphanumeric characters"), nil
 		}
 		region, _ := args["region"].(string)
+		if !regionRe.MatchString(region) {
+			return mcpadapter.ErrorResult("INVALID_ARGUMENT: region must be 0–4 uppercase alphanumeric characters"), nil
+		}
 
 		if b.State() != bridge.StateConnected {
 			return mcpadapter.ErrorResult("BRIDGE_DISCONNECTED: not connected to simulator"), nil
@@ -167,10 +176,13 @@ func registerGetNDBDetails(mcp *mcpadapter.Server, b bridge.Bridge) {
 
 	mcp.AddTool(tool, func(ctx context.Context, args map[string]any) (*mcpadapter.CallToolResult, error) {
 		icao, _ := args["icao"].(string)
-		if icao == "" {
-			return mcpadapter.ErrorResult("INVALID_ARGUMENT: icao is required"), nil
+		if !icaoRe.MatchString(icao) {
+			return mcpadapter.ErrorResult("INVALID_ARGUMENT: icao must be 1–9 uppercase alphanumeric characters"), nil
 		}
 		region, _ := args["region"].(string)
+		if !regionRe.MatchString(region) {
+			return mcpadapter.ErrorResult("INVALID_ARGUMENT: region must be 0–4 uppercase alphanumeric characters"), nil
+		}
 
 		if b.State() != bridge.StateConnected {
 			return mcpadapter.ErrorResult("BRIDGE_DISCONNECTED: not connected to simulator"), nil
@@ -264,10 +276,13 @@ func registerGetWaypointDetails(mcp *mcpadapter.Server, b bridge.Bridge) {
 
 	mcp.AddTool(tool, func(ctx context.Context, args map[string]any) (*mcpadapter.CallToolResult, error) {
 		icao, _ := args["icao"].(string)
-		if icao == "" {
-			return mcpadapter.ErrorResult("INVALID_ARGUMENT: icao is required"), nil
+		if !icaoRe.MatchString(icao) {
+			return mcpadapter.ErrorResult("INVALID_ARGUMENT: icao must be 1–9 uppercase alphanumeric characters"), nil
 		}
 		region, _ := args["region"].(string)
+		if !regionRe.MatchString(region) {
+			return mcpadapter.ErrorResult("INVALID_ARGUMENT: region must be 0–4 uppercase alphanumeric characters"), nil
+		}
 
 		if b.State() != bridge.StateConnected {
 			return mcpadapter.ErrorResult("BRIDGE_DISCONNECTED: not connected to simulator"), nil

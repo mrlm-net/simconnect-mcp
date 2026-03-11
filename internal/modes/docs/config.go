@@ -1,6 +1,9 @@
 package docs
 
-import "os"
+import (
+	"os"
+	"strconv"
+)
 
 // Config holds all configuration for the docs operating mode.
 // All env var access is centralised in ConfigFromEnv; no other function
@@ -29,6 +32,8 @@ func ConfigFromEnv() Config {
 
 	port := os.Getenv("PORT")
 	if port == "" {
+		port = "8080"
+	} else if n, err := strconv.Atoi(port); err != nil || n < 1025 || n > 65535 {
 		port = "8080"
 	}
 

@@ -5,6 +5,7 @@ package simconnect
 import (
 	"fmt"
 	"os"
+	"strconv"
 )
 
 // Config holds configuration for the simconnect operating mode.
@@ -27,6 +28,8 @@ func ConfigFromEnv() Config {
 
 	port := os.Getenv("PORT")
 	if port == "" {
+		port = "8080"
+	} else if n, err := strconv.Atoi(port); err != nil || n < 1025 || n > 65535 {
 		port = "8080"
 	}
 

@@ -4,6 +4,17 @@ All notable changes to SimConnect MCP are documented here. The format follows [K
 
 Full release history with release notes is also available on the [GitHub Releases page](https://github.com/mrlm-net/simconnect-mcp/releases).
 
+## [0.4.0] - 2026-03-11
+
+### Added
+
+- `get_vors_in_range` — list VOR navigation stations in the simulator's reality bubble sorted by distance from the player aircraft; configurable radius (default 200 km, max 500 km); each entry includes ICAO, region, lat/lon, altitude (metres MSL), frequency (Hz), magnetic variation, and distance (km)
+- `get_vor_details` — query detailed VOR data by ICAO code; returns position, frequency (Hz and MHz), magnetic variation, nav range (NM), and capability flags (`is_nav`, `is_dme`, `is_tacan`, `has_glide_slope`, `has_back_course`)
+- `get_ndbs_in_range` — list NDB navigation stations in the simulator's reality bubble sorted by distance; configurable radius (default 200 km, max 500 km); each entry includes ICAO, region, lat/lon, altitude (metres MSL), frequency (Hz), magnetic variation, and distance (km)
+- `get_ndb_details` — query detailed NDB data by ICAO code; returns position, frequency (Hz and kHz), type, range, magnetic variation, name, and terminal flag
+- `get_waypoints_in_range` — list waypoints in the simulator's reality bubble sorted by distance; configurable radius (default 100 km, max 500 km) and count limit (default 200, max 1000); each entry includes ICAO, region, lat/lon, altitude (metres MSL), magnetic variation, and distance (km)
+- `get_waypoint_details` — query detailed waypoint data by ICAO code; returns position, type, magnetic variation, number of airways routes, and terminal flag
+
 ## [0.3.20] - 2026-03-08
 
 ### Fixed

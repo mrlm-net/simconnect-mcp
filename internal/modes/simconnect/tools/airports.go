@@ -17,6 +17,8 @@ func RegisterAirportTools(mcp *mcpadapter.Server, b bridge.Bridge) {
 	registerGetAirportsInRange(mcp, b)
 	registerGetNearestAirport(mcp, b)
 	registerGetAirportDetails(mcp, b)
+	registerGetAirportTaxiways(mcp, b)
+	registerGetAirportParkings(mcp, b)
 }
 
 func registerGetAirportsInRange(mcp *mcpadapter.Server, b bridge.Bridge) {
@@ -144,5 +146,73 @@ func registerGetAirportDetails(mcp *mcpadapter.Server, b bridge.Bridge) {
 		}
 
 		return mcpadapter.JSONResult(details)
+	})
+}
+
+func registerGetAirportTaxiways(mcp *mcpadapter.Server, b bridge.Bridge) {
+	tool := mcpadapter.NewTool("get_airport_taxiways").
+		Description("Return the taxiway network graph for a specific airport by ICAO code. " +
+			"The response contains three correlated arrays: names (taxiway letter strings), " +
+			"paths (directed edges — each path references start_node and end_node indices into points, " +
+			"and a name_index into names), and points (graph nodes including hold-short positions). " +
+			"Leave region empty (default) for best results.").
+		StringParam("icao", "ICAO airport code (e.g. \"EDDM\", \"KLAX\").").
+		StringParam("region", "Optional ICAO region code (e.g. \"ED\", \"K6\"). Leave empty to match any region.").
+		Build()
+
+	mcp.AddTool(tool, func(ctx context.Context, args map[string]any) (*mcpadapter.CallToolResult, error) {
+		icao, _ := args["icao"].(string)
+		if icao == "" {
+			return mcpadapter.ErrorResult("INVALID_ARGUMENT: icao is required"), nil
+		}
+		region, _ := args["region"].(string)
+
+		if b.State() != bridge.StateConnected {
+			return mcpadapter.ErrorResult("BRIDGE_DISCONNECTED: not connected to simulator"), nil
+		}
+
+		taxiways, err := b.GetAirportTaxiways(ctx, icao, region)
+		if err != nil {
+			return mcpadapter.ErrorResult(fmt.Sprintf("TAXIWAY_ERROR: %v", err)), nil
+		}
+		if taxiways == nil {
+			return mcpadapter.ErrorResult(fmt.Sprintf("TAXIWAY_NOT_FOUND: airport %q has no taxiway data", icao)), nil
+		}
+
+		return mcpadapter.JSONResult(taxiways)
+	})
+}
+
+func registerGetAirportParkings(mcp *mcpadapter.Server, b bridge.Bridge) {
+	tool := mcpadapter.NewTool("get_airport_parkings").
+		Description("Return all parking stands, gates, and ramps at a specific airport by ICAO code. " +
+			"Each entry includes type, name, suffix, number, heading (degrees true), radius (metres), " +
+			"and position offsets (bias_x_m, bias_z_m) from the airport reference point. " +
+			"Returns the full TAXI_PARKING record — more fields than the stands array in get_airport_details. " +
+			"Leave region empty (default) for best results.").
+		StringParam("icao", "ICAO airport code (e.g. \"EDDM\", \"KLAX\").").
+		StringParam("region", "Optional ICAO region code (e.g. \"ED\", \"K6\"). Leave empty to match any region.").
+		Build()
+
+	mcp.AddTool(tool, func(ctx context.Context, args map[string]any) (*mcpadapter.CallToolResult, error) {
+		icao, _ := args["icao"].(string)
+		if icao == "" {
+			return mcpadapter.ErrorResult("INVALID_ARGUMENT: icao is required"), nil
+		}
+		region, _ := args["region"].(string)
+
+		if b.State() != bridge.StateConnected {
+			return mcpadapter.ErrorResult("BRIDGE_DISCONNECTED: not connected to simulator"), nil
+		}
+
+		parkings, err := b.GetAirportParkings(ctx, icao, region)
+		if err != nil {
+			return mcpadapter.ErrorResult(fmt.Sprintf("PARKING_ERROR: %v", err)), nil
+		}
+		if parkings == nil {
+			return mcpadapter.ErrorResult(fmt.Sprintf("PARKING_NOT_FOUND: airport %q has no parking data", icao)), nil
+		}
+
+		return mcpadapter.JSONResult(parkings)
 	})
 }

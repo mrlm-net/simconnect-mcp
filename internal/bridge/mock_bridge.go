@@ -109,6 +109,18 @@ type MockBridge struct {
 
 	// MockWaypointDetailsError is returned by GetWaypointDetails when non-nil.
 	MockWaypointDetailsError error
+
+	// MockAirportTaxiways is returned by GetAirportTaxiways when MockAirportTaxiwaysError is nil.
+	MockAirportTaxiways *AirportTaxiways
+
+	// MockAirportTaxiwaysError is returned by GetAirportTaxiways when non-nil.
+	MockAirportTaxiwaysError error
+
+	// MockAirportParkings is returned by GetAirportParkings when MockAirportParkingsError is nil.
+	MockAirportParkings *AirportParkings
+
+	// MockAirportParkingsError is returned by GetAirportParkings when non-nil.
+	MockAirportParkingsError error
 }
 
 // Compile-time assertion: MockBridge must implement Bridge.
@@ -296,6 +308,24 @@ func (m *MockBridge) GetWaypointDetails(_ context.Context, _, _ string) (*Waypoi
 		return nil, m.MockWaypointDetailsError
 	}
 	return m.MockWaypointDetails, nil
+}
+
+func (m *MockBridge) GetAirportTaxiways(_ context.Context, _, _ string) (*AirportTaxiways, error) {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+	if m.MockAirportTaxiwaysError != nil {
+		return nil, m.MockAirportTaxiwaysError
+	}
+	return m.MockAirportTaxiways, nil
+}
+
+func (m *MockBridge) GetAirportParkings(_ context.Context, _, _ string) (*AirportParkings, error) {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+	if m.MockAirportParkingsError != nil {
+		return nil, m.MockAirportParkingsError
+	}
+	return m.MockAirportParkings, nil
 }
 
 func (m *MockBridge) SimEvents() <-chan SimEvent {

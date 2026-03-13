@@ -299,6 +299,72 @@ type AirportDetails struct {
 	Arrivals       []AirportProcedure `json:"arrivals,omitempty"`
 }
 
+// TaxiwayPoint is a single node in the airport taxiway network graph.
+// BiasX and BiasZ are offsets in metres from the airport reference point
+// along the longitudinal and latitudinal axes respectively.
+type TaxiwayPoint struct {
+	Type        string  `json:"type"`        // NONE/NORMAL/HOLD_SHORT/ILS_HOLD_SHORT/HOLD_SHORT_NO_DRAW/ILS_HOLD_SHORT_NO_DRAW
+	Orientation string  `json:"orientation"` // FORWARD/REVERSE (meaningful only for hold-short types)
+	BiasXM      float32 `json:"bias_x_m"`
+	BiasZM      float32 `json:"bias_z_m"`
+}
+
+// TaxiwayPath is a directed edge in the airport taxiway network graph.
+// Start and End are indices into the TaxiwayPoints slice of the parent AirportTaxiways.
+// NameIndex is an index into the Names slice.
+type TaxiwayPath struct {
+	Type              string  `json:"type"`               // NONE/TAXI/RUNWAY/PARKING/PATH/CLOSED/VEHICLE/ROAD/PAINTED_LINE
+	WidthM            float32 `json:"width_m"`
+	LeftHalfWidthM    float32 `json:"left_half_width_m"`
+	RightHalfWidthM   float32 `json:"right_half_width_m"`
+	WeightLbs         uint32  `json:"weight_lbs"`
+	RunwayNumber      int32   `json:"runway_number"`
+	RunwayDesignator  string  `json:"runway_designator"`  // L/R/C/W/A/B or empty
+	LeftEdge          string  `json:"left_edge"`          // NONE/SOLID/DASHED/SOLID_DASHED
+	LeftEdgeLighted   bool    `json:"left_edge_lighted"`
+	RightEdge         string  `json:"right_edge"`
+	RightEdgeLighted  bool    `json:"right_edge_lighted"`
+	CenterLine        bool    `json:"center_line"`
+	CenterLineLighted bool    `json:"center_line_lighted"`
+	StartNode         int32   `json:"start_node"` // index 0–3999 into Points
+	EndNode           int32   `json:"end_node"`   // index 0–3999 into Points
+	NameIndex         uint32  `json:"name_index"` // index into Names
+}
+
+// AirportTaxiways holds the complete taxiway graph for a specific airport.
+// The three slices form a directed graph: Paths are edges that reference
+// node indices (StartNode/EndNode into Points) and name indices (into Names).
+type AirportTaxiways struct {
+	ICAO       string         `json:"icao"`
+	NameCount  int            `json:"name_count"`
+	PointCount int            `json:"point_count"`
+	PathCount  int            `json:"path_count"`
+	Names      []string       `json:"names"`  // taxiway letter/name strings, indexed by TaxiwayPath.NameIndex
+	Points     []TaxiwayPoint `json:"points"` // graph nodes, indexed by TaxiwayPath.StartNode/EndNode
+	Paths      []TaxiwayPath  `json:"paths"`  // graph edges
+}
+
+// AirportParking holds the full parking record for a single stand, gate, or ramp spot.
+type AirportParking struct {
+	Type          string  `json:"type"`            // Ramp GA/Gate Small/Gate Heavy/Vehicle/etc.
+	TaxiPointType string  `json:"taxi_point_type"` // NONE/NORMAL/HOLD_SHORT/etc.
+	Name          string  `json:"name"`            // NONE/PARKING/N/NE/GATE/GATE_A/etc.
+	Suffix        string  `json:"suffix"`          // same enum as Name
+	Number        uint32  `json:"number"`
+	Orientation   string  `json:"orientation"` // FORWARD/REVERSE
+	HeadingDeg    float32 `json:"heading_deg"`
+	RadiusM       float32 `json:"radius_m"`
+	BiasXM        float32 `json:"bias_x_m"`
+	BiasZM        float32 `json:"bias_z_m"`
+}
+
+// AirportParkings holds all parking stands, gates, and ramps at an airport.
+type AirportParkings struct {
+	ICAO         string           `json:"icao"`
+	ParkingCount int              `json:"parking_count"`
+	Parkings     []AirportParking `json:"parkings"`
+}
+
 // Bridge abstracts all SimConnect SDK calls needed by the four MCP tools.
 // Implementations must be safe to call from multiple goroutines concurrently.
 type Bridge interface {
@@ -382,6 +448,16 @@ type Bridge interface {
 	// GetWaypointDetails returns detailed facility data for the given waypoint ICAO.
 	// Pass region="" to match any region. Returns nil if the waypoint is not found.
 	GetWaypointDetails(ctx context.Context, icao, region string) (*WaypointDetails, error)
+
+	// GetAirportTaxiways returns the taxiway network graph (names, paths, and nodes)
+	// for the given ICAO airport. Pass region="" to match any region.
+	// Returns nil, nil if the airport is not found or has no taxiway data.
+	GetAirportTaxiways(ctx context.Context, icao, region string) (*AirportTaxiways, error)
+
+	// GetAirportParkings returns all parking stands, gates, and ramps for the given
+	// ICAO airport. Pass region="" to match any region.
+	// Returns nil, nil if the airport is not found or has no parking data.
+	GetAirportParkings(ctx context.Context, icao, region string) (*AirportParkings, error)
 
 	// SimEvents returns a read-only channel that receives lifecycle events.
 	SimEvents() <-chan SimEvent

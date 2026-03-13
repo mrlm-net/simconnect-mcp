@@ -260,6 +260,180 @@ func TestGetAirportDetails_Disconnected(t *testing.T) {
 	}
 }
 
+// ── get_airport_taxiways tests ────────────────────────────────────────────────
+
+func TestGetAirportTaxiways_Found(t *testing.T) {
+	mb := &bridge.MockBridge{
+		MockState: bridge.StateConnected,
+		MockAirportTaxiways: &bridge.AirportTaxiways{
+			ICAO:       "EDDM",
+			NameCount:  2,
+			PointCount: 3,
+			PathCount:  1,
+			Names:      []string{"A", "B"},
+			Points: []bridge.TaxiwayPoint{
+				{Type: "NORMAL", Orientation: "FORWARD", BiasXM: 10.0, BiasZM: -5.0},
+				{Type: "HOLD_SHORT", Orientation: "FORWARD", BiasXM: 20.0, BiasZM: 0.0},
+				{Type: "NORMAL", Orientation: "FORWARD", BiasXM: 30.0, BiasZM: 5.0},
+			},
+			Paths: []bridge.TaxiwayPath{
+				{Type: "TAXI", WidthM: 22.9, StartNode: 0, EndNode: 1, NameIndex: 0},
+			},
+		},
+	}
+	srv := newAirportServer(t, mb)
+
+	resp := callToolEvent(t, srv.URL, "get_airport_taxiways", map[string]any{"icao": "EDDM"})
+	got := parseAirportJSON(t, resp)
+
+	if got["icao"] != "EDDM" {
+		t.Errorf("expected icao=EDDM, got %v", got["icao"])
+	}
+	if got["name_count"].(float64) != 2 {
+		t.Errorf("expected name_count=2, got %v", got["name_count"])
+	}
+	if got["path_count"].(float64) != 1 {
+		t.Errorf("expected path_count=1, got %v", got["path_count"])
+	}
+	names := got["names"].([]any)
+	if names[0] != "A" {
+		t.Errorf("expected first name=A, got %v", names[0])
+	}
+}
+
+func TestGetAirportTaxiways_MissingICAO(t *testing.T) {
+	mb := &bridge.MockBridge{MockState: bridge.StateConnected}
+	srv := newAirportServer(t, mb)
+
+	resp := callToolEvent(t, srv.URL, "get_airport_taxiways", map[string]any{})
+	text := contentTextEvent(t, resp)
+
+	if !containsStr(text, "INVALID_ARGUMENT") {
+		t.Errorf("expected INVALID_ARGUMENT in error, got: %s", text)
+	}
+}
+
+func TestGetAirportTaxiways_Disconnected(t *testing.T) {
+	mb := &bridge.MockBridge{MockState: bridge.StateDisconnected}
+	srv := newAirportServer(t, mb)
+
+	resp := callToolEvent(t, srv.URL, "get_airport_taxiways", map[string]any{"icao": "EDDM"})
+	text := contentTextEvent(t, resp)
+
+	if !containsStr(text, "BRIDGE_DISCONNECTED") {
+		t.Errorf("expected BRIDGE_DISCONNECTED in error, got: %s", text)
+	}
+}
+
+func TestGetAirportTaxiways_NotFound(t *testing.T) {
+	mb := &bridge.MockBridge{
+		MockState:           bridge.StateConnected,
+		MockAirportTaxiways: nil,
+	}
+	srv := newAirportServer(t, mb)
+
+	resp := callToolEvent(t, srv.URL, "get_airport_taxiways", map[string]any{"icao": "ZZZZ"})
+	text := contentTextEvent(t, resp)
+
+	if !containsStr(text, "TAXIWAY_NOT_FOUND") {
+		t.Errorf("expected TAXIWAY_NOT_FOUND in error, got: %s", text)
+	}
+}
+
+// ── get_airport_parkings tests ────────────────────────────────────────────────
+
+func TestGetAirportParkings_Found(t *testing.T) {
+	mb := &bridge.MockBridge{
+		MockState: bridge.StateConnected,
+		MockAirportParkings: &bridge.AirportParkings{
+			ICAO:         "EDDM",
+			ParkingCount: 2,
+			Parkings: []bridge.AirportParking{
+				{
+					Type:        "Gate Heavy",
+					Name:        "GATE",
+					Suffix:      "GATE_A",
+					Number:      1,
+					Orientation: "FORWARD",
+					HeadingDeg:  185.0,
+					RadiusM:     36.0,
+					BiasXM:      423.2,
+					BiasZM:      -81.5,
+				},
+				{
+					Type:        "Ramp GA",
+					Name:        "PARKING",
+					Suffix:      "NONE",
+					Number:      2,
+					Orientation: "FORWARD",
+					HeadingDeg:  90.0,
+					RadiusM:     15.0,
+					BiasXM:      100.0,
+					BiasZM:      50.0,
+				},
+			},
+		},
+	}
+	srv := newAirportServer(t, mb)
+
+	resp := callToolEvent(t, srv.URL, "get_airport_parkings", map[string]any{"icao": "EDDM"})
+	got := parseAirportJSON(t, resp)
+
+	if got["icao"] != "EDDM" {
+		t.Errorf("expected icao=EDDM, got %v", got["icao"])
+	}
+	if got["parking_count"].(float64) != 2 {
+		t.Errorf("expected parking_count=2, got %v", got["parking_count"])
+	}
+	parkings := got["parkings"].([]any)
+	first := parkings[0].(map[string]any)
+	if first["type"] != "Gate Heavy" {
+		t.Errorf("expected type=Gate Heavy, got %v", first["type"])
+	}
+	if first["heading_deg"].(float64) != 185.0 {
+		t.Errorf("expected heading_deg=185.0, got %v", first["heading_deg"])
+	}
+}
+
+func TestGetAirportParkings_MissingICAO(t *testing.T) {
+	mb := &bridge.MockBridge{MockState: bridge.StateConnected}
+	srv := newAirportServer(t, mb)
+
+	resp := callToolEvent(t, srv.URL, "get_airport_parkings", map[string]any{})
+	text := contentTextEvent(t, resp)
+
+	if !containsStr(text, "INVALID_ARGUMENT") {
+		t.Errorf("expected INVALID_ARGUMENT in error, got: %s", text)
+	}
+}
+
+func TestGetAirportParkings_Disconnected(t *testing.T) {
+	mb := &bridge.MockBridge{MockState: bridge.StateDisconnected}
+	srv := newAirportServer(t, mb)
+
+	resp := callToolEvent(t, srv.URL, "get_airport_parkings", map[string]any{"icao": "EDDM"})
+	text := contentTextEvent(t, resp)
+
+	if !containsStr(text, "BRIDGE_DISCONNECTED") {
+		t.Errorf("expected BRIDGE_DISCONNECTED in error, got: %s", text)
+	}
+}
+
+func TestGetAirportParkings_NotFound(t *testing.T) {
+	mb := &bridge.MockBridge{
+		MockState:           bridge.StateConnected,
+		MockAirportParkings: nil,
+	}
+	srv := newAirportServer(t, mb)
+
+	resp := callToolEvent(t, srv.URL, "get_airport_parkings", map[string]any{"icao": "ZZZZ"})
+	text := contentTextEvent(t, resp)
+
+	if !containsStr(text, "PARKING_NOT_FOUND") {
+		t.Errorf("expected PARKING_NOT_FOUND in error, got: %s", text)
+	}
+}
+
 // containsStr is a simple string-contains check for test assertions.
 func containsStr(s, substr string) bool {
 	return len(s) >= len(substr) && (s == substr || len(substr) == 0 ||

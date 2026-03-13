@@ -292,6 +292,85 @@ var (
 	_ = [1]struct{}{}[unsafe.Sizeof(waypointFacilityData{})-56]
 )
 
+// taxiNameFacilityData mirrors the OPEN TAXI_NAME field sequence:
+//
+//	NAME([32]byte)
+//
+// Wire size: 32 bytes.
+type taxiNameFacilityData struct {
+	Name [32]byte
+}
+
+// taxiPointFacilityData mirrors the OPEN TAXI_POINT field sequence:
+//
+//	TYPE(i32), ORIENTATION(i32), BIAS_X(f32), BIAS_Z(f32)
+//
+// Wire size: 4×4 = 16 bytes.
+type taxiPointFacilityData struct {
+	Type        int32
+	Orientation int32
+	BiasX       float32
+	BiasZ       float32
+}
+
+// taxiPathFacilityData mirrors the OPEN TAXI_PATH field sequence:
+//
+//	TYPE(i32), WIDTH(f32), LEFT_HALF_WIDTH(f32), RIGHT_HALF_WIDTH(f32),
+//	WEIGHT(u32), RUNWAY_NUMBER(i32), RUNWAY_DESIGNATOR(i32),
+//	LEFT_EDGE(i32), LEFT_EDGE_LIGHTED(i32),
+//	RIGHT_EDGE(i32), RIGHT_EDGE_LIGHTED(i32),
+//	CENTER_LINE(i32), CENTER_LINE_LIGHTED(i32),
+//	START(i32), END(i32), NAME_INDEX(u32)
+//
+// Wire size: 16×4 = 64 bytes.
+type taxiPathFacilityData struct {
+	Type              int32
+	Width             float32
+	LeftHalfWidth     float32
+	RightHalfWidth    float32
+	Weight            uint32
+	RunwayNumber      int32
+	RunwayDesignator  int32
+	LeftEdge          int32
+	LeftEdgeLighted   int32
+	RightEdge         int32
+	RightEdgeLighted  int32
+	CenterLine        int32
+	CenterLineLighted int32
+	Start             int32
+	End               int32
+	NameIndex         uint32
+}
+
+// fullParkingFacilityData mirrors the expanded OPEN TAXI_PARKING field sequence
+// used in GetAirportParkings (all 10 fields, distinct from the 6-field
+// parkingFacilityData used in GetAirportDetails):
+//
+//	TYPE(i32), TAXI_POINT_TYPE(i32), NAME(i32), SUFFIX(i32),
+//	NUMBER(u32), ORIENTATION(i32), HEADING(f32), RADIUS(f32),
+//	BIAS_X(f32), BIAS_Z(f32)
+//
+// Wire size: 10×4 = 40 bytes.
+type fullParkingFacilityData struct {
+	Type          int32
+	TaxiPointType int32
+	Name          int32
+	Suffix        int32
+	Number        uint32
+	Orientation   int32
+	Heading       float32
+	Radius        float32
+	BiasX         float32
+	BiasZ         float32
+}
+
+var (
+	_ = [1]struct{}{}[unsafe.Sizeof(taxiNameFacilityData{})-32]
+	_ = [1]struct{}{}[unsafe.Sizeof(taxiPointFacilityData{})-16]
+	_ = [1]struct{}{}[unsafe.Sizeof(taxiPathFacilityData{})-64]
+	_ = [1]struct{}{}[unsafe.Sizeof(fullParkingFacilityData{})-40]
+)
+
 // navaidDefSet holds pre-registered facility definition IDs for VOR/NDB/Waypoint
 // detail requests. Reset on reconnect; re-registered lazily on first detail call.
 type navaidDefSet struct {
@@ -331,6 +410,35 @@ type ndbDetailState struct {
 type waypointDetailState struct {
 	mu       sync.Mutex
 	details  *WaypointDetails
+	done     chan struct{}
+	doneOnce sync.Once
+}
+
+// taxiwayDefSet holds pre-registered facility definition IDs for taxiway and
+// full-parking requests. Reset on reconnect; re-registered lazily on first call.
+type taxiwayDefSet struct {
+	txName, txPath, txPoint, fullPk uint32
+}
+
+// taxiwayCallState holds per-call state for GetAirportTaxiways.
+// Three sub-request IDs (name, path, point) each deliver a FACILITY_DATA_END;
+// done is closed once all three ENDs have been received.
+type taxiwayCallState struct {
+	mu          sync.Mutex
+	result      *AirportTaxiways
+	nameReqID   uint32
+	pathReqID   uint32
+	pointReqID  uint32
+	endCount    int
+	done        chan struct{}
+	doneOnce    sync.Once
+}
+
+// parkingCallState holds per-call state for GetAirportParkings.
+// A single sub-request ID delivers one FACILITY_DATA_END; done is closed on receipt.
+type parkingCallState struct {
+	mu       sync.Mutex
+	result   *AirportParkings
 	done     chan struct{}
 	doneOnce sync.Once
 }
@@ -531,6 +639,116 @@ func parkingTypeName(t int32) string {
 	}
 }
 
+// taxiPathTypeName maps TAXI_PATH TYPE integer to a human-readable label.
+func taxiPathTypeName(t int32) string {
+	switch t {
+	case 0:
+		return "NONE"
+	case 1:
+		return "TAXI"
+	case 2:
+		return "RUNWAY"
+	case 3:
+		return "PARKING"
+	case 4:
+		return "PATH"
+	case 5:
+		return "CLOSED"
+	case 6:
+		return "VEHICLE"
+	case 7:
+		return "ROAD"
+	case 8:
+		return "PAINTED_LINE"
+	default:
+		return fmt.Sprintf("TYPE(%d)", t)
+	}
+}
+
+// taxiPointTypeName maps TAXI_POINT TYPE integer to a human-readable label.
+func taxiPointTypeName(t int32) string {
+	switch t {
+	case 0:
+		return "NONE"
+	case 1:
+		return "NORMAL"
+	case 2:
+		return "HOLD_SHORT"
+	case 4:
+		return "ILS_HOLD_SHORT"
+	case 5:
+		return "HOLD_SHORT_NO_DRAW"
+	case 6:
+		return "ILS_HOLD_SHORT_NO_DRAW"
+	default:
+		return fmt.Sprintf("TYPE(%d)", t)
+	}
+}
+
+// taxiEdgeName maps TAXI_PATH edge type integer to a human-readable label.
+func taxiEdgeName(t int32) string {
+	switch t {
+	case 0:
+		return "NONE"
+	case 1:
+		return "SOLID"
+	case 2:
+		return "DASHED"
+	case 3:
+		return "SOLID_DASHED"
+	default:
+		return fmt.Sprintf("EDGE(%d)", t)
+	}
+}
+
+// taxiOrientationName maps TAXI_POINT/TAXI_PARKING ORIENTATION integer to a label.
+func taxiOrientationName(t int32) string {
+	switch t {
+	case 0:
+		return "FORWARD"
+	case 1:
+		return "REVERSE"
+	default:
+		return fmt.Sprintf("ORIENTATION(%d)", t)
+	}
+}
+
+// parkingNameLabel maps TAXI_PARKING NAME/SUFFIX integer to a human-readable label.
+func parkingNameLabel(t int32) string {
+	switch t {
+	case 0:
+		return "NONE"
+	case 1:
+		return "PARKING"
+	case 2:
+		return "N"
+	case 3:
+		return "NE"
+	case 4:
+		return "E"
+	case 5:
+		return "SE"
+	case 6:
+		return "S"
+	case 7:
+		return "SW"
+	case 8:
+		return "W"
+	case 9:
+		return "NW"
+	case 10:
+		return "GATE"
+	case 11:
+		return "DOCK"
+	default:
+		// GATE_A (12) through GATE_Z (37)
+		if t >= 12 && t <= 37 {
+			return fmt.Sprintf("GATE_%c", 'A'+t-12)
+		}
+		return fmt.Sprintf("NAME(%d)", t)
+	}
+}
+
 // frequencyTypeName maps SimConnect frequency TYPE integer to a human-readable label.
 func frequencyTypeName(t int32) string {
 	switch t {
@@ -637,6 +855,12 @@ type simconnectBridge struct {
 	ndbDetailPending     map[uint32]*ndbDetailState
 	waypointDetailPending map[uint32]*waypointDetailState
 
+	// taxiwayMu guards taxiwayDefs, taxiwayPending, and parkingPending.
+	taxiwayMu      sync.Mutex
+	taxiwayDefs    taxiwayDefSet
+	taxiwayPending map[uint32]*taxiwayCallState
+	parkingPending map[uint32]*parkingCallState
+
 	// idCounter provides unique definition / request IDs.
 	// Each request consumes two IDs: (counter*2) for definition, (counter*2+1) for request.
 	// We start from 1 to stay well within IsValidUserID range.
@@ -671,6 +895,8 @@ func NewSimConnectBridge() Bridge {
 		vorDetailPending:      make(map[uint32]*vorDetailState),
 		ndbDetailPending:      make(map[uint32]*ndbDetailState),
 		waypointDetailPending: make(map[uint32]*waypointDetailState),
+		taxiwayPending:        make(map[uint32]*taxiwayCallState),
+		parkingPending:        make(map[uint32]*parkingCallState),
 	}
 	b.eventIDCounter.Store(100_000)
 	return b
@@ -730,6 +956,9 @@ func (b *simconnectBridge) Open(ctx context.Context, appName string) error {
 		b.navaidMu.Lock()
 		b.navaidDefs = navaidDefSet{}
 		b.navaidMu.Unlock()
+		b.taxiwayMu.Lock()
+		b.taxiwayDefs = taxiwayDefSet{}
+		b.taxiwayMu.Unlock()
 	})
 
 	// Wire up lifecycle events that feed SimEvents().
@@ -852,6 +1081,17 @@ func (b *simconnectBridge) Close() error {
 		delete(b.waypointDetailPending, id)
 	}
 	b.navaidMu.Unlock()
+
+	b.taxiwayMu.Lock()
+	for id, state := range b.taxiwayPending {
+		state.doneOnce.Do(func() { close(state.done) })
+		delete(b.taxiwayPending, id)
+	}
+	for id, state := range b.parkingPending {
+		state.doneOnce.Do(func() { close(state.done) })
+		delete(b.parkingPending, id)
+	}
+	b.taxiwayMu.Unlock()
 
 	if err := mgr.Stop(); err != nil {
 		cancel()
@@ -1883,6 +2123,215 @@ func (b *simconnectBridge) GetWaypointDetails(ctx context.Context, icao, region 
 // ensureFacilityDefs registers the eight facility definition schemas once per
 // SimConnect connection and stores them in b.facilityDefs for reuse by all
 // subsequent GetAirportDetails calls — eliminating the per-call
+// ensureTaxiwayDefs registers facility definitions for TAXI_NAME, TAXI_PATH,
+// TAXI_POINT, and expanded TAXI_PARKING once per connection, then re-uses them for
+// subsequent calls. Reset on reconnect (see OnOpen callback).
+func (b *simconnectBridge) ensureTaxiwayDefs(mgr manager.Manager) (taxiwayDefSet, error) {
+	b.taxiwayMu.Lock()
+	defer b.taxiwayMu.Unlock()
+
+	if b.taxiwayDefs.txName != 0 {
+		return b.taxiwayDefs, nil
+	}
+
+	txNameDefID, _ := b.allocIDs()
+	txPathDefID, _ := b.allocIDs()
+	txPointDefID, _ := b.allocIDs()
+	fullPkDefID, _ := b.allocIDs()
+
+	for _, f := range []string{"OPEN AIRPORT", "OPEN TAXI_NAME", "NAME", "CLOSE TAXI_NAME", "CLOSE AIRPORT"} {
+		if err := mgr.AddToFacilityDefinition(txNameDefID, f); err != nil {
+			return taxiwayDefSet{}, fmt.Errorf("bridge: AddToFacilityDefinition taxi_name %q: %w", f, err)
+		}
+	}
+	for _, f := range []string{
+		"OPEN AIRPORT", "OPEN TAXI_PATH",
+		"TYPE", "WIDTH", "LEFT_HALF_WIDTH", "RIGHT_HALF_WIDTH", "WEIGHT",
+		"RUNWAY_NUMBER", "RUNWAY_DESIGNATOR",
+		"LEFT_EDGE", "LEFT_EDGE_LIGHTED", "RIGHT_EDGE", "RIGHT_EDGE_LIGHTED",
+		"CENTER_LINE", "CENTER_LINE_LIGHTED", "START", "END", "NAME_INDEX",
+		"CLOSE TAXI_PATH", "CLOSE AIRPORT",
+	} {
+		if err := mgr.AddToFacilityDefinition(txPathDefID, f); err != nil {
+			return taxiwayDefSet{}, fmt.Errorf("bridge: AddToFacilityDefinition taxi_path %q: %w", f, err)
+		}
+	}
+	for _, f := range []string{
+		"OPEN AIRPORT", "OPEN TAXI_POINT",
+		"TYPE", "ORIENTATION", "BIAS_X", "BIAS_Z",
+		"CLOSE TAXI_POINT", "CLOSE AIRPORT",
+	} {
+		if err := mgr.AddToFacilityDefinition(txPointDefID, f); err != nil {
+			return taxiwayDefSet{}, fmt.Errorf("bridge: AddToFacilityDefinition taxi_point %q: %w", f, err)
+		}
+	}
+	for _, f := range []string{
+		"OPEN AIRPORT", "OPEN TAXI_PARKING",
+		"TYPE", "TAXI_POINT_TYPE", "NAME", "SUFFIX", "NUMBER", "ORIENTATION",
+		"HEADING", "RADIUS", "BIAS_X", "BIAS_Z",
+		"CLOSE TAXI_PARKING", "CLOSE AIRPORT",
+	} {
+		if err := mgr.AddToFacilityDefinition(fullPkDefID, f); err != nil {
+			return taxiwayDefSet{}, fmt.Errorf("bridge: AddToFacilityDefinition full_parking %q: %w", f, err)
+		}
+	}
+
+	b.taxiwayDefs = taxiwayDefSet{
+		txName:  txNameDefID,
+		txPath:  txPathDefID,
+		txPoint: txPointDefID,
+		fullPk:  fullPkDefID,
+	}
+	return b.taxiwayDefs, nil
+}
+
+// GetAirportTaxiways returns the taxiway network graph (names, paths, and nodes)
+// for the given ICAO airport. Fires three RequestFacilityData calls (TAXI_NAME,
+// TAXI_PATH, TAXI_POINT) and waits until all three FACILITY_DATA_END messages
+// are received or the 45-second deadline expires.
+func (b *simconnectBridge) GetAirportTaxiways(ctx context.Context, icao, region string) (*AirportTaxiways, error) {
+	if b.State() != StateConnected {
+		return nil, ErrNotConnected
+	}
+	b.mu.RLock()
+	mgr := b.mgr
+	b.mu.RUnlock()
+	if mgr == nil {
+		return nil, ErrNotConnected
+	}
+
+	defs, err := b.ensureTaxiwayDefs(mgr)
+	if err != nil {
+		return nil, err
+	}
+
+	_, nameReqID := b.allocIDs()
+	_, pathReqID := b.allocIDs()
+	_, pointReqID := b.allocIDs()
+
+	state := &taxiwayCallState{
+		result:     &AirportTaxiways{ICAO: icao},
+		nameReqID:  nameReqID,
+		pathReqID:  pathReqID,
+		pointReqID: pointReqID,
+		done:       make(chan struct{}),
+	}
+
+	b.taxiwayMu.Lock()
+	b.taxiwayPending[nameReqID] = state
+	b.taxiwayPending[pathReqID] = state
+	b.taxiwayPending[pointReqID] = state
+	b.taxiwayMu.Unlock()
+	defer func() {
+		b.taxiwayMu.Lock()
+		delete(b.taxiwayPending, nameReqID)
+		delete(b.taxiwayPending, pathReqID)
+		delete(b.taxiwayPending, pointReqID)
+		b.taxiwayMu.Unlock()
+	}()
+
+	for _, pair := range [][2]uint32{
+		{defs.txName, nameReqID},
+		{defs.txPath, pathReqID},
+		{defs.txPoint, pointReqID},
+	} {
+		if err := mgr.RequestFacilityData(pair[0], pair[1], icao, region); err != nil {
+			return nil, fmt.Errorf("bridge: RequestFacilityData taxiway %s: %w", icao, err)
+		}
+	}
+
+	deadline := time.NewTimer(45 * time.Second)
+	defer deadline.Stop()
+
+	select {
+	case <-state.done:
+		drainTimer := time.NewTimer(200 * time.Millisecond)
+		select {
+		case <-ctx.Done():
+			drainTimer.Stop()
+		case <-drainTimer.C:
+		}
+	case <-ctx.Done():
+	case <-deadline.C:
+	}
+
+	state.mu.Lock()
+	result := state.result
+	state.mu.Unlock()
+
+	if result == nil || (len(result.Names) == 0 && len(result.Paths) == 0 && len(result.Points) == 0) {
+		return nil, nil
+	}
+	result.NameCount = len(result.Names)
+	result.PathCount = len(result.Paths)
+	result.PointCount = len(result.Points)
+	return result, nil
+}
+
+// GetAirportParkings returns all parking stands, gates, and ramps for the given
+// ICAO airport using the full 10-field TAXI_PARKING record.
+func (b *simconnectBridge) GetAirportParkings(ctx context.Context, icao, region string) (*AirportParkings, error) {
+	if b.State() != StateConnected {
+		return nil, ErrNotConnected
+	}
+	b.mu.RLock()
+	mgr := b.mgr
+	b.mu.RUnlock()
+	if mgr == nil {
+		return nil, ErrNotConnected
+	}
+
+	defs, err := b.ensureTaxiwayDefs(mgr)
+	if err != nil {
+		return nil, err
+	}
+
+	_, pkReqID := b.allocIDs()
+
+	state := &parkingCallState{
+		result: &AirportParkings{ICAO: icao},
+		done:   make(chan struct{}),
+	}
+
+	b.taxiwayMu.Lock()
+	b.parkingPending[pkReqID] = state
+	b.taxiwayMu.Unlock()
+	defer func() {
+		b.taxiwayMu.Lock()
+		delete(b.parkingPending, pkReqID)
+		b.taxiwayMu.Unlock()
+	}()
+
+	if err := mgr.RequestFacilityData(defs.fullPk, pkReqID, icao, region); err != nil {
+		return nil, fmt.Errorf("bridge: RequestFacilityData parkings %s: %w", icao, err)
+	}
+
+	deadline := time.NewTimer(45 * time.Second)
+	defer deadline.Stop()
+
+	select {
+	case <-state.done:
+		drainTimer := time.NewTimer(200 * time.Millisecond)
+		select {
+		case <-ctx.Done():
+			drainTimer.Stop()
+		case <-drainTimer.C:
+		}
+	case <-ctx.Done():
+	case <-deadline.C:
+	}
+
+	state.mu.Lock()
+	result := state.result
+	state.mu.Unlock()
+
+	if result == nil || len(result.Parkings) == 0 {
+		return nil, nil
+	}
+	result.ParkingCount = len(result.Parkings)
+	return result, nil
+}
+
 // AddToFacilityDefinition overhead. The definitions are reset on reconnect
 // (see OnOpen callback) and re-registered lazily on the next call.
 //
@@ -2873,6 +3322,74 @@ func (b *simconnectBridge) handleMessage(msg engine.Message) {
 			wstate.mu.Unlock()
 		}
 
+		// Route to taxiway and parking pending.
+		b.taxiwayMu.Lock()
+		txState := b.taxiwayPending[rid]
+		pkState := b.parkingPending[rid]
+		b.taxiwayMu.Unlock()
+
+		if txState != nil {
+			txState.mu.Lock()
+			switch rid {
+			case txState.nameReqID:
+				if fd.Type == types.SIMCONNECT_FACILITY_DATA_TAXI_NAME {
+					data := engine.CastDataAs[taxiNameFacilityData](&fd.Data)
+					txState.result.Names = append(txState.result.Names, engine.BytesToString(data.Name[:]))
+				}
+			case txState.pathReqID:
+				if fd.Type == types.SIMCONNECT_FACILITY_DATA_TAXI_PATH {
+					data := engine.CastDataAs[taxiPathFacilityData](&fd.Data)
+					txState.result.Paths = append(txState.result.Paths, TaxiwayPath{
+						Type:              taxiPathTypeName(data.Type),
+						WidthM:            data.Width,
+						LeftHalfWidthM:    data.LeftHalfWidth,
+						RightHalfWidthM:   data.RightHalfWidth,
+						WeightLbs:         data.Weight,
+						RunwayNumber:      data.RunwayNumber,
+						RunwayDesignator:  runwayDesignatorLetter(data.RunwayDesignator),
+						LeftEdge:          taxiEdgeName(data.LeftEdge),
+						LeftEdgeLighted:   data.LeftEdgeLighted != 0,
+						RightEdge:         taxiEdgeName(data.RightEdge),
+						RightEdgeLighted:  data.RightEdgeLighted != 0,
+						CenterLine:        data.CenterLine != 0,
+						CenterLineLighted: data.CenterLineLighted != 0,
+						StartNode:         data.Start,
+						EndNode:           data.End,
+						NameIndex:         data.NameIndex,
+					})
+				}
+			case txState.pointReqID:
+				if fd.Type == types.SIMCONNECT_FACILITY_DATA_TAXI_POINT {
+					data := engine.CastDataAs[taxiPointFacilityData](&fd.Data)
+					txState.result.Points = append(txState.result.Points, TaxiwayPoint{
+						Type:        taxiPointTypeName(data.Type),
+						Orientation: taxiOrientationName(data.Orientation),
+						BiasXM:      data.BiasX,
+						BiasZM:      data.BiasZ,
+					})
+				}
+			}
+			txState.mu.Unlock()
+		} else if pkState != nil {
+			if fd.Type == types.SIMCONNECT_FACILITY_DATA_TAXI_PARKING {
+				data := engine.CastDataAs[fullParkingFacilityData](&fd.Data)
+				pkState.mu.Lock()
+				pkState.result.Parkings = append(pkState.result.Parkings, AirportParking{
+					Type:          parkingTypeName(data.Type),
+					TaxiPointType: taxiPointTypeName(data.TaxiPointType),
+					Name:          parkingNameLabel(data.Name),
+					Suffix:        parkingNameLabel(data.Suffix),
+					Number:        data.Number,
+					Orientation:   taxiOrientationName(data.Orientation),
+					HeadingDeg:    data.Heading,
+					RadiusM:       data.Radius,
+					BiasXM:        data.BiasX,
+					BiasZM:        data.BiasZ,
+				})
+				pkState.mu.Unlock()
+			}
+		}
+
 	case types.SIMCONNECT_RECV_ID_FACILITY_DATA_END:
 		fde := msg.AsFacilityDataEnd()
 		if fde == nil {
@@ -2911,6 +3428,25 @@ func (b *simconnectBridge) handleMessage(msg engine.Message) {
 			nstate.doneOnce.Do(func() { close(nstate.done) })
 		} else if wstate != nil {
 			wstate.doneOnce.Do(func() { close(wstate.done) })
+		}
+
+		// Route to taxiway and parking pending.
+		b.taxiwayMu.Lock()
+		txState := b.taxiwayPending[rid]
+		pkState := b.parkingPending[rid]
+		b.taxiwayMu.Unlock()
+
+		if txState != nil {
+			allDone := false
+			txState.mu.Lock()
+			txState.endCount++
+			allDone = txState.endCount == 3
+			txState.mu.Unlock()
+			if allDone {
+				txState.doneOnce.Do(func() { close(txState.done) })
+			}
+		} else if pkState != nil {
+			pkState.doneOnce.Do(func() { close(pkState.done) })
 		}
 	}
 }

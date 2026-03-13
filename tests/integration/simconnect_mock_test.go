@@ -146,6 +146,8 @@ func TestSimconnectToolsList(t *testing.T) {
 		"get_ndb_details",
 		"get_waypoints_in_range",
 		"get_waypoint_details",
+		"get_airport_taxiways",
+		"get_airport_parkings",
 	}
 
 	if len(toolsRaw) != len(want) {

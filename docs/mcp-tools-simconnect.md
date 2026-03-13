@@ -1,11 +1,11 @@
 ---
 title: "MCP Tools — SimConnect Mode"
-description: Reference for the 16 live-data MCP tools in SimConnect mode (MCP_MODE=simconnect, Windows only).
+description: Reference for the 18 live-data MCP tools in SimConnect mode (MCP_MODE=simconnect, Windows only).
 order: 2
 section: reference
 ---
 
-All 16 MCP tools listed here are available when the server runs with `MCP_MODE=simconnect`. This mode provides live simulator data via the SimConnect SDK.
+All 18 MCP tools listed here are available when the server runs with `MCP_MODE=simconnect`. This mode provides live simulator data via the SimConnect SDK.
 
 **Requirements**: Windows only. Microsoft Flight Simulator 2020 or 2024 must be running with SimConnect enabled before issuing any read or transmit calls. The `get_sim_state` tool is safe to call at any time regardless of connection state.
 
@@ -31,6 +31,8 @@ Tools are called over the Model Context Protocol using JSON-RPC 2.0 with the `to
 | [`get_ndb_details`](#get_ndb_details) | Return detailed data for a specific NDB by ICAO code |
 | [`get_waypoints_in_range`](#get_waypoints_in_range) | List waypoints sorted by distance from the player aircraft |
 | [`get_waypoint_details`](#get_waypoint_details) | Return detailed data for a specific waypoint by ICAO code |
+| [`get_airport_taxiways`](#get_airport_taxiways) | Return the taxiway network graph for a specific airport by ICAO code |
+| [`get_airport_parkings`](#get_airport_parkings) | Return all parking stands, gates, and ramps at a specific airport by ICAO code |
 
 ---
 
@@ -744,7 +746,7 @@ Return detailed facility data for a specific airport by ICAO code. The default r
 **Error codes**
 
 - `BRIDGE_DISCONNECTED`: Not connected to the simulator.
-- `INVALID_ARGUMENT`: `icao` was not provided or is empty.
+- `INVALID_ARGUMENT`: `icao` must be 1–9 uppercase alphanumeric characters; `region` must be 0–4 uppercase alphanumeric characters.
 - `AIRPORT_NOT_FOUND`: No airport matching the given ICAO code was found.
 - `AIRPORT_DETAILS_ERROR`: SimConnect returned an error while fetching facility data.
 
@@ -971,5 +973,167 @@ Return detailed data for a specific waypoint by ICAO code.
 **Error codes**
 
 - `BRIDGE_DISCONNECTED`: Not connected to the simulator.
-- `INVALID_ARGUMENT`: `icao` was not provided or is empty.
+- `INVALID_ARGUMENT`: `icao` must be 1–9 uppercase alphanumeric characters; `region` must be 0–4 uppercase alphanumeric characters.
 - `WAYPOINT_NOT_FOUND`: No waypoint matching the given ICAO code was found.
+
+---
+
+## get_airport_taxiways
+
+Return the taxiway network graph for a specific airport by ICAO code. The response contains three correlated arrays: `names` (taxiway letter strings), `paths` (directed edges referencing start/end node indices and a name index), and `points` (graph nodes including hold-short positions). Leave `region` empty for best results.
+
+**Requirements**: Windows + MSFS 2020 or 2024 running with SimConnect enabled.
+
+**Parameters**
+
+| Name | Type | Required | Default | Description |
+|------|------|----------|---------|-------------|
+| `icao` | string | Yes | — | ICAO airport code, e.g. `"EDDM"` or `"KLAX"`. Must be 1–9 uppercase alphanumeric characters. |
+| `region` | string | No | `""` | ICAO region code, e.g. `"ED"` or `"K6"`. Leave empty for best results. |
+
+**Returns**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `names` | array | List of taxiway name strings (e.g. `["A", "B", "C"]`) |
+| `paths` | array | Directed edges (see below) |
+| `points` | array | Graph nodes (see below) |
+
+Each entry in `paths`:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `type` | string | Path type (e.g. `"TAXIWAY"`, `"RUNWAY"`, `"VEHICLE"`) |
+| `width_m` | number | Path width in metres |
+| `left_half_width_m` | number | Left half-width in metres |
+| `right_half_width_m` | number | Right half-width in metres |
+| `weight` | number | Path weight / priority value |
+| `runway_number` | number | Associated runway number (0 if not runway-related) |
+| `runway_designator` | number | Associated runway designator code |
+| `left_edge` | string | Left edge lighting type |
+| `right_edge` | string | Right edge lighting type |
+| `center_line` | string | Center line type |
+| `start_node` | number | Index into `points` array for the path start |
+| `end_node` | number | Index into `points` array for the path end |
+| `name_index` | number | Index into `names` array identifying the taxiway letter |
+
+Each entry in `points`:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `type` | string | Node type (e.g. `"NORMAL"`, `"HOLD_SHORT"`, `"ILS_HOLD_SHORT"`) |
+| `orientation` | string | Orientation descriptor |
+| `bias_x_m` | number | X offset from the airport reference point in metres |
+| `bias_z_m` | number | Z offset from the airport reference point in metres |
+
+**Example request**
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 17,
+  "method": "tools/call",
+  "params": {
+    "name": "get_airport_taxiways",
+    "arguments": { "icao": "EDDM" }
+  }
+}
+```
+
+**Example response**
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 17,
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"names\":[\"A\",\"B\",\"N\"],\"paths\":[{\"type\":\"TAXIWAY\",\"width_m\":23.0,\"start_node\":0,\"end_node\":1,\"name_index\":0,...}],\"points\":[{\"type\":\"NORMAL\",\"orientation\":\"NONE\",\"bias_x_m\":-823.5,\"bias_z_m\":441.2}]}"
+      }
+    ]
+  }
+}
+```
+
+**Error codes**
+
+- `BRIDGE_DISCONNECTED`: Not connected to the simulator.
+- `INVALID_ARGUMENT`: `icao` must be 1–9 uppercase alphanumeric characters; `region` must be 0–4 uppercase alphanumeric characters.
+- `TAXIWAY_NOT_FOUND`: No taxiway data was found for the given ICAO code.
+- `TAXIWAY_ERROR`: SimConnect returned an error while fetching taxiway data.
+
+---
+
+## get_airport_parkings
+
+Return all parking stands, gates, and ramps at a specific airport by ICAO code. Each entry includes type, name, suffix, number, heading, radius, and position offsets from the airport reference point. Returns the full `TAXI_PARKING` record — more fields than the abbreviated stands array in `get_airport_details`. Leave `region` empty for best results.
+
+**Requirements**: Windows + MSFS 2020 or 2024 running with SimConnect enabled.
+
+**Parameters**
+
+| Name | Type | Required | Default | Description |
+|------|------|----------|---------|-------------|
+| `icao` | string | Yes | — | ICAO airport code, e.g. `"EDDM"` or `"KLAX"`. Must be 1–9 uppercase alphanumeric characters. |
+| `region` | string | No | `""` | ICAO region code, e.g. `"ED"` or `"K6"`. Leave empty for best results. |
+
+**Returns**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `count` | number | Number of parking stands returned |
+| `parkings` | array | Array of parking entries (see below) |
+
+Each entry in `parkings`:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `type` | string | Parking type (e.g. `"GATE"`, `"RAMP_GA"`, `"RAMP_CARGO"`, `"FUEL"`, `"VEHICLE"`) |
+| `name` | string | Parking name label (derived from type) |
+| `suffix` | string | Parking suffix letter (e.g. `"A"`, `"L"`, `"R"`) |
+| `number` | number | Parking stand number |
+| `orientation` | string | Push-back orientation descriptor |
+| `heading_deg` | number | Parking heading in degrees true |
+| `radius_m` | number | Parking radius in metres (aircraft size constraint) |
+| `bias_x_m` | number | X offset from the airport reference point in metres |
+| `bias_z_m` | number | Z offset from the airport reference point in metres |
+
+**Example request**
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 18,
+  "method": "tools/call",
+  "params": {
+    "name": "get_airport_parkings",
+    "arguments": { "icao": "EDDM" }
+  }
+}
+```
+
+**Example response**
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 18,
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"count\":2,\"parkings\":[{\"type\":\"GATE\",\"name\":\"Gate\",\"suffix\":\"A\",\"number\":1,\"orientation\":\"NONE\",\"heading_deg\":180.0,\"radius_m\":40.0,\"bias_x_m\":120.5,\"bias_z_m\":-310.2},{\"type\":\"RAMP_GA\",\"name\":\"Ramp GA\",\"suffix\":\"\",\"number\":2,\"orientation\":\"NONE\",\"heading_deg\":90.0,\"radius_m\":12.0,\"bias_x_m\":-50.0,\"bias_z_m\":80.0}]}"
+      }
+    ]
+  }
+}
+```
+
+**Error codes**
+
+- `BRIDGE_DISCONNECTED`: Not connected to the simulator.
+- `INVALID_ARGUMENT`: `icao` must be 1–9 uppercase alphanumeric characters; `region` must be 0–4 uppercase alphanumeric characters.
+- `PARKING_NOT_FOUND`: No parking data was found for the given ICAO code.
+- `PARKING_ERROR`: SimConnect returned an error while fetching parking data.

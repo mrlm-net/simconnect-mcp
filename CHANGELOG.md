@@ -4,6 +4,21 @@ All notable changes to SimConnect MCP are documented here. The format follows [K
 
 Full release history with release notes is also available on the [GitHub Releases page](https://github.com/mrlm-net/simconnect-mcp/releases).
 
+## [0.5.0] - 2026-03-13
+
+### Added
+
+- `get_airport_taxiways` — return the taxiway network graph for a specific airport by ICAO code; response contains three correlated arrays: `names` (taxiway letter strings), `paths` (directed edges referencing start/end node indices and a name index), and `points` (graph nodes including hold-short positions); uses `RequestFacilityData` with TAXI_NAME, TAXI_PATH, and TAXI_POINT sub-requests
+- `get_airport_parkings` — return all parking stands, gates, and ramps at a specific airport by ICAO code; each entry includes type, name, suffix, number, heading (degrees true), radius (metres), and position offsets (`bias_x_m`, `bias_z_m`) from the airport reference point; returns the full TAXI_PARKING record with more fields than the stands array in `get_airport_details`
+
+### Fixed
+
+- `get_airport_details`, `get_airport_taxiways`, and `get_airport_parkings` now validate `icao` (1–9 uppercase alphanumeric) and `region` (0–4 uppercase alphanumeric) with the same regex guards used by the navaid tools; previously raw user input was passed directly as C-string arguments to the SimConnect SDK
+
+### Changed
+
+- Upgraded `golang.org/x/net` v0.51.0 → v0.52.0 (pulls in `x/crypto`, `x/sys`, `x/text` patch releases)
+
 ## [0.4.0] - 2026-03-11
 
 ### Added

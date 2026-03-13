@@ -127,10 +127,13 @@ func registerGetAirportDetails(mcp *mcpadapter.Server, b bridge.Bridge) {
 
 	mcp.AddTool(tool, func(ctx context.Context, args map[string]any) (*mcpadapter.CallToolResult, error) {
 		icao, _ := args["icao"].(string)
-		if icao == "" {
-			return mcpadapter.ErrorResult("INVALID_ARGUMENT: icao is required"), nil
+		if !icaoRe.MatchString(icao) {
+			return mcpadapter.ErrorResult("INVALID_ARGUMENT: icao must be 1–9 uppercase alphanumeric characters"), nil
 		}
 		region, _ := args["region"].(string)
+		if !regionRe.MatchString(region) {
+			return mcpadapter.ErrorResult("INVALID_ARGUMENT: region must be 0–4 uppercase alphanumeric characters"), nil
+		}
 		expanded, _ := args["expanded"].(bool)
 
 		if b.State() != bridge.StateConnected {
@@ -162,10 +165,13 @@ func registerGetAirportTaxiways(mcp *mcpadapter.Server, b bridge.Bridge) {
 
 	mcp.AddTool(tool, func(ctx context.Context, args map[string]any) (*mcpadapter.CallToolResult, error) {
 		icao, _ := args["icao"].(string)
-		if icao == "" {
-			return mcpadapter.ErrorResult("INVALID_ARGUMENT: icao is required"), nil
+		if !icaoRe.MatchString(icao) {
+			return mcpadapter.ErrorResult("INVALID_ARGUMENT: icao must be 1–9 uppercase alphanumeric characters"), nil
 		}
 		region, _ := args["region"].(string)
+		if !regionRe.MatchString(region) {
+			return mcpadapter.ErrorResult("INVALID_ARGUMENT: region must be 0–4 uppercase alphanumeric characters"), nil
+		}
 
 		if b.State() != bridge.StateConnected {
 			return mcpadapter.ErrorResult("BRIDGE_DISCONNECTED: not connected to simulator"), nil
@@ -196,10 +202,13 @@ func registerGetAirportParkings(mcp *mcpadapter.Server, b bridge.Bridge) {
 
 	mcp.AddTool(tool, func(ctx context.Context, args map[string]any) (*mcpadapter.CallToolResult, error) {
 		icao, _ := args["icao"].(string)
-		if icao == "" {
-			return mcpadapter.ErrorResult("INVALID_ARGUMENT: icao is required"), nil
+		if !icaoRe.MatchString(icao) {
+			return mcpadapter.ErrorResult("INVALID_ARGUMENT: icao must be 1–9 uppercase alphanumeric characters"), nil
 		}
 		region, _ := args["region"].(string)
+		if !regionRe.MatchString(region) {
+			return mcpadapter.ErrorResult("INVALID_ARGUMENT: region must be 0–4 uppercase alphanumeric characters"), nil
+		}
 
 		if b.State() != bridge.StateConnected {
 			return mcpadapter.ErrorResult("BRIDGE_DISCONNECTED: not connected to simulator"), nil

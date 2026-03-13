@@ -7,6 +7,12 @@ section: changelog
 
 All notable changes to SimConnect MCP are documented here.
 
+## [0.5.1] - 2026-03-13
+
+### Added
+
+- `Dockerfile` for docs mode — multi-stage build, distroless nonroot runtime, exposes port 8080; run with `docker run -p 8080:8080 ghcr.io/mrlm-net/simconnect-mcp:latest`
+
 ## [0.5.0] - 2026-03-13
 
 ### Added

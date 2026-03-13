@@ -1,0 +1,8 @@
+website/
+docs/
+.git/
+*.md
+!README.md
+!CHANGELOG.md
+.github/
+tests/

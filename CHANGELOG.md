@@ -4,6 +4,16 @@ All notable changes to SimConnect MCP are documented here. The format follows [K
 
 Full release history with release notes is also available on the [GitHub Releases page](https://github.com/mrlm-net/simconnect-mcp/releases).
 
+## [0.5.1] - 2026-03-13
+
+### Added
+
+- `Dockerfile` and `.dockerignore` for docs mode — multi-stage build using `golang:1.25-alpine` builder and `gcr.io/distroless/static-debian12:nonroot` runtime; set `MCP_MODE=docs` and `GIN_MODE=release` by default; exposes port 8080; accepts `VERSION` build arg for version embedding
+
+### Fixed
+
+- Closed stale packaging backlog issues (#60–#80) that were already implemented — version embedding, release workflow (GoReleaser), CHANGELOG.md, README installation docs
+
 ## [0.5.0] - 2026-03-13
 
 ### Added

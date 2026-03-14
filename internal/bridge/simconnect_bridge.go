@@ -3225,7 +3225,7 @@ func (b *simconnectBridge) handleMessage(msg engine.Message) {
 					OnGround:         onGround,
 					InParkingState:   data.InParking != 0,
 					OnAnyRunway:      data.OnRunway != 0,
-					FlightPhase:      computeFlightPhase(onGround, data.GndSpd, vsFPM),
+					FlightPhase:      computeFlightPhase(onGround, data.GndSpd, vsFPM, data.Alt),
 				})
 				allDone = uint32(len(estate.results)) >= estate.expected
 			}

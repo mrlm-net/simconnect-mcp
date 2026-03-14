@@ -21,20 +21,27 @@ func computeTrackDeg(velX, velZ float64) float64 {
 }
 
 // computeFlightPhase infers the phase of flight from on-ground status,
-// ground speed (knots), and vertical speed (feet per minute).
+// ground speed (knots), vertical speed (feet per minute), and altitude (feet MSL).
 //
 // Phase table:
 //
-//	on_ground + GS < 2 kts       → PARKED
-//	on_ground + GS ≥ 2 kts       → TAXI
-//	airborne + VS > +1000 fpm     → CLIMB
-//	airborne + VS +200…+1000 fpm  → CLIMB SHALLOW
-//	airborne + VS −200…+200 fpm   → LEVEL
-//	airborne + VS −800…−200 fpm   → DESCENT
-//	airborne + VS −1500…−800 fpm  → APPROACH
-//	airborne + VS < −1500 fpm     → FINAL
-func computeFlightPhase(onGround bool, groundSpeedKts, verticalSpeedFPM float64) string {
-	if onGround {
+//	on_ground + GS < 2 kts                          → PARKED
+//	on_ground + GS ≥ 2 kts                          → TAXI
+//	alt < 100 ft + |VS| < 100 fpm + GS < 2 kts      → PARKED (SimConnect on_ground workaround)
+//	airborne + VS > +1000 fpm                        → CLIMB
+//	airborne + VS +200…+1000 fpm                     → CLIMB SHALLOW
+//	airborne + VS −200…+200 fpm                      → LEVEL
+//	airborne + VS −800…−200 fpm                      → DESCENT
+//	airborne + VS −1500…−800 fpm                     → APPROACH
+//	airborne + VS < −1500 fpm                        → FINAL
+//
+// The altitude heuristic catches AI aircraft whose SimConnect on_ground flag
+// reports false due to the model's reference point being several feet above
+// the gear contact point (commonly seen as alt ≈ 10–30 ft for parked AI).
+func computeFlightPhase(onGround bool, groundSpeedKts, verticalSpeedFPM, altitudeFt float64) string {
+	effectiveOnGround := onGround ||
+		(altitudeFt < 100 && math.Abs(verticalSpeedFPM) < 100 && groundSpeedKts < 2)
+	if effectiveOnGround {
 		if groundSpeedKts < 2 {
 			return "PARKED"
 		}

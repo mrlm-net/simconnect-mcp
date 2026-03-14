@@ -9,8 +9,33 @@ import (
 	"github.com/mrlm-net/simconnect-mcp/internal/mcpadapter"
 )
 
-// RegisterSimVarTools registers list_simvars and get_simvar on s.
+// RegisterSimVarTools registers list_simvar_categories, list_simvars, and get_simvar on s.
 func RegisterSimVarTools(s *mcpadapter.Server, store corpus.DocStore, liveScrape bool) {
+	catBuilder := mcpadapter.NewTool("list_simvar_categories").
+		Description("List all available SimVar category filter values. " +
+			"Use these exact strings as the category parameter for list_simvars. " +
+			"Note: some categories contain '/' without spaces (e.g. 'AIRCRAFT AUTOPILOT/ASSISTANT VARIABLES') " +
+			"and others use ' / ' with spaces (e.g. 'AIRCRAFT BRAKE / LANDING GEAR VARIABLES').")
+	if liveScrape {
+		catBuilder = catBuilder.BoolParam("confirm_live_scraping", "Set to true to confirm you accept responsibility for live HTTP requests to external documentation sites. Required when DOCS_LIVE_SCRAPE=true.")
+	}
+	s.AddTool(catBuilder.Build(),
+		func(ctx context.Context, args map[string]any) (*mcpadapter.CallToolResult, error) {
+			if guard := liveScrapeGuard(args, liveScrape); guard != nil {
+				return guard, nil
+			}
+			cats, err := store.ListSimVarCategories(ctx)
+			if err != nil {
+				return mcpadapter.ErrorResult(fmt.Sprintf("INTERNAL_ERROR: %v", err)), nil
+			}
+			return mcpadapter.JSONResult(map[string]any{
+				"total":      len(cats),
+				"categories": cats,
+			})
+		},
+	)
+
+
 	listBuilder := mcpadapter.NewTool("list_simvars").
 		Description("List SimConnect simulation variables. Optionally filter by category and paginate.").
 		StringParam("category", "Filter by category (optional)").

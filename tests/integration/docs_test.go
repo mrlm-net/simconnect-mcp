@@ -1,6 +1,6 @@
 // Package integration contains end-to-end tests for the MCP docs mode.
 // Tests start the full Gin router in-process via net/http/httptest and
-// exercise all 11 registered MCP tools plus the health and routing layer.
+// exercise all 12 registered MCP tools plus the health and routing layer.
 //
 // Environment:
 //   - DOCS_MSFS_VERSION=both  (set via t.Setenv in TestMain)
@@ -160,7 +160,7 @@ func parseContentJSON(t *testing.T, resp map[string]any, dst any) {
 
 // ── Tests ─────────────────────────────────────────────────────────────────────
 
-// TestToolsList verifies that tools/list returns exactly 11 named tools.
+// TestToolsList verifies that tools/list returns exactly 12 named tools.
 func TestToolsList(t *testing.T) {
 	srv := newTestServer(t)
 
@@ -173,6 +173,7 @@ func TestToolsList(t *testing.T) {
 	}
 
 	want := []string{
+		"list_simvar_categories",
 		"list_simvars",
 		"get_simvar",
 		"list_events",

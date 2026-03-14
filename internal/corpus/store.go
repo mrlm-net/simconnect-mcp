@@ -7,6 +7,7 @@ package corpus
 
 import (
 	"context"
+	"sort"
 	"strings"
 	"sync"
 )
@@ -29,6 +30,10 @@ type DocStore interface {
 	ListErrorCodes(ctx context.Context, page, pageSize int) (Page[ErrorCode], error)
 	GetErrorCode(ctx context.Context, name string) (ErrorCode, error)
 	Search(ctx context.Context, query, type_ string, limit int) (SearchResults, error)
+	// ListSimVarCategories returns a deduplicated, sorted list of all SimVar
+	// category strings present in the loaded corpus. The values are the exact
+	// strings expected by the category parameter of ListSimVars.
+	ListSimVarCategories(ctx context.Context) ([]string, error)
 	SimVarCount() int
 	EventCount() int
 }
@@ -65,6 +70,9 @@ type memStore struct {
 
 	// category index: strings.ToUpper(category) → []SimVar (preserving order)
 	simVarsByCategory map[string][]SimVar
+
+	// sorted deduplicated list of original (non-normalised) category strings.
+	categories []string
 }
 
 // NewDocStore constructs an in-memory DocStore from the provided Corpus.
@@ -91,13 +99,20 @@ func NewDocStore(c Corpus) DocStore {
 	copy(s.structures, c.Structures)
 	copy(s.errorCodes, c.ErrorCodes)
 
+	catSeen := make(map[string]bool)
 	for _, sv := range c.SimVars {
 		key := strings.ToUpper(sv.Name)
 		s.simVarByName[key] = sv
 
 		catKey := strings.ToUpper(sv.Category)
 		s.simVarsByCategory[catKey] = append(s.simVarsByCategory[catKey], sv)
+
+		if sv.Category != "" && !catSeen[sv.Category] {
+			catSeen[sv.Category] = true
+			s.categories = append(s.categories, sv.Category)
+		}
 	}
+	sort.Strings(s.categories)
 	for _, ev := range c.Events {
 		s.eventByName[strings.ToUpper(ev.Name)] = ev
 	}
@@ -403,11 +418,30 @@ func (s *memStore) Search(_ context.Context, query, type_ string, limit int) (Se
 	}, nil
 }
 
-// matchItem returns true when query q (already lowercased) appears in
-// the lowercased name or description.
+// matchItem returns true when every whitespace-separated token in q (already
+// lowercased) appears in the lowercased name or description.
+// Using token matching instead of a consecutive substring allows queries like
+// "parking brake" to find "BRAKE PARKING POSITION" regardless of word order.
 func matchItem(q, name, description string) bool {
-	return strings.Contains(strings.ToLower(name), q) ||
-		strings.Contains(strings.ToLower(description), q)
+	lname := strings.ToLower(name)
+	ldesc := strings.ToLower(description)
+	for _, tok := range strings.Fields(q) {
+		if !strings.Contains(lname, tok) && !strings.Contains(ldesc, tok) {
+			return false
+		}
+	}
+	return true
+}
+
+// ── Categories ────────────────────────────────────────────────────────────────
+
+func (s *memStore) ListSimVarCategories(_ context.Context) ([]string, error) {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+
+	out := make([]string, len(s.categories))
+	copy(out, s.categories)
+	return out, nil
 }
 
 // ── Counts ────────────────────────────────────────────────────────────────────

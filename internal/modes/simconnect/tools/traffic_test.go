@@ -111,6 +111,25 @@ func TestGetNearbyTraffic_Disconnected(t *testing.T) {
 	}
 }
 
+func TestGetNearbyTraffic_SimTime(t *testing.T) {
+	mb := &bridge.MockBridge{
+		MockState:          bridge.StateConnected,
+		MockTrafficResults: []bridge.TrafficEntry{},
+		MockSimTime:        3600.5,
+	}
+	srv := newTrafficServer(t, mb)
+
+	resp := callToolTraffic(t, srv.URL, map[string]any{})
+	text := contentTextTraffic(t, resp)
+	var got map[string]any
+	if err := json.Unmarshal([]byte(text), &got); err != nil {
+		t.Fatalf("parse content JSON: %v\ntext: %s", err, text)
+	}
+	if got["sim_time"] != float64(3600.5) {
+		t.Errorf("expected sim_time=3600.5, got %v", got["sim_time"])
+	}
+}
+
 func TestGetNearbyTraffic_RadiusCapped(t *testing.T) {
 	mb := &bridge.MockBridge{
 		MockState:          bridge.StateConnected,

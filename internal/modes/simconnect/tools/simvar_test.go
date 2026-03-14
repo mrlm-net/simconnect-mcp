@@ -297,6 +297,54 @@ func TestGetSimVarValues_TooManyVars(t *testing.T) {
 	}
 }
 
+// TestGetSimVarValue_UnknownVariable verifies that ErrUnknownVariable produces UNKNOWN_VARIABLE error.
+func TestGetSimVarValue_UnknownVariable(t *testing.T) {
+	mb := &bridge.MockBridge{
+		MockState:           bridge.StateConnected,
+		MockUnknownVarError: true,
+	}
+	srv := newSimVarServer(t, mb)
+
+	resp := callToolSimVar(t, srv.URL, "get_simvar_value", map[string]any{
+		"name": "NONEXISTENT VARIABLE",
+		"unit": "feet",
+	})
+
+	if !isErrorSimVar(t, resp) {
+		t.Fatal("expected isError=true for unknown variable")
+	}
+	text := contentTextSimVar(t, resp)
+	if !strings.Contains(text, "UNKNOWN_VARIABLE") {
+		t.Errorf("expected UNKNOWN_VARIABLE in content, got: %s", text)
+	}
+	if !strings.Contains(text, "NONEXISTENT VARIABLE") {
+		t.Errorf("expected variable name in content, got: %s", text)
+	}
+}
+
+// TestGetSimVarValues_UnknownVariable verifies that ErrUnknownVariable from batch returns UNKNOWN_VARIABLE.
+func TestGetSimVarValues_UnknownVariable(t *testing.T) {
+	mb := &bridge.MockBridge{
+		MockState:           bridge.StateConnected,
+		MockUnknownVarError: true,
+	}
+	srv := newSimVarServer(t, mb)
+
+	resp := callToolSimVar(t, srv.URL, "get_simvar_values", map[string]any{
+		"vars": []any{
+			map[string]any{"name": "BAD VAR", "unit": "feet"},
+		},
+	})
+
+	if !isErrorSimVar(t, resp) {
+		t.Fatal("expected isError=true for unknown variable in batch")
+	}
+	text := contentTextSimVar(t, resp)
+	if !strings.Contains(text, "UNKNOWN_VARIABLE") {
+		t.Errorf("expected UNKNOWN_VARIABLE in content, got: %s", text)
+	}
+}
+
 // TestGetSimVarValues_PerItemError verifies that when MockSimVarResults contains
 // one error entry, that item has an "error" field and the other has a "value" field.
 func TestGetSimVarValues_PerItemError(t *testing.T) {

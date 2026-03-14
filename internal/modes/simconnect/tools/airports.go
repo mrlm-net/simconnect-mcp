@@ -12,12 +12,14 @@ import (
 )
 
 // RegisterAirportTools registers the get_airports_in_range, get_nearest_airport,
-// and get_airport_details MCP tools onto the provided server.
+// get_airport_details, get_airport_taxiways, get_taxiway_names, and get_airport_parkings
+// MCP tools onto the provided server.
 func RegisterAirportTools(mcp *mcpadapter.Server, b bridge.Bridge) {
 	registerGetAirportsInRange(mcp, b)
 	registerGetNearestAirport(mcp, b)
 	registerGetAirportDetails(mcp, b)
 	registerGetAirportTaxiways(mcp, b)
+	registerGetTaxiwayNames(mcp, b)
 	registerGetAirportParkings(mcp, b)
 }
 
@@ -158,6 +160,71 @@ func registerGetAirportTaxiways(mcp *mcpadapter.Server, b bridge.Bridge) {
 			"The response contains three correlated arrays: names (taxiway letter strings), " +
 			"paths (directed edges — each path references start_node and end_node indices into points, " +
 			"and a name_index into names), and points (graph nodes including hold-short positions). " +
+			"Large airports (EDDM, KJFK) may have 800–1200 paths; use max_paths to limit response size. " +
+			"When truncated, the response includes truncated=true and truncated_to fields. " +
+			"Leave region empty (default) for best results.").
+		StringParam("icao", "ICAO airport code (e.g. \"EDDM\", \"KLAX\").").
+		StringParam("region", "Optional ICAO region code (e.g. \"ED\", \"K6\"). Leave empty to match any region.").
+		NumberParam("max_paths", "Maximum number of paths to return (default 500, range 1–2000). When truncated, response includes truncated=true and truncated_to fields.").
+		Build()
+
+	mcp.AddTool(tool, func(ctx context.Context, args map[string]any) (*mcpadapter.CallToolResult, error) {
+		icao, _ := args["icao"].(string)
+		if !icaoRe.MatchString(icao) {
+			return mcpadapter.ErrorResult("INVALID_ARGUMENT: icao must be 1–9 uppercase alphanumeric characters"), nil
+		}
+		region, _ := args["region"].(string)
+		if !regionRe.MatchString(region) {
+			return mcpadapter.ErrorResult("INVALID_ARGUMENT: region must be 0–4 uppercase alphanumeric characters"), nil
+		}
+
+		if b.State() != bridge.StateConnected {
+			return mcpadapter.ErrorResult("BRIDGE_DISCONNECTED: not connected to simulator"), nil
+		}
+
+		taxiways, err := b.GetAirportTaxiways(ctx, icao, region)
+		if err != nil {
+			return mcpadapter.ErrorResult(fmt.Sprintf("TAXIWAY_ERROR: %v", err)), nil
+		}
+		if taxiways == nil {
+			return mcpadapter.ErrorResult(fmt.Sprintf("TAXIWAY_NOT_FOUND: airport %q has no taxiway data", icao)), nil
+		}
+
+		maxPaths := 500
+		if v, ok := args["max_paths"]; ok {
+			if n, ok := v.(float64); ok && n >= 1 {
+				if n > 2000 {
+					n = 2000
+				}
+				maxPaths = int(n)
+			}
+		}
+
+		result := map[string]any{
+			"icao":        taxiways.ICAO,
+			"name_count":  taxiways.NameCount,
+			"point_count": taxiways.PointCount,
+			"path_count":  taxiways.PathCount,
+			"names":       taxiways.Names,
+			"points":      taxiways.Points,
+		}
+
+		if taxiways.PathCount > maxPaths {
+			result["paths"] = taxiways.Paths[:maxPaths]
+			result["truncated"] = true
+			result["truncated_to"] = maxPaths
+		} else {
+			result["paths"] = taxiways.Paths
+		}
+
+		return mcpadapter.JSONResult(result)
+	})
+}
+
+func registerGetTaxiwayNames(mcp *mcpadapter.Server, b bridge.Bridge) {
+	tool := mcpadapter.NewTool("get_taxiway_names").
+		Description("Return only the taxiway letter/name strings for an airport by ICAO code. " +
+			"Lightweight alternative to get_airport_taxiways when only taxiway names are needed. " +
 			"Leave region empty (default) for best results.").
 		StringParam("icao", "ICAO airport code (e.g. \"EDDM\", \"KLAX\").").
 		StringParam("region", "Optional ICAO region code (e.g. \"ED\", \"K6\"). Leave empty to match any region.").
@@ -185,7 +252,11 @@ func registerGetAirportTaxiways(mcp *mcpadapter.Server, b bridge.Bridge) {
 			return mcpadapter.ErrorResult(fmt.Sprintf("TAXIWAY_NOT_FOUND: airport %q has no taxiway data", icao)), nil
 		}
 
-		return mcpadapter.JSONResult(taxiways)
+		return mcpadapter.JSONResult(map[string]any{
+			"icao":       taxiways.ICAO,
+			"name_count": taxiways.NameCount,
+			"names":      taxiways.Names,
+		})
 	})
 }
 

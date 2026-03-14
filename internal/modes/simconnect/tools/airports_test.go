@@ -434,6 +434,148 @@ func TestGetAirportParkings_NotFound(t *testing.T) {
 	}
 }
 
+// ── get_airport_taxiways truncation tests ─────────────────────────────────────
+
+// TestGetAirportTaxiways_DefaultCap verifies paths are capped at 500 by default.
+func TestGetAirportTaxiways_DefaultCap(t *testing.T) {
+	// Build a mock with 600 paths.
+	paths := make([]bridge.TaxiwayPath, 600)
+	mb := &bridge.MockBridge{
+		MockState: bridge.StateConnected,
+		MockAirportTaxiways: &bridge.AirportTaxiways{
+			ICAO:       "EDDM",
+			NameCount:  5,
+			PointCount: 700,
+			PathCount:  600,
+			Names:      []string{"A", "B", "C", "D", "E"},
+			Points:     []bridge.TaxiwayPoint{},
+			Paths:      paths,
+		},
+	}
+	srv := newAirportServer(t, mb)
+
+	resp := callToolEvent(t, srv.URL, "get_airport_taxiways", map[string]any{"icao": "EDDM"})
+	text := contentTextEvent(t, resp)
+	var got map[string]any
+	if err := json.Unmarshal([]byte(text), &got); err != nil {
+		t.Fatalf("parse JSON: %v\ntext: %s", err, text)
+	}
+
+	gotPaths := got["paths"].([]any)
+	if len(gotPaths) != 500 {
+		t.Errorf("expected 500 paths (default cap), got %d", len(gotPaths))
+	}
+	if got["truncated"] != true {
+		t.Errorf("expected truncated=true, got %v", got["truncated"])
+	}
+	if got["truncated_to"] != float64(500) {
+		t.Errorf("expected truncated_to=500, got %v", got["truncated_to"])
+	}
+	if got["path_count"] != float64(600) {
+		t.Errorf("expected path_count=600 (pre-truncation), got %v", got["path_count"])
+	}
+}
+
+// TestGetAirportTaxiways_ExplicitCapWithTruncation verifies explicit max_paths works.
+func TestGetAirportTaxiways_ExplicitCapWithTruncation(t *testing.T) {
+	paths := make([]bridge.TaxiwayPath, 200)
+	mb := &bridge.MockBridge{
+		MockState: bridge.StateConnected,
+		MockAirportTaxiways: &bridge.AirportTaxiways{
+			ICAO:      "KLAX",
+			PathCount: 200,
+			Names:     []string{},
+			Points:    []bridge.TaxiwayPoint{},
+			Paths:     paths,
+		},
+	}
+	srv := newAirportServer(t, mb)
+
+	resp := callToolEvent(t, srv.URL, "get_airport_taxiways", map[string]any{
+		"icao":      "KLAX",
+		"max_paths": float64(100),
+	})
+	text := contentTextEvent(t, resp)
+	var got map[string]any
+	if err := json.Unmarshal([]byte(text), &got); err != nil {
+		t.Fatalf("parse JSON: %v\ntext: %s", err, text)
+	}
+
+	gotPaths := got["paths"].([]any)
+	if len(gotPaths) != 100 {
+		t.Errorf("expected 100 paths, got %d", len(gotPaths))
+	}
+	if got["truncated"] != true {
+		t.Errorf("expected truncated=true")
+	}
+}
+
+// TestGetAirportTaxiways_NoTruncation verifies small airports return all paths without truncated field.
+func TestGetAirportTaxiways_NoTruncation(t *testing.T) {
+	paths := make([]bridge.TaxiwayPath, 50)
+	mb := &bridge.MockBridge{
+		MockState: bridge.StateConnected,
+		MockAirportTaxiways: &bridge.AirportTaxiways{
+			ICAO:      "LKPD",
+			PathCount: 50,
+			Names:     []string{"A"},
+			Points:    []bridge.TaxiwayPoint{},
+			Paths:     paths,
+		},
+	}
+	srv := newAirportServer(t, mb)
+
+	resp := callToolEvent(t, srv.URL, "get_airport_taxiways", map[string]any{"icao": "LKPD"})
+	text := contentTextEvent(t, resp)
+	var got map[string]any
+	if err := json.Unmarshal([]byte(text), &got); err != nil {
+		t.Fatalf("parse JSON: %v\ntext: %s", err, text)
+	}
+
+	gotPaths := got["paths"].([]any)
+	if len(gotPaths) != 50 {
+		t.Errorf("expected all 50 paths, got %d", len(gotPaths))
+	}
+	if _, hasTruncated := got["truncated"]; hasTruncated {
+		t.Errorf("expected no truncated field for small airport")
+	}
+}
+
+// ── get_taxiway_names tests ───────────────────────────────────────────────────
+
+// TestGetTaxiwayNames_ReturnsNamesOnly verifies the lightweight tool returns only names.
+func TestGetTaxiwayNames_ReturnsNamesOnly(t *testing.T) {
+	mb := &bridge.MockBridge{
+		MockState: bridge.StateConnected,
+		MockAirportTaxiways: &bridge.AirportTaxiways{
+			ICAO:      "EDDM",
+			NameCount: 3,
+			Names:     []string{"A", "B", "C"},
+			Points:    []bridge.TaxiwayPoint{},
+			Paths:     make([]bridge.TaxiwayPath, 1000),
+		},
+	}
+	srv := newAirportServer(t, mb)
+
+	resp := callToolEvent(t, srv.URL, "get_taxiway_names", map[string]any{"icao": "EDDM"})
+	text := contentTextEvent(t, resp)
+	var got map[string]any
+	if err := json.Unmarshal([]byte(text), &got); err != nil {
+		t.Fatalf("parse JSON: %v\ntext: %s", err, text)
+	}
+
+	if _, hasPaths := got["paths"]; hasPaths {
+		t.Error("get_taxiway_names must not include paths")
+	}
+	if _, hasPoints := got["points"]; hasPoints {
+		t.Error("get_taxiway_names must not include points")
+	}
+	names := got["names"].([]any)
+	if len(names) != 3 {
+		t.Errorf("expected 3 names, got %d", len(names))
+	}
+}
+
 // containsStr is a simple string-contains check for test assertions.
 func containsStr(s, substr string) bool {
 	return len(s) >= len(substr) && (s == substr || len(substr) == 0 ||

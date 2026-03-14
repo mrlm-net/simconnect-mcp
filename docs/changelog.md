@@ -7,6 +7,19 @@ section: changelog
 
 All notable changes to SimConnect MCP are documented here.
 
+## [0.5.7] - 2026-03-15
+
+### Added
+
+- `get_taxiway_names` tool — lightweight alternative to `get_airport_taxiways` that returns only the taxiway letter/name strings (no paths or points); avoids token-limit issues for large airports
+
+### Fixed
+
+- `get_simvar_value` and `get_simvar_values`: unknown or misspelled SimVar names now return a structured `UNKNOWN_VARIABLE` error instead of timing out with a generic message
+- `get_nearby_traffic` and `get_traffic_with_phase`: `sim_time` (Zulu seconds since midnight) is now included at the envelope level in all responses
+- `get_airport_details`: supplying an incorrect `region` code no longer silently drops the result — the bridge automatically retries with an empty region and logs a WARN
+- `get_airport_taxiways`: added `max_paths` parameter (default 500, max 2000) to cap large responses; response includes `truncated` and `truncated_to` fields when paths are capped
+
 ## [0.5.6] - 2026-03-14
 
 ### Added

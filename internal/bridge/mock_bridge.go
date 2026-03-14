@@ -30,6 +30,12 @@ type MockBridge struct {
 	// when non-nil. GetSimState ignores MockError (always succeeds).
 	MockError error
 
+	// MockUnknownVarError, when true, makes GetSimVar and GetSimVars return ErrUnknownVariable.
+	MockUnknownVarError bool
+
+	// MockSimTime is returned by GetSimTime().
+	MockSimTime float64
+
 	// EventsCh is the channel returned by SimEvents.
 	// If nil, SimEvents returns a non-nil but never-written channel.
 	EventsCh chan SimEvent
@@ -152,6 +158,9 @@ func (m *MockBridge) GetSimVar(_ context.Context, name, unit string) (SimVar, er
 	if m.MockError != nil {
 		return SimVar{}, m.MockError
 	}
+	if m.MockUnknownVarError {
+		return SimVar{}, ErrUnknownVariable
+	}
 	sv := m.MockSimVar
 	sv.Name = name
 	sv.Unit = unit
@@ -163,6 +172,9 @@ func (m *MockBridge) GetSimVars(_ context.Context, vars []SimVarRequest) ([]SimV
 	defer m.mu.RUnlock()
 	if m.MockError != nil {
 		return nil, m.MockError
+	}
+	if m.MockUnknownVarError {
+		return nil, ErrUnknownVariable
 	}
 	if m.MockSimVarResults != nil {
 		return m.MockSimVarResults, nil
@@ -205,6 +217,12 @@ func (m *MockBridge) GetSimState(_ context.Context) (SimState, error) {
 	state := m.MockSimState
 	state.Connected = m.MockState == StateConnected
 	return state, nil
+}
+
+func (m *MockBridge) GetSimTime() float64 {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+	return m.MockSimTime
 }
 
 func (m *MockBridge) GetTraffic(_ context.Context, _ uint32) ([]TrafficEntry, error) {

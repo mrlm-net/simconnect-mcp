@@ -1,11 +1,11 @@
 ---
 title: "MCP Tools — SimConnect Mode"
-description: Reference for the 18 live-data MCP tools in SimConnect mode (MCP_MODE=simconnect, Windows only).
+description: Reference for the 19 live-data MCP tools in SimConnect mode (MCP_MODE=simconnect, Windows only).
 order: 2
 section: reference
 ---
 
-All 18 MCP tools listed here are available when the server runs with `MCP_MODE=simconnect`. This mode provides live simulator data via the SimConnect SDK.
+All 19 MCP tools listed here are available when the server runs with `MCP_MODE=simconnect`. This mode provides live simulator data via the SimConnect SDK.
 
 **Requirements**: Windows only. Microsoft Flight Simulator 2020 or 2024 must be running with SimConnect enabled before issuing any read or transmit calls. The `get_sim_state` tool is safe to call at any time regardless of connection state.
 
@@ -32,6 +32,7 @@ Tools are called over the Model Context Protocol using JSON-RPC 2.0 with the `to
 | [`get_waypoints_in_range`](#get_waypoints_in_range) | List waypoints sorted by distance from the player aircraft |
 | [`get_waypoint_details`](#get_waypoint_details) | Return detailed data for a specific waypoint by ICAO code |
 | [`get_airport_taxiways`](#get_airport_taxiways) | Return the taxiway network graph for a specific airport by ICAO code |
+| [`get_taxiway_names`](#get_taxiway_names) | Return only the taxiway letter/name strings for an airport (lightweight alternative) |
 | [`get_airport_parkings`](#get_airport_parkings) | Return all parking stands, gates, and ramps at a specific airport by ICAO code |
 
 ---
@@ -114,6 +115,7 @@ Read a single live simulation variable from the running simulator.
 
 - `BRIDGE_DISCONNECTED`: The SimConnect bridge is not connected to the simulator. Start the simulator and ensure SimConnect is enabled.
 - `INVALID_ARGUMENT`: `name` or `unit` was not provided or is empty.
+- `UNKNOWN_VARIABLE`: The variable name or unit is not recognised by SimConnect. Check the name against the SimConnect SDK reference.
 - `INTERNAL_ERROR`: Unexpected bridge or SimConnect failure.
 
 ---
@@ -182,6 +184,7 @@ An array of result objects. Each object has:
 
 - `BRIDGE_DISCONNECTED`: The SimConnect bridge is not connected to the simulator.
 - `INVALID_ARGUMENT`: `vars` was not provided, is empty, exceeds 20 items, or contains an item missing `name` or `unit`.
+- `UNKNOWN_VARIABLE`: One or more variable names or units in the batch are not recognised by SimConnect.
 - `INTERNAL_ERROR`: Unexpected bridge or SimConnect failure.
 
 ---
@@ -419,6 +422,7 @@ Return a list of AI and player aircraft within a given radius of the user aircra
 
 | Field | Type | Description |
 |-------|------|-------------|
+| `sim_time` | number | Simulator Zulu time in seconds since midnight at the moment of the scan |
 | `radius_meters` | number | The radius used for the scan |
 | `count` | number | Number of aircraft returned |
 | `traffic` | array | Array of traffic entries (see below) |
@@ -490,6 +494,7 @@ Return nearby aircraft with enriched telemetry: vertical speed, actual ground tr
 
 | Field | Type | Description |
 |-------|------|-------------|
+| `sim_time` | number | Simulator Zulu time in seconds since midnight at the moment of the scan |
 | `radius_meters` | number | The radius used for the scan |
 | `count` | number | Number of aircraft returned |
 | `traffic` | array | Array of enriched traffic entries (see below) |
@@ -990,14 +995,20 @@ Return the taxiway network graph for a specific airport by ICAO code. The respon
 |------|------|----------|---------|-------------|
 | `icao` | string | Yes | — | ICAO airport code, e.g. `"EDDM"` or `"KLAX"`. Must be 1–9 uppercase alphanumeric characters. |
 | `region` | string | No | `""` | ICAO region code, e.g. `"ED"` or `"K6"`. Leave empty for best results. |
+| `max_paths` | number | No | `500` | Maximum number of path entries to return. Range `1–2000`. Large airports (EDDM, KJFK) can exceed 1000 paths; use this to keep the response within MCP client size limits. |
 
 **Returns**
 
 | Field | Type | Description |
 |-------|------|-------------|
+| `name_count` | number | Total number of taxiway names |
+| `point_count` | number | Total number of graph nodes |
+| `path_count` | number | Total number of paths before truncation |
 | `names` | array | List of taxiway name strings (e.g. `["A", "B", "C"]`) |
-| `paths` | array | Directed edges (see below) |
+| `paths` | array | Directed edges, capped at `max_paths` (see below) |
 | `points` | array | Graph nodes (see below) |
+| `truncated` | boolean | Present and `true` when paths were capped by `max_paths` |
+| `truncated_to` | number | Present when `truncated=true`; the number of paths actually returned |
 
 Each entry in `paths`:
 
@@ -1051,6 +1062,67 @@ Each entry in `points`:
       {
         "type": "text",
         "text": "{\"names\":[\"A\",\"B\",\"N\"],\"paths\":[{\"type\":\"TAXIWAY\",\"width_m\":23.0,\"start_node\":0,\"end_node\":1,\"name_index\":0,...}],\"points\":[{\"type\":\"NORMAL\",\"orientation\":\"NONE\",\"bias_x_m\":-823.5,\"bias_z_m\":441.2}]}"
+      }
+    ]
+  }
+}
+```
+
+**Error codes**
+
+- `BRIDGE_DISCONNECTED`: Not connected to the simulator.
+- `INVALID_ARGUMENT`: `icao` must be 1–9 uppercase alphanumeric characters; `region` must be 0–4 uppercase alphanumeric characters.
+- `TAXIWAY_NOT_FOUND`: No taxiway data was found for the given ICAO code.
+- `TAXIWAY_ERROR`: SimConnect returned an error while fetching taxiway data.
+
+---
+
+## get_taxiway_names
+
+Return only the taxiway letter/name strings for an airport by ICAO code. Lightweight alternative to `get_airport_taxiways` when only the taxiway label list is needed — no paths or points are returned.
+
+**Requirements**: Windows + MSFS 2020 or 2024 running with SimConnect enabled.
+
+**Parameters**
+
+| Name | Type | Required | Default | Description |
+|------|------|----------|---------|-------------|
+| `icao` | string | Yes | — | ICAO airport code, e.g. `"EDDM"` or `"KLAX"`. Must be 1–9 uppercase alphanumeric characters. |
+| `region` | string | No | `""` | ICAO region code, e.g. `"ED"` or `"K6"`. Leave empty for best results. |
+
+**Returns**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `icao` | string | Airport ICAO code |
+| `name_count` | number | Number of taxiway names |
+| `names` | array | List of taxiway name strings (e.g. `["A", "B", "C", "N"]`) |
+
+**Example request**
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 19,
+  "method": "tools/call",
+  "params": {
+    "name": "get_taxiway_names",
+    "arguments": { "icao": "EDDM" }
+  }
+}
+```
+
+**Example response**
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 19,
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"icao\":\"EDDM\",\"name_count\":12,\"names\":[\"A\",\"B\",\"C\",\"D\",\"E\",\"F\",\"G\",\"H\",\"J\",\"K\",\"M\",\"N\"]}"
       }
     ]
   }

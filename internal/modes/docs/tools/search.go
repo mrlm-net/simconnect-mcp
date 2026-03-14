@@ -20,9 +20,9 @@ func isValidSearchType(t string) bool {
 // RegisterSearchTool registers search_docs on s.
 func RegisterSearchTool(s *mcpadapter.Server, store corpus.DocStore, liveScrape bool) {
 	builder := mcpadapter.NewTool("search_docs").
-		Description("Keyword search across SimConnect documentation. Returns matching SimVars, events, functions, structures, and error codes. " +
-			"Search is word-token based: every word in the query must appear somewhere in the item name or description (order-independent). " +
-			"Works best with SimVar name fragments in UPPERCASE (e.g. 'BRAKE PARKING', 'HEADING LOCK', 'ENGINE OIL'). " +
+		Description("Keyword search across SimConnect documentation. Returns matching SimVars, events, functions, structures, and error codes. "+
+			"Search is word-token based: every word in the query must appear somewhere in the item name or description (order-independent). "+
+			"Works best with SimVar name fragments in UPPERCASE (e.g. 'BRAKE PARKING', 'HEADING LOCK', 'ENGINE OIL'). "+
 			"Natural-language synonyms are not supported — use SimConnect terminology rather than aviation shorthand.").
 		StringParam("query", "Search query (required, non-empty). All words must appear in the matching item's name or description.").
 		StringParam("type", "Corpus type to search: simvar, event, function, structure, error_code, all (default all)").

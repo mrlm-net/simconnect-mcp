@@ -52,6 +52,7 @@ func RegisterTrafficTool(mcp *mcpadapter.Server, b bridge.Bridge) {
 		}
 
 		return mcpadapter.JSONResult(map[string]any{
+			"sim_time":      b.GetSimTime(),
 			"radius_meters": radius,
 			"count":         len(entries),
 			"traffic":       entries,

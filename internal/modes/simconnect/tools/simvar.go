@@ -5,6 +5,7 @@ package tools
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"github.com/mrlm-net/simconnect-mcp/internal/bridge"
@@ -44,6 +45,9 @@ func registerGetSimVarValue(mcp *mcpadapter.Server, b bridge.Bridge) {
 
 		sv, err := b.GetSimVar(ctx, name, unit)
 		if err != nil {
+			if errors.Is(err, bridge.ErrUnknownVariable) {
+				return mcpadapter.ErrorResult(fmt.Sprintf("UNKNOWN_VARIABLE: unknown simulation variable %q", name)), nil
+			}
 			return mcpadapter.ErrorResult(fmt.Sprintf("INTERNAL_ERROR: %v", err)), nil
 		}
 
@@ -126,6 +130,9 @@ func registerGetSimVarValues(mcp *mcpadapter.Server, b bridge.Bridge) {
 
 		results, err := b.GetSimVars(ctx, requests)
 		if err != nil {
+			if errors.Is(err, bridge.ErrUnknownVariable) {
+				return mcpadapter.ErrorResult("UNKNOWN_VARIABLE: unknown simulation variable or unit in batch"), nil
+			}
 			return mcpadapter.ErrorResult(fmt.Sprintf("INTERNAL_ERROR: %v", err)), nil
 		}
 

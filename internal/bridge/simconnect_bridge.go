@@ -1125,6 +1125,18 @@ func (b *simconnectBridge) State() ConnectionState {
 	}
 }
 
+// GetSimTime returns the current simulator Zulu time in seconds since midnight.
+// Returns 0 if the bridge is not connected. Uses cached manager SimState — no extra request.
+func (b *simconnectBridge) GetSimTime() float64 {
+	b.mu.RLock()
+	mgr := b.mgr
+	b.mu.RUnlock()
+	if mgr == nil {
+		return 0
+	}
+	return mgr.SimState().ZuluTime
+}
+
 // approachTypeName converts a SimConnect approach type int to a string label.
 func approachTypeName(t int32) string {
 	switch t {
@@ -1237,7 +1249,7 @@ func (b *simconnectBridge) GetSimVar(ctx context.Context, name, unit string) (Si
 		delete(b.pending, reqID)
 		b.pendingMu.Unlock()
 		_ = mgr.ClearDataDefinition(defID)
-		return SimVar{}, fmt.Errorf("bridge: simvar %q: no response from simulator (unknown variable or unit)", name)
+		return SimVar{}, fmt.Errorf("bridge: simvar %q: %w", name, ErrUnknownVariable)
 	case value, ok = <-resultCh:
 		if !ok {
 			// Channel was closed by Close() — bridge shutting down.
@@ -1332,7 +1344,7 @@ func (b *simconnectBridge) GetSimVars(ctx context.Context, vars []SimVarRequest)
 	case <-ctx.Done():
 		return nil, fmt.Errorf("bridge: %w", ErrTimeout)
 	case <-reqDeadline.C:
-		return nil, fmt.Errorf("bridge: get_simvar_values: no response from simulator (unknown variable or unit in batch)")
+		return nil, fmt.Errorf("bridge: get_simvar_values: %w", ErrUnknownVariable)
 	case values, ok := <-resultCh:
 		if !ok {
 			// Channel closed by Close() — bridge shutting down.
@@ -2448,9 +2460,35 @@ func (b *simconnectBridge) ensureFacilityDefs(mgr manager.Manager) (facilityDefS
 }
 
 // GetAirportDetails returns detailed facility data for the given ICAO airport.
-// Issues two RequestFacilityData calls (basic airport info + runways) and waits
-// until both FACILITY_DATA_END messages are received.
+// Issues RequestFacilityData calls (basic airport info + runways, plus optional
+// expanded sub-sections) and waits until all FACILITY_DATA_END messages are received.
+//
+// If region is non-empty and SimConnect returns no base data (AIRPORT_REGION_MISMATCH),
+// the call is automatically retried with an empty region so that airports with
+// mismatched or unknown region codes are still reachable.
 func (b *simconnectBridge) GetAirportDetails(ctx context.Context, icao, region string, expanded bool) (*AirportDetails, error) {
+	details, err := b.getAirportDetailsOnce(ctx, icao, region, expanded)
+	if err != nil {
+		return nil, err
+	}
+	if details == nil && region != "" {
+		// AIRPORT_REGION_MISMATCH — SimConnect returned no base data for the
+		// given region string. Retry with an empty region, which lets SimConnect
+		// find the airport by ICAO alone regardless of its assigned region code.
+		slog.Warn("airport details region fallback: retrying with empty region", "icao", icao, "region", region)
+		details, err = b.getAirportDetailsOnce(ctx, icao, "", expanded)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return details, nil
+}
+
+// getAirportDetailsOnce performs a single RequestFacilityData round-trip for the
+// given ICAO and region. Returns (nil, nil) when SimConnect completes all END
+// messages but no base FACILITY_DATA record was received (airport not found or
+// region mismatch). Returns a non-nil snapshot on success.
+func (b *simconnectBridge) getAirportDetailsOnce(ctx context.Context, icao, region string, expanded bool) (*AirportDetails, error) {
 	if b.State() != StateConnected {
 		return nil, ErrNotConnected
 	}

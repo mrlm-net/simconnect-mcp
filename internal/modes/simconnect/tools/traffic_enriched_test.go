@@ -141,6 +141,25 @@ func TestGetTrafficWithPhase_Disconnected(t *testing.T) {
 	}
 }
 
+func TestGetTrafficWithPhase_SimTime(t *testing.T) {
+	mb := &bridge.MockBridge{
+		MockState:                  bridge.StateConnected,
+		MockEnrichedTrafficResults: []bridge.EnrichedTrafficEntry{},
+		MockSimTime:                7200.0,
+	}
+	srv := newEnrichedTrafficServer(t, mb)
+
+	resp := callEnrichedTool(t, srv.URL, map[string]any{})
+	text := contentTextEvent(t, resp)
+	var got map[string]any
+	if err := json.Unmarshal([]byte(text), &got); err != nil {
+		t.Fatalf("parse JSON: %v\ntext: %s", err, text)
+	}
+	if got["sim_time"] != float64(7200.0) {
+		t.Errorf("expected sim_time=7200.0, got %v", got["sim_time"])
+	}
+}
+
 func TestGetTrafficWithPhase_RadiusCapped(t *testing.T) {
 	mb := &bridge.MockBridge{
 		MockState:                  bridge.StateConnected,

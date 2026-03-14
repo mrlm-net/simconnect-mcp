@@ -459,6 +459,10 @@ type Bridge interface {
 	// Returns nil, nil if the airport is not found or has no parking data.
 	GetAirportParkings(ctx context.Context, icao, region string) (*AirportParkings, error)
 
+	// GetSimTime returns the current simulator Zulu time in seconds since midnight.
+	// Returns 0 if the bridge is not connected. Uses cached manager SimState — no extra request.
+	GetSimTime() float64
+
 	// SimEvents returns a read-only channel that receives lifecycle events.
 	SimEvents() <-chan SimEvent
 }

@@ -2,18 +2,11 @@
 
 SimConnect MCP exposes Microsoft Flight Simulator's SimConnect SDK documentation as a [Model Context Protocol (MCP)](https://modelcontextprotocol.io) server. AI assistants — Claude, GitHub Copilot, and others — can answer questions about SimVars, events, API functions, data structures, and error codes without leaving the chat.
 
-The server is written in Go with Gin routing and operates in two modes reflecting the project milestones: **documentation fetch** (cross-platform) and **live SimConnect data** (Windows-only).
+The server is written in Go with Gin routing and operates in two modes: **documentation fetch** (cross-platform) and **live SimConnect data** (Windows-only).
 
 ## Documentation
 
 Full documentation is available at **[simconnect-mcp.mrlm.net](https://simconnect-mcp.mrlm.net)** — getting started guides, configuration reference, MCP tool API docs, and architecture notes.
-
-## Milestones
-
-| Milestone | Mode | `MCP_MODE` value | Status |
-|-----------|------|------------------|--------|
-| M1 | Documentation fetch | `docs` | Complete |
-| M2 | Live SimConnect data | `simconnect` | Complete |
 
 ## Installation
 
@@ -42,8 +35,8 @@ go build -o simconnect-mcp ./cmd/simconnect-mcp/
 ## Prerequisites
 
 - **Go 1.24+** (build from source or `go install` only)
-- Milestone 1 (`docs` mode) runs on any operating system — no additional prerequisites.
-- Milestone 2 (`simconnect` mode) requires:
+- `docs` mode runs on any operating system — no additional prerequisites.
+- `simconnect` mode requires:
   - **Windows 10/11 (x64)**
   - **Microsoft Flight Simulator 2020 or 2024** with SimConnect enabled
   - **SimConnect SDK** — installed via MSFS Developer Mode tools or the standalone SDK installer
@@ -130,10 +123,11 @@ Add the following to your `claude_desktop_config.json` (or equivalent MCP client
 
 ## Available Tools
 
-The server exposes 11 MCP tools in `docs` mode. See [docs/api/mcp-tools.md](docs/api/mcp-tools.md) for full parameter references, request/response examples, and error codes.
+The server exposes 12 MCP tools in `docs` mode. See [docs/api/mcp-tools.md](docs/api/mcp-tools.md) for full parameter references, request/response examples, and error codes.
 
 | Tool | Description |
 |------|-------------|
+| `list_simvar_categories` | List all SimVar category strings valid for the `category` filter of `list_simvars` |
 | `list_simvars` | List simulation variables, optionally filtered by category, with pagination |
 | `get_simvar` | Fetch a single simulation variable by name (case-insensitive) |
 | `list_events` | List client input events (Key Event IDs) with pagination |
@@ -144,11 +138,11 @@ The server exposes 11 MCP tools in `docs` mode. See [docs/api/mcp-tools.md](docs
 | `get_structure` | Fetch a single data structure by name (case-insensitive) |
 | `list_error_codes` | List `SIMCONNECT_EXCEPTION` enum values with pagination |
 | `get_error_code` | Fetch an error code by name or integer value |
-| `search_docs` | Full-text search across all corpus types (SimVars, events, functions, structures, error codes) |
+| `search_docs` | Keyword search across all corpus types; all query words must appear in the name or description |
 
 All `list_*` tools return a paginated envelope (`items`, `page`, `page_size`, `total_items`, `total_pages`). Default page size is 20; maximum is 100.
 
-## Live SimConnect Mode (Milestone 2)
+## Live SimConnect Mode
 
 `simconnect` mode connects to a running instance of MSFS 2020 or MSFS 2024 via the SimConnect SDK and exposes live simulator data as MCP tools. It is Windows-only and must be built with the `-tags windows` flag.
 
@@ -197,15 +191,4 @@ Unit tests live alongside the code in `_test.go` files. Integration tests are in
 
 ## Contributing
 
-Development is milestone-based. Active branches:
-
-| Branch | Purpose |
-|--------|---------|
-| `main` | Stable releases |
-| `milestone/1-docs` | Documentation fetch mode (complete) |
-| `milestone/2-simconnect` | Live SimConnect mode (complete) |
-| `milestone/3-website` | Documentation website (active) |
-
-Issues are labelled `milestone-1`, `milestone-2`, `milestone-3`, etc.
-
-Browse open issues and submit bug reports or feature requests at [github.com/mrlm-net/simconnect-mcp/issues](https://github.com/mrlm-net/simconnect-mcp/issues).
+All development happens on `main`. Browse open issues and submit bug reports or feature requests at [github.com/mrlm-net/simconnect-mcp/issues](https://github.com/mrlm-net/simconnect-mcp/issues).

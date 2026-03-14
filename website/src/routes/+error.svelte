@@ -67,10 +67,13 @@
 		</p>
 	{/if}
 
-	<!-- Actions -->
+	<!-- Actions — data-sveltekit-reload forces full page load instead of
+	     client-side navigation, which would crash because layout data is
+	     unavailable from the 404 fallback context. -->
 	<div class="flex flex-wrap justify-center gap-3">
 		<a
 			href="{base}/"
+			data-sveltekit-reload
 			class="rounded-md border px-4 py-2 text-sm font-medium transition-colors"
 			style="background-color: var(--color-bg-secondary); border-color: var(--color-border); color: var(--color-text-primary);"
 		>
@@ -78,6 +81,7 @@
 		</a>
 		<a
 			href="{base}/docs/getting-started/"
+			data-sveltekit-reload
 			class="rounded-md px-4 py-2 text-sm font-medium transition-colors"
 			style="background-color: #1f6feb; color: #ffffff;"
 		>

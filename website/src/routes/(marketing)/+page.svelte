@@ -624,52 +624,38 @@
 
 <!-- Sponsor / Support -->
 <section
-	class="border-t px-6 py-16"
+	class="border-t px-6 py-16 text-center"
 	style="background-color: var(--color-bg-primary); border-color: var(--color-border);"
 >
-	<div class="mx-auto max-w-xl">
-		<div
-			class="rounded-xl border px-8 py-10 text-center"
-			style="background-color: var(--color-bg-secondary); border-color: rgba(248,81,73,0.25);"
-		>
-			<!-- Heart icon -->
-			<div class="mb-5 flex justify-center">
-				<div
-					class="flex h-11 w-11 items-center justify-center rounded-full"
-					style="background-color: rgba(248,81,73,0.12); color: #f85149;"
-				>
-					<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-						<path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-					</svg>
-				</div>
-			</div>
-
-			<h2 class="mb-1 text-xl font-bold tracking-tight" style="color: var(--color-text-primary);">
-				Support the project
-			</h2>
-			<p class="mb-4 text-xs font-semibold uppercase tracking-widest" style="color: var(--color-text-muted);">
-				Back open-source MSFS tooling
-			</p>
-			<p class="mx-auto mb-7 max-w-sm text-sm leading-relaxed" style="color: var(--color-text-secondary);">
-				Sponsoring covers infrastructure costs, development time, and MSFS 2020 &amp; 2024
-				licences required to test against real simulator versions.
-			</p>
-			<a
-				href="https://revolut.me/mrlm?currency=EUR"
-				target="_blank"
-				rel="noopener noreferrer"
-				class="inline-flex items-center gap-2 rounded-md px-6 py-2.5 text-sm font-semibold transition-opacity hover:opacity-90"
-				style="background-color: #f85149; color: #fff;"
-			>
-				Sponsor via Revolut
-				<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-					<path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
-					<polyline points="15 3 21 3 21 9" />
-					<line x1="10" y1="14" x2="21" y2="3" />
-				</svg>
-			</a>
-		</div>
+	<div class="mb-4 flex justify-center">
+		<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="#f85149" aria-hidden="true">
+			<path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+		</svg>
 	</div>
+	<h2 class="mb-1 text-xl font-bold tracking-tight" style="color: var(--color-text-primary);">
+		Support the project
+	</h2>
+	<p class="mb-4 text-xs font-semibold uppercase tracking-widest" style="color: var(--color-text-muted);">
+		Back open-source MSFS tooling
+	</p>
+	<p class="mx-auto mb-7 max-w-sm text-sm leading-relaxed" style="color: var(--color-text-secondary);">
+		Sponsoring covers infrastructure costs, development time, and MSFS 2020 &amp; 2024
+		licences required to test against real simulator versions.
+	</p>
+	<a
+		href="https://revolut.me/mrlm?currency=EUR"
+		target="_blank"
+		rel="noopener noreferrer"
+		class="inline-flex items-center gap-2 rounded-md px-6 py-2.5 text-sm font-semibold transition-opacity hover:opacity-90"
+		style="background-color: #f85149; color: #fff;"
+	>
+		Sponsor via Revolut
+		<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+			<path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+			<polyline points="15 3 21 3 21 9" />
+			<line x1="10" y1="14" x2="21" y2="3" />
+		</svg>
+	</a>
 </section>
 
 <style>

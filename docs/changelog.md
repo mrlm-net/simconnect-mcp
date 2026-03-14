@@ -7,6 +7,13 @@ section: changelog
 
 All notable changes to SimConnect MCP are documented here.
 
+## [0.5.5] - 2026-03-14
+
+### Fixed
+
+- Website: 404 on `/docs/*` URLs crashed — `(docs)` and `(marketing)` group layouts now fall back to directly-imported `siteConfig` when layout server data is unavailable (GitHub Pages static 404 fallback context)
+- Website: added `(docs)/+error.svelte` so docs-group 404s render inside the docs layout chrome instead of double-rendering a header/footer
+
 ## [0.5.4] - 2026-03-14
 
 ### Fixed

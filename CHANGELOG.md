@@ -4,6 +4,13 @@ All notable changes to SimConnect MCP are documented here. The format follows [K
 
 Full release history with release notes is also available on the [GitHub Releases page](https://github.com/mrlm-net/simconnect-mcp/releases).
 
+## [0.5.5] - 2026-03-14
+
+### Fixed
+
+- Website: 404 pages on `/docs/*` URLs crashed with `Cannot read properties of undefined (reading 'title')` because the `(docs)` group layout reads `data.siteConfig` from the layout server load, which is unavailable when GitHub Pages serves the static `404.html` fallback; both group layouts (`docs`, `marketing`) now fall back to a directly-imported `siteConfig` constant when `data.siteConfig` is undefined
+- Website: added `(docs)/+error.svelte` so error pages inside the docs group render inside the docs chrome (header, sidebar, footer) rather than rendering a second standalone header/footer from the root error page
+
 ## [0.5.4] - 2026-03-14
 
 ### Fixed

@@ -2,6 +2,7 @@
 	import Header from '$lib/components/layout/Header.svelte';
 	import Sidebar from '$lib/components/layout/Sidebar.svelte';
 	import Footer from '$lib/components/layout/Footer.svelte';
+	import { siteConfig as defaultSiteConfig } from '$lib/config/site.js';
 	import type { Snippet } from 'svelte';
 	import type { NavSection, NavItem, SiteConfig } from '$lib/types/index.js';
 
@@ -9,9 +10,13 @@
 		data,
 		children
 	}: {
-		data: { navigation: NavSection[]; topLinks: NavItem[]; siteConfig: SiteConfig };
+		data: { navigation?: NavSection[]; topLinks?: NavItem[]; siteConfig?: SiteConfig };
 		children: Snippet;
 	} = $props();
+
+	const config = data.siteConfig ?? defaultSiteConfig;
+	const navigation = data.navigation ?? [];
+	const topLinks = data.topLinks ?? [];
 
 	let sidebarOpen = $state(false);
 	function toggleSidebar() {
@@ -22,10 +27,10 @@
 	}
 </script>
 
-<Header siteConfig={data.siteConfig} onToggleSidebar={toggleSidebar} />
+<Header siteConfig={config} onToggleSidebar={toggleSidebar} />
 <Sidebar
-	navigation={data.navigation}
-	topLinks={data.topLinks}
+	{navigation}
+	{topLinks}
 	open={sidebarOpen}
 	onClose={closeSidebar}
 />
@@ -35,5 +40,5 @@
 	</main>
 </div>
 <div class="md:pl-70">
-	<Footer siteConfig={data.siteConfig} />
+	<Footer siteConfig={config} />
 </div>

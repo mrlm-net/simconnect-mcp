@@ -7,6 +7,16 @@ section: changelog
 
 All notable changes to SimConnect MCP are documented here.
 
+## [0.5.3] - 2026-03-14
+
+### Added
+
+- Website: custom 404 error page with aviation-themed random messages, header, footer, and navigation back to home
+
+### Fixed
+
+- Website: 404 page `siteConfig` crash on GitHub Pages — import directly from config instead of `page.data`
+
 ## [0.5.2] - 2026-03-14
 
 ### Added

@@ -4,6 +4,16 @@ All notable changes to SimConnect MCP are documented here. The format follows [K
 
 Full release history with release notes is also available on the [GitHub Releases page](https://github.com/mrlm-net/simconnect-mcp/releases).
 
+## [0.5.3] - 2026-03-14
+
+### Added
+
+- Website: custom 404 error page with aviation-themed random messages (TERRAIN PULL UP, SQUAWK 7700, GO AROUND, etc.), full site header/footer, and links back to home and getting started
+
+### Fixed
+
+- Website: 404 page crashed with `Cannot read properties of undefined (reading 'title')` on GitHub Pages because `page.data` is empty for unmatched static routes; `siteConfig` is now imported directly from `$lib/config/site.js` instead of relying on layout server data
+
 ## [0.5.2] - 2026-03-14
 
 ### Added

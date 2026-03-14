@@ -7,6 +7,18 @@ section: changelog
 
 All notable changes to SimConnect MCP are documented here.
 
+## [0.5.2] - 2026-03-14
+
+### Added
+
+- `list_simvar_categories` — returns a sorted list of all SimVar category strings; use the exact values as the `category` filter for `list_simvars`
+- HTTP 404 responses now rotate through aviation-themed messages at random
+
+### Fixed
+
+- `get_traffic_with_phase` — parked AI aircraft reported as airborne by SimConnect (on_ground=false, alt < 100 ft, GS < 2 kts, |VS| < 100 fpm) are now correctly classified as `PARKED` instead of `LEVEL`
+- `search_docs` — token-based matching; "parking brake" now finds "BRAKE PARKING POSITION" regardless of word order
+
 ## [0.5.1] - 2026-03-13
 
 ### Added

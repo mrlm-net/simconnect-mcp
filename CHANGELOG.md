@@ -4,6 +4,18 @@ All notable changes to SimConnect MCP are documented here. The format follows [K
 
 Full release history with release notes is also available on the [GitHub Releases page](https://github.com/mrlm-net/simconnect-mcp/releases).
 
+## [0.5.2] - 2026-03-14
+
+### Added
+
+- `list_simvar_categories` — new MCP tool that returns a sorted, deduplicated list of all SimVar category strings present in the loaded corpus; use the returned values as the exact `category` filter argument for `list_simvars`
+- HTTP 404 responses now pick from a pool of aviation-themed messages at random (e.g. "TERRAIN PULL UP — no route found at this altitude", "Squawk 7700 — this endpoint is a navigation emergency")
+
+### Fixed
+
+- `get_traffic_with_phase` — AI aircraft that SimConnect reports as airborne at very low altitude (< 100 ft MSL) with near-zero ground speed (< 2 kts) and near-zero vertical speed (< 100 fpm) are now classified as `PARKED` instead of `LEVEL`; this corrects a common SimConnect issue where a parked AI aircraft's model reference point is several feet above the gear contact point, causing `on_ground` to read `false`
+- `search_docs` — query matching is now token-based (all whitespace-separated words must appear somewhere in the name or description, order-independent) instead of a consecutive substring match; queries like `"parking brake"` now correctly find `BRAKE PARKING POSITION`
+
 ## [0.5.1] - 2026-03-13
 
 ### Added

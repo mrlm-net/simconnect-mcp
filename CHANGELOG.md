@@ -4,6 +4,17 @@ All notable changes to SimConnect MCP are documented here. The format follows [K
 
 Full release history with release notes is also available on the [GitHub Releases page](https://github.com/mrlm-net/simconnect-mcp/releases).
 
+## [0.5.4] - 2026-03-14
+
+### Fixed
+
+- Website: "Back to home" and "Getting started" links on the 404 page caused a client-side navigation crash (`Cannot read properties of undefined (reading 'title')`); links now use `data-sveltekit-reload` to force a full page load, bypassing SvelteKit's client-side router which cannot resolve layout data from the GitHub Pages 404 fallback context
+
+### Changed
+
+- README: live SimConnect tools table expanded from 4 tools to all 19 current tools, organised into four groups (simulation variables, traffic, airports, navigation facilities)
+- README: completed milestone sections removed; contributing section simplified
+
 ## [0.5.3] - 2026-03-14
 
 ### Added

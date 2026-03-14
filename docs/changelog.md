@@ -7,6 +7,16 @@ section: changelog
 
 All notable changes to SimConnect MCP are documented here.
 
+## [0.5.4] - 2026-03-14
+
+### Fixed
+
+- Website: 404 page navigation links crash fixed — `data-sveltekit-reload` forces full page load instead of client-side routing, which cannot resolve layout data from the GitHub Pages fallback context
+
+### Changed
+
+- README: live SimConnect tools table expanded to all 19 current tools (simulation variables, traffic, airports, navigation facilities)
+
 ## [0.5.3] - 2026-03-14
 
 ### Added

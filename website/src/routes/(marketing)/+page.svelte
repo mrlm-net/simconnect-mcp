@@ -516,131 +516,159 @@
 
 <!-- SDK CTA -->
 <section
-	class="border-t px-6 pb-24 pt-16"
+	class="border-t px-6 py-16"
 	style="background-color: var(--color-bg-primary); border-color: var(--color-border);"
 >
 	<div class="mx-auto max-w-5xl">
-		<p
-			class="mb-3 text-center text-xs font-semibold uppercase tracking-widest"
-			style="color: var(--color-text-muted);"
-		>
-			Go SDK
-		</p>
-		<h2
-			class="mb-4 text-center text-2xl font-bold tracking-tight"
-			style="color: var(--color-text-primary);"
-		>
-			SimConnect Go SDK
-		</h2>
-		<p
-			class="mx-auto mb-8 max-w-xl text-center text-sm leading-relaxed"
-			style="color: var(--color-text-secondary);"
-		>
-			Build Microsoft Flight Simulator add-ons with Go. Lightweight, typed, zero-dependency
-			wrapper over SimConnect.dll for MSFS 2020 &amp; 2024.
-		</p>
-
-		<!-- go get code block -->
 		<div
-			class="mx-auto mb-8 flex w-full max-w-xl items-center justify-between gap-3 rounded-lg border px-4 py-3"
-			style="background-color: var(--color-bg-code); border-color: var(--color-border);"
+			class="rounded-xl border p-8 lg:p-10"
+			style="background-color: var(--color-bg-secondary); border-color: var(--color-border);"
 		>
-			<code
-				class="install-cmd flex-1 overflow-x-auto whitespace-nowrap text-left text-sm"
-				style="font-family: var(--font-mono); color: var(--color-text-secondary);"
-			>
-				<span style="color: var(--color-text-muted);">$</span>
-				<span style="color: var(--color-text-primary);"> {sdkInstallCommand}</span>
-			</code>
-			<button
-				onclick={copySdkInstall}
-				class="ml-2 shrink-0 cursor-pointer rounded p-1.5 transition-colors"
-				style="color: {sdkCopied ? '#3fb950' : 'var(--color-text-muted)'};"
-				aria-label="Copy SDK install command"
-				title="Copy to clipboard"
-			>
-				{#if sdkCopied}
-					<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-						<polyline points="20 6 9 17 4 12" />
-					</svg>
-				{:else}
-					<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-						<rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
-						<path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
-					</svg>
-				{/if}
-			</button>
-		</div>
+			<div class="flex flex-col gap-8 lg:flex-row lg:items-center lg:gap-12">
 
-		<!-- CTA buttons -->
-		<div class="flex flex-wrap items-center justify-center gap-3">
-			<a
-				href="https://simconnect.mrlm.net/getting-started"
-				target="_blank"
-				rel="noopener noreferrer"
-				class="inline-flex items-center gap-2 rounded-md px-6 py-2.5 text-sm font-semibold transition-opacity hover:opacity-90"
-				style="background-color: var(--color-link); color: #fff;"
-			>
-				Get Started
-				<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-					<line x1="5" y1="12" x2="19" y2="12" />
-					<polyline points="12 5 19 12 12 19" />
-				</svg>
-			</a>
-			<a
-				href="https://simconnect.mrlm.net/docs"
-				target="_blank"
-				rel="noopener noreferrer"
-				class="inline-flex items-center gap-2 rounded-md border px-6 py-2.5 text-sm font-semibold transition-colors"
-				style="border-color: var(--color-border); color: var(--color-text-primary); background-color: transparent;"
-				onmouseenter={(e) => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--color-text-secondary)'; }}
-				onmouseleave={(e) => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--color-border)'; }}
-			>
-				View Documentation
-			</a>
+				<!-- Left: icon + text + buttons -->
+				<div class="flex-1">
+					<div class="mb-4 flex items-center gap-3">
+						<div
+							class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg"
+							style="background-color: rgba(88,166,255,0.12); color: var(--color-link);"
+						>
+							<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+								<path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+							</svg>
+						</div>
+						<h2 class="text-xl font-bold tracking-tight" style="color: var(--color-text-primary);">
+							SimConnect Go SDK
+						</h2>
+					</div>
+					<p class="mb-6 max-w-md text-sm leading-relaxed" style="color: var(--color-text-secondary);">
+						Build Microsoft Flight Simulator add-ons with Go. Lightweight, typed,
+						zero-dependency wrapper over SimConnect.dll for MSFS 2020 &amp; 2024.
+					</p>
+					<div class="flex flex-wrap gap-3">
+						<a
+							href="https://simconnect.mrlm.net/getting-started"
+							target="_blank"
+							rel="noopener noreferrer"
+							class="inline-flex items-center gap-2 rounded-md px-5 py-2 text-sm font-semibold transition-opacity hover:opacity-90"
+							style="background-color: var(--color-link); color: #fff;"
+						>
+							Get Started
+							<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+								<line x1="5" y1="12" x2="19" y2="12" />
+								<polyline points="12 5 19 12 12 19" />
+							</svg>
+						</a>
+						<a
+							href="https://simconnect.mrlm.net/docs"
+							target="_blank"
+							rel="noopener noreferrer"
+							class="inline-flex items-center gap-2 rounded-md border px-5 py-2 text-sm font-semibold transition-colors"
+							style="border-color: var(--color-border); color: var(--color-text-primary); background-color: transparent;"
+							onmouseenter={(e) => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--color-text-secondary)'; }}
+							onmouseleave={(e) => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--color-border)'; }}
+						>
+							View Documentation
+						</a>
+					</div>
+				</div>
+
+				<!-- Right: code block -->
+				<div class="lg:w-72 xl:w-80">
+					<p class="mb-2 text-xs font-medium" style="color: var(--color-text-muted);">Install</p>
+					<div
+						class="flex items-center justify-between gap-3 rounded-lg border px-4 py-3"
+						style="background-color: var(--color-bg-code); border-color: var(--color-border);"
+					>
+						<code
+							class="install-cmd flex-1 overflow-x-auto whitespace-nowrap text-sm"
+							style="font-family: var(--font-mono); color: var(--color-text-secondary);"
+						>
+							<span style="color: var(--color-text-muted);">$</span>
+							<span style="color: var(--color-text-primary);"> {sdkInstallCommand}</span>
+						</code>
+						<button
+							onclick={copySdkInstall}
+							class="ml-1 shrink-0 cursor-pointer rounded p-1.5 transition-colors"
+							style="color: {sdkCopied ? '#3fb950' : 'var(--color-text-muted)'};"
+							aria-label="Copy SDK install command"
+							title="Copy to clipboard"
+						>
+							{#if sdkCopied}
+								<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+									<polyline points="20 6 9 17 4 12" />
+								</svg>
+							{:else}
+								<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+									<rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+									<path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+								</svg>
+							{/if}
+						</button>
+					</div>
+					<p class="mt-3 text-xs" style="color: var(--color-text-muted);">
+						<a
+							href="https://github.com/mrlm-net/simconnect"
+							target="_blank"
+							rel="noopener noreferrer"
+							style="color: var(--color-link);"
+						>github.com/mrlm-net/simconnect</a>
+						&middot; Apache 2.0
+					</p>
+				</div>
+
+			</div>
 		</div>
 	</div>
 </section>
 
 <!-- Sponsor / Support -->
 <section
-	class="border-t px-6 pb-24 pt-16"
-	style="background-color: var(--color-bg-secondary); border-color: var(--color-border);"
+	class="border-t px-6 py-16"
+	style="background-color: var(--color-bg-primary); border-color: var(--color-border);"
 >
-	<div class="mx-auto max-w-5xl text-center">
-		<p
-			class="mb-3 text-xs font-semibold uppercase tracking-widest"
-			style="color: var(--color-text-muted);"
+	<div class="mx-auto max-w-xl">
+		<div
+			class="rounded-xl border px-8 py-10 text-center"
+			style="background-color: var(--color-bg-secondary); border-color: rgba(248,81,73,0.25);"
 		>
-			Back open-source MSFS tooling
-		</p>
-		<h2
-			class="mb-4 text-2xl font-bold tracking-tight"
-			style="color: var(--color-text-primary);"
-		>
-			Support the project
-		</h2>
-		<p
-			class="mx-auto mb-8 max-w-md text-sm leading-relaxed"
-			style="color: var(--color-text-secondary);"
-		>
-			Sponsoring covers infrastructure costs, development time, and MSFS 2020 &amp; 2024
-			licences required to test against real simulator versions.
-		</p>
-		<a
-			href="https://revolut.me/mrlm?currency=EUR"
-			target="_blank"
-			rel="noopener noreferrer"
-			class="inline-flex items-center gap-2 rounded-md px-6 py-2.5 text-sm font-semibold transition-opacity hover:opacity-90"
-			style="background-color: var(--color-link); color: #fff;"
-		>
-			Sponsor via Revolut
-			<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-				<path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
-				<polyline points="15 3 21 3 21 9" />
-				<line x1="10" y1="14" x2="21" y2="3" />
-			</svg>
-		</a>
+			<!-- Heart icon -->
+			<div class="mb-5 flex justify-center">
+				<div
+					class="flex h-11 w-11 items-center justify-center rounded-full"
+					style="background-color: rgba(248,81,73,0.12); color: #f85149;"
+				>
+					<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+						<path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+					</svg>
+				</div>
+			</div>
+
+			<h2 class="mb-1 text-xl font-bold tracking-tight" style="color: var(--color-text-primary);">
+				Support the project
+			</h2>
+			<p class="mb-4 text-xs font-semibold uppercase tracking-widest" style="color: var(--color-text-muted);">
+				Back open-source MSFS tooling
+			</p>
+			<p class="mx-auto mb-7 max-w-sm text-sm leading-relaxed" style="color: var(--color-text-secondary);">
+				Sponsoring covers infrastructure costs, development time, and MSFS 2020 &amp; 2024
+				licences required to test against real simulator versions.
+			</p>
+			<a
+				href="https://revolut.me/mrlm?currency=EUR"
+				target="_blank"
+				rel="noopener noreferrer"
+				class="inline-flex items-center gap-2 rounded-md px-6 py-2.5 text-sm font-semibold transition-opacity hover:opacity-90"
+				style="background-color: #f85149; color: #fff;"
+			>
+				Sponsor via Revolut
+				<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+					<path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+					<polyline points="15 3 21 3 21 9" />
+					<line x1="10" y1="14" x2="21" y2="3" />
+				</svg>
+			</a>
+		</div>
 	</div>
 </section>
 

@@ -45,6 +45,8 @@ github.com/modern-go/reflect2 v1.0.2 h1:xBagoLtFs94CBntxluKeaWgTMpvLxC4ur3nMaC9G
 github.com/modern-go/reflect2 v1.0.2/go.mod h1:yWuevngMOJpCy52FWWMvUC8ws7m/LJsjYzDa0/r8luk=
 github.com/mrlm-net/simconnect v0.4.2 h1:/lIuXQZmGpPdjHuOd6NCj7kLEVSSTu2YHvOclVE3Lvk=
 github.com/mrlm-net/simconnect v0.4.2/go.mod h1:3TGqZYOT51/TDEvEvja8EvD+Ouo3bcfI5j90rK/f43U=
+github.com/mrlm-net/simconnect v0.6.0 h1:+RRGcFK0jPm2ztlMfAvop/jQ3/hPYlD4nKDuYFY3sHc=
+github.com/mrlm-net/simconnect v0.6.0/go.mod h1:3TGqZYOT51/TDEvEvja8EvD+Ouo3bcfI5j90rK/f43U=
 github.com/pelletier/go-toml/v2 v2.2.2 h1:aYUidT7k73Pcl9nb2gScu7NSrKCSHIDE89b3+6Wq+LM=
 github.com/pelletier/go-toml/v2 v2.2.2/go.mod h1:1t835xjRzz80PqgE6HHgN2JOsmgYu/h4qDAS4n929Rs=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=

@@ -7,6 +7,12 @@ section: changelog
 
 All notable changes to SimConnect MCP are documented here.
 
+## [0.5.8] - 2026-03-15
+
+### Changed
+
+- Upgraded `github.com/mrlm-net/simconnect` SDK dependency from v0.4.2 to v0.6.0
+
 ## [0.5.7] - 2026-03-15
 
 ### Added

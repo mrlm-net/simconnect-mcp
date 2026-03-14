@@ -3,6 +3,7 @@
 	import { base } from '$app/paths';
 	import Header from '$lib/components/layout/Header.svelte';
 	import Footer from '$lib/components/layout/Footer.svelte';
+	import { siteConfig } from '$lib/config/site.js';
 
 	const messages404 = [
 		{ code: 'TERRAIN PULL UP', body: 'No route found at this altitude. Check your charts.' },
@@ -16,16 +17,13 @@
 	const picked = messages404[Math.floor(Math.random() * messages404.length)];
 
 	const is404 = page.status === 404;
-	const siteConfig = page.data?.siteConfig;
 </script>
 
 <svelte:head>
 	<title>{page.status} — SimConnect MCP</title>
 </svelte:head>
 
-{#if siteConfig}
-	<Header {siteConfig} onToggleSidebar={() => {}} showMenuButton={false} />
-{/if}
+<Header {siteConfig} onToggleSidebar={() => {}} showMenuButton={false} />
 
 <main
 	id="main-content"
@@ -88,6 +86,4 @@
 	</div>
 </main>
 
-{#if siteConfig}
-	<Footer {siteConfig} />
-{/if}
+<Footer {siteConfig} />

@@ -148,12 +148,44 @@ All `list_*` tools return a paginated envelope (`items`, `page`, `page_size`, `t
 
 The server reconnects automatically when the simulator restarts — no manual intervention is required.
 
+**Simulation variables**
+
 | Tool | Description |
 |------|-------------|
 | `get_simvar_value` | Read the current value of a single simulation variable from the running simulator |
-| `get_simvar_values` | Read multiple simulation variables in a single request |
+| `get_simvar_values` | Read up to 20 simulation variables in a single request |
+| `set_simvar_value` | Write a numeric simulation variable to the user aircraft |
 | `transmit_event` | Send a Key Event ID to the simulator (e.g., toggle landing gear, set autopilot altitude) |
-| `get_sim_state` | Return high-level simulator state: paused, running, aircraft title, and connection status |
+| `get_sim_state` | Return high-level simulator state: paused, running, aircraft title, position, and speed |
+
+**Traffic**
+
+| Tool | Description |
+|------|-------------|
+| `get_nearby_traffic` | List aircraft within a given radius — object ID, callsign, position, speed, heading |
+| `get_traffic_with_phase` | Enriched traffic: adds vertical speed, ground track, flight phase, runway occupancy |
+
+**Airports**
+
+| Tool | Description |
+|------|-------------|
+| `get_airports_in_range` | List airports in the simulator's loaded scenery area, sorted by distance |
+| `get_nearest_airport` | Return the single closest airport to the player aircraft |
+| `get_airport_details` | Detailed facility data: runways, ATC frequencies, stands, approaches, SIDs, STARs |
+| `get_airport_taxiways` | Taxiway network graph: names, directed path edges, and node positions |
+| `get_taxiway_names` | Lightweight list of taxiway letter strings only (no paths or points) |
+| `get_airport_parkings` | All parking stands, gates, and ramps with type, heading, and radius |
+
+**Navigation facilities**
+
+| Tool | Description |
+|------|-------------|
+| `get_vors_in_range` | List VOR stations within a radius |
+| `get_vor_details` | Detailed VOR data: frequency, type, range, declination |
+| `get_ndbs_in_range` | List NDB stations within a radius |
+| `get_ndb_details` | Detailed NDB data: frequency and range |
+| `get_waypoints_in_range` | List waypoints within a radius |
+| `get_waypoint_details` | Detailed waypoint data: position and magvar |
 
 ## Refreshing the Corpus
 

@@ -7,6 +7,13 @@ section: changelog
 
 All notable changes to SimConnect MCP are documented here.
 
+## [0.5.6] - 2026-03-14
+
+### Added
+
+- Website: SDK CTA section — promotes the `github.com/mrlm-net/simconnect` Go SDK with copyable `go get` command and links to `simconnect.mrlm.net`
+- Website: "Support the project" sponsor section with "Sponsor via Revolut" link
+
 ## [0.5.5] - 2026-03-14
 
 ### Fixed

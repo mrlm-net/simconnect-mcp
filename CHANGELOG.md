@@ -4,6 +4,13 @@ All notable changes to SimConnect MCP are documented here. The format follows [K
 
 Full release history with release notes is also available on the [GitHub Releases page](https://github.com/mrlm-net/simconnect-mcp/releases).
 
+## [0.5.6] - 2026-03-14
+
+### Added
+
+- Website: SDK CTA section on the homepage — introduces the underlying `github.com/mrlm-net/simconnect` Go SDK with a copyable `go get` command, "Get Started" and "View Documentation" links to `simconnect.mrlm.net`
+- Website: "Support the project" sponsor section on the homepage — "Sponsor via Revolut" link for funding infrastructure, development time, and MSFS licence costs
+
 ## [0.5.5] - 2026-03-14
 
 ### Fixed

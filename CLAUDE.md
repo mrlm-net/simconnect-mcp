@@ -4,7 +4,7 @@ A Model Context Protocol (MCP) server for Microsoft Flight Simulator / Prepar3D 
 
 ## Tech Stack
 
-- **Language**: Go 1.23
+- **Language**: Go 1.27
 - **HTTP framework**: Gin (`github.com/gin-gonic/gin`)
 - **Protocol**: Model Context Protocol (MCP) over HTTP/SSE
 - **Platform**: Cross-platform for Milestone 1 (docs); Windows-only for Milestone 2 (SimConnect SDK)
@@ -32,7 +32,7 @@ The SimConnect mode (`internal/modes/simconnect/`) is gated with `//go:build win
 
 ### Prerequisites
 
-- Go 1.23+
+- Go 1.27+
 - Windows SDK + SimConnect SDK (for Milestone 2 only)
 - `gh` CLI (for issue/project management)
 

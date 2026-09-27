@@ -4,6 +4,41 @@ All notable changes to SimConnect MCP are documented here. The format follows [K
 
 Full release history with release notes is also available on the [GitHub Releases page](https://github.com/mrlm-net/simconnect-mcp/releases).
 
+## [Unreleased]
+
+### Changed
+
+- Upgraded `github.com/mrlm-net/simconnect` SDK dependency from v0.6.0 to v0.6.1 — empty unit strings in data definitions now select the SimConnect default unit instead of raising `UNRECOGNIZED_ID` (mrlm-net/simconnect#263)
+- Minimum Go version raised to 1.27.1 (was 1.25 with a `go1.25.8` toolchain); Docker builder image moved to `golang:1.27-alpine`
+
+### Security
+
+- Upgraded `golang.org/x/net` v0.52.0 → v0.59.0 (GO-2026-5025, GO-2026-5027, GO-2026-5028, GO-2026-5029, GO-2026-5030) and dependent `golang.org/x/crypto`, `golang.org/x/sys`, `golang.org/x/text`
+- Go 1.27.1 toolchain resolves the standard-library advisories reported by `govulncheck` against Go 1.25.8
+
+## [0.5.8] - 2026-03-15
+
+### Changed
+
+- Upgraded `github.com/mrlm-net/simconnect` SDK dependency from v0.4.2 to v0.6.0
+
+## [0.5.7] - 2026-03-15
+
+### Added
+
+- `get_taxiway_names` tool — lightweight alternative to `get_airport_taxiways` that returns only the taxiway letter/name strings (no paths or points); avoids token-limit issues for large airports
+
+### Fixed
+
+- `get_simvar_value` and `get_simvar_values`: unknown or misspelled SimVar names now return a structured `UNKNOWN_VARIABLE` error instead of timing out with a generic message
+- `get_nearby_traffic` and `get_traffic_with_phase`: `sim_time` (Zulu seconds since midnight) is now included at the envelope level in all responses
+- `get_airport_details`: supplying an incorrect `region` code no longer silently drops the result — the bridge automatically retries with an empty region and logs a WARN
+- `get_airport_taxiways`: added `max_paths` parameter (default 500, max 2000) to cap large responses; response includes `truncated` and `truncated_to` fields when paths are capped
+
+### Changed
+
+- Website: simplified the SDK CTA and sponsor sections on the homepage
+
 ## [0.5.6] - 2026-03-14
 
 ### Added

@@ -20,7 +20,7 @@ Download the latest release for your platform from the [GitHub Releases page](ht
 go install github.com/mrlm-net/simconnect-mcp/cmd/simconnect-mcp@latest
 ```
 
-Requires Go 1.24+. The binary is installed as `simconnect-mcp`.
+Requires Go 1.27+. The binary is installed as `simconnect-mcp`.
 
 > **Note:** The `simconnect` mode binary for Windows (CGo/SimConnect SDK) is not available via `go install` due to CGo requirements. Download the Windows release binary instead.
 
@@ -34,7 +34,7 @@ go build -o simconnect-mcp ./cmd/simconnect-mcp/
 
 ## Prerequisites
 
-- **Go 1.24+** (build from source or `go install` only)
+- **Go 1.27+** (build from source or `go install` only)
 - `docs` mode runs on any operating system — no additional prerequisites.
 - `simconnect` mode requires:
   - **Windows 10/11 (x64)**

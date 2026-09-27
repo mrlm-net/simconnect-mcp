@@ -14,7 +14,7 @@ SimConnect MCP is a [Model Context Protocol](https://modelcontextprotocol.io/) s
 
 ### All modes
 
-- Go 1.25 or later
+- Go 1.27 or later
 
 ### SimConnect mode only
 

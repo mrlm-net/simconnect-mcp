@@ -2,7 +2,7 @@
 
 SimConnect MCP exposes Microsoft Flight Simulator's SimConnect SDK documentation as a [Model Context Protocol (MCP)](https://modelcontextprotocol.io) server. AI assistants — Claude, GitHub Copilot, and others — can answer questions about SimVars, events, API functions, data structures, and error codes without leaving the chat.
 
-The server is written in Go with Gin routing and operates in two modes: **documentation fetch** (cross-platform) and **live SimConnect data** (Windows-only).
+The server is written in Go with Gin routing and operates in two modes: **documentation fetch** (cross-platform) and **live SimConnect data** (Windows-only) — or both at once with `MCP_MODE=both`.
 
 ## Documentation
 
@@ -76,9 +76,9 @@ Expected output (Gin startup log):
 
 | Variable | Default | Valid values | Description |
 |----------|---------|--------------|-------------|
-| `MCP_MODE` | `docs` | `docs`, `simconnect` | Operating mode. `simconnect` requires Windows and `-tags windows` build flag. |
-| `PORT` | `8080` | any port number | HTTP listen port. Applies to both `docs` and `simconnect` modes. |
-| `SIMCONNECT_APP_NAME` | `simconnect-mcp` | any string | App name registered with the SimConnect SDK. Used in `simconnect` mode only. |
+| `MCP_MODE` | `docs` | `docs`, `simconnect`, `both` | Operating mode. `simconnect` requires Windows and `-tags windows` build flag. `both` serves the docs tools plus, on Windows with the simulator reachable at startup, the SimConnect tools. |
+| `PORT` | `8080` | any port number | HTTP listen port. Applies to all modes. |
+| `SIMCONNECT_APP_NAME` | `simconnect-mcp` | any string | App name registered with the SimConnect SDK. Used in `simconnect` and `both` modes. |
 | `DOCS_MSFS_VERSION` | `2024` | `2020`, `2024`, `both` | SDK version of the corpus to serve. |
 | `DOCS_OVERRIDE_PATH` | *(embedded)* | filesystem path | Override the embedded corpus with local JSON files. See [Security note](#security-note). |
 | `GIN_MODE` | `debug` | `debug`, `release` | Gin operating mode. `release` enforces localhost-only CORS (DNS rebinding protection). |
@@ -123,7 +123,9 @@ Add the following to your `claude_desktop_config.json` (or equivalent MCP client
 
 ## Available Tools
 
-The server exposes 12 MCP tools in `docs` mode. See [docs/api/mcp-tools.md](docs/api/mcp-tools.md) for full parameter references, request/response examples, and error codes.
+The server exposes 15 MCP tools in `docs` mode — 12 for the SimConnect SDK reference and 3 for the [`github.com/mrlm-net/simconnect`](https://github.com/mrlm-net/simconnect) Go library guides — and 19 in `simconnect` mode. `both` mode on Windows serves all 34 when SimConnect is reachable at startup, and the 15 docs tools otherwise. See [docs/mcp-tools-docs.md](docs/mcp-tools-docs.md) and [docs/mcp-tools-simconnect.md](docs/mcp-tools-simconnect.md) for full parameter references, request/response examples, and error codes.
+
+**SimConnect SDK reference**
 
 | Tool | Description |
 |------|-------------|
@@ -140,7 +142,17 @@ The server exposes 12 MCP tools in `docs` mode. See [docs/api/mcp-tools.md](docs
 | `get_error_code` | Fetch an error code by name or integer value |
 | `search_docs` | Keyword search across all corpus types; all query words must appear in the name or description |
 
-All `list_*` tools return a paginated envelope (`items`, `page`, `page_size`, `total_items`, `total_pages`). Default page size is 20; maximum is 100.
+All paginated `list_*` tools return an envelope (`items`, `page`, `page_size`, `total_items`, `total_pages`). Default page size is 20; maximum is 100.
+
+**Go library guides**
+
+The 33 guides of the `github.com/mrlm-net/simconnect` Go library (client, manager, facilities, `pkg/airport`, `pkg/nav`, `pkg/traffic`) are embedded at the library version the server is built with — currently **v0.15.0**. The `/health` response (docs and both modes) reports it as `library_version`.
+
+| Tool | Description |
+|------|-------------|
+| `list_library_guides` | List the library guides with their chapter headings, optionally filtered by section |
+| `get_library_guide` | Read a guide as Markdown — the whole guide, or one `##` chapter by heading or unique prefix |
+| `search_library_docs` | Keyword search across guide chapters; every query word must appear in the chapter, its heading, or the guide title |
 
 ## Live SimConnect Mode
 

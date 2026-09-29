@@ -32,8 +32,9 @@ type bothMode struct {
 	appName string
 
 	// corpus state — populated in Mount/ServeStdio
-	store corpus.DocStore
-	corp  corpus.Corpus
+	store      corpus.DocStore
+	corp       corpus.Corpus
+	libVersion string
 
 	// simconnect state — populated when the bridge connects
 	br      bridge.Bridge
@@ -74,6 +75,7 @@ func (m *bothMode) buildMCPServer(ctx context.Context) (*mcpadapter.Server, erro
 	if err != nil {
 		return nil, fmt.Errorf("both mode: load library guides: %w", err)
 	}
+	m.libVersion = lib.Version
 
 	mcp := mcpadapter.NewServer("simconnect-mcp", "1.0.0")
 	doctools.RegisterAll(mcp, m.store, lib, false)
@@ -131,6 +133,7 @@ func (m *bothMode) HealthInfo() map[string]any {
 		"simvar_count":     m.store.SimVarCount(),
 		"event_count":      m.store.EventCount(),
 		"scraped_at":       m.corp.ScrapedAt.Format(time.RFC3339),
+		"library_version":  m.libVersion,
 		"sdk_version":      m.corp.SDKVersion,
 		"simconnect_ready": m.scReady,
 	}

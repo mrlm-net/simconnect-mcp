@@ -97,7 +97,7 @@ Inside a Claude Code session, run:
 /mcp
 ```
 
-The output lists all configured servers and their connection status. `simconnect-mcp` should show as **connected** with 11 tools available (docs mode) or 4 tools (simconnect mode).
+The output lists all configured servers and their connection status. `simconnect-mcp` should show as **connected** with 15 tools available (docs mode), 19 tools (simconnect mode), or 34 tools (both mode on Windows with the simulator reachable).
 
 From the CLI, outside a session:
 
@@ -118,5 +118,5 @@ Claude should call `list_simvars` and return variables such as `PLANE ALTITUDE`,
 |---------|-------|-----|
 | Server not listed in `/mcp` | `.mcp.json` not found or malformed | Run `claude mcp list` to see all scopes; check JSON syntax |
 | `command not found: simconnect-mcp` | Binary not on PATH | Run `go install github.com/mrlm-net/simconnect-mcp/cmd/simconnect-mcp@latest`, ensure `$GOPATH/bin` is in PATH |
-| 0 tools available | Server started but mode incorrect | Verify `MCP_MODE` env var is set to `docs` or `simconnect` |
+| 0 tools available | Server started but mode incorrect | Verify `MCP_MODE` env var is set to `docs`, `simconnect`, or `both` |
 | SimConnect mode errors | MSFS not running | Start MSFS 2020 / 2024 before launching Claude Code |

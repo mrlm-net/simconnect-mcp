@@ -1,11 +1,11 @@
 ---
 title: "MCP Tools — Docs Mode"
-description: Reference for all 11 MCP tools available in docs mode (MCP_MODE=docs).
+description: Reference for all 15 MCP tools available in docs mode (MCP_MODE=docs).
 order: 1
 section: reference
 ---
 
-All 11 MCP tools listed here are available when the server runs with `MCP_MODE=docs`. These tools provide read-only access to the scraped SimConnect SDK documentation corpus: simulation variables, client events, API functions, data structures, and exception/error codes. The server is cross-platform in this mode — no simulator installation is required.
+All 15 MCP tools listed here are available when the server runs with `MCP_MODE=docs` (and also with `MCP_MODE=both`). Twelve of them provide read-only access to the scraped SimConnect SDK documentation corpus: simulation variables, client events, API functions, data structures, and exception/error codes. The other three serve the guides of the [`github.com/mrlm-net/simconnect`](https://github.com/mrlm-net/simconnect) Go library (currently v0.15.0), embedded at the library version the server is built against. The server is cross-platform in this mode — no simulator installation is required.
 
 Tools are called over the Model Context Protocol using JSON-RPC 2.0 with the `tools/call` method. Error responses are returned as text content (not JSON-RPC errors) with a prefix token followed by a colon and a human-readable message.
 
@@ -13,6 +13,7 @@ Tools are called over the Model Context Protocol using JSON-RPC 2.0 with the `to
 
 | Tool | Category | Description |
 |------|----------|-------------|
+| [`list_simvar_categories`](#list_simvar_categories) | SimVars | List all SimVar category filter values for `list_simvars` |
 | [`list_simvars`](#list_simvars) | SimVars | List simulation variables, optionally filtered by category |
 | [`get_simvar`](#get_simvar) | SimVars | Fetch a single simulation variable by name |
 | [`list_events`](#list_events) | Events | List client input events |
@@ -24,12 +25,15 @@ Tools are called over the Model Context Protocol using JSON-RPC 2.0 with the `to
 | [`list_error_codes`](#list_error_codes) | Error Codes | List `SIMCONNECT_EXCEPTION` enum values |
 | [`get_error_code`](#get_error_code) | Error Codes | Fetch an error code by name or integer value |
 | [`search_docs`](#search_docs) | Search | Full-text search across all corpus types |
+| [`list_library_guides`](#list_library_guides) | Library Guides | List the `mrlm-net/simconnect` Go library guides and their chapters |
+| [`get_library_guide`](#get_library_guide) | Library Guides | Read a library guide, or one chapter of it, as Markdown |
+| [`search_library_docs`](#search_library_docs) | Library Guides | Search the library guides chapter by chapter |
 
 ---
 
 ## Pagination
 
-All `list_*` tools return a `Page[T]` envelope with the following fields:
+All paginated `list_*` tools (every `list_*` tool except `list_simvar_categories` and `list_library_guides`, which return their full result in one response) return a `Page[T]` envelope with the following fields:
 
 | Field | Type | Description |
 |-------|------|-------------|
@@ -43,6 +47,60 @@ All `list_*` tools return a `Page[T]` envelope with the following fields:
 
 ## SimVars
 
+### list_simvar_categories
+
+List all SimVar category filter values. Use these exact strings as the `category` parameter of [`list_simvars`](#list_simvars). Note that some categories contain `/` without spaces (e.g. `"AIRCRAFT AUTOPILOT/ASSISTANT VARIABLES"`) while others use ` / ` with spaces (e.g. `"AIRCRAFT BRAKE / LANDING GEAR VARIABLES"`) — copy them verbatim.
+
+**Parameters**
+
+None.
+
+**Returns**
+
+An object with the following fields:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `total` | integer | Number of categories |
+| `categories` | string[] | Category names, as accepted by `list_simvars` |
+
+**Example request**
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 0,
+  "method": "tools/call",
+  "params": {
+    "name": "list_simvar_categories",
+    "arguments": {}
+  }
+}
+```
+
+**Example response**
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 0,
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"total\":2,\"categories\":[\"AIRCRAFT AUTOPILOT/ASSISTANT VARIABLES\",\"AIRCRAFT BRAKE / LANDING GEAR VARIABLES\"]}"
+      }
+    ]
+  }
+}
+```
+
+**Error codes**
+
+- `INTERNAL_ERROR`: Unexpected store failure.
+
+---
+
 ### list_simvars
 
 List SimConnect simulation variables, optionally filtered by category, with pagination.
@@ -51,7 +109,7 @@ List SimConnect simulation variables, optionally filtered by category, with pagi
 
 | Name | Type | Required | Default | Description |
 |------|------|----------|---------|-------------|
-| `category` | string | No | — | Filter results to a specific SDK documentation category (e.g., `"Aircraft Position and Speed"`). Omit to return all categories. |
+| `category` | string | No | — | Filter results to a specific SDK documentation category (e.g., `"Aircraft Position and Speed"`). Use [`list_simvar_categories`](#list_simvar_categories) for the exact values. Omit to return all categories. |
 | `page` | integer | No | `1` | Page number, 1-indexed. |
 | `page_size` | integer | No | `20` | Results per page. Maximum `100`. |
 
@@ -772,3 +830,205 @@ Each `SearchResult` has:
 
 - `INVALID_ARGUMENT`: `query` is empty or whitespace-only, `type` is not one of the allowed values, or `limit` is less than `1` or greater than `100`.
 - `INTERNAL_ERROR`: Unexpected store failure.
+
+
+---
+
+## Library Guides
+
+These three tools serve the guides of the [`github.com/mrlm-net/simconnect`](https://github.com/mrlm-net/simconnect) Go library — the SimConnect client and manager, facilities, input events, client data areas, `pkg/airport` (ground layouts, taxi routing, SID/STAR/approach procedures), `pkg/nav` (airways, weather, active runway, ATIS, flight plans) and `pkg/traffic` (AI traffic, departures, arrivals, schedules, sequencing, separation). The 33 guides are embedded in the server binary at the library version `go.mod` requires (currently v0.15.0), so they always match the library the server is built with. In docs and both modes the `/health` endpoint reports that version as `library_version`.
+
+Each guide is split into chapters at its `##` headings. The usual flow is `search_library_docs` or `list_library_guides` to find a guide, then `get_library_guide` with a `chapter` to read only the relevant part — whole guides can be long.
+
+### list_library_guides
+
+List the library guides, optionally filtered by section, with the chapter headings of each guide.
+
+**Parameters**
+
+| Name | Type | Required | Default | Description |
+|------|------|----------|---------|-------------|
+| `section` | string | No | — | Filter to one section: `airport`, `client`, `datasets`, `events`, `internals`, `manager`, `nav`, `packages`, `traffic` (case-insensitive). Omit to list all guides. |
+
+**Returns**
+
+An object with the following fields:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `library` | string | Always `"github.com/mrlm-net/simconnect"` |
+| `version` | string | Library version the guides were taken from (e.g., `"v0.15.0"`) |
+| `total` | integer | Number of guides returned |
+| `guides` | Guide[] | Guides, ordered by section and position within the section |
+
+Each `Guide` has:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `slug` | string | Guide identifier, passed to `get_library_guide` (e.g., `"airport-layout"`) |
+| `title` | string | Guide title |
+| `description` | string | One-line summary; omitted when the guide has none |
+| `section` | string | Section the guide belongs to |
+| `chapters` | string[] | The guide's `##` chapter headings, in order |
+
+**Example request**
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 13,
+  "method": "tools/call",
+  "params": {
+    "name": "list_library_guides",
+    "arguments": {
+      "section": "airport"
+    }
+  }
+}
+```
+
+**Example response**
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 13,
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"library\":\"github.com/mrlm-net/simconnect\",\"version\":\"v0.15.0\",\"total\":1,\"guides\":[{\"slug\":\"airport-layout\",\"title\":\"Airport Layout & Taxi Routing\",\"description\":\"Load an airport's ground layout with pkg/airport and compute taxi routes between stands and runways.\",\"section\":\"airport\",\"chapters\":[\"Loading a layout\",\"The Layout model\",\"Taxi graph and routes\",\"GeoJSON\",\"Procedures: SIDs, STARs, approaches\",\"Airport limits\",\"Seeing it on a map\"]}]}"
+      }
+    ]
+  }
+}
+```
+
+**Error codes**
+
+- `NOT_FOUND`: No guides in the given `section`. The message lists the valid sections.
+
+---
+
+### get_library_guide
+
+Read a library guide as Markdown — the whole guide, or a single `##` chapter of it.
+
+**Parameters**
+
+| Name | Type | Required | Default | Description |
+|------|------|----------|---------|-------------|
+| `slug` | string | Yes | — | Guide slug from `list_library_guides` or `search_library_docs` (e.g., `"airport-layout"`). Case-insensitive; a trailing `.md` is accepted. |
+| `chapter` | string | No | — | Chapter heading to read instead of the whole guide (e.g., `"Taxi graph and routes"`). Case-insensitive; a prefix that matches exactly one chapter heading also works (e.g., `"Taxi graph"`). |
+
+**Returns**
+
+Plain Markdown text (not JSON). Without `chapter`: the guide title as a `#` heading followed by the full guide. With `chapter`: the guide title, the chapter's `##` heading, and that chapter's text.
+
+**Example request**
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 14,
+  "method": "tools/call",
+  "params": {
+    "name": "get_library_guide",
+    "arguments": {
+      "slug": "airport-layout",
+      "chapter": "Taxi graph"
+    }
+  }
+}
+```
+
+**Example response**
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 14,
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "# Airport Layout & Taxi Routing\n\n## Taxi graph and routes\n\n..."
+      }
+    ]
+  }
+}
+```
+
+**Error codes**
+
+- `NOT_FOUND`: No guide with the given `slug`, or the guide has no chapter matching `chapter` (no exact match and not a unique prefix). The chapter error message lists the guide's chapter headings.
+
+---
+
+### search_library_docs
+
+Search the library guides chapter by chapter. Every word of the query must appear in the chapter text, the chapter heading, or the guide's title or description — order-independent and case-insensitive. Results are ranked best first: words found in a chapter heading weigh most, then words in the guide title, then occurrences in the text. Go identifiers and concepts work well as queries (e.g., `"RouteToRunway"`, `"holding pattern"`, `"wake separation"`, `"weather reader"`).
+
+**Parameters**
+
+| Name | Type | Required | Default | Description |
+|------|------|----------|---------|-------------|
+| `query` | string | Yes | — | Search words. Must be non-empty after trimming whitespace. |
+| `limit` | integer | No | `10` | Maximum number of results to return. Minimum `1`, maximum `50`. |
+
+**Returns**
+
+An object with the following fields:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `query` | string | The search string as provided by the caller |
+| `total` | integer | Number of results in this response (equal to `len(results)`; not a global match count) |
+| `results` | LibraryHit[] | Matching chapters, most relevant first |
+
+Each `LibraryHit` has:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `slug` | string | Slug of the guide containing the chapter |
+| `title` | string | Guide title |
+| `heading` | string | Chapter heading — pass it as `chapter` to `get_library_guide`; omitted for text before the first `##` heading |
+| `excerpt` | string | About 240 characters of the chapter text around the first query word |
+
+**Example request**
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 15,
+  "method": "tools/call",
+  "params": {
+    "name": "search_library_docs",
+    "arguments": {
+      "query": "taxi route",
+      "limit": 3
+    }
+  }
+}
+```
+
+**Example response**
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 15,
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"query\":\"taxi route\",\"total\":1,\"results\":[{\"slug\":\"airport-layout\",\"title\":\"Airport Layout & Taxi Routing\",\"heading\":\"Taxi graph and routes\",\"excerpt\":\"…\"}]}"
+      }
+    ]
+  }
+}
+```
+
+**Error codes**
+
+- `INVALID_ARGUMENT`: `query` is empty or whitespace-only, or `limit` is less than `1` or greater than `50`.

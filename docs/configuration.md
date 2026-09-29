@@ -11,9 +11,9 @@ SimConnect MCP is configured entirely through environment variables. There are n
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `MCP_MODE` | `docs` | Operating mode: `docs` (cross-platform) or `simconnect` (Windows only) |
+| `MCP_MODE` | `docs` | Operating mode: `docs` (cross-platform), `simconnect` (Windows only), or `both` (docs tools plus SimConnect tools on Windows) |
 | `PORT` | `8080` | TCP port to listen on |
-| `SIMCONNECT_APP_NAME` | `simconnect-mcp` | Application name registered with SimConnect (SimConnect mode only) |
+| `SIMCONNECT_APP_NAME` | `simconnect-mcp` | Application name registered with SimConnect (SimConnect and both modes) |
 | `DOCS_MSFS_VERSION` | `2024` | MSFS version for the docs corpus: `2020`, `2024`, or `both` |
 | `DOCS_OVERRIDE_PATH` | *(embedded)* | Filesystem path to a directory of JSON corpus files. Overrides the embedded corpus. See security note below. |
 | `GIN_MODE` | `debug` | Gin server mode: `debug` or `release`. In `release` mode, CORS is restricted to localhost only (DNS rebinding protection). |
@@ -22,8 +22,9 @@ SimConnect MCP is configured entirely through environment variables. There are n
 
 Selects the operating mode at startup. The server does not support switching modes at runtime; restart with a different value to change modes.
 
-- `docs` — scrapes and serves SimConnect SDK reference documentation. Cross-platform, no simulator required.
-- `simconnect` — connects to a running MSFS instance via the SimConnect SDK. Windows only; requires the `windows` build tag and the SimConnect SDK.
+- `docs` — serves SimConnect SDK reference documentation and the `github.com/mrlm-net/simconnect` Go library guides (15 tools). Cross-platform, no simulator required.
+- `simconnect` — connects to a running MSFS instance via the SimConnect SDK (19 tools). Windows only; requires the `windows` build tag and the SimConnect SDK.
+- `both` — always serves the docs tools, and on Windows also the SimConnect tools (34 tools in total). The SimConnect tools are registered only if the connection to the simulator opens at startup (10-second timeout); otherwise, and on non-Windows platforms, the server runs docs-only with the 15 docs tools. The `simconnect_ready` field of `/health` reports which case applies.
 
 ### PORT
 
@@ -31,11 +32,11 @@ The TCP port the HTTP server binds to. Use this to avoid conflicts with other lo
 
 ### SIMCONNECT_APP_NAME
 
-The name SimConnect MCP registers with the simulator when establishing a connection. This name appears in the simulator's SimConnect client list. Only applies in `simconnect` mode.
+The name SimConnect MCP registers with the simulator when establishing a connection. This name appears in the simulator's SimConnect client list. Only applies in `simconnect` and `both` modes.
 
 ### DOCS_MSFS_VERSION
 
-Controls which version of the SimConnect SDK documentation is fetched when running in `docs` mode. Set to `2020` for the original MSFS 2020 SDK, `2024` (the default) for the MSFS 2024 SDK, or `both` to merge both corpora — SimVars and events include a `versions` field indicating which simulator defines them. Only applies in `docs` mode.
+Controls which version of the SimConnect SDK documentation is fetched when running in `docs` mode. Set to `2020` for the original MSFS 2020 SDK, `2024` (the default) for the MSFS 2024 SDK, or `both` to merge both corpora — SimVars and events include a `versions` field indicating which simulator defines them. Only applies in `docs` and `both` modes.
 
 ### DOCS_OVERRIDE_PATH
 
@@ -79,6 +80,12 @@ Run in docs mode targeting MSFS 2020 documentation:
 
 ```bash
 MCP_MODE=docs DOCS_MSFS_VERSION=2020 simconnect-mcp
+```
+
+Run in both mode — docs tools everywhere, plus live SimConnect tools on Windows when the simulator is running:
+
+```bash
+MCP_MODE=both simconnect-mcp
 ```
 
 ## Build Tags

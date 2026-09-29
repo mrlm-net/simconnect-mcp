@@ -506,7 +506,7 @@
 					</svg>
 				</div>
 				<p class="text-xs leading-relaxed" style="color: var(--color-text-muted);">
-					All 11 MCP tools with parameters, examples, and error codes.
+					All 15 docs-mode MCP tools with parameters, examples, and error codes.
 				</p>
 			</a>
 

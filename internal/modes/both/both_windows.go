@@ -17,6 +17,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/mrlm-net/simconnect-mcp/internal/bridge"
 	"github.com/mrlm-net/simconnect-mcp/internal/corpus"
+	"github.com/mrlm-net/simconnect-mcp/internal/libdocs"
 	"github.com/mrlm-net/simconnect-mcp/internal/mcpadapter"
 	"github.com/mrlm-net/simconnect-mcp/internal/modes"
 	"github.com/mrlm-net/simconnect-mcp/internal/modes/docs"
@@ -69,14 +70,13 @@ func (m *bothMode) buildMCPServer(ctx context.Context) (*mcpadapter.Server, erro
 	}
 	m.corp = c
 	m.store = corpus.NewDocStore(c)
+	lib, err := libdocs.Load()
+	if err != nil {
+		return nil, fmt.Errorf("both mode: load library guides: %w", err)
+	}
 
 	mcp := mcpadapter.NewServer("simconnect-mcp", "1.0.0")
-	doctools.RegisterSimVarTools(mcp, m.store, false)
-	doctools.RegisterEventTools(mcp, m.store, false)
-	doctools.RegisterFunctionTools(mcp, m.store, false)
-	doctools.RegisterStructureTools(mcp, m.store, false)
-	doctools.RegisterErrorCodeTools(mcp, m.store, false)
-	doctools.RegisterSearchTool(mcp, m.store, false)
+	doctools.RegisterAll(mcp, m.store, lib, false)
 
 	b := bridge.NewSimConnectBridge()
 	tctx, cancel := context.WithTimeout(ctx, 10*time.Second)
@@ -86,13 +86,7 @@ func (m *bothMode) buildMCPServer(ctx context.Context) (*mcpadapter.Server, erro
 	} else {
 		m.br = b
 		m.scReady = true
-		sctools.RegisterSimVarTools(mcp, b)
-		sctools.RegisterSetSimVarTool(mcp, b)
-		sctools.RegisterEventTools(mcp, b)
-		sctools.RegisterStateTools(mcp, b)
-		sctools.RegisterTrafficTool(mcp, b)
-		sctools.RegisterEnrichedTrafficTool(mcp, b)
-		sctools.RegisterAirportTools(mcp, b)
+		sctools.RegisterAll(mcp, b)
 	}
 	return mcp, nil
 }

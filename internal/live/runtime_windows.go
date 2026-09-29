@@ -57,6 +57,7 @@ type Runtime struct {
 	fixes     *nav.NavLoader
 	crawlNav  *nav.NavLoader
 	weather   *nav.WeatherReader
+	traffic   *trafficState
 
 	layoutWait map[string][]chan layoutResult
 	procWait   map[string][]chan procResult
@@ -146,6 +147,9 @@ func (r *Runtime) resetLocked() {
 	r.fixes = nav.NewNavLoaderWithIDs(r.mgr, fixDefBase, fixReqBase, fixSlots)
 	r.crawlNav = nav.NewNavLoaderWithIDs(r.mgr, crawlDefBase, crawlReqBase, crawlSlots)
 	r.weather = nav.NewWeatherReader(r.mgr, weatherDefID, weatherReqID)
+	// The simulator removed our aircraft with the old connection; the
+	// traffic state is made again for the new one when needed.
+	r.traffic = nil
 	r.wxSubbed = false
 }
 
@@ -228,6 +232,7 @@ func (r *Runtime) handle(msg engine.Message) {
 			r.finishCrawlLocked(err)
 		}
 	}
+	r.handleTrafficLocked(msg)
 }
 
 func (r *Runtime) tickLoop() {
@@ -272,6 +277,7 @@ func (r *Runtime) tick(now time.Time) {
 			r.finishCrawlLocked(err)
 		}
 	}
+	r.tickTrafficLocked()
 }
 
 // ── Layouts ─────────────────────────────────────────────────────────────────

@@ -794,7 +794,7 @@ func frequencyTypeName(t int32) string {
 //
 // ID allocation strategy (must not overlap manager's reserved 999_999_900–999_999_999):
 //
-//	Definition IDs : n*2     (n = idCounter, starts at 1 → def=2, 4, 6, …)
+//	Definition IDs : n*2     (n = idCounter, starts at 500,001 → def=1,000,002, …)
 //	Request IDs    : n*2+1   (same n → req=3, 5, 7, …)
 //	Notification group ID : 1
 //	Event ID base  : 100_000 (incremented per TransmitEvent call)
@@ -899,7 +899,18 @@ func NewSimConnectBridge() Bridge {
 		parkingPending:        make(map[uint32]*parkingCallState),
 	}
 	b.eventIDCounter.Store(100_000)
+	// Definition/request IDs start at 1,000,002: clear of the library
+	// components' fixed defaults (airport.ProcedureLoader uses 8400–8508).
+	b.idCounter.Store(500_000)
 	return b
+}
+
+// Manager returns the SimConnect manager once Open has been called, for the
+// library components of internal/live; nil before.
+func (b *simconnectBridge) Manager() manager.Manager {
+	b.mu.RLock()
+	defer b.mu.RUnlock()
+	return b.mgr
 }
 
 // Open starts the background Manager connection and dispatch loop.

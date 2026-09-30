@@ -2049,7 +2049,7 @@ List the aircraft installed in the simulator that AI traffic can use, as `"title
 
 ## spawn_departure
 
-Put an AI departure under our control on a stand at an airport. It pushes back, taxis the planned route to the runway, lines up and takes off, then flies the SID. With `hold_for_clearances` (default `true`) it waits at every step for `atc_clearance` — `pushback`, `taxi`, (`cross`), `lineup`, `takeoff`; otherwise it goes by itself. Stand, runway, SID and model are chosen when not given. Follow it with `list_our_traffic`.
+Put an AI departure under our control on a stand at an airport. It pushes back, taxis the planned route to the runway, lines up and takes off, then flies the SID. With `hold_for_clearances` (default `true`) it waits at every step for `atc_clearance` — `pushback`, `taxi`, (`cross`), `lineup`, `takeoff`; otherwise it goes by itself. Stand, runway, SID and model are chosen when not given. With `turnaround_of`, one of our arrivals parked at the airport becomes the departure: the same aircraft, on its stand, in its livery. Follow it with `list_our_traffic`.
 
 > **Adds an aircraft to the simulator.** Take it out with `atc_clearance` `remove`.
 
@@ -2069,6 +2069,7 @@ Put an AI departure under our control on a stand at an airport. It pushes back, 
 | `aircraft_type` | string | No | A320 | ICAO type to pick a model by, e.g. `"A20N"`, `"B738"` |
 | `via` | string | No | — | Taxiways to follow in order, e.g. `"F, L"` |
 | `hold_for_clearances` | boolean | No | `true` | Wait at every step for `atc_clearance` |
+| `turnaround_of` | string | No | | Call sign of one of our arrivals parked at the airport; its aircraft becomes this departure (`stand`, `model` and `aircraft_type` are then ignored) |
 
 **Returns**
 
@@ -2530,12 +2531,13 @@ It returns:
 
 - **Departures** appear on a free stand 10 minutes before their STD and push at it.
 - **Arrivals** appear at a STAR entry 25 minutes before their STA.
+- **Turnarounds:** an arrival whose airline and type depart again 40 minutes to 3 hours after its STA stays on its stand and becomes that departure. It is the same aircraft, not a new one on another stand.
 - **Clearances:** the flights are ours and not held for clearances, so the runtime's tower and landing sequences clear and sequence them (see [Airborne ATC tools](#airborne-atc-tools)).
 - **Removal:** departed and parked aircraft are removed.
 - **Spacing and limits:** spawns are spaced (arrivals 3 min apart, departures 1 min), limited to `max_aircraft`, and retried with another model or stand when a spawn fails.
 - **Late flights:** a flight that can't start in time is cancelled.
 
-Not yet: turnarounds (an arrival becoming a later departure on its stand), arrivals appearing en route before their STAR, and overflights.
+Not yet: arrivals appearing en route before their STAR, and overflights.
 
 ## start_schedule
 

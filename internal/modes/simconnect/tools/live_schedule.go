@@ -18,10 +18,12 @@ import (
 // Scheduled traffic: the library's TrafficManager runs an airline schedule
 // for airports in the simulator — departures board on their stands before
 // their STD and push at it, arrivals appear at a STAR entry in time for
-// their STA; departed and parked aircraft are removed. The flights are ours
-// and not held for clearances, so the runtime's tower and landing sequences
-// clear and sequence them. (No turnarounds or en route arrivals yet: the
-// runtime spawns a departure on an empty stand and an arrival at its STAR.)
+// their STA; departed and parked aircraft are removed. An arrival of an
+// airline and type that departs again 40 minutes to 3 hours later turns
+// around: it stays on its stand and becomes that departure. The flights are
+// ours and not held for clearances, so the runtime's tower and landing
+// sequences clear and sequence them. (No en route arrivals yet: an arrival
+// appears at its STAR.)
 
 // scheduleRunner is the TrafficManager and the Spawner it spawns through.
 type scheduleRunner struct {
@@ -37,8 +39,7 @@ type scheduleRunner struct {
 	clock   func() time.Time                // time.Now; tests set it
 }
 
-// The manager's settings for the MCP: turnarounds and en route arrivals
-// off (see above), at most maxScheduled at once (the runtime keeps 32).
+// The manager's settings for the MCP: en route arrivals off (see above), at most maxScheduled at once (the runtime keeps 32).
 const (
 	maxScheduled       = 24
 	scheduleTick       = time.Second
@@ -58,6 +59,9 @@ func (r *scheduleRunner) Spawn(f traffic.ManagedFlight) {
 		var bad *mcpadapter.CallToolResult
 		if f.Kind == "departure" {
 			args["hold_for_clearances"] = false
+			if f.TurnFrom != "" {
+				args["turnaround_of"] = f.TurnFrom
+			}
 			v, bad = spawnDepartureFrom(context.Background(), r.src, r.tr, args)
 		} else {
 			args["hold_for_clearance"] = false
@@ -172,7 +176,6 @@ func (r *scheduleRunner) start(airports []string, density float64, seed uint64, 
 				// Under the manager's lock: reads the runner's settings only.
 				return traffic.Schedule(cfg, traffic.ScheduleOptions{Focus: airports, Density: r.density, Seed: r.seed}, from, to)
 			},
-			MinTurn:       -1, // no turnarounds
 			EnrouteLead:   -1, // arrivals appear at their STAR entry
 			MaxAircraft:   maxAircraft,
 			MaxPerAirport: min(maxAircraft, defaultMaxPerField),
@@ -240,7 +243,8 @@ func registerStartSchedule(mcp *mcpadapter.Server, r *scheduleRunner) {
 		Description("Run a realistic airline schedule at airports in the simulator (this adds and removes aircraft): " +
 			"departures appear on their stands 10 minutes before their STD and push at it, arrivals appear at a STAR entry " +
 			"25 minutes before their STA; the tower and landing sequence clear and sequence them (see get_landing_sequence), " +
-			"and departed and parked aircraft are removed. Airlines, types, routes and time-of-day waves as generate_schedule. " +
+			"and departed and parked aircraft are removed. An arrival whose airline and type depart again 40 min to 3 h " +
+			"later turns around on its stand into that departure. Airlines, types, routes and time-of-day waves as generate_schedule. " +
 			"Calling it again changes the airports and settings. The airports must be loaded around the user aircraft.").
 		StringParam("airports", "Airports, e.g. \"LKPR\" or \"LKPR, LKTB\" (required).").
 		NumberParam("density", "Traffic density, 0.1–3 (default 1).").

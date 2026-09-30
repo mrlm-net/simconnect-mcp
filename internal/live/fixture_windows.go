@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 
 	"github.com/mrlm-net/simconnect/pkg/airport"
@@ -149,6 +150,14 @@ func (f *FixtureTraffic) Models(context.Context) ([]string, error) { return f.Mo
 func (f *FixtureTraffic) SpawnDeparture(_ context.Context, s DepartureSpec) (FlightView, error) {
 	f.mu.Lock()
 	defer f.mu.Unlock()
+	if s.Adopt != "" { // a turnaround: the parked arrival becomes the departure
+		i := slices.IndexFunc(f.flights, func(v FlightView) bool { return v.Callsign == s.Adopt })
+		if i < 0 || f.flights[i].Kind != "arrival" || f.flights[i].State != "parked" {
+			return FlightView{}, fmt.Errorf("turnaround of %s: not an arrival parked on its stand", s.Adopt)
+		}
+		s.Stand = f.flights[i].Stand
+		f.flights = slices.Delete(f.flights, i, i+1)
+	}
 	f.Departures = append(f.Departures, s)
 	v := FlightView{Callsign: s.Callsign, Kind: "departure", ICAO: s.Graph.Layout.ICAO, Stand: s.Stand, Runway: s.Runway,
 		Entry: s.Entry, Procedure: s.SID, State: "spawning", Actions: []string{"remove"}}

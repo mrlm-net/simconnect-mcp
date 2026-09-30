@@ -4,6 +4,12 @@ All notable changes to SimConnect MCP are documented here. The format follows [K
 
 Full release history with release notes is also available on the [GitHub Releases page](https://github.com/mrlm-net/simconnect-mcp/releases).
 
+## [Unreleased]
+
+### Added
+
+- Turnarounds in scheduled traffic: an arrival whose airline and type depart again 40 min to 3 h after its STA stays on its stand and becomes that departure, the same aircraft, instead of a new aircraft on another stand. `spawn_departure` takes `turnaround_of` (one of our arrivals parked at the airport) to do the same by hand.
+
 ## [0.7.0] - 2026-09-30
 
 Scheduled traffic: a realistic airline schedule that runs itself at your airports, on the library's `TrafficManager` — departures board, push and depart on time, arrivals come in over their STARs, and the tower and landing sequences clear and space them. The website gains the traffic, ATC and schedule features and a scheduled traffic example.

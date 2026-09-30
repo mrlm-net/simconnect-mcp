@@ -184,9 +184,10 @@ func (r *scheduleRunner) handover(mgr *traffic.TrafficManager, e *enrouteFlight)
 // overflights are the flights crossing the area around the schedule's
 // first airport in an hour; none before its position is known.
 func (r *scheduleRunner) overflights(cfg traffic.ScheduleConfig, from, to time.Time) []traffic.Flight {
-	if r.centre == (airport.LatLon{}) {
+	s := r.settings.Load()
+	if s == nil || s.centre == (airport.LatLon{}) {
 		return nil
 	}
-	return traffic.Overflights(cfg, traffic.OverflightOptions{Centre: r.centre, RadiusNM: overflightRadiusNM,
-		Density: r.density, Seed: r.seed, Exclude: r.airports}, from, to)
+	return traffic.Overflights(cfg, traffic.OverflightOptions{Centre: s.centre, RadiusNM: overflightRadiusNM,
+		Density: s.density, Seed: s.seed, Exclude: s.airports}, from, to)
 }

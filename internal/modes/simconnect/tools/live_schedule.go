@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"github.com/mrlm-net/simconnect-mcp/internal/live"
@@ -33,14 +34,20 @@ type scheduleRunner struct {
 
 	mu      sync.Mutex
 	mgr     *traffic.TrafficManager
-	density float64
-	seed    uint64
 	stop    chan struct{}
 	status  map[string]traffic.FlightStatus // last reported, by call sign
 	clock   func() time.Time                // time.Now; tests set it
-	// En route flights by call sign; the schedule's airports and the
-	// first one's position (the overflights' area).
-	enroute  map[string]*enrouteFlight
+	enroute map[string]*enrouteFlight       // en route flights by call sign
+	// settings: what the manager's sources read, under its lock (not mu:
+	// start holds mu while it calls the manager).
+	settings atomic.Pointer[scheduleSettings]
+}
+
+// scheduleSettings are start_schedule's: density, seed, the airports and
+// the first one's position (the overflights' area; zero: none).
+type scheduleSettings struct {
+	density  float64
+	seed     uint64
 	airports []string
 	centre   airport.LatLon
 }
@@ -190,13 +197,14 @@ func (r *scheduleRunner) tick(now time.Time) {
 func (r *scheduleRunner) start(airports []string, centre airport.LatLon, density float64, seed uint64, maxAircraft int) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
-	r.density, r.seed, r.airports, r.centre = density, seed, airports, centre
+	r.settings.Store(&scheduleSettings{density: density, seed: seed, airports: airports, centre: centre})
 	if r.mgr == nil {
 		cfg := traffic.DefaultScheduleConfig()
 		r.mgr = traffic.NewTrafficManager(r, traffic.ManagerOptions{
 			Source: func(from, to time.Time, airports []string) []traffic.Flight {
 				// Under the manager's lock: reads the runner's settings only.
-				return traffic.Schedule(cfg, traffic.ScheduleOptions{Focus: airports, Density: r.density, Seed: r.seed}, from, to)
+				s := r.settings.Load()
+				return traffic.Schedule(cfg, traffic.ScheduleOptions{Focus: airports, Density: s.density, Seed: s.seed}, from, to)
 			},
 			Overflights: func(from, to time.Time) []traffic.Flight {
 				return r.overflights(cfg, from, to)

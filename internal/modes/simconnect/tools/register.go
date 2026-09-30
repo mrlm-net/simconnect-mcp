@@ -15,7 +15,11 @@ import (
 // The airport, weather and navigation tools built on the mrlm-net/simconnect
 // library need the bridge's manager; a bridge without one (the mock) gets
 // the bridge tools only.
-func RegisterAll(mcp *mcpadapter.Server, b bridge.Bridge) {
+//
+// It returns the cleanup to run before the bridge closes: it takes the AI
+// aircraft the traffic tools spawned out of the simulator, which keeps them
+// after we disconnect. It returns how many it removed.
+func RegisterAll(mcp *mcpadapter.Server, b bridge.Bridge) (cleanup func() int) {
 	RegisterSimVarTools(mcp, b)
 	RegisterSetSimVarTool(mcp, b)
 	RegisterEventTools(mcp, b)
@@ -29,7 +33,9 @@ func RegisterAll(mcp *mcpadapter.Server, b bridge.Bridge) {
 		rt := live.NewRuntime(p.Manager())
 		RegisterLiveTools(mcp, rt)
 		RegisterLiveTrafficTools(mcp, rt, rt)
+		return rt.Close
 	}
+	return func() int { return 0 }
 }
 
 // RegisterLiveTools registers the tools built on the library: airport

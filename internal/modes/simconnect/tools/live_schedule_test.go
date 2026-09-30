@@ -47,7 +47,7 @@ func TestScheduleRunner(t *testing.T) {
 	r.clock = clock.now
 	now := clock.now()
 	r.start([]string{"LKPR"}, airport.LatLon{}, 2, 1, 6)
-	defer r.halt(false)
+	defer r.shutdown()
 	// Ticks over twenty minutes, a spawn goroutine's time between them.
 	deps, arrs := 0, 0
 	for i := 0; i < 20*60 && deps == 0; i += 10 {
@@ -62,6 +62,9 @@ func TestScheduleRunner(t *testing.T) {
 	specs, _, _ := ft.Specs()
 	if specs[0].HoldForClearances {
 		t.Error("a scheduled departure holds for clearances: the tower would never clear it")
+	}
+	if !specs[0].Tug {
+		t.Error("a scheduled departure pushes without a tug")
 	}
 	cs := specs[0].Callsign
 	ft.SetState(cs, "awaiting pushback")
@@ -82,7 +85,7 @@ func TestScheduleRunner(t *testing.T) {
 	if err != nil || res.IsError {
 		t.Fatalf("view: %v %+v", err, res)
 	}
-	if n := r.halt(true); n == 0 {
+	if n, _ := r.halt(true); n == 0 {
 		t.Error("stop with remove removed nothing")
 	}
 }
@@ -100,7 +103,7 @@ func TestScheduleTurnaround(t *testing.T) {
 	r.clock = clock.now
 	now := clock.now()
 	r.start([]string{"LKPR"}, airport.LatLon{}, 2, 1, 24)
-	defer r.halt(false)
+	defer r.shutdown()
 	// Arrivals park at once, departures leave at once; four hours.
 	for i := 0; i < 4*3600; i += 30 {
 		now = clock.add(30 * time.Second)
@@ -147,7 +150,7 @@ func TestScheduleEnrouteArrival(t *testing.T) {
 	r.clock = clock.now
 	now := clock.now()
 	r.start([]string{"LKPR"}, airport.LatLon{}, 1, 1, 6)
-	r.halt(false) // the manager only, no ticks
+	r.shutdown() // the manager only, no ticks
 	lead := r.mgr.Options().ArrivalLead
 	f := traffic.ManagedFlight{Flight: traffic.Flight{Callsign: "DLH1234", Airline: "DLH", Type: "A320", Origin: "EDDM", Destination: "LKPR",
 		STA: now.Add(lead + 20*time.Minute)}, Kind: "arrival", Airport: "LKPR", Stage: "enroute"}
@@ -202,7 +205,7 @@ func TestScheduleOverflightEntersArea(t *testing.T) {
 	// The area: 100 NM around a point west of Prague, which EDDM → LKPR crosses.
 	centre := airport.LatLon{Lat: 49.6, Lon: 13.0}
 	r.start([]string{"LKTB"}, centre, 1, 1, 6)
-	r.halt(false)
+	r.shutdown()
 	f := traffic.ManagedFlight{Flight: traffic.Flight{Callsign: "DLH9", Airline: "DLH", Type: "A320", Origin: "EDDM", Destination: "LKPR",
 		STD: now.Add(-3 * time.Hour), Enter: now}, Kind: "overflight", Stage: "enroute"}
 	if _, err := r.spawnEnroute(t.Context(), f, 0); err != nil {
@@ -229,5 +232,59 @@ func TestGreatCircleCrosses(t *testing.T) {
 	}
 	if p := greatCirclePoint(dublin, seoul, 1); calc.HaversineNM(p.Lat, p.Lon, seoul.Lat, seoul.Lon) > 0.1 {
 		t.Errorf("the great circle ends at %v, not Seoul", p)
+	}
+}
+
+// Stopped without remove, the schedule runs on until its aircraft are
+// gone; a failed one is removed so a retry can take its call sign.
+func TestScheduleStopDrains(t *testing.T) {
+	fx, err := live.NewFixture("../../../live/testdata")
+	if err != nil {
+		t.Fatal(err)
+	}
+	ft := &live.FixtureTraffic{ModelList: []string{"FSLTL A320 CSA Czech Airlines", "FSLTL B738 TVS Smartwings"}}
+	r := newScheduleRunner(fx, ft)
+	clock := &testClock{t: time.Date(2026, 9, 30, 8, 0, 0, 0, time.UTC)}
+	r.clock = clock.now
+	r.start([]string{"LKPR"}, airport.LatLon{}, 2, 1, 6)
+	defer r.shutdown()
+	deps := 0
+	for i := 0; i < 20*60 && deps == 0; i += 10 {
+		r.tick(clock.add(10 * time.Second))
+		time.Sleep(20 * time.Millisecond)
+		deps, _ = ft.Spawned()
+	}
+	specs, _, _ := ft.Specs()
+	if len(specs) == 0 {
+		t.Fatal("no departure spawned")
+	}
+	cs := specs[0].Callsign
+	// A failed flight leaves the runtime.
+	ft.SetState(cs, "failed")
+	r.tick(clock.add(time.Second))
+	for _, v := range ft.Flights() {
+		if v.Callsign == cs {
+			t.Errorf("%s failed but is still one of ours", cs)
+		}
+	}
+	// Stopped: spawning off, the ticker on while aircraft fly.
+	_, flying := r.halt(false)
+	r.mu.Lock()
+	stop := r.stop
+	r.mu.Unlock()
+	if flying > 0 && (stop == nil || r.drained(stop)) {
+		t.Fatalf("stopped with %d aircraft flying", flying)
+	}
+	// Everything gone: it stops.
+	for _, v := range ft.Flights() {
+		_, _ = ft.Clear(v.Callsign, "remove")
+	}
+	for i := 0; i < 90 && !r.stopped(); i++ {
+		r.tick(clock.add(time.Minute))
+		r.drained(stop)
+		time.Sleep(5 * time.Millisecond)
+	}
+	if !r.stopped() {
+		t.Errorf("still running with %d active", r.mgr.Active())
 	}
 }

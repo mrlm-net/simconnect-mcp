@@ -2069,6 +2069,7 @@ Put an AI departure under our control on a stand at an airport. It pushes back, 
 | `aircraft_type` | string | No | A320 | ICAO type to pick a model by, e.g. `"A20N"`, `"B738"` |
 | `via` | string | No | — | Taxiways to follow in order, e.g. `"F, L"` |
 | `hold_for_clearances` | boolean | No | `true` | Wait at every step for `atc_clearance` |
+| `tug` | boolean | No | `true` | A pushback tug pushes it |
 | `turnaround_of` | string | No | | Call sign of one of our arrivals parked at the airport; its aircraft becomes this departure (`stand`, `model` and `aircraft_type` are then ignored) |
 
 **Returns**
@@ -2552,7 +2553,7 @@ Calling it again changes the airports and settings of the running schedule. It r
 
 ## stop_schedule
 
-No more aircraft appear. With `remove=true` the schedule's aircraft are taken out of the simulator now; otherwise they fly on and are removed as they depart or park. Returns `running` and `removed` (how many were removed).
+No more aircraft appear. With `remove=true` the schedule's aircraft are taken out of the simulator now. Otherwise those in the simulator fly on: en route arrivals are still handed to the arrival controller at their STAR entry, and aircraft are removed as they depart, park or leave the area. The schedule stops when the last one is gone. Returns `running`, `removed` (how many were removed) and `flying_on` (how many fly on).
 
 ## get_schedule
 

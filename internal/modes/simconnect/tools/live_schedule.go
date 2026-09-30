@@ -38,6 +38,7 @@ type scheduleRunner struct {
 	status  map[string]traffic.FlightStatus // last reported, by call sign
 	clock   func() time.Time                // time.Now; tests set it
 	enroute map[string]*enrouteFlight       // en route flights by call sign
+	cleared bool                            // stop_schedule removed the aircraft (until the next start)
 	// settings: what the manager's sources read, under its lock (not mu:
 	// start holds mu while it calls the manager).
 	settings atomic.Pointer[scheduleSettings]
@@ -176,6 +177,8 @@ func (r *scheduleRunner) tick(now time.Time) {
 		s, ok, err := flightStatus(v)
 		if err != nil {
 			mgr.Failed(v.Callsign, err, now)
+			// Out of the way of a retry under the same call sign.
+			_, _ = r.tr.Clear(v.Callsign, "remove")
 			continue
 		}
 		r.mu.Lock()
@@ -198,6 +201,7 @@ func (r *scheduleRunner) start(airports []string, centre airport.LatLon, density
 	r.mu.Lock()
 	defer r.mu.Unlock()
 	r.settings.Store(&scheduleSettings{density: density, seed: seed, airports: airports, centre: centre})
+	r.cleared = false
 	if r.mgr == nil {
 		cfg := traffic.DefaultScheduleConfig()
 		r.mgr = traffic.NewTrafficManager(r, traffic.ManagerOptions{
@@ -228,36 +232,91 @@ func (r *scheduleRunner) start(airports []string, centre airport.LatLon, density
 					return
 				case <-t.C:
 					r.tick(r.clock())
+					if r.drained(stop) {
+						return
+					}
 				}
 			}
 		}(r.stop)
 	}
 }
 
-// halt stops spawning; with remove, the schedule's aircraft go too.
-func (r *scheduleRunner) halt(remove bool) int {
+// halt stops spawning. With remove the schedule's aircraft go now and it
+// stops; otherwise it runs on until they have departed, parked or left
+// (en route arrivals are still handed over), and flying is how many that is.
+func (r *scheduleRunner) halt(remove bool) (removed, flying int) {
 	r.mu.Lock()
 	mgr := r.mgr
+	if remove {
+		r.stopLocked()
+		r.cleared = true
+	}
+	r.mu.Unlock()
+	if mgr == nil {
+		return 0, 0
+	}
+	mgr.SetEnabled(false)
+	if !remove {
+		return 0, mgr.Active()
+	}
+	ours := map[string]bool{}
+	for _, v := range r.tr.Flights() {
+		ours[v.Callsign] = true
+	}
+	now := r.clock()
+	for _, f := range mgr.Flights() {
+		if f.Status >= traffic.FlightSpawning && f.Status <= traffic.FlightParked { // in the simulator
+			if ours[f.Callsign] {
+				removed++
+			}
+			mgr.Remove(f.Callsign, now) // done; its aircraft goes through Remove above
+		}
+	}
+	return removed, 0
+}
+
+// stopLocked stops the ticker.
+func (r *scheduleRunner) stopLocked() {
 	if r.stop != nil {
 		close(r.stop)
 		r.stop = nil
 	}
-	r.mu.Unlock()
-	if mgr == nil {
-		return 0
+}
+
+// stopped reports whether the ticker is stopped.
+func (r *scheduleRunner) stopped() bool {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	return r.stop == nil
+}
+
+// wasCleared reports whether stop_schedule removed the schedule's aircraft.
+func (r *scheduleRunner) wasCleared() bool {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	return r.cleared
+}
+
+// drained stops the ticker (stop) once spawning is off and none of the
+// schedule's aircraft is left.
+func (r *scheduleRunner) drained(stop chan struct{}) bool {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	if r.stop != stop {
+		return true // stopped, or another ticker runs
 	}
-	mgr.SetEnabled(false)
-	n := 0
-	if remove {
-		for _, f := range mgr.Flights() {
-			if f.Status >= traffic.FlightSpawning && f.Status <= traffic.FlightParked { // in the simulator
-				if _, err := r.tr.Clear(f.Callsign, "remove"); err == nil {
-					n++
-				}
-			}
-		}
+	if r.mgr.Enabled() || r.mgr.Active() > 0 {
+		return false
 	}
-	return n
+	r.stopLocked()
+	return true
+}
+
+// shutdown stops the ticker; the runtime removes our aircraft.
+func (r *scheduleRunner) shutdown() {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	r.stopLocked()
 }
 
 // RegisterLiveScheduleTools registers start_schedule, stop_schedule and
@@ -267,7 +326,7 @@ func RegisterLiveScheduleTools(mcp *mcpadapter.Server, src live.Source, tr live.
 	registerStartSchedule(mcp, r)
 	registerStopSchedule(mcp, r)
 	registerGetSchedule(mcp, r)
-	return func() { r.halt(false) }
+	return r.shutdown
 }
 
 func registerStartSchedule(mcp *mcpadapter.Server, r *scheduleRunner) {
@@ -313,14 +372,15 @@ func registerStartSchedule(mcp *mcpadapter.Server, r *scheduleRunner) {
 func registerStopSchedule(mcp *mcpadapter.Server, r *scheduleRunner) {
 	tool := mcpadapter.NewTool("stop_schedule").
 		Description("Stop the airline schedule: no more aircraft appear. With remove=true the schedule's aircraft are also " +
-			"taken out of the simulator; otherwise they fly on and are removed as they depart or park.").
+			"taken out of the simulator now; otherwise those in the simulator fly on (en route arrivals are still handed to " +
+			"the arrival controller) and are removed as they depart, park or leave the area. Returns removed and flying_on.").
 		BoolParam("remove", "Also remove the schedule's aircraft now (default false).").
 		Build()
 
 	mcp.AddTool(tool, func(ctx context.Context, args map[string]any) (*mcpadapter.CallToolResult, error) {
 		remove, _ := args["remove"].(bool)
-		n := r.halt(remove)
-		return mcpadapter.JSONResult(map[string]any{"running": false, "removed": n})
+		removed, flying := r.halt(remove)
+		return mcpadapter.JSONResult(map[string]any{"running": false, "removed": removed, "flying_on": flying})
 	})
 }
 

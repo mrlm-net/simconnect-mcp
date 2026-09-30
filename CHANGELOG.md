@@ -14,6 +14,13 @@ Full release history with release notes is also available on the [GitHub Release
   - **Overflights** cross the area within 100 NM of the first airport, between airports outside it, on routes whose great circle really crosses it. Each appears where its planned route enters the area, at its entry time. `get_schedule` lists them under `overflights`.
   - En route aircraft are created airborne as non-ATC AI and released to a waypoint chain, because MSFS 2024 places an enroute ATC aircraft on the ground at its departure airport.
 
+### Fixed
+
+- Departures push back with a tug (`traffic.DefaultTugTitle`), in `spawn_departure` (new `tug` parameter, default true) and the schedule. Before, they pushed back with no tug.
+- `stop_schedule` without `remove` really lets the schedule's aircraft fly on. The schedule keeps running with no new spawns until they have departed, parked or left, and en route arrivals are still handed over. Before, it stopped at once, so nothing was ever removed. `stop_schedule` returns `flying_on`.
+- A scheduled flight that fails is removed, so its retry under the same call sign isn't refused.
+- An en route aircraft removed while the simulator is still creating it no longer stays in the simulator.
+
 ### Changed
 
 - Runways in use stay in use while the wind allows them (up to 5 kt tailwind), in `get_active_runway`, the spawn tools and the schedule. In a calm or variable wind, arrivals and departures no longer get opposite runways from one spawn to the next.

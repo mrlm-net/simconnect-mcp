@@ -64,6 +64,8 @@ type DepartureSpec struct {
 	Departure         []airport.NavPoint // the SID, flown after the take-off
 	Taxiways          []string
 	HoldForClearances bool
+	// Tug: a pushback tug pushes it (traffic.DefaultTugTitle).
+	Tug bool
 	// Adopt: the call sign of a parked arrival of ours; its aircraft, on its
 	// stand and in its livery, becomes this departure (a turnaround). Stand,
 	// Model, Livery and Type are then ignored.
@@ -557,12 +559,17 @@ func (r *Runtime) SpawnDeparture(ctx context.Context, s DepartureSpec) (FlightVi
 		return FlightView{}, err
 	}
 	t := r.traffic
+	var tug traffic.PushbackTug // nil, not a nil *SimObjectTug: no tug
+	if s.Tug {
+		// The block's last request ID: the controller uses the first few.
+		tug = traffic.NewSimObjectTug(t.client, t.inj, traffic.DefaultTugTitle, reqBase+ctrlIDBlock-1, ac.Motion)
+	}
 	ctl := traffic.NewTaxiController(t.fleet, traffic.TaxiWithIDs(defBase, reqBase), traffic.TaxiWithInjector(t.inj),
 		traffic.TaxiWithDetail(t.detail), traffic.TaxiWithGroundPicture(t.picture.Ground(g.Layout.ICAO)))
 	if err := ctl.Start(traffic.TaxiRequest{Graph: g, Parking: stand, Runway: s.Runway, Entry: s.Entry,
 		Options: airport.RouteOptions{Taxiways: s.Taxiways}, Model: model, Livery: livery, Tail: s.Callsign,
 		HoldForClearances: s.HoldForClearances, HoldForRunway: !s.HoldForClearances, Profile: ac.Motion, Aircraft: &ac,
-		Departure: s.Departure, Airport: s.Limits, ObjectID: objectID}); err != nil {
+		Departure: s.Departure, Airport: s.Limits, ObjectID: objectID, Tug: tug}); err != nil {
 		undo()
 		return FlightView{}, err
 	}

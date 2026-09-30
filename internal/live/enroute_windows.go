@@ -152,6 +152,17 @@ func (r *Runtime) tickEnrouteLocked(now time.Time) {
 			t.tmu.Unlock()
 		}
 	}
+	t.tmu.Lock()
+	any := false
+	for _, f := range t.flights {
+		any = any || f.enroute
+	}
+	t.tmu.Unlock()
+	if !any {
+		return
+	}
+	// Seen only within the picture's radius: farther out a view keeps its
+	// last position.
 	seen := map[uint32]traffic.TrackedAircraft{}
 	for _, a := range t.picture.Aircraft() {
 		if a.Ours {
@@ -172,11 +183,19 @@ func (r *Runtime) tickEnrouteLocked(now time.Time) {
 // being created goes when the simulator answers.
 func (r *Runtime) removeEnroute(f *flight) error {
 	t := f.ts
-	if f.id == 0 {
+	// Gone first: a creation answered from now on removes its aircraft
+	// (enrouteCreatedLocked); one answered before has set the ID.
+	t.tmu.Lock()
+	if t.flights[f.view.Callsign] == f {
+		delete(t.flights, f.view.Callsign)
+	}
+	id := f.id
+	t.tmu.Unlock()
+	if id == 0 {
 		return nil
 	}
-	t.picture.ForgetOwn(f.id)
-	if err := t.fleet.Remove(f.id, enrouteRemoveReq); err != nil {
+	t.picture.ForgetOwn(id)
+	if err := t.fleet.Remove(id, enrouteRemoveReq); err != nil {
 		return errors.Join(fmt.Errorf("removing %s", f.view.Callsign), err)
 	}
 	return nil

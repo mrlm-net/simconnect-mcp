@@ -50,9 +50,10 @@ type enrouteFlight struct {
 // spawnEnroute puts a scheduled arrival or overflight in the air where its
 // flight is now.
 func (r *scheduleRunner) spawnEnroute(ctx context.Context, f traffic.ManagedFlight, arrivalLead time.Duration) (live.FlightView, error) {
-	now := r.clock()
 	e := &enrouteFlight{f: f}
-	p := planArgs{Type: f.Type}
+	// An overflight is planned direct: its airways would be crawled up to
+	// 400 NM around, and the area crossing is a great circle's.
+	p := planArgs{Type: f.Type, Direct: !f.Arrival()}
 	var procs *airport.Procedures
 	if f.Arrival() {
 		g, err := r.src.Graph(ctx, f.Airport)
@@ -74,6 +75,7 @@ func (r *scheduleRunner) spawnEnroute(ctx context.Context, f traffic.ManagedFlig
 	if bad != nil {
 		return live.FlightView{}, fmt.Errorf("flight plan %s → %s: %s", f.Origin, f.Destination, resultText(bad))
 	}
+	now := r.clock() // after planning, which takes a while
 	kts := fp.Performance.CruiseTASKts
 	if kts < 200 {
 		kts = 420
@@ -194,11 +196,18 @@ func (r *scheduleRunner) handover(mgr *traffic.TrafficManager, e *enrouteFlight)
 		r.mu.Unlock()
 	}()
 	_, _ = r.tr.Clear(cs, "remove")
+	if r.wasCleared() {
+		return // stop_schedule removed the schedule's aircraft meanwhile
+	}
 	args := map[string]any{"icao": e.f.Airport, "callsign": cs, "runway": e.runway, "star": e.star, "model": e.model,
 		"aircraft_type": e.f.Type, "hold_for_clearance": false}
 	v, bad := spawnArrivalFrom(context.Background(), r.src, r.tr, args)
 	if bad != nil {
 		mgr.Failed(cs, fmt.Errorf("handover at %s: %s", e.entryFix, resultText(bad)), r.clock())
+		return
+	}
+	if r.wasCleared() {
+		_, _ = r.tr.Clear(cs, "remove")
 		return
 	}
 	mgr.Describe(cs, v.Model, v.Stand, v.Runway)

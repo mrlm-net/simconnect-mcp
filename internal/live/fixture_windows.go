@@ -227,8 +227,11 @@ func (f *FixtureTraffic) Spawned() (departures, arrivals int) {
 func (f *FixtureTraffic) Clear(callsign, action string) (FlightView, error) {
 	f.mu.Lock()
 	defer f.mu.Unlock()
-	for _, v := range f.flights {
+	for i, v := range f.flights {
 		if v.Callsign == callsign {
+			if action == "remove" {
+				f.flights = slices.Delete(f.flights, i, i+1)
+			}
 			return v, nil
 		}
 	}

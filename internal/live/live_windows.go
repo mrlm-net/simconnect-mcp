@@ -29,6 +29,9 @@ type Source interface {
 	Procedures(ctx context.Context, icao string) (*airport.Procedures, error)
 	// Weather returns the ambient weather at the user aircraft.
 	Weather(ctx context.Context) (nav.Weather, error)
+	// RunwaysInUse are the runways in use at an airport for the weather,
+	// kept while the wind allows them (RunwayMemory).
+	RunwaysInUse(l *airport.Layout, w nav.Weather, lim nav.RunwayLimits) nav.RunwayUse
 	// Fix loads a waypoint, VOR or NDB with the airways through it.
 	Fix(ctx context.Context, key nav.FixKey) (nav.NavResult, error)
 	// Airways crawls the airway network within radiusNM of center, starting

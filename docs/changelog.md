@@ -17,6 +17,10 @@ All notable changes to SimConnect MCP are documented here.
   - **Overflights** cross the area within 100 NM of the first airport, between airports outside it. `get_schedule` lists them under `overflights`.
   - En route aircraft are created airborne as non-ATC AI and released to a waypoint chain, because MSFS 2024 places an enroute ATC aircraft on the ground at its departure airport.
 
+### Changed
+
+- Runways in use stay in use while the wind allows them (up to 5 kt tailwind), in `get_active_runway`, the spawn tools and the schedule. In a calm or variable wind, arrivals and departures no longer get opposite runways from one spawn to the next.
+
 ## [0.7.0] - 2026-09-30
 
 Scheduled traffic: a realistic airline schedule that runs itself at your airports, on the library's `TrafficManager` — departures board, push and depart on time, arrivals come in over their STARs, and the tower and landing sequences clear and space them. The website gains the traffic, ATC and schedule features and a scheduled traffic example.

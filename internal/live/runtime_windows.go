@@ -58,6 +58,7 @@ type Runtime struct {
 	crawlNav  *nav.NavLoader
 	weather   *nav.WeatherReader
 	traffic   *trafficState
+	runways   RunwayMemory
 
 	layoutWait map[string][]chan layoutResult
 	procWait   map[string][]chan procResult
@@ -97,6 +98,11 @@ type crawlJob struct {
 }
 
 // NewRuntime attaches a Runtime to mgr. Call Close to detach it.
+// RunwaysInUse implements Source.
+func (r *Runtime) RunwaysInUse(l *airport.Layout, w nav.Weather, lim nav.RunwayLimits) nav.RunwayUse {
+	return r.runways.Use(l, w, lim)
+}
+
 func NewRuntime(mgr manager.Manager) *Runtime {
 	r := &Runtime{
 		mgr:        mgr,

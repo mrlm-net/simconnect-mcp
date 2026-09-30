@@ -100,7 +100,8 @@ type runwayInUse struct {
 }
 
 // activeRunway works out the runways in use at icao for the weather at the
-// user aircraft, with the airport's limits and preferential runways.
+// user aircraft, with the airport's limits and preferential runways; the
+// runways already in use stay while the wind allows them.
 func activeRunway(ctx context.Context, src live.Source, icao string) (*airport.Layout, *airport.Procedures, nav.Weather, nav.RunwayUse, airport.Limits, error) {
 	layout, err := src.Layout(ctx, icao)
 	if err != nil {
@@ -112,7 +113,7 @@ func activeRunway(ctx context.Context, src live.Source, icao string) (*airport.L
 		return nil, nil, nav.Weather{}, nav.RunwayUse{}, airport.Limits{}, err
 	}
 	lim := airport.LimitsFor(layout, procs)
-	return layout, procs, w, nav.ActiveRunways(layout, w, nav.RunwayLimitsFrom(lim)), lim, nil
+	return layout, procs, w, src.RunwaysInUse(layout, w, nav.RunwayLimitsFrom(lim)), lim, nil
 }
 
 func registerGetActiveRunway(mcp *mcpadapter.Server, src live.Source) {

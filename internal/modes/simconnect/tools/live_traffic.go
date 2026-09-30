@@ -111,7 +111,7 @@ func spawnCommon(ctx context.Context, src live.Source, args map[string]any, arri
 			bad = sourceError("weather for the runway in use (give runway)", err)
 			return
 		}
-		use := nav.ActiveRunways(g.Layout, w, nav.RunwayLimitsFrom(lim))
+		use := src.RunwaysInUse(g.Layout, w, nav.RunwayLimitsFrom(lim))
 		if runway = use.Departure.Name; arrival {
 			runway = use.Arrival.Name
 		}

@@ -1620,7 +1620,7 @@ None.
 
 ## get_active_runway
 
-Work out the runways in use at an airport as a tower would: the preferential runway if the wind allows, else the one with the most headwind, within the airport's tailwind and crosswind limits. Returns the departure and arrival runway, wind components, whether an ILS or visual approach is expected and the best published approach, the transition altitude and level. Uses the weather at the user aircraft, so it is right for the airport the aircraft is at or near.
+Work out the runways in use at an airport as a tower would: the preferential runway if the wind allows, else the one with the most headwind, within the airport's tailwind and crosswind limits. Returns the departure and arrival runway, wind components, whether an ILS or visual approach is expected and the best published approach, the transition altitude and level. Once a runway is in use it stays in use while the wind allows it (up to 5 kt tailwind), as at a real airport; a calm or variable wind doesn't swap it. The spawn tools and the schedule use the same runways. Uses the weather at the user aircraft, so it is right for the airport the aircraft is at or near.
 
 **Requirements**: Windows + MSFS 2020 or 2024 running with SimConnect enabled.
 

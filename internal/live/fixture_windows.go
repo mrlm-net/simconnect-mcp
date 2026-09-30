@@ -28,6 +28,7 @@ type Fixture struct {
 	cache *airport.Cache
 	procs map[string]*airport.Procedures
 	graph *nav.AirwayGraph
+	runways RunwayMemory
 }
 
 // NewFixture reads the fixtures in dir.
@@ -103,6 +104,10 @@ func (f *Fixture) Procedures(_ context.Context, icao string) (*airport.Procedure
 }
 
 func (f *Fixture) Weather(context.Context) (nav.Weather, error) { return f.WeatherValue, nil }
+
+func (f *Fixture) RunwaysInUse(l *airport.Layout, w nav.Weather, lim nav.RunwayLimits) nav.RunwayUse {
+	return f.runways.Use(l, w, lim)
+}
 
 func (f *Fixture) Fix(_ context.Context, key nav.FixKey) (nav.NavResult, error) {
 	if f.graph != nil {

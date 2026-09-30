@@ -66,7 +66,7 @@ func (r *scheduleRunner) spawnEnroute(ctx context.Context, f traffic.ManagedFlig
 		if procs == nil {
 			return live.FlightView{}, errors.New("no procedures: it appears on final")
 		}
-		e.runway = nav.ActiveRunways(g.Layout, w, nav.RunwayLimitsFrom(airport.LimitsFor(g.Layout, procs))).Arrival.Name
+		e.runway = r.src.RunwaysInUse(g.Layout, w, nav.RunwayLimitsFrom(airport.LimitsFor(g.Layout, procs))).Arrival.Name
 		p.ArrivalRunway = e.runway
 	}
 	fp, _, bad := planBetween(ctx, r.src, f.Origin, f.Destination, p)

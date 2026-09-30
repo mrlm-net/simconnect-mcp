@@ -20,7 +20,8 @@ All notable changes to SimConnect MCP are documented here.
 - `internal/live` runtime running the `mrlm-net/simconnect` library's `pkg/airport` and `pkg/nav` loaders on the bridge's SimConnect connection; the ten tools are registered only with the real bridge
 - AI traffic tools (simconnect and both modes, Windows, real bridge only) on the library's `pkg/traffic`: `spawn_departure`, `spawn_arrival` (add AI aircraft to the simulator), `atc_clearance` (pushback, taxi, cross, lineup, takeoff, hold, abort, goaround, remove), `list_our_traffic`, `get_traffic_picture`, `list_aircraft_models`, `generate_schedule`
 - Airborne ATC (simconnect and both modes, Windows, real bridge only) on the library's v0.16: a tower per runway (line-up, take-off and crossing clearances, automatic go-arounds) and a landing sequence per runway end (delays absorbed by speed, a longer downwind and a stacked hold) for our traffic not held for clearances; tools `get_landing_sequence`, `approach_instruction`, `get_atc_log`, `get_conflicts`, `separation_minima`
-- Tool counts: docs 15, simconnect 41, both 56
+- `get_fuel_state` (simconnect and both modes): the user aircraft's fuel, with total quantity, capacity, percent full and weight (lb and kg), plus the center, left main and right main tanks. Tanks the aircraft does not have are left out. It completes milestone 6, whose `get_weather` came in milestone 7.
+- Tool counts: docs 15, simconnect 42, both 57
 
 ### Changed
 
@@ -40,6 +41,8 @@ All notable changes to SimConnect MCP are documented here.
 - AI aircraft spawned by the traffic tools are removed from the simulator when the server stops (Ctrl+C, SIGTERM, or stdin closing in stdio mode); the HTTP server now shuts down gracefully and the SimConnect connection is closed
 - `both` mode on Windows now registers the six navaid tools (`get_vors_in_range`, `get_vor_details`, `get_ndbs_in_range`, `get_ndb_details`, `get_waypoints_in_range`, `get_waypoint_details`), which were previously missing
 - Documentation: corrected the tool counts, documented `list_simvar_categories` and `MCP_MODE=both`, and brought the `llm.txt` tool list up to date
+- Airport details: SimConnect now and then drops a facility request's messages. `get_airport_details` retries up to three times (20 s each, 200 ms apart) and answers `TIMEOUT` if the simulator never answers, instead of "not found" after 45 s.
+- Taxiways and parkings: an airport without the data (`TAXIWAY_NOT_FOUND`, `PARKING_NOT_FOUND`) is now told apart from one the simulator did not answer for (`TIMEOUT`, try again).
 
 ### Security
 

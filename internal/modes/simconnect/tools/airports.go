@@ -4,6 +4,7 @@ package tools
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"github.com/mrlm-net/simconnect-mcp/internal/bridge"
@@ -25,11 +26,11 @@ func RegisterAirportTools(mcp *mcpadapter.Server, b bridge.Bridge) {
 
 func registerGetAirportsInRange(mcp *mcpadapter.Server, b bridge.Bridge) {
 	tool := mcpadapter.NewTool("get_airports_in_range").
-		Description("Return a list of airports in the simulator's reality bubble (loaded scenery area), " +
-			"sorted by distance from the player aircraft. Each entry includes ICAO code, region, " +
-			"lat/lon, altitude (metres MSL), and distance (km). " +
-			"By default only standard ICAO airports are returned (4 uppercase letters, e.g. EDDM). " +
-			"Set expanded=true to include all entries (private fields, military strips, simulator-only identifiers). " +
+		Description("Return a list of airports in the simulator's reality bubble (loaded scenery area), "+
+			"sorted by distance from the player aircraft. Each entry includes ICAO code, region, "+
+			"lat/lon, altitude (metres MSL), and distance (km). "+
+			"By default only standard ICAO airports are returned (4 uppercase letters, e.g. EDDM). "+
+			"Set expanded=true to include all entries (private fields, military strips, simulator-only identifiers). "+
 			"Use radius_km to limit results; defaults to 50 km, maximum 500 km.").
 		NumberParam("radius_km", "Maximum distance from player aircraft in kilometres (default 50, max 500).").
 		BoolParam("expanded", "When true, include non-standard identifiers (private fields, simulator-only codes). Default false.").
@@ -115,12 +116,12 @@ func registerGetNearestAirport(mcp *mcpadapter.Server, b bridge.Bridge) {
 
 func registerGetAirportDetails(mcp *mcpadapter.Server, b bridge.Bridge) {
 	tool := mcpadapter.NewTool("get_airport_details").
-		Description("Return detailed facility data for a specific airport by ICAO code. " +
-			"Default response includes name, lat/lon, altitude (metres MSL), magnetic variation, closed status, " +
-			"runways (heading, length_m, width_m, surface), and ATC frequencies. " +
-			"Set expanded=true to also include parking stands, helipads, instrument approaches, " +
-			"departure procedures (SIDs), and arrival procedures (STARs). " +
-			"Leave region empty (default) for best results — SimConnect's region filter is strict and " +
+		Description("Return detailed facility data for a specific airport by ICAO code. "+
+			"Default response includes name, lat/lon, altitude (metres MSL), magnetic variation, closed status, "+
+			"runways (heading, length_m, width_m, surface), and ATC frequencies. "+
+			"Set expanded=true to also include parking stands, helipads, instrument approaches, "+
+			"departure procedures (SIDs), and arrival procedures (STARs). "+
+			"Leave region empty (default) for best results — SimConnect's region filter is strict and "+
 			"will silently fail if the region code does not match the simulator's internal value exactly.").
 		StringParam("icao", "ICAO airport code (e.g. \"LPMA\", \"EDDM\").").
 		StringParam("region", "Optional ICAO region code (e.g. \"LP\", \"ED\"). Leave empty to match any region.").
@@ -143,6 +144,9 @@ func registerGetAirportDetails(mcp *mcpadapter.Server, b bridge.Bridge) {
 		}
 
 		details, err := b.GetAirportDetails(ctx, icao, region, expanded)
+		if errors.Is(err, bridge.ErrTimeout) {
+			return mcpadapter.ErrorResult(fmt.Sprintf("TIMEOUT: the simulator did not answer for %q after 3 tries", icao)), nil
+		}
 		if err != nil {
 			return mcpadapter.ErrorResult(fmt.Sprintf("AIRPORT_DETAILS_ERROR: %v", err)), nil
 		}
@@ -156,12 +160,12 @@ func registerGetAirportDetails(mcp *mcpadapter.Server, b bridge.Bridge) {
 
 func registerGetAirportTaxiways(mcp *mcpadapter.Server, b bridge.Bridge) {
 	tool := mcpadapter.NewTool("get_airport_taxiways").
-		Description("Return the taxiway network graph for a specific airport by ICAO code. " +
-			"The response contains three correlated arrays: names (taxiway letter strings), " +
-			"paths (directed edges — each path references start_node and end_node indices into points, " +
-			"and a name_index into names), and points (graph nodes including hold-short positions). " +
-			"Large airports (EDDM, KJFK) may have 800–1200 paths; use max_paths to limit response size. " +
-			"When truncated, the response includes truncated=true and truncated_to fields. " +
+		Description("Return the taxiway network graph for a specific airport by ICAO code. "+
+			"The response contains three correlated arrays: names (taxiway letter strings), "+
+			"paths (directed edges — each path references start_node and end_node indices into points, "+
+			"and a name_index into names), and points (graph nodes including hold-short positions). "+
+			"Large airports (EDDM, KJFK) may have 800–1200 paths; use max_paths to limit response size. "+
+			"When truncated, the response includes truncated=true and truncated_to fields. "+
 			"Leave region empty (default) for best results.").
 		StringParam("icao", "ICAO airport code (e.g. \"EDDM\", \"KLAX\").").
 		StringParam("region", "Optional ICAO region code (e.g. \"ED\", \"K6\"). Leave empty to match any region.").
@@ -183,7 +187,10 @@ func registerGetAirportTaxiways(mcp *mcpadapter.Server, b bridge.Bridge) {
 		}
 
 		taxiways, err := b.GetAirportTaxiways(ctx, icao, region)
-		if err != nil {
+		if errors.Is(err, bridge.ErrTimeout) || errors.Is(err, context.DeadlineExceeded) {
+			return mcpadapter.ErrorResult(fmt.Sprintf("TIMEOUT: the simulator did not answer for %q; try again", icao)), nil
+		}
+		if err != nil && !errors.Is(err, bridge.ErrNotFound) {
 			return mcpadapter.ErrorResult(fmt.Sprintf("TAXIWAY_ERROR: %v", err)), nil
 		}
 		if taxiways == nil {
@@ -223,8 +230,8 @@ func registerGetAirportTaxiways(mcp *mcpadapter.Server, b bridge.Bridge) {
 
 func registerGetTaxiwayNames(mcp *mcpadapter.Server, b bridge.Bridge) {
 	tool := mcpadapter.NewTool("get_taxiway_names").
-		Description("Return only the taxiway letter/name strings for an airport by ICAO code. " +
-			"Lightweight alternative to get_airport_taxiways when only taxiway names are needed. " +
+		Description("Return only the taxiway letter/name strings for an airport by ICAO code. "+
+			"Lightweight alternative to get_airport_taxiways when only taxiway names are needed. "+
 			"Leave region empty (default) for best results.").
 		StringParam("icao", "ICAO airport code (e.g. \"EDDM\", \"KLAX\").").
 		StringParam("region", "Optional ICAO region code (e.g. \"ED\", \"K6\"). Leave empty to match any region.").
@@ -245,7 +252,10 @@ func registerGetTaxiwayNames(mcp *mcpadapter.Server, b bridge.Bridge) {
 		}
 
 		taxiways, err := b.GetAirportTaxiways(ctx, icao, region)
-		if err != nil {
+		if errors.Is(err, bridge.ErrTimeout) || errors.Is(err, context.DeadlineExceeded) {
+			return mcpadapter.ErrorResult(fmt.Sprintf("TIMEOUT: the simulator did not answer for %q; try again", icao)), nil
+		}
+		if err != nil && !errors.Is(err, bridge.ErrNotFound) {
 			return mcpadapter.ErrorResult(fmt.Sprintf("TAXIWAY_ERROR: %v", err)), nil
 		}
 		if taxiways == nil {
@@ -262,10 +272,10 @@ func registerGetTaxiwayNames(mcp *mcpadapter.Server, b bridge.Bridge) {
 
 func registerGetAirportParkings(mcp *mcpadapter.Server, b bridge.Bridge) {
 	tool := mcpadapter.NewTool("get_airport_parkings").
-		Description("Return all parking stands, gates, and ramps at a specific airport by ICAO code. " +
-			"Each entry includes type, name, suffix, number, heading (degrees true), radius (metres), " +
-			"and position offsets (bias_x_m, bias_z_m) from the airport reference point. " +
-			"Returns the full TAXI_PARKING record — more fields than the stands array in get_airport_details. " +
+		Description("Return all parking stands, gates, and ramps at a specific airport by ICAO code. "+
+			"Each entry includes type, name, suffix, number, heading (degrees true), radius (metres), "+
+			"and position offsets (bias_x_m, bias_z_m) from the airport reference point. "+
+			"Returns the full TAXI_PARKING record — more fields than the stands array in get_airport_details. "+
 			"Leave region empty (default) for best results.").
 		StringParam("icao", "ICAO airport code (e.g. \"EDDM\", \"KLAX\").").
 		StringParam("region", "Optional ICAO region code (e.g. \"ED\", \"K6\"). Leave empty to match any region.").
@@ -286,7 +296,10 @@ func registerGetAirportParkings(mcp *mcpadapter.Server, b bridge.Bridge) {
 		}
 
 		parkings, err := b.GetAirportParkings(ctx, icao, region)
-		if err != nil {
+		if errors.Is(err, bridge.ErrTimeout) || errors.Is(err, context.DeadlineExceeded) {
+			return mcpadapter.ErrorResult(fmt.Sprintf("TIMEOUT: the simulator did not answer for %q; try again", icao)), nil
+		}
+		if err != nil && !errors.Is(err, bridge.ErrNotFound) {
 			return mcpadapter.ErrorResult(fmt.Sprintf("PARKING_ERROR: %v", err)), nil
 		}
 		if parkings == nil {

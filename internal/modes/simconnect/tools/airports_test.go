@@ -5,6 +5,7 @@ package tools
 import (
 	"encoding/json"
 	"net/http/httptest"
+	"strings"
 	"testing"
 
 	"github.com/gin-gonic/gin"
@@ -94,10 +95,10 @@ func TestGetAirportsInRange_FilterNonICAO(t *testing.T) {
 	mb := &bridge.MockBridge{
 		MockState: bridge.StateConnected,
 		MockAirports: []bridge.AirportEntry{
-			{ICAO: "EDDM", Region: "ED", DistanceKM: 1.0},   // valid — kept
-			{ICAO: "IABX", Region: "ED", DistanceKM: 2.0},   // starts with 'I' (excluded) — filtered
-			{ICAO: "EDF8V", Region: "ED", DistanceKM: 3.0},  // 5 chars — filtered (len != 4)
-			{ICAO: "ETSE", Region: "ET", DistanceKM: 12.0},  // valid — kept
+			{ICAO: "EDDM", Region: "ED", DistanceKM: 1.0},  // valid — kept
+			{ICAO: "IABX", Region: "ED", DistanceKM: 2.0},  // starts with 'I' (excluded) — filtered
+			{ICAO: "EDF8V", Region: "ED", DistanceKM: 3.0}, // 5 chars — filtered (len != 4)
+			{ICAO: "ETSE", Region: "ET", DistanceKM: 12.0}, // valid — kept
 		},
 	}
 	srv := newAirportServer(t, mb)
@@ -187,13 +188,13 @@ func TestGetAirportDetails_Found(t *testing.T) {
 	mb := &bridge.MockBridge{
 		MockState: bridge.StateConnected,
 		MockAirportDetails: &bridge.AirportDetails{
-			ICAO:      "LPMA",
-			Region:    "LP",
-			Name:      "Madeira",
-			Name64:    "Aeroporto Internacional da Madeira Cristiano Ronaldo",
-			Latitude:  32.697,
-			Longitude: -16.778,
-			AltitudeM: 58,
+			ICAO:        "LPMA",
+			Region:      "LP",
+			Name:        "Madeira",
+			Name64:      "Aeroporto Internacional da Madeira Cristiano Ronaldo",
+			Latitude:    32.697,
+			Longitude:   -16.778,
+			AltitudeM:   58,
 			RunwayCount: 1,
 			Runways: []bridge.AirportRunway{
 				{Heading: 54.0, LengthM: 2781, WidthM: 45, Surface: "Asphalt"},
@@ -243,7 +244,7 @@ func TestGetAirportDetails_MissingICAO(t *testing.T) {
 		t.Fatal("expected non-empty error text when icao is missing")
 	}
 	// Should contain INVALID_ARGUMENT
-	if !containsStr(text, "INVALID_ARGUMENT") {
+	if !strings.Contains(text, "INVALID_ARGUMENT") {
 		t.Errorf("expected INVALID_ARGUMENT in error, got: %s", text)
 	}
 }
@@ -255,7 +256,7 @@ func TestGetAirportDetails_Disconnected(t *testing.T) {
 	resp := callToolEvent(t, srv.URL, "get_airport_details", map[string]any{"icao": "LPMA"})
 	text := contentTextEvent(t, resp)
 
-	if !containsStr(text, "BRIDGE_DISCONNECTED") {
+	if !strings.Contains(text, "BRIDGE_DISCONNECTED") {
 		t.Errorf("expected BRIDGE_DISCONNECTED in error, got: %s", text)
 	}
 }
@@ -308,7 +309,7 @@ func TestGetAirportTaxiways_MissingICAO(t *testing.T) {
 	resp := callToolEvent(t, srv.URL, "get_airport_taxiways", map[string]any{})
 	text := contentTextEvent(t, resp)
 
-	if !containsStr(text, "INVALID_ARGUMENT") {
+	if !strings.Contains(text, "INVALID_ARGUMENT") {
 		t.Errorf("expected INVALID_ARGUMENT in error, got: %s", text)
 	}
 }
@@ -320,7 +321,7 @@ func TestGetAirportTaxiways_Disconnected(t *testing.T) {
 	resp := callToolEvent(t, srv.URL, "get_airport_taxiways", map[string]any{"icao": "EDDM"})
 	text := contentTextEvent(t, resp)
 
-	if !containsStr(text, "BRIDGE_DISCONNECTED") {
+	if !strings.Contains(text, "BRIDGE_DISCONNECTED") {
 		t.Errorf("expected BRIDGE_DISCONNECTED in error, got: %s", text)
 	}
 }
@@ -335,7 +336,7 @@ func TestGetAirportTaxiways_NotFound(t *testing.T) {
 	resp := callToolEvent(t, srv.URL, "get_airport_taxiways", map[string]any{"icao": "ZZZZ"})
 	text := contentTextEvent(t, resp)
 
-	if !containsStr(text, "TAXIWAY_NOT_FOUND") {
+	if !strings.Contains(text, "TAXIWAY_NOT_FOUND") {
 		t.Errorf("expected TAXIWAY_NOT_FOUND in error, got: %s", text)
 	}
 }
@@ -402,7 +403,7 @@ func TestGetAirportParkings_MissingICAO(t *testing.T) {
 	resp := callToolEvent(t, srv.URL, "get_airport_parkings", map[string]any{})
 	text := contentTextEvent(t, resp)
 
-	if !containsStr(text, "INVALID_ARGUMENT") {
+	if !strings.Contains(text, "INVALID_ARGUMENT") {
 		t.Errorf("expected INVALID_ARGUMENT in error, got: %s", text)
 	}
 }
@@ -414,7 +415,7 @@ func TestGetAirportParkings_Disconnected(t *testing.T) {
 	resp := callToolEvent(t, srv.URL, "get_airport_parkings", map[string]any{"icao": "EDDM"})
 	text := contentTextEvent(t, resp)
 
-	if !containsStr(text, "BRIDGE_DISCONNECTED") {
+	if !strings.Contains(text, "BRIDGE_DISCONNECTED") {
 		t.Errorf("expected BRIDGE_DISCONNECTED in error, got: %s", text)
 	}
 }
@@ -429,7 +430,7 @@ func TestGetAirportParkings_NotFound(t *testing.T) {
 	resp := callToolEvent(t, srv.URL, "get_airport_parkings", map[string]any{"icao": "ZZZZ"})
 	text := contentTextEvent(t, resp)
 
-	if !containsStr(text, "PARKING_NOT_FOUND") {
+	if !strings.Contains(text, "PARKING_NOT_FOUND") {
 		t.Errorf("expected PARKING_NOT_FOUND in error, got: %s", text)
 	}
 }
@@ -574,17 +575,4 @@ func TestGetTaxiwayNames_ReturnsNamesOnly(t *testing.T) {
 	if len(names) != 3 {
 		t.Errorf("expected 3 names, got %d", len(names))
 	}
-}
-
-// containsStr is a simple string-contains check for test assertions.
-func containsStr(s, substr string) bool {
-	return len(s) >= len(substr) && (s == substr || len(substr) == 0 ||
-		func() bool {
-			for i := 0; i <= len(s)-len(substr); i++ {
-				if s[i:i+len(substr)] == substr {
-					return true
-				}
-			}
-			return false
-		}())
 }

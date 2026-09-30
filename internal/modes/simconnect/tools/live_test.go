@@ -152,3 +152,91 @@ func TestLiveTools(t *testing.T) {
 		})
 	}
 }
+
+func TestLiveTrafficTools(t *testing.T) {
+	fx, err := live.NewFixture("../../../live/testdata")
+	if err != nil {
+		t.Fatal(err)
+	}
+	ft := &live.FixtureTraffic{ModelList: []string{"FSLTL A320 CSA Czech Airlines", "FSLTL B738 TVS Smartwings"}}
+	gin.SetMode(gin.TestMode)
+	r := gin.New()
+	mcp := mcpadapter.NewServer("test", "1.0.0")
+	RegisterLiveTrafficTools(mcp, fx, ft)
+	mcp.MountStreamableHTTP(r, "/mcp")
+	srv := httptest.NewServer(r)
+	t.Cleanup(srv.Close)
+
+	call := func(tool string, args map[string]any) (map[string]any, bool) {
+		t.Helper()
+		resp := callToolEvent(t, srv.URL, tool, args)
+		isErr := false
+		if r, ok := resp["result"].(map[string]any); ok {
+			isErr, _ = r["isError"].(bool)
+		}
+		text := contentTextEvent(t, resp)
+		var got map[string]any
+		if json.Unmarshal([]byte(text), &got) != nil {
+			got = map[string]any{"text": text}
+		}
+		return got, isErr
+	}
+
+	got, isErr := call("list_aircraft_models", map[string]any{"filter": "a320 csa"})
+	if isErr || got["count"] != 1.0 {
+		t.Errorf("models: %v", got)
+	}
+
+	// Runway in use for the fixture's wind (240/10) and the first SID for it.
+	got, isErr = call("spawn_departure", map[string]any{"icao": "LKPR", "callsign": "csa123", "stand": "C22"})
+	if isErr || got["runway"] != "24" || got["procedure"] != "ARTU5A" || got["callsign"] != "CSA123" {
+		t.Fatalf("departure: %v", got)
+	}
+	d := ft.Departures[0]
+	if !d.HoldForClearances || len(d.Departure) < 2 || d.Limits == nil || d.Limits.TransitionAltitudeFt != 5000 {
+		t.Errorf("departure spec: hold %v, SID points %d, limits %+v", d.HoldForClearances, len(d.Departure), d.Limits)
+	}
+	if _, isErr = call("spawn_departure", map[string]any{"icao": "LKPR", "callsign": "CSA124", "sid": "NOPE"}); !isErr {
+		t.Error("unknown SID accepted")
+	}
+	if _, isErr = call("spawn_departure", map[string]any{"icao": "LKPR", "callsign": "C", "stand": "C22"}); !isErr {
+		t.Error("bad call sign accepted")
+	}
+
+	got, isErr = call("spawn_arrival", map[string]any{"icao": "LKPR", "callsign": "DLH4AB", "runway": "24", "hold_for_clearance": false})
+	if isErr || !strings.Contains(got["procedure"].(string), "→ ILS 24") {
+		t.Fatalf("arrival: %v", got)
+	}
+	a := ft.Arrivals[0]
+	if a.HoldForClearance || len(a.Procedure) < 3 {
+		t.Errorf("arrival spec: hold %v, procedure points %d", a.HoldForClearance, len(a.Procedure))
+	}
+	if last := a.Procedure[len(a.Procedure)-1]; last.Ident != "RW24" {
+		t.Errorf("arrival ends at %q, want RW24", last.Ident)
+	}
+	if _, isErr = call("spawn_arrival", map[string]any{"icao": "LKPR", "callsign": "DLH4AC", "runway": "24", "star": "none"}); isErr {
+		t.Error("straight-in arrival refused")
+	}
+	if ft.Arrivals[1].Procedure != nil {
+		t.Error("star=none still flies a procedure")
+	}
+
+	got, _ = call("list_our_traffic", nil)
+	if got["count"] != 3.0 {
+		t.Errorf("our traffic: %v", got)
+	}
+	if got, isErr = call("atc_clearance", map[string]any{"callsign": "XXX1", "action": "taxi"}); !isErr || !strings.Contains(got["text"].(string), "NOT_FOUND") {
+		t.Errorf("clearance for a stranger: %v", got)
+	}
+
+	got, isErr = call("generate_schedule", map[string]any{"airports": "LKPR", "hours": 3.0, "start": "2026-10-01T06:00:00Z"})
+	if isErr || got["count"].(float64) < 5 {
+		t.Errorf("schedule: %v", got)
+	}
+	got2, _ := call("generate_schedule", map[string]any{"airports": "LKPR", "hours": 3.0, "start": "2026-10-01T06:00:00Z"})
+	b1, _ := json.Marshal(got)
+	b2, _ := json.Marshal(got2)
+	if string(b1) != string(b2) {
+		t.Error("schedule not deterministic for a seed")
+	}
+}

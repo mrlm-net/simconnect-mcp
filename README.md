@@ -123,7 +123,7 @@ Add the following to your `claude_desktop_config.json` (or equivalent MCP client
 
 ## Available Tools
 
-The server exposes 15 MCP tools in `docs` mode — 12 for the SimConnect SDK reference and 3 for the [`github.com/mrlm-net/simconnect`](https://github.com/mrlm-net/simconnect) Go library guides — and 29 in `simconnect` mode. `both` mode on Windows serves all 44 when SimConnect is reachable at startup, and the 15 docs tools otherwise. See [docs/mcp-tools-docs.md](docs/mcp-tools-docs.md) and [docs/mcp-tools-simconnect.md](docs/mcp-tools-simconnect.md) for full parameter references, request/response examples, and error codes.
+The server exposes 15 MCP tools in `docs` mode — 12 for the SimConnect SDK reference and 3 for the [`github.com/mrlm-net/simconnect`](https://github.com/mrlm-net/simconnect) Go library guides — and 36 in `simconnect` mode. `both` mode on Windows serves all 51 when SimConnect is reachable at startup, and the 15 docs tools otherwise. See [docs/mcp-tools-docs.md](docs/mcp-tools-docs.md) and [docs/mcp-tools-simconnect.md](docs/mcp-tools-simconnect.md) for full parameter references, request/response examples, and error codes.
 
 **SimConnect SDK reference**
 
@@ -163,7 +163,7 @@ The 33 guides of the `github.com/mrlm-net/simconnect` Go library (client, manage
 
 The server reconnects automatically when the simulator restarts — no manual intervention is required.
 
-`simconnect` mode exposes 29 MCP tools; on Windows, `MCP_MODE=both` serves them together with the 15 docs tools (44 in all). See [docs/mcp-tools-simconnect.md](docs/mcp-tools-simconnect.md) for the full reference.
+`simconnect` mode exposes 36 MCP tools; on Windows, `MCP_MODE=both` serves them together with the 15 docs tools (51 in all). See [docs/mcp-tools-simconnect.md](docs/mcp-tools-simconnect.md) for the full reference.
 
 **Simulation variables**
 
@@ -230,6 +230,20 @@ The following tools are built on the [mrlm-net/simconnect](https://github.com/mr
 | `get_fix` | Waypoint, VOR or NDB with position, frequency and the airways through it |
 | `find_airway_route` | Airway route between two enroute fixes (crawled on demand, cached), e.g. `VOZ M725 OKF` |
 | `plan_flight` | IFR flight plan between two airports: runways, SID, airways, STAR, approach, cruise level, time and fuel; optionally loads it into the simulator |
+
+**AI traffic**
+
+These tools, built on the library's `pkg/traffic`, add AI aircraft of our own to the simulator and fly them on ATC clearances — at most 32 at once, at an airport loaded around the user aircraft. Conflict prediction, wake separation, approach sequencing and holds come with the library's v0.16 and are not available yet.
+
+| Tool | Description |
+|------|-------------|
+| `list_aircraft_models` | Installed aircraft titles (and liveries) AI traffic can use, filtered by words |
+| `spawn_departure` | Add a departure on a stand — pushback, taxi, line-up, take-off and SID, each on clearance; stand, runway, SID and model (type in the call sign's airline livery) chosen when not given |
+| `spawn_arrival` | Add an arrival on a STAR or out on final — approach, landing, vacating and taxi to a stand |
+| `list_our_traffic` | Our AI aircraft: state, position, speed, taxiway, holding point, lights and the clearances they take now |
+| `atc_clearance` | Clear one of ours: `pushback`, `taxi`, `cross`, `lineup`, `takeoff`, `hold`, `abort`, `goaround`, or `remove` it from the simulator |
+| `get_traffic_picture` | Every aircraft around the user aircraft or an airport, with phase (parked, taxiing, runway, departing, enroute, arriving) and airport; the user's and ours marked |
+| `generate_schedule` | Realistic airline schedule for airports — call signs, types, routes, STD/STA — to pick flights to spawn (nothing is spawned) |
 
 ## Refreshing the Corpus
 

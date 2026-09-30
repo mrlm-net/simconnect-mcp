@@ -12,6 +12,7 @@ import (
 
 	"github.com/mrlm-net/simconnect/pkg/airport"
 	"github.com/mrlm-net/simconnect/pkg/nav"
+	"github.com/mrlm-net/simconnect/pkg/traffic"
 )
 
 // Fixture is a Source serving captured data, for tests: raw airport records
@@ -123,4 +124,45 @@ func (f *Fixture) Airways(context.Context, airport.LatLon, float64, []nav.FixKey
 func (f *Fixture) LoadFlightPlan(_ context.Context, pln []byte) error {
 	f.Loaded = append(f.Loaded, pln)
 	return nil
+}
+
+// FixtureTraffic is a Traffic for tests: it records spawns and clearances.
+type FixtureTraffic struct {
+	ModelList  []string
+	Departures []DepartureSpec
+	Arrivals   []ArrivalSpec
+	flights    []FlightView
+}
+
+func (f *FixtureTraffic) Models(context.Context) ([]string, error) { return f.ModelList, nil }
+
+func (f *FixtureTraffic) SpawnDeparture(_ context.Context, s DepartureSpec) (FlightView, error) {
+	f.Departures = append(f.Departures, s)
+	v := FlightView{Callsign: s.Callsign, Kind: "departure", ICAO: s.Graph.Layout.ICAO, Stand: s.Stand, Runway: s.Runway,
+		Entry: s.Entry, Procedure: s.SID, State: "spawning", Actions: []string{"remove"}}
+	f.flights = append(f.flights, v)
+	return v, nil
+}
+
+func (f *FixtureTraffic) SpawnArrival(_ context.Context, s ArrivalSpec) (FlightView, error) {
+	f.Arrivals = append(f.Arrivals, s)
+	v := FlightView{Callsign: s.Callsign, Kind: "arrival", ICAO: s.Graph.Layout.ICAO, Stand: s.Stand, Runway: s.Runway,
+		Procedure: s.STAR, State: "spawning", Actions: []string{"remove"}}
+	f.flights = append(f.flights, v)
+	return v, nil
+}
+
+func (f *FixtureTraffic) Flights() []FlightView { return f.flights }
+
+func (f *FixtureTraffic) Clear(callsign, action string) (FlightView, error) {
+	for _, v := range f.flights {
+		if v.Callsign == callsign {
+			return v, nil
+		}
+	}
+	return FlightView{}, fmt.Errorf("%s: %w", callsign, ErrUnknownFlight)
+}
+
+func (f *FixtureTraffic) Picture(context.Context, string, float64) ([]traffic.TrackedAircraft, error) {
+	return nil, nil
 }

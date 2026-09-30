@@ -26,13 +26,15 @@ func RegisterAll(mcp *mcpadapter.Server, b bridge.Bridge) {
 	RegisterNavaidTools(mcp, b)
 
 	if p, ok := b.(interface{ Manager() manager.Manager }); ok && p.Manager() != nil {
-		RegisterLiveTools(mcp, live.NewRuntime(p.Manager()))
+		rt := live.NewRuntime(p.Manager())
+		RegisterLiveTools(mcp, rt)
+		RegisterLiveTrafficTools(mcp, rt, rt)
 	}
 }
 
 // RegisterLiveTools registers the tools built on the library: airport
 // procedures, taxi routes, stands, weather, runway in use, ATIS, fixes,
-// airway routes and flight plans.
+// airway routes and flight plans. RegisterLiveTrafficTools adds the AI traffic tools.
 func RegisterLiveTools(mcp *mcpadapter.Server, src live.Source) {
 	RegisterLiveAirportTools(mcp, src)
 	RegisterLiveNavTools(mcp, src)

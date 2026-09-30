@@ -17,7 +17,9 @@ All notable changes to SimConnect MCP are documented here.
 - Airport procedures & ground tools (simconnect and both modes, Windows): `get_airport_procedures`, `plan_taxi_route`, `get_runway_entries_exits`, `find_stands`
 - Weather & runway in use tools: `get_weather` (weather at the user aircraft; supersedes the planned milestone-6 `get_weather`), `get_active_runway`, `get_atis`
 - Navigation & flight planning tools: `get_fix`, `find_airway_route`, `plan_flight` (`load_into_sim=true` changes the simulator's flight plan)
-- `internal/live` runtime running the `mrlm-net/simconnect` library's `pkg/airport` and `pkg/nav` loaders on the bridge's SimConnect connection; the ten tools are registered only with the real bridge. Tool counts: docs 15, simconnect 29, both 44
+- `internal/live` runtime running the `mrlm-net/simconnect` library's `pkg/airport` and `pkg/nav` loaders on the bridge's SimConnect connection; the ten tools are registered only with the real bridge
+- AI traffic tools (simconnect and both modes, Windows, real bridge only) on the library's `pkg/traffic`: `spawn_departure`, `spawn_arrival` (add AI aircraft to the simulator), `atc_clearance` (pushback, taxi, cross, lineup, takeoff, hold, abort, goaround, remove), `list_our_traffic`, `get_traffic_picture`, `list_aircraft_models`, `generate_schedule`
+- Tool counts: docs 15, simconnect 36, both 51
 
 ### Changed
 

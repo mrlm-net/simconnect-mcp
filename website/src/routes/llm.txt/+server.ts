@@ -46,7 +46,7 @@ github.com/mrlm-net/simconnect Go library guides (v0.15.0):
 - get_library_guide: Read a library guide, or a single chapter of it, as Markdown
 - search_library_docs: Search the library guides chapter by chapter
 
-## MCP Tools — SimConnect Mode (MCP_MODE=simconnect, Windows only, 29 tools)
+## MCP Tools — SimConnect Mode (MCP_MODE=simconnect, Windows only, 36 tools)
 
 - get_simvar_value: Read a single live simulation variable from the running simulator
 - get_simvar_values: Read up to 20 simulation variables in a single call
@@ -78,9 +78,19 @@ github.com/mrlm-net/simconnect Go library guides (v0.15.0):
 - find_airway_route: Airway route between two enroute fixes, e.g. VOZ M725 OKF
 - plan_flight: IFR flight plan between two airports (SID, airways, STAR, approach, profile, fuel); optionally loads it into the simulator
 
+AI traffic (adds and removes AI aircraft in the simulator; at most 32 of ours, at an airport loaded around the user aircraft):
+
+- list_aircraft_models: Installed aircraft titles (and liveries) AI traffic can use, filtered by words
+- spawn_departure: Add an AI departure on a stand: pushback, taxi, line-up, take-off and SID, each on an ATC clearance
+- spawn_arrival: Add an AI arrival on a STAR or out on final: approach, landing, vacating and taxi to a stand
+- list_our_traffic: Our AI aircraft with state, position, speed, taxiway and the clearances they take now
+- atc_clearance: Clear one of ours: pushback, taxi, cross, lineup, takeoff, hold, abort, goaround, or remove it from the simulator
+- get_traffic_picture: Every aircraft around the user aircraft or an airport, with phase and airport; the user's and ours marked
+- generate_schedule: Realistic airline schedule for airports (call signs, types, routes, STD/STA); nothing is spawned
+
 ## MCP Tools — Both Mode (MCP_MODE=both)
 
-Docs-mode tools always; on Windows, also the SimConnect-mode tools (44 in total) when the simulator is reachable at startup.
+Docs-mode tools always; on Windows, also the SimConnect-mode tools (51 in total) when the simulator is reachable at startup.
 
 ## Documentation
 

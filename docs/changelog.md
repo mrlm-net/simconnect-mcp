@@ -7,7 +7,9 @@ section: changelog
 
 All notable changes to SimConnect MCP are documented here.
 
-## [Unreleased]
+## [0.8.0] - 2026-09-30
+
+A living sky around your airport. Scheduled arrivals come in from their origins en route and are handed to the arrival controller at their STAR entry; overflights cross the area at cruise level; and arrivals turn around on their stands into their later departures. Runways in use no longer flip in a calm wind, and each release's notes on GitHub are now its changelog.
 
 ### Added
 
@@ -26,6 +28,7 @@ All notable changes to SimConnect MCP are documented here.
 
 ### Changed
 
+- Release notes on GitHub are the version's section of CHANGELOG.md, not a commit list
 - Runways in use stay in use while the wind allows them (up to 5 kt tailwind), in `get_active_runway`, the spawn tools and the schedule. In a calm or variable wind, arrivals and departures no longer get opposite runways from one spawn to the next.
 
 ## [0.7.0] - 2026-09-30

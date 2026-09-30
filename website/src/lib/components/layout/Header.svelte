@@ -64,6 +64,14 @@
 			Docs
 		</a>
 		<a
+			href="{base}/docs/ai-traffic"
+			class="nav-link text-sm transition-colors"
+			class:font-medium={isActive(`${base}/docs/ai-traffic`)}
+			style="color: {isActive(`${base}/docs/ai-traffic`) ? 'var(--color-text-primary)' : 'var(--color-text-secondary)'};"
+		>
+			AI Traffic
+		</a>
+		<a
 			href="{base}/docs/examples"
 			class="nav-link text-sm transition-colors"
 			class:font-medium={isActive(`${base}/docs/examples`)}

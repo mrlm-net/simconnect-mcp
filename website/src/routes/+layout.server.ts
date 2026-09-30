@@ -11,8 +11,9 @@ export const load: LayoutServerLoad = () => {
     const navigation = buildNavigation(docs, base);
     const topLinks = [
         { title: 'Getting Started', href: `${base}/docs/getting-started`, order: 0 },
-        { title: 'Examples', href: `${base}/docs/examples`, order: 1 },
-        { title: 'Changelog', href: `${base}/docs/changelog`, order: 2 }
+        { title: 'AI Traffic', href: `${base}/docs/ai-traffic`, order: 1 },
+        { title: 'Examples', href: `${base}/docs/examples`, order: 2 },
+        { title: 'Changelog', href: `${base}/docs/changelog`, order: 3 }
     ];
     return { navigation, topLinks, siteConfig };
 };

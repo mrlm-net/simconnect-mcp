@@ -210,6 +210,13 @@ func (f *FixtureTraffic) SetState(callsign, state string) {
 	}
 }
 
+// Specs returns copies of the spawn requests received so far.
+func (f *FixtureTraffic) Specs() ([]DepartureSpec, []ArrivalSpec, []EnrouteSpec) {
+	f.mu.Lock()
+	defer f.mu.Unlock()
+	return slices.Clone(f.Departures), slices.Clone(f.Arrivals), slices.Clone(f.Enroute)
+}
+
 // Spawned counts the departures and arrivals spawned.
 func (f *FixtureTraffic) Spawned() (departures, arrivals int) {
 	f.mu.Lock()

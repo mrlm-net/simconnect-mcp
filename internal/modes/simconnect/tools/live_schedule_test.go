@@ -59,10 +59,11 @@ func TestScheduleRunner(t *testing.T) {
 	if deps == 0 {
 		t.Fatalf("no departure spawned in 20 minutes (arrivals %d)", arrs)
 	}
-	if ft.Departures[0].HoldForClearances {
+	specs, _, _ := ft.Specs()
+	if specs[0].HoldForClearances {
 		t.Error("a scheduled departure holds for clearances: the tower would never clear it")
 	}
-	cs := ft.Departures[0].Callsign
+	cs := specs[0].Callsign
 	ft.SetState(cs, "awaiting pushback")
 	r.tick(now.Add(time.Second))
 	found := false
@@ -115,7 +116,8 @@ func TestScheduleTurnaround(t *testing.T) {
 		time.Sleep(3 * time.Millisecond)
 	}
 	turned := 0
-	for _, d := range ft.Departures {
+	deps, arrs, _ := ft.Specs()
+	for _, d := range deps {
 		if d.Adopt == "" {
 			continue
 		}
@@ -127,9 +129,9 @@ func TestScheduleTurnaround(t *testing.T) {
 		}
 	}
 	if turned == 0 {
-		t.Fatalf("no turnaround in four hours (%d departures, %d arrivals)", len(ft.Departures), len(ft.Arrivals))
+		t.Fatalf("no turnaround in four hours (%d departures, %d arrivals)", len(deps), len(arrs))
 	}
-	t.Logf("%d of %d departures turned around", turned, len(ft.Departures))
+	t.Logf("%d of %d departures turned around", turned, len(deps))
 }
 
 // An arrival appears en route on its flight plan, flies to its STAR entry
@@ -153,11 +155,12 @@ func TestScheduleEnrouteArrival(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if v.Kind != "arrival" || len(ft.Enroute) != 1 {
-		t.Fatalf("en route: %+v, %d spawned", v, len(ft.Enroute))
+	_, _, enroute := ft.Specs()
+	if v.Kind != "arrival" || len(enroute) != 1 {
+		t.Fatalf("en route: %+v, %d spawned", v, len(enroute))
 	}
 	e := r.enroute["DLH1234"]
-	s := ft.Enroute[0]
+	s := enroute[0]
 	last := s.Route[len(s.Route)-1].Position
 	if e == nil || e.star == "" || e.entryFix == "" || last != e.entry {
 		t.Fatalf("route ends at %v, want the STAR entry %+v", last, e)
@@ -170,15 +173,16 @@ func TestScheduleEnrouteArrival(t *testing.T) {
 	// At the entry: handed over.
 	views := map[string]live.FlightView{"DLH1234": {Callsign: "DLH1234", Kind: "arrival", State: "enroute", Position: e.entry}}
 	r.handovers(now, views)
-	for i := 0; i < 100 && len(ft.Arrivals) == 0; i++ {
-		time.Sleep(20 * time.Millisecond)
-		_, _ = ft.Spawned()
-	}
 	_, arrs := ft.Spawned()
+	for i := 0; i < 100 && arrs == 0; i++ {
+		time.Sleep(20 * time.Millisecond)
+		_, arrs = ft.Spawned()
+	}
 	if arrs != 1 {
 		t.Fatalf("no arrival controller after the handover")
 	}
-	if a := ft.Arrivals[0]; !strings.HasPrefix(a.STAR, e.star) || a.Runway != e.runway || a.Callsign != "DLH1234" {
+	_, handed, _ := ft.Specs()
+	if a := handed[0]; !strings.HasPrefix(a.STAR, e.star) || a.Runway != e.runway || a.Callsign != "DLH1234" {
 		t.Errorf("handed over to %s %s %s, want %s %s", a.Callsign, a.STAR, a.Runway, e.star, e.runway)
 	}
 }

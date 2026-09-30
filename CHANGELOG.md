@@ -4,7 +4,9 @@ All notable changes to SimConnect MCP are documented here. The format follows [K
 
 Full release history with release notes is also available on the [GitHub Releases page](https://github.com/mrlm-net/simconnect-mcp/releases).
 
-## [Unreleased]
+## [0.6.0] - 2026-09-30
+
+The `github.com/mrlm-net/simconnect` library inside the server: its guides as docs tools; airport procedures, taxi routes, stands, weather, runway in use, ATIS, airways and flight plans; AI traffic of our own under ATC-style control; and, on the library's v0.16, airborne ATC — a tower per runway and landing sequences run by the server, with tools to read and work them. Plus fuel state, and airport requests that retry instead of failing.
 
 ### Added
 

@@ -97,7 +97,7 @@ Inside a Claude Code session, run:
 /mcp
 ```
 
-The output lists all configured servers and their connection status. `simconnect-mcp` should show as **connected** with 15 tools available (docs mode), 41 tools (simconnect mode), or 56 tools (both mode on Windows with the simulator reachable).
+The output lists all configured servers and their connection status. `simconnect-mcp` should show as **connected** with 15 tools available (docs mode), 42 tools (simconnect mode), or 57 tools (both mode on Windows with the simulator reachable).
 
 From the CLI, outside a session:
 

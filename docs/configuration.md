@@ -23,8 +23,8 @@ SimConnect MCP is configured entirely through environment variables. There are n
 Selects the operating mode at startup. The server does not support switching modes at runtime; restart with a different value to change modes.
 
 - `docs` — serves SimConnect SDK reference documentation and the `github.com/mrlm-net/simconnect` Go library guides (15 tools). Cross-platform, no simulator required.
-- `simconnect` — connects to a running MSFS instance via the SimConnect SDK (41 tools, including the AI traffic and airborne ATC tools). Windows only; requires the `windows` build tag and the SimConnect SDK.
-- `both` — always serves the docs tools, and on Windows also the SimConnect tools (56 tools in total). The SimConnect tools are registered only if the connection to the simulator opens at startup (10-second timeout); otherwise, and on non-Windows platforms, the server runs docs-only with the 15 docs tools. The `simconnect_ready` field of `/health` reports which case applies.
+- `simconnect` — connects to a running MSFS instance via the SimConnect SDK (42 tools, including the AI traffic and airborne ATC tools). Windows only; requires the `windows` build tag and the SimConnect SDK.
+- `both` — always serves the docs tools, and on Windows also the SimConnect tools (57 tools in total). The SimConnect tools are registered only if the connection to the simulator opens at startup (10-second timeout); otherwise, and on non-Windows platforms, the server runs docs-only with the 15 docs tools. The `simconnect_ready` field of `/health` reports which case applies.
 
 ### PORT
 

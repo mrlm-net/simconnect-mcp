@@ -1,13 +1,13 @@
 ---
 title: "MCP Tools — SimConnect Mode"
-description: Reference for the 41 live-data, AI traffic and airborne ATC MCP tools in SimConnect mode (MCP_MODE=simconnect, Windows only).
+description: Reference for the 42 live-data, AI traffic and airborne ATC MCP tools in SimConnect mode (MCP_MODE=simconnect, Windows only).
 order: 2
 section: reference
 ---
 
-All 41 MCP tools listed here are available when the server runs with `MCP_MODE=simconnect` (and, on Windows, with `MCP_MODE=both`, alongside the 15 docs tools — 56 in all). This mode provides live simulator data via the SimConnect SDK, and AI traffic under our control.
+All 42 MCP tools listed here are available when the server runs with `MCP_MODE=simconnect` (and, on Windows, with `MCP_MODE=both`, alongside the 15 docs tools — 57 in all). This mode provides live simulator data via the SimConnect SDK, and AI traffic under our control.
 
-**Both mode**: with `MCP_MODE=both` on Windows, the server registers these 41 tools alongside the 15 [docs-mode tools](/docs/mcp-tools-docs) — 56 tools in total — provided SimConnect opens at startup (10-second timeout). If the simulator cannot be reached, or on non-Windows platforms, both mode serves the 15 docs tools only; `simconnect_ready` in the `/health` response reports which case applies.
+**Both mode**: with `MCP_MODE=both` on Windows, the server registers these 42 tools alongside the 15 [docs-mode tools](/docs/mcp-tools-docs) — 57 tools in total — provided SimConnect opens at startup (10-second timeout). If the simulator cannot be reached, or on non-Windows platforms, both mode serves the 15 docs tools only; `simconnect_ready` in the `/health` response reports which case applies.
 
 **Requirements**: Windows only. Microsoft Flight Simulator 2020 or 2024 must be running with SimConnect enabled before issuing any read or transmit calls. The `get_sim_state` tool is safe to call at any time regardless of connection state.
 
@@ -22,6 +22,7 @@ Tools are called over the Model Context Protocol using JSON-RPC 2.0 with the `to
 | [`set_simvar_value`](#set_simvar_value) | Write a numeric simulation variable to the user aircraft |
 | [`transmit_event`](#transmit_event) | Transmit a named SimConnect client event to the simulator |
 | [`get_sim_state`](#get_sim_state) | Return a snapshot of current simulator connection state and flight status |
+| [`get_fuel_state`](#get_fuel_state) | The user aircraft's fuel: total, weight and the main tanks |
 | [`get_nearby_traffic`](#get_nearby_traffic) | List AI and player aircraft within a radius of the user aircraft |
 | [`get_traffic_with_phase`](#get_traffic_with_phase) | Like `get_nearby_traffic` with enriched telemetry and inferred flight phase |
 | [`get_airports_in_range`](#get_airports_in_range) | List airports in the simulator's loaded scenery area sorted by distance |
@@ -53,6 +54,11 @@ Tools are called over the Model Context Protocol using JSON-RPC 2.0 with the `to
 | [`atc_clearance`](#atc_clearance) | Give one of our AI aircraft a clearance: pushback, taxi, cross, lineup, takeoff, hold, abort, goaround or remove |
 | [`get_traffic_picture`](#get_traffic_picture) | Every aircraft around the user aircraft or an airport, with phase and airport; the user's and ours marked |
 | [`generate_schedule`](#generate_schedule) | Generate a realistic airline schedule for airports (pure computation) |
+| [`get_landing_sequence`](#get_landing_sequence) | The landing sequence of each runway end with our arrivals, and who uses each runway |
+| [`approach_instruction`](#approach_instruction) | An approach instruction to one of our arrivals: up, down, slow, hold, release, direct, goaround |
+| [`get_atc_log`](#get_atc_log) | The latest instructions of the runtime's tower and approach to our traffic |
+| [`get_conflicts`](#get_conflicts) | Predict airborne conflicts, with the least disturbing resolution for ours as advice |
+| [`separation_minima`](#separation_minima) | Wake categories, spacing on final, departure interval and runway occupancy for a pair of types |
 
 ---
 
@@ -356,6 +362,46 @@ Return a snapshot of current simulator connection state and flight status. This 
 ```
 
 **Error codes**: None. This tool always succeeds.
+
+---
+
+## get_fuel_state
+
+The user aircraft's fuel: total quantity and capacity, percent full and weight, with the center, left main and right main tanks. Tanks the aircraft does not have (zero capacity) are left out. It reads all nine SimVars in one request.
+
+**Requirements**: Windows + MSFS 2020 or 2024 running with SimConnect enabled.
+
+**Parameters**: none.
+
+**Returns**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `total_quantity_gal` | number | Fuel on board, US gallons |
+| `total_capacity_gal` | number | Usable capacity, US gallons |
+| `total_percent_full` | number | Quantity as a percentage of capacity (0 when capacity is 0) |
+| `total_weight_lbs` | number | Fuel weight, pounds |
+| `total_weight_kg` | number | Fuel weight, kilograms |
+| `tanks` | array | `name` (Center, Left Main, Right Main), `quantity_gal`, `capacity_gal`, `percent_full` |
+
+**Example response** (an A320 with 50 % of its fuel, none in the center tank)
+
+```json
+{
+  "total_quantity_gal": 3200, "total_capacity_gal": 6400, "total_percent_full": 50,
+  "total_weight_lbs": 21440, "total_weight_kg": 9725,
+  "tanks": [
+    { "name": "Center", "quantity_gal": 0, "capacity_gal": 2200, "percent_full": 0 },
+    { "name": "Left Main", "quantity_gal": 1600, "capacity_gal": 1800, "percent_full": 88.9 },
+    { "name": "Right Main", "quantity_gal": 1600, "capacity_gal": 1800, "percent_full": 88.9 }
+  ]
+}
+```
+
+**Error codes**
+
+- `BRIDGE_DISCONNECTED`: Not connected to the simulator.
+- `INTERNAL_ERROR`: The simulator refused a fuel SimVar.
 
 ---
 

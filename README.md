@@ -123,7 +123,7 @@ Add the following to your `claude_desktop_config.json` (or equivalent MCP client
 
 ## Available Tools
 
-The server exposes 15 MCP tools in `docs` mode — 12 for the SimConnect SDK reference and 3 for the [`github.com/mrlm-net/simconnect`](https://github.com/mrlm-net/simconnect) Go library guides — and 42 in `simconnect` mode. `both` mode on Windows serves all 57 when SimConnect is reachable at startup, and the 15 docs tools otherwise. See [docs/mcp-tools-docs.md](docs/mcp-tools-docs.md) and [docs/mcp-tools-simconnect.md](docs/mcp-tools-simconnect.md) for full parameter references, request/response examples, and error codes.
+The server exposes 15 MCP tools in `docs` mode — 12 for the SimConnect SDK reference and 3 for the [`github.com/mrlm-net/simconnect`](https://github.com/mrlm-net/simconnect) Go library guides — and 45 in `simconnect` mode. `both` mode on Windows serves all 60 when SimConnect is reachable at startup, and the 15 docs tools otherwise. See [docs/mcp-tools-docs.md](docs/mcp-tools-docs.md) and [docs/mcp-tools-simconnect.md](docs/mcp-tools-simconnect.md) for full parameter references, request/response examples, and error codes.
 
 **SimConnect SDK reference**
 
@@ -163,7 +163,7 @@ The 35 guides of the `github.com/mrlm-net/simconnect` Go library (client, manage
 
 The server reconnects automatically when the simulator restarts — no manual intervention is required.
 
-`simconnect` mode exposes 42 MCP tools; on Windows, `MCP_MODE=both` serves them together with the 15 docs tools (57 in all). See [docs/mcp-tools-simconnect.md](docs/mcp-tools-simconnect.md) for the full reference.
+`simconnect` mode exposes 45 MCP tools; on Windows, `MCP_MODE=both` serves them together with the 15 docs tools (60 in all). See [docs/mcp-tools-simconnect.md](docs/mcp-tools-simconnect.md) for the full reference.
 
 **Simulation variables**
 

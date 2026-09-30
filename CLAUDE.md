@@ -12,12 +12,13 @@ A Model Context Protocol (MCP) server for Microsoft Flight Simulator / Prepar3D 
 
 ## Architecture
 
-The server supports two operating modes, selected at startup via the `MCP_MODE` environment variable:
+The server supports three operating modes, selected at startup via the `MCP_MODE` environment variable:
 
 | Mode | Value | Milestone | Platform |
 |------|-------|-----------|----------|
 | Documentation fetch | `docs` | 1 | Any |
 | Live SimConnect data | `simconnect` | 2 | Windows only |
+| Docs + live data | `both` | — | Docs anywhere; live tools on Windows when SimConnect opens |
 
 ```
 cmd/simconnect-mcp/       Entry point — reads MCP_MODE, boots Gin, registers routes

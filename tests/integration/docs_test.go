@@ -1,6 +1,6 @@
 // Package integration contains end-to-end tests for the MCP docs mode.
 // Tests start the full Gin router in-process via net/http/httptest and
-// exercise all 12 registered MCP tools plus the health and routing layer.
+// exercise all 15 registered MCP tools plus the health and routing layer.
 //
 // Environment:
 //   - DOCS_MSFS_VERSION=both  (set via t.Setenv in TestMain)
@@ -160,7 +160,7 @@ func parseContentJSON(t *testing.T, resp map[string]any, dst any) {
 
 // ── Tests ─────────────────────────────────────────────────────────────────────
 
-// TestToolsList verifies that tools/list returns exactly 12 named tools.
+// TestToolsList verifies that tools/list returns exactly 15 named tools.
 func TestToolsList(t *testing.T) {
 	srv := newTestServer(t)
 
@@ -185,6 +185,9 @@ func TestToolsList(t *testing.T) {
 		"list_error_codes",
 		"get_error_code",
 		"search_docs",
+		"list_library_guides",
+		"get_library_guide",
+		"search_library_docs",
 	}
 
 	if len(toolsRaw) != len(want) {
@@ -556,5 +559,31 @@ func TestUnknownRoute(t *testing.T) {
 	}
 	if body.Error.Code == "" {
 		t.Error("404 body missing error.code")
+	}
+}
+
+// TestLibraryDocs verifies the mrlm-net/simconnect guides: list, search, read
+// a chapter, and an unknown guide.
+func TestLibraryDocs(t *testing.T) {
+	srv := newTestServer(t)
+
+	list := contentText(t, callTool(t, srv.URL, "list_library_guides", map[string]any{"section": "airport"}))
+	if !strings.Contains(list, `"slug":"airport-layout"`) {
+		t.Errorf("list_library_guides(airport) lacks airport-layout: %s", list)
+	}
+
+	hits := contentText(t, callTool(t, srv.URL, "search_library_docs", map[string]any{"query": "RouteToRunway"}))
+	if !strings.Contains(hits, `"slug":"airport-layout"`) {
+		t.Errorf("search_library_docs(RouteToRunway) lacks airport-layout: %s", hits)
+	}
+
+	chapter := contentText(t, callTool(t, srv.URL, "get_library_guide", map[string]any{"slug": "airport-layout", "chapter": "taxi graph"}))
+	if !strings.Contains(chapter, "## Taxi graph") || strings.Contains(chapter, "## Procedures") {
+		t.Errorf("get_library_guide chapter is not just the Taxi graph chapter: %.300s", chapter)
+	}
+
+	resp := callTool(t, srv.URL, "get_library_guide", map[string]any{"slug": "no-such-guide"})
+	if !isToolError(t, resp) || !strings.Contains(contentText(t, resp), "NOT_FOUND") {
+		t.Errorf("expected NOT_FOUND for an unknown guide, got %v", resp)
 	}
 }

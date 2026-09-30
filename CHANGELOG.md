@@ -6,10 +6,22 @@ Full release history with release notes is also available on the [GitHub Release
 
 ## [Unreleased]
 
+### Added
+
+- `list_library_guides`, `get_library_guide`, and `search_library_docs` tools (docs and both modes) — serve the 33 guides of the `github.com/mrlm-net/simconnect` Go library (client, manager, facilities, `pkg/airport`, `pkg/nav`, `pkg/traffic`), embedded at the library version in `go.mod`; `get_library_guide` reads a whole guide or a single `##` chapter by heading or unique prefix, `search_library_docs` requires every query word to appear in a chapter, its heading, or the guide title
+- `/health` in docs and both modes now reports `library_version`
+- Library guides are refreshed with `go generate ./internal/libdocs/`; a test fails if the embedded guides drift from the library version in `go.mod`
+
 ### Changed
 
 - Upgraded `github.com/mrlm-net/simconnect` SDK dependency from v0.6.0 to v0.6.1 — empty unit strings in data definitions now select the SimConnect default unit instead of raising `UNRECOGNIZED_ID` (mrlm-net/simconnect#263)
+- Upgraded `github.com/mrlm-net/simconnect` SDK dependency from v0.6.1 to v0.15.0
 - Minimum Go version raised to 1.27.1 (was 1.25 with a `go1.25.8` toolchain); Docker builder image moved to `golang:1.27-alpine`
+
+### Fixed
+
+- `both` mode on Windows now registers the six navaid tools (`get_vors_in_range`, `get_vor_details`, `get_ndbs_in_range`, `get_ndb_details`, `get_waypoints_in_range`, `get_waypoint_details`), which were previously missing
+- Documentation: corrected tool counts (docs mode 15, simconnect mode 19, both mode 34 on Windows), documented `list_simvar_categories` and `MCP_MODE=both`, and brought the `llm.txt` tool list up to date
 
 ### Security
 

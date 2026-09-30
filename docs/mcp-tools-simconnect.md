@@ -7,6 +7,8 @@ section: reference
 
 All 19 MCP tools listed here are available when the server runs with `MCP_MODE=simconnect`. This mode provides live simulator data via the SimConnect SDK.
 
+**Both mode**: with `MCP_MODE=both` on Windows, the server registers these 19 tools alongside the 15 [docs-mode tools](/docs/mcp-tools-docs) — 34 tools in total — provided SimConnect opens at startup (10-second timeout). If the simulator cannot be reached, or on non-Windows platforms, both mode serves the 15 docs tools only; `simconnect_ready` in the `/health` response reports which case applies.
+
 **Requirements**: Windows only. Microsoft Flight Simulator 2020 or 2024 must be running with SimConnect enabled before issuing any read or transmit calls. The `get_sim_state` tool is safe to call at any time regardless of connection state.
 
 Tools are called over the Model Context Protocol using JSON-RPC 2.0 with the `tools/call` method. Error responses are returned as text content (not JSON-RPC errors) with a prefix token followed by a colon and a human-readable message.

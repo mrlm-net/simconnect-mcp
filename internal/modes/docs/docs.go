@@ -13,6 +13,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/mrlm-net/simconnect-mcp/internal/corpus"
+	"github.com/mrlm-net/simconnect-mcp/internal/libdocs"
 	"github.com/mrlm-net/simconnect-mcp/internal/mcpadapter"
 	"github.com/mrlm-net/simconnect-mcp/internal/modes"
 	"github.com/mrlm-net/simconnect-mcp/internal/modes/docs/tools"
@@ -25,6 +26,7 @@ type docsMode struct {
 	cfg        Config
 	store      corpus.DocStore
 	corpusData corpus.Corpus
+	libVersion string
 }
 
 // New constructs a docs mode instance from the provided Config.
@@ -60,14 +62,14 @@ func (m *docsMode) buildMCPServer() (*mcpadapter.Server, error) {
 	}
 	m.corpusData = c
 	m.store = corpus.NewDocStore(c)
+	lib, err := libdocs.Load()
+	if err != nil {
+		return nil, fmt.Errorf("docs mode: load library guides: %w", err)
+	}
+	m.libVersion = lib.Version
 
 	mcp := mcpadapter.NewServer("simconnect-mcp-docs", "1.0.0")
-	tools.RegisterSimVarTools(mcp, m.store, m.cfg.LiveScrape)
-	tools.RegisterEventTools(mcp, m.store, m.cfg.LiveScrape)
-	tools.RegisterFunctionTools(mcp, m.store, m.cfg.LiveScrape)
-	tools.RegisterStructureTools(mcp, m.store, m.cfg.LiveScrape)
-	tools.RegisterErrorCodeTools(mcp, m.store, m.cfg.LiveScrape)
-	tools.RegisterSearchTool(mcp, m.store, m.cfg.LiveScrape)
+	tools.RegisterAll(mcp, m.store, lib, m.cfg.LiveScrape)
 	return mcp, nil
 }
 
@@ -107,15 +109,16 @@ func (m *docsMode) HealthInfo() map[string]any {
 		source = "live"
 	}
 	return map[string]any{
-		"status":       "ok",
-		"mode":         "docs",
-		"docs_loaded":  true,
-		"docs_source":  source,
-		"live_scrape":  m.cfg.LiveScrape,
-		"msfs_version": m.cfg.MSFSVersion,
-		"simvar_count": m.store.SimVarCount(),
-		"event_count":  m.store.EventCount(),
-		"scraped_at":   m.corpusData.ScrapedAt.Format(time.RFC3339),
-		"sdk_version":  m.corpusData.SDKVersion,
+		"status":          "ok",
+		"mode":            "docs",
+		"docs_loaded":     true,
+		"docs_source":     source,
+		"live_scrape":     m.cfg.LiveScrape,
+		"msfs_version":    m.cfg.MSFSVersion,
+		"simvar_count":    m.store.SimVarCount(),
+		"event_count":     m.store.EventCount(),
+		"scraped_at":      m.corpusData.ScrapedAt.Format(time.RFC3339),
+		"sdk_version":     m.corpusData.SDKVersion,
+		"library_version": m.libVersion,
 	}
 }

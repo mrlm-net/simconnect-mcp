@@ -39,6 +39,7 @@ type bothMode struct {
 	// simconnect state — populated when the bridge connects
 	br      bridge.Bridge
 	scReady bool
+	cleanup func() int // removes our AI aircraft; see sctools.RegisterAll
 }
 
 // Ensure bothMode satisfies modes.Mode at compile time.
@@ -88,7 +89,7 @@ func (m *bothMode) buildMCPServer(ctx context.Context) (*mcpadapter.Server, erro
 	} else {
 		m.br = b
 		m.scReady = true
-		sctools.RegisterAll(mcp, b)
+		m.cleanup = sctools.RegisterAll(mcp, b)
 	}
 	return mcp, nil
 }
@@ -146,4 +147,10 @@ func (m *bothMode) HealthInfo() map[string]any {
 	}
 
 	return h
+}
+
+// Close implements modes.Closer: it takes our AI aircraft out of the
+// simulator and closes the SimConnect connection, if there is one.
+func (m *bothMode) Close() error {
+	return simconnect.Shutdown(m.cleanup, m.br)
 }

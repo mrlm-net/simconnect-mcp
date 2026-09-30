@@ -9,8 +9,9 @@ import (
 
 // simconnectMode implements modes.Mode for the live SimConnect data mode.
 type simconnectMode struct {
-	cfg    Config
-	bridge bridge.Bridge
+	cfg     Config
+	bridge  bridge.Bridge
+	cleanup func() int // removes our AI aircraft; see tools.RegisterAll
 }
 
 // New creates a new simconnectMode with the given configuration.

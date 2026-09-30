@@ -27,6 +27,7 @@ Full release history with release notes is also available on the [GitHub Release
 
 ### Fixed
 
+- AI aircraft spawned by the traffic tools are removed from the simulator when the server stops (Ctrl+C, SIGTERM, or stdin closing in stdio mode); the HTTP server now shuts down gracefully and the SimConnect connection is closed
 - `both` mode on Windows now registers the six navaid tools (`get_vors_in_range`, `get_vor_details`, `get_ndbs_in_range`, `get_ndb_details`, `get_waypoints_in_range`, `get_waypoint_details`), which were previously missing
 - Documentation: corrected the tool counts, documented `list_simvar_categories` and `MCP_MODE=both`, and brought the `llm.txt` tool list up to date
 

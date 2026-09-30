@@ -16,3 +16,9 @@ type Mode interface {
 	// HealthInfo returns mode-specific status fields for the /health endpoint.
 	HealthInfo() map[string]any
 }
+
+// Closer is implemented by modes holding resources to release on shutdown:
+// the SimConnect connection and the AI aircraft spawned through it.
+type Closer interface {
+	Close() error
+}

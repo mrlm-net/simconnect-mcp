@@ -132,10 +132,15 @@ func NewRuntime(mgr manager.Manager) *Runtime {
 	return r
 }
 
-// Close stops the Runtime's timer. Its handlers stay registered with the
-// manager, which is closed with it.
-func (r *Runtime) Close() {
+// Close takes our AI aircraft out of the simulator and stops the Runtime's
+// timer; it returns how many aircraft it removed. The simulator keeps AI
+// objects after their client disconnects, so call it before closing the
+// connection. Its handlers stay registered with the manager, which is closed
+// with it.
+func (r *Runtime) Close() int {
+	n := r.RemoveAll()
 	r.once.Do(func() { close(r.stop) })
+	return n
 }
 
 // resetLocked creates the loaders anew: after a reconnect their facility

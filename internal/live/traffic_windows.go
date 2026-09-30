@@ -816,11 +816,12 @@ func (r *Runtime) Flights() []FlightView {
 	return out
 }
 
-// RemoveAll takes every aircraft of ours out of the simulator.
-func (r *Runtime) RemoveAll() {
+// RemoveAll takes every aircraft of ours out of the simulator and returns
+// how many there were.
+func (r *Runtime) RemoveAll() int {
 	t := r.currentTraffic()
 	if t == nil {
-		return
+		return 0
 	}
 	t.tmu.Lock()
 	fl := make([]*flight, 0, len(t.flights))
@@ -831,6 +832,7 @@ func (r *Runtime) RemoveAll() {
 	for _, f := range fl {
 		_ = r.removeFlight(f)
 	}
+	return len(fl)
 }
 
 // ── Picture ────────────────────────────────────────────────────────────────

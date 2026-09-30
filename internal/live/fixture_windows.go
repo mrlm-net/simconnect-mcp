@@ -128,10 +128,17 @@ func (f *Fixture) LoadFlightPlan(_ context.Context, pln []byte) error {
 
 // FixtureTraffic is a Traffic for tests: it records spawns and clearances.
 type FixtureTraffic struct {
-	ModelList  []string
-	Departures []DepartureSpec
-	Arrivals   []ArrivalSpec
-	flights    []FlightView
+	ModelList    []string
+	PictureList  []traffic.TrackedAircraft
+	SequenceList []RunwaySequence
+	TowerList    []RunwayUser
+	Log          []ATCMessage
+	Instructions []string // "CS action", as given to Approach
+	ApproachSaid string
+	ApproachErr  error
+	Departures   []DepartureSpec
+	Arrivals     []ArrivalSpec
+	flights      []FlightView
 }
 
 func (f *FixtureTraffic) Models(context.Context) ([]string, error) { return f.ModelList, nil }
@@ -164,5 +171,20 @@ func (f *FixtureTraffic) Clear(callsign, action string) (FlightView, error) {
 }
 
 func (f *FixtureTraffic) Picture(context.Context, string, float64) ([]traffic.TrackedAircraft, error) {
-	return nil, nil
+	return f.PictureList, nil
+}
+
+// Sequences, Tower and ATCLog return the fixture's; Approach records the
+// instruction and answers from ApproachSaid.
+func (f *FixtureTraffic) Sequences(string) []RunwaySequence { return f.SequenceList }
+func (f *FixtureTraffic) Tower(string) []RunwayUser         { return f.TowerList }
+func (f *FixtureTraffic) ATCLog(limit int) []ATCMessage {
+	if limit > 0 && len(f.Log) > limit {
+		return f.Log[len(f.Log)-limit:]
+	}
+	return f.Log
+}
+func (f *FixtureTraffic) Approach(callsign, action string) (string, error) {
+	f.Instructions = append(f.Instructions, callsign+" "+action)
+	return f.ApproachSaid, f.ApproachErr
 }

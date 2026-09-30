@@ -1,13 +1,13 @@
 ---
 title: "MCP Tools — SimConnect Mode"
-description: Reference for the 36 live-data and AI traffic MCP tools in SimConnect mode (MCP_MODE=simconnect, Windows only).
+description: Reference for the 41 live-data, AI traffic and airborne ATC MCP tools in SimConnect mode (MCP_MODE=simconnect, Windows only).
 order: 2
 section: reference
 ---
 
-All 36 MCP tools listed here are available when the server runs with `MCP_MODE=simconnect` (and, on Windows, with `MCP_MODE=both`, alongside the 15 docs tools — 51 in all). This mode provides live simulator data via the SimConnect SDK, and AI traffic under our control.
+All 41 MCP tools listed here are available when the server runs with `MCP_MODE=simconnect` (and, on Windows, with `MCP_MODE=both`, alongside the 15 docs tools — 56 in all). This mode provides live simulator data via the SimConnect SDK, and AI traffic under our control.
 
-**Both mode**: with `MCP_MODE=both` on Windows, the server registers these 36 tools alongside the 15 [docs-mode tools](/docs/mcp-tools-docs) — 51 tools in total — provided SimConnect opens at startup (10-second timeout). If the simulator cannot be reached, or on non-Windows platforms, both mode serves the 15 docs tools only; `simconnect_ready` in the `/health` response reports which case applies.
+**Both mode**: with `MCP_MODE=both` on Windows, the server registers these 41 tools alongside the 15 [docs-mode tools](/docs/mcp-tools-docs) — 56 tools in total — provided SimConnect opens at startup (10-second timeout). If the simulator cannot be reached, or on non-Windows platforms, both mode serves the 15 docs tools only; `simconnect_ready` in the `/health` response reports which case applies.
 
 **Requirements**: Windows only. Microsoft Flight Simulator 2020 or 2024 must be running with SimConnect enabled before issuing any read or transmit calls. The `get_sim_state` tool is safe to call at any time regardless of connection state.
 
@@ -1903,7 +1903,7 @@ Shared behaviour:
 - **At most 32 aircraft of ours** at once. Call signs are 2–8 letters or digits and unique among ours.
 - **Clearances**: each flight lists `actions`, the `atc_clearance` actions that fit its state now (see [Clearance flow](#clearance-flow)).
 - **The traffic picture** comes from a scan of every aircraft within 80 km (about 43 NM) of the user aircraft, repeated every second once `get_traffic_picture` or a spawn has started it.
-- **Not available yet**: conflict prediction, wake-turbulence separation, approach sequencing and holding patterns are in the library's unreleased v0.16.
+- **Airborne ATC**: the runtime's tower and landing sequences clear and sequence the flights not held for clearances (see [Airborne ATC tools](#airborne-atc-tools)).
 
 Examples show the tool result's `text` content, formatted, from MSFS 2024 at LKPR. Long arrays are abridged (`…`).
 
@@ -1942,7 +1942,7 @@ Examples show the tool result's `text` content, formatted, from MSFS 2024 at LKP
 | `cross` | `holding short` of a runway on the way | Crosses it and taxis on |
 | `remove` | any | Takes the aircraft out of the simulator |
 
-States: departures go `spawning`, `awaiting pushback`, `pushback`, `awaiting taxi`, `taxiing`, `holding short`, `lining up`, `lined up`, `departing`, `complete`; arrivals go `spawning`, `approaching`, `landing`, `rollout`, `vacating`, `awaiting taxi`, `taxiing`, `holding short`, `parking`, `parked`. Either may end `cancelled` or `failed` (see `error`). Without holding for clearances, each step clears itself after a short, varied wait.
+States: departures go `spawning`, `awaiting pushback`, `pushback`, `awaiting taxi`, `taxiing`, `holding short`, `lining up`, `lined up`, `departing`, `complete`; arrivals go `spawning`, `approaching`, `landing`, `rollout`, `vacating`, `awaiting taxi`, `taxiing`, `holding short`, `parking`, `parked`. Either may end `cancelled` or `failed` (see `error`). Without holding for clearances, the ground steps clear themselves after a short, varied wait, and the runway steps (line-up, take-off, crossings) come from the tower when the runway allows. Arrivals are sequenced, lose their delays, and go around by themselves when the runway is not free.
 
 ---
 
@@ -2367,3 +2367,108 @@ Generate a realistic airline schedule for airports: flights with call sign, airl
 **Error codes**
 
 - `INVALID_ARGUMENT`: `airports` missing or not ICAO codes; `hours`, `density` or `limit` out of range; `start` not RFC 3339.
+
+---
+
+## Airborne ATC tools
+
+The live runtime runs a controller for every airport where we have traffic, using the library's v0.16 (airborne ATC):
+
+- **A tower per runway** clears our departures' line-up and take-off and our aircraft's runway crossings. It works in mixed mode: departures go in the gaps between arrivals, after the wake and same-SID interval. It sends an arrival around when the runway will not be free on short final (someone lined up, crossing, or still on it after landing). The go-around flies the published missed approach and is sequenced again.
+- **A landing sequence per runway end**, first come first served, of our arrivals and the other traffic on the final. Spacing is the wake minimum, at least 5 NM, and more in low visibility or on a contaminated runway (the weather at the user aircraft). Our arrivals lose their delays by themselves: slower first, then a longer downwind, then a hold at the STAR fix (stacked 1000 ft apart), left once the delay is down to a minute.
+
+Flights spawned with `hold_for_clearances` / `hold_for_clearance` are yours: the tower and the sequence count them but never clear or instruct them.
+
+The five tools below read the sequence and the tower, give approach instructions, predict conflicts, and compute separation minima.
+
+---
+
+## get_landing_sequence
+
+The landing sequence of each runway end with our arrivals, and who uses each runway now.
+
+**Parameters**
+
+| Name | Type | Required | Default | Description |
+|------|------|----------|---------|-------------|
+| `icao` | string | No | all | Airport ICAO code |
+
+**Returns**: `sequences` has one entry per runway end: `icao`, `runway`, `conditions` (visibility, ceiling, headwind, surface), and `arrivals`, first to land first. Each arrival has:
+
+- `number`, `callsign`, `wake` (`M/D`: ICAO/RECAT-EU);
+- `behind` and `spacing_nm`, with `spacing_why` when the conditions change it;
+- `distance_to_go_nm` along what it still flies;
+- `predicted_landing` and `sequenced_landing` (UTC);
+- `delay_s`, and `established` inside 8 NM.
+
+`tower` lists who uses each runway: `runway`, `callsign`, `phase` (holding short, lined up, on the runway, final), `ours`, and `waiting` (why it waits, e.g. `"CSA1 on a 3.0 NM final"`, `"1m20s behind DLH2"`).
+
+---
+
+## approach_instruction
+
+Give one of our arrivals in a landing sequence an approach controller's instruction. It returns what was said (`said`).
+
+| `instruction` | Effect |
+|---|---|
+| `up`, `down` | A place earlier or later in the landing order; it keeps the place |
+| `slow` | Loses another minute: slower, then a longer downwind |
+| `hold` | Holds at its STAR's hold fix, stacked above the others |
+| `release` | Leaves the hold and continues the arrival |
+| `direct` | Straight to the final, leaving out the rest of its STAR |
+| `goaround` | Goes around (the published missed approach) and is sequenced again |
+
+**Error codes**:
+
+- `NOT_FOUND`: not in a landing sequence.
+- `NOT_APPLICABLE`: established (inside 8 NM), on the final, already holding or not holding.
+- `INVALID_ARGUMENT`: an unknown instruction.
+
+---
+
+## get_atc_log
+
+The latest instructions of the runtime's controllers, newest last, as ATC says them. For example:
+
+- `"CSA123, runway 24, line up, cleared for take-off"`
+- `"DLH4AB, number 2, delay 1m30s: 210 kt, +4.1 NM"`
+- `"KLM7, hold at PR722, direct entry, maintain 7000 ft, expect further clearance 1042Z"`
+- `"CSA1, go around, I say again, go around — TVS3 on the runway"`
+
+Parameters: `icao`, `callsign`, `limit` (1–200, default 50). Returns `messages`: `at`, `icao`, `callsign`, `text`.
+
+---
+
+## get_conflicts
+
+Airborne conflicts in the traffic picture: pairs that, flying on as they are (track, ground speed, vertical speed), come closer than 5 NM (3 NM near an airport) and 1000 ft within the look-ahead.
+
+- Departures and arrivals at the same airport low near the runway are left to the tower.
+- Where one of the pair is ours, the least disturbing resolution comes as advice: a speed (±10–20 %), a level (1000 or 2000 ft, by the semicircular rule) or a heading (20–45°), whichever keeps it clear of everyone.
+
+Parameters: `centre`, `radius_nm` (1–40), `lookahead_min` (1–10, default 5).
+
+Returns `conflicts`. Each conflict has `pair`, `loss_in_s`, `closest_nm`, `closest_vertical_ft`, `closest_in_s` and `minimum_nm`, plus either:
+
+- `resolution`: `callsign`, `kind` (speed, level, heading), `kts`, `altFt` or `headingDeg`, and `why`;
+- `resolution_note`, when there is none.
+
+---
+
+## separation_minima
+
+Wake turbulence and runway separation for a pair of aircraft types. It is a pure calculation.
+
+Parameters:
+
+- `leader`, `follower`: ICAO types, required;
+- `scheme`: `icao` or `recat`;
+- `visibility_m`;
+- `surface`: `dry`, `wet` or `contaminated`;
+- `same_route`: `1` for the same SID.
+
+It returns:
+
+- each type's `wake` (ICAO and RECAT-EU) and `landing_occupancy_s`;
+- `wake_minimum_nm`, and `spacing_on_final_nm` with `spacing_why` (at least 6 NM in low visibility, +1 NM contaminated, reduced 2.5 NM only in good conditions);
+- `departure_interval_s` and `follower_takeoff_occupancy_s`.

@@ -19,7 +19,8 @@ All notable changes to SimConnect MCP are documented here.
 - Navigation & flight planning tools: `get_fix`, `find_airway_route`, `plan_flight` (`load_into_sim=true` changes the simulator's flight plan)
 - `internal/live` runtime running the `mrlm-net/simconnect` library's `pkg/airport` and `pkg/nav` loaders on the bridge's SimConnect connection; the ten tools are registered only with the real bridge
 - AI traffic tools (simconnect and both modes, Windows, real bridge only) on the library's `pkg/traffic`: `spawn_departure`, `spawn_arrival` (add AI aircraft to the simulator), `atc_clearance` (pushback, taxi, cross, lineup, takeoff, hold, abort, goaround, remove), `list_our_traffic`, `get_traffic_picture`, `list_aircraft_models`, `generate_schedule`
-- Tool counts: docs 15, simconnect 36, both 51
+- Airborne ATC (simconnect and both modes, Windows, real bridge only) on the library's v0.16: a tower per runway (line-up, take-off and crossing clearances, automatic go-arounds) and a landing sequence per runway end (delays absorbed by speed, a longer downwind and a stacked hold) for our traffic not held for clearances; tools `get_landing_sequence`, `approach_instruction`, `get_atc_log`, `get_conflicts`, `separation_minima`
+- Tool counts: docs 15, simconnect 41, both 56
 
 ### Changed
 

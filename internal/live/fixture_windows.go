@@ -28,6 +28,7 @@ type Fixture struct {
 	cache *airport.Cache
 	procs map[string]*airport.Procedures
 	graph *nav.AirwayGraph
+	runways RunwayMemory
 }
 
 // NewFixture reads the fixtures in dir.
@@ -104,6 +105,10 @@ func (f *Fixture) Procedures(_ context.Context, icao string) (*airport.Procedure
 
 func (f *Fixture) Weather(context.Context) (nav.Weather, error) { return f.WeatherValue, nil }
 
+func (f *Fixture) RunwaysInUse(l *airport.Layout, w nav.Weather, lim nav.RunwayLimits) nav.RunwayUse {
+	return f.runways.Use(l, w, lim)
+}
+
 func (f *Fixture) Fix(_ context.Context, key nav.FixKey) (nav.NavResult, error) {
 	if f.graph != nil {
 		for _, fx := range f.graph.Find(key.Ident) {
@@ -142,6 +147,7 @@ type FixtureTraffic struct {
 	ApproachErr  error
 	Departures   []DepartureSpec
 	Arrivals     []ArrivalSpec
+	Enroute      []EnrouteSpec
 	flights      []FlightView
 }
 
@@ -175,6 +181,18 @@ func (f *FixtureTraffic) SpawnArrival(_ context.Context, s ArrivalSpec) (FlightV
 	return v, nil
 }
 
+func (f *FixtureTraffic) SpawnEnroute(_ context.Context, s EnrouteSpec) (FlightView, error) {
+	f.mu.Lock()
+	defer f.mu.Unlock()
+	f.Enroute = append(f.Enroute, s)
+	v := FlightView{Callsign: s.Callsign, Kind: s.Kind, ICAO: s.ICAO, Procedure: s.Plan, State: "enroute", Actions: []string{"remove"}}
+	if len(s.Route) > 0 {
+		v.Position, v.AltFt = s.Route[0].Position, s.Route[0].AltFt
+	}
+	f.flights = append(f.flights, v)
+	return v, nil
+}
+
 func (f *FixtureTraffic) Flights() []FlightView {
 	f.mu.Lock()
 	defer f.mu.Unlock()
@@ -192,6 +210,13 @@ func (f *FixtureTraffic) SetState(callsign, state string) {
 	}
 }
 
+// Specs returns copies of the spawn requests received so far.
+func (f *FixtureTraffic) Specs() ([]DepartureSpec, []ArrivalSpec, []EnrouteSpec) {
+	f.mu.Lock()
+	defer f.mu.Unlock()
+	return slices.Clone(f.Departures), slices.Clone(f.Arrivals), slices.Clone(f.Enroute)
+}
+
 // Spawned counts the departures and arrivals spawned.
 func (f *FixtureTraffic) Spawned() (departures, arrivals int) {
 	f.mu.Lock()
@@ -202,8 +227,11 @@ func (f *FixtureTraffic) Spawned() (departures, arrivals int) {
 func (f *FixtureTraffic) Clear(callsign, action string) (FlightView, error) {
 	f.mu.Lock()
 	defer f.mu.Unlock()
-	for _, v := range f.flights {
+	for i, v := range f.flights {
 		if v.Callsign == callsign {
+			if action == "remove" {
+				f.flights = slices.Delete(f.flights, i, i+1)
+			}
 			return v, nil
 		}
 	}

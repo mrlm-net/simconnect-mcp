@@ -99,8 +99,8 @@ Airborne ATC (the server runs a tower per runway and a landing sequence per runw
 
 Scheduled traffic (adds and removes AI aircraft in the simulator):
 
-- start_schedule: Run a realistic airline schedule at airports; departures and arrivals appear and go by themselves, cleared by the tower; arrivals turn around into later departures on their stands
-- stop_schedule: Stop the schedule, optionally removing its aircraft
+- start_schedule: Run a realistic airline schedule at airports; departures and arrivals appear and go by themselves, cleared by the tower; arrivals come in en route from their origin and turn around into later departures on their stands; overflights cross the area
+- stop_schedule: Stop the schedule; its aircraft fly on until they depart, park or leave, or are removed at once
 - get_schedule: The running schedule's departure and arrival boards with status, stand, runway and delays
 
 ## MCP Tools — Both Mode (MCP_MODE=both)

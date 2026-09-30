@@ -9,6 +9,21 @@ Full release history with release notes is also available on the [GitHub Release
 ### Added
 
 - Turnarounds in scheduled traffic: an arrival whose airline and type depart again 40 min to 3 h after its STA stays on its stand and becomes that departure, the same aircraft, instead of a new aircraft on another stand. `spawn_departure` takes `turnaround_of` (one of our arrivals parked at the airport) to do the same by hand.
+- En route arrivals and overflights in scheduled traffic:
+  - **Arrivals** appear in the air 45 minutes before their STA, on a flight plan from their origin to the runway in use, and fly to their STAR entry as MSFS AI. There they are handed to an arrival controller flying the same STAR. An arrival that can't fly en route appears at its STAR entry as before.
+  - **Overflights** cross the area within 100 NM of the first airport, between airports outside it, on routes whose great circle really crosses it. Each appears where its planned route enters the area, at its entry time. `get_schedule` lists them under `overflights`.
+  - En route aircraft are created airborne as non-ATC AI and released to a waypoint chain, because MSFS 2024 places an enroute ATC aircraft on the ground at its departure airport.
+
+### Fixed
+
+- Departures push back with a tug (`traffic.DefaultTugTitle`), in `spawn_departure` (new `tug` parameter, default true) and the schedule. Before, they pushed back with no tug.
+- `stop_schedule` without `remove` really lets the schedule's aircraft fly on. The schedule keeps running with no new spawns until they have departed, parked or left, and en route arrivals are still handed over. Before, it stopped at once, so nothing was ever removed. `stop_schedule` returns `flying_on`.
+- A scheduled flight that fails is removed, so its retry under the same call sign isn't refused.
+- An en route aircraft removed while the simulator is still creating it no longer stays in the simulator.
+
+### Changed
+
+- Runways in use stay in use while the wind allows them (up to 5 kt tailwind), in `get_active_runway`, the spawn tools and the schedule. In a calm or variable wind, arrivals and departures no longer get opposite runways from one spawn to the next.
 
 ## [0.7.0] - 2026-09-30
 

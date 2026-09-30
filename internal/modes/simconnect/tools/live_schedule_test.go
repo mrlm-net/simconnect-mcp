@@ -186,3 +186,48 @@ func TestScheduleEnrouteArrival(t *testing.T) {
 		t.Errorf("handed over to %s %s %s, want %s %s", a.Callsign, a.STAR, a.Runway, e.star, e.runway)
 	}
 }
+
+// An overflight appears where its plan enters the area at its entry time,
+// not where its STD would put it.
+func TestScheduleOverflightEntersArea(t *testing.T) {
+	fx, err := live.NewFixture("../../../live/testdata")
+	if err != nil {
+		t.Fatal(err)
+	}
+	ft := &live.FixtureTraffic{ModelList: []string{"FSLTL A320 DLH Lufthansa"}}
+	r := newScheduleRunner(fx, ft)
+	clock := &testClock{t: time.Date(2026, 9, 30, 8, 0, 0, 0, time.UTC)}
+	r.clock = clock.now
+	now := clock.now()
+	// The area: 100 NM around a point west of Prague, which EDDM → LKPR crosses.
+	centre := airport.LatLon{Lat: 49.6, Lon: 13.0}
+	r.start([]string{"LKTB"}, centre, 1, 1, 6)
+	r.halt(false)
+	f := traffic.ManagedFlight{Flight: traffic.Flight{Callsign: "DLH9", Airline: "DLH", Type: "A320", Origin: "EDDM", Destination: "LKPR",
+		STD: now.Add(-3 * time.Hour), Enter: now}, Kind: "overflight", Stage: "enroute"}
+	if _, err := r.spawnEnroute(t.Context(), f, 0); err != nil {
+		t.Fatal(err)
+	}
+	_, _, enroute := ft.Specs()
+	p := enroute[0].Route[0].Position
+	if d := calc.HaversineNM(p.Lat, p.Lon, centre.Lat, centre.Lon); d > overflightRadiusNM+5 || d < overflightRadiusNM-40 {
+		t.Errorf("appears %.0f NM from the centre, want at the %d NM edge", d, overflightRadiusNM)
+	}
+}
+
+// Dublin to Seoul crosses Prague on a straight lat/lon line, not on its
+// great circle; Frankfurt to Kraków does both.
+func TestGreatCircleCrosses(t *testing.T) {
+	prague := airport.LatLon{Lat: 50.10, Lon: 14.26}
+	dublin, seoul := airport.LatLon{Lat: 53.42, Lon: -6.27}, airport.LatLon{Lat: 37.46, Lon: 126.44}
+	frankfurt, krakow := airport.LatLon{Lat: 50.03, Lon: 8.57}, airport.LatLon{Lat: 50.08, Lon: 19.78}
+	if greatCircleCrosses(dublin, seoul, prague, overflightRadiusNM) {
+		t.Error("Dublin–Seoul crosses Prague")
+	}
+	if !greatCircleCrosses(frankfurt, krakow, prague, overflightRadiusNM) {
+		t.Error("Frankfurt–Kraków misses Prague")
+	}
+	if p := greatCirclePoint(dublin, seoul, 1); calc.HaversineNM(p.Lat, p.Lon, seoul.Lat, seoul.Lon) > 0.1 {
+		t.Errorf("the great circle ends at %v, not Seoul", p)
+	}
+}

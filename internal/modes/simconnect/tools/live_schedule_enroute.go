@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"math"
+	"slices"
 	"strings"
 	"time"
 
@@ -103,7 +104,17 @@ func (r *scheduleRunner) spawnEnroute(ctx context.Context, f traffic.ManagedFlig
 			return live.FlightView{}, fmt.Errorf("only %.0f NM before its STAR entry: it appears there", entryDist-dist)
 		}
 	} else {
+		// Where its plan enters the area, on from there since it entered
+		// (the schedule's Enter): the plan's route and speeds are not the
+		// generator's, so its STD would put it elsewhere.
 		dist = now.Sub(f.STD.Add(10*time.Minute)).Hours() * kts
+		if s := r.settings.Load(); s != nil && s.centre != (airport.LatLon{}) {
+			in, ok := entersArea(fp, s.centre, overflightRadiusNM)
+			if !ok {
+				return live.FlightView{}, fmt.Errorf("its route (%s) does not cross the area", fp.Route)
+			}
+			dist = in + math.Max(0, now.Sub(f.Enter).Hours())*kts
+		}
 	}
 	dist = math.Max(10, math.Min(dist, fp.DistanceNM-20))
 	pos, altFt, _ := fp.PositionAt(dist)
@@ -135,6 +146,18 @@ func (r *scheduleRunner) spawnEnroute(ctx context.Context, f traffic.ManagedFlig
 	r.enroute[f.Callsign] = e
 	r.mu.Unlock()
 	return v, nil
+}
+
+// entersArea is how far along fp it first comes within radiusNM of centre.
+func entersArea(fp *nav.FlightPlan, centre airport.LatLon, radiusNM float64) (float64, bool) {
+	const step = 2.0 // NM
+	for d := 0.0; d <= fp.DistanceNM; d += step {
+		p, _, _ := fp.PositionAt(d)
+		if calc.HaversineNM(p.Lat, p.Lon, centre.Lat, centre.Lon) <= radiusNM {
+			return d, true
+		}
+	}
+	return 0, false
 }
 
 // handovers passes en route arrivals to an arrival controller at their
@@ -188,6 +211,55 @@ func (r *scheduleRunner) overflights(cfg traffic.ScheduleConfig, from, to time.T
 	if s == nil || s.centre == (airport.LatLon{}) {
 		return nil
 	}
-	return traffic.Overflights(cfg, traffic.OverflightOptions{Centre: s.centre, RadiusNM: overflightRadiusNM,
+	pos := map[string]airport.LatLon{}
+	for _, a := range cfg.Airports {
+		pos[a.ICAO] = a.Position
+	}
+	// The generator draws a straight line in latitude and longitude; a
+	// long flight follows the great circle, far from it (Dublin to Seoul
+	// "crosses" Prague on the line, Norway on the great circle).
+	out := traffic.Overflights(cfg, traffic.OverflightOptions{Centre: s.centre, RadiusNM: overflightRadiusNM,
 		Density: s.density, Seed: s.seed, Exclude: s.airports}, from, to)
+	return slices.DeleteFunc(out, func(f traffic.Flight) bool {
+		return !greatCircleCrosses(pos[f.Origin], pos[f.Destination], s.centre, overflightRadiusNM)
+	})
+}
+
+// greatCircleCrosses reports whether the great circle from a to b passes
+// through the area for at least half its radius.
+func greatCircleCrosses(a, b, centre airport.LatLon, radiusNM float64) bool {
+	if a == (airport.LatLon{}) || b == (airport.LatLon{}) {
+		return false
+	}
+	dist := calc.HaversineNM(a.Lat, a.Lon, b.Lat, b.Lon)
+	in := -1.0
+	for d := 0.0; d <= dist; d += 5 {
+		p := greatCirclePoint(a, b, d/dist)
+		if calc.HaversineNM(p.Lat, p.Lon, centre.Lat, centre.Lon) <= radiusNM {
+			if in < 0 {
+				in = d
+			}
+			if d-in >= radiusNM/2 {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+// greatCirclePoint is the point a fraction f of the way from a to b on the
+// great circle (spherical interpolation).
+func greatCirclePoint(a, b airport.LatLon, f float64) airport.LatLon {
+	vec := func(p airport.LatLon) [3]float64 {
+		lat, lon := p.Lat*math.Pi/180, p.Lon*math.Pi/180
+		return [3]float64{math.Cos(lat) * math.Cos(lon), math.Cos(lat) * math.Sin(lon), math.Sin(lat)}
+	}
+	u, v := vec(a), vec(b)
+	delta := math.Acos(math.Max(-1, math.Min(1, u[0]*v[0]+u[1]*v[1]+u[2]*v[2])))
+	if delta < 1e-9 {
+		return a
+	}
+	ka, kb := math.Sin((1-f)*delta)/math.Sin(delta), math.Sin(f*delta)/math.Sin(delta)
+	x, y, z := ka*u[0]+kb*v[0], ka*u[1]+kb*v[1], ka*u[2]+kb*v[2]
+	return airport.LatLon{Lat: math.Atan2(z, math.Hypot(x, y)) * 180 / math.Pi, Lon: math.Atan2(y, x) * 180 / math.Pi}
 }

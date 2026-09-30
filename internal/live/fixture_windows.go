@@ -3,6 +3,7 @@
 package live
 
 import (
+	"sync"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -128,6 +129,8 @@ func (f *Fixture) LoadFlightPlan(_ context.Context, pln []byte) error {
 
 // FixtureTraffic is a Traffic for tests: it records spawns and clearances.
 type FixtureTraffic struct {
+	mu sync.Mutex // spawns come from goroutines (scheduled traffic)
+
 	ModelList    []string
 	PictureList  []traffic.TrackedAircraft
 	SequenceList []RunwaySequence
@@ -144,6 +147,8 @@ type FixtureTraffic struct {
 func (f *FixtureTraffic) Models(context.Context) ([]string, error) { return f.ModelList, nil }
 
 func (f *FixtureTraffic) SpawnDeparture(_ context.Context, s DepartureSpec) (FlightView, error) {
+	f.mu.Lock()
+	defer f.mu.Unlock()
 	f.Departures = append(f.Departures, s)
 	v := FlightView{Callsign: s.Callsign, Kind: "departure", ICAO: s.Graph.Layout.ICAO, Stand: s.Stand, Runway: s.Runway,
 		Entry: s.Entry, Procedure: s.SID, State: "spawning", Actions: []string{"remove"}}
@@ -152,6 +157,8 @@ func (f *FixtureTraffic) SpawnDeparture(_ context.Context, s DepartureSpec) (Fli
 }
 
 func (f *FixtureTraffic) SpawnArrival(_ context.Context, s ArrivalSpec) (FlightView, error) {
+	f.mu.Lock()
+	defer f.mu.Unlock()
 	f.Arrivals = append(f.Arrivals, s)
 	v := FlightView{Callsign: s.Callsign, Kind: "arrival", ICAO: s.Graph.Layout.ICAO, Stand: s.Stand, Runway: s.Runway,
 		Procedure: s.STAR, State: "spawning", Actions: []string{"remove"}}
@@ -159,9 +166,33 @@ func (f *FixtureTraffic) SpawnArrival(_ context.Context, s ArrivalSpec) (FlightV
 	return v, nil
 }
 
-func (f *FixtureTraffic) Flights() []FlightView { return f.flights }
+func (f *FixtureTraffic) Flights() []FlightView {
+	f.mu.Lock()
+	defer f.mu.Unlock()
+	return append([]FlightView(nil), f.flights...)
+}
+
+// SetState sets a flight's state, as its controller would.
+func (f *FixtureTraffic) SetState(callsign, state string) {
+	f.mu.Lock()
+	defer f.mu.Unlock()
+	for i := range f.flights {
+		if f.flights[i].Callsign == callsign {
+			f.flights[i].State = state
+		}
+	}
+}
+
+// Spawned counts the departures and arrivals spawned.
+func (f *FixtureTraffic) Spawned() (departures, arrivals int) {
+	f.mu.Lock()
+	defer f.mu.Unlock()
+	return len(f.Departures), len(f.Arrivals)
+}
 
 func (f *FixtureTraffic) Clear(callsign, action string) (FlightView, error) {
+	f.mu.Lock()
+	defer f.mu.Unlock()
 	for _, v := range f.flights {
 		if v.Callsign == callsign {
 			return v, nil

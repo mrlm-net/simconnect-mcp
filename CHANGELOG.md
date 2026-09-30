@@ -4,6 +4,13 @@ All notable changes to SimConnect MCP are documented here. The format follows [K
 
 Full release history with release notes is also available on the [GitHub Releases page](https://github.com/mrlm-net/simconnect-mcp/releases).
 
+## [Unreleased]
+
+### Added
+
+- Scheduled traffic (simconnect and both modes, Windows, real bridge only): `start_schedule`, `stop_schedule` and `get_schedule` run a realistic airline schedule at airports on the library's `TrafficManager`. Departures appear on their stands before their STD and push at it, arrivals appear at a STAR entry in time for their STA, and the tower and landing sequences clear and sequence them. Departed and parked aircraft are removed. Spawns are spaced, limited and retried. Turnarounds, en route arrivals and overflights are not supported yet.
+- Tool counts: docs 15, simconnect 45, both 60
+
 ## [0.6.0] - 2026-09-30
 
 The `github.com/mrlm-net/simconnect` library inside the server: its guides as docs tools; airport procedures, taxi routes, stands, weather, runway in use, ATIS, airways and flight plans; AI traffic of our own under ATC-style control; and, on the library's v0.16, airborne ATC — a tower per runway and landing sequences run by the server, with tools to read and work them. Plus fuel state, and airport requests that retry instead of failing.

@@ -46,7 +46,7 @@ github.com/mrlm-net/simconnect Go library guides (v0.16.0):
 - get_library_guide: Read a library guide, or a single chapter of it, as Markdown
 - search_library_docs: Search the library guides chapter by chapter
 
-## MCP Tools — SimConnect Mode (MCP_MODE=simconnect, Windows only, 42 tools)
+## MCP Tools — SimConnect Mode (MCP_MODE=simconnect, Windows only, 45 tools)
 
 - get_simvar_value: Read a single live simulation variable from the running simulator
 - get_simvar_values: Read up to 20 simulation variables in a single call
@@ -97,9 +97,15 @@ Airborne ATC (the server runs a tower per runway and a landing sequence per runw
 - get_conflicts: Predicted airborne conflicts in the traffic picture, with the least disturbing resolution for ours as advice
 - separation_minima: Wake categories, spacing on final, departure interval and runway occupancy for a pair of aircraft types
 
+Scheduled traffic (adds and removes AI aircraft in the simulator):
+
+- start_schedule: Run a realistic airline schedule at airports; departures and arrivals appear and go by themselves, cleared by the tower
+- stop_schedule: Stop the schedule, optionally removing its aircraft
+- get_schedule: The running schedule's departure and arrival boards with status, stand, runway and delays
+
 ## MCP Tools — Both Mode (MCP_MODE=both)
 
-Docs-mode tools always; on Windows, also the SimConnect-mode tools (57 in total) when the simulator is reachable at startup.
+Docs-mode tools always; on Windows, also the SimConnect-mode tools (60 in total) when the simulator is reachable at startup.
 
 ## Documentation
 

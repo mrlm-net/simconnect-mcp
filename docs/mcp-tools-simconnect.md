@@ -1,13 +1,13 @@
 ---
 title: "MCP Tools — SimConnect Mode"
-description: Reference for the 42 live-data, AI traffic and airborne ATC MCP tools in SimConnect mode (MCP_MODE=simconnect, Windows only).
+description: Reference for the 45 live-data, AI traffic, airborne ATC and scheduled traffic MCP tools in SimConnect mode (MCP_MODE=simconnect, Windows only).
 order: 2
 section: reference
 ---
 
-All 42 MCP tools listed here are available when the server runs with `MCP_MODE=simconnect` (and, on Windows, with `MCP_MODE=both`, alongside the 15 docs tools — 57 in all). This mode provides live simulator data via the SimConnect SDK, and AI traffic under our control.
+All 45 MCP tools listed here are available when the server runs with `MCP_MODE=simconnect` (and, on Windows, with `MCP_MODE=both`, alongside the 15 docs tools — 60 in all). This mode provides live simulator data via the SimConnect SDK, and AI traffic under our control.
 
-**Both mode**: with `MCP_MODE=both` on Windows, the server registers these 42 tools alongside the 15 [docs-mode tools](/docs/mcp-tools-docs) — 57 tools in total — provided SimConnect opens at startup (10-second timeout). If the simulator cannot be reached, or on non-Windows platforms, both mode serves the 15 docs tools only; `simconnect_ready` in the `/health` response reports which case applies.
+**Both mode**: with `MCP_MODE=both` on Windows, the server registers these 45 tools alongside the 15 [docs-mode tools](/docs/mcp-tools-docs) — 60 tools in total — provided SimConnect opens at startup (10-second timeout). If the simulator cannot be reached, or on non-Windows platforms, both mode serves the 15 docs tools only; `simconnect_ready` in the `/health` response reports which case applies.
 
 **Requirements**: Windows only. Microsoft Flight Simulator 2020 or 2024 must be running with SimConnect enabled before issuing any read or transmit calls. The `get_sim_state` tool is safe to call at any time regardless of connection state.
 
@@ -59,6 +59,9 @@ Tools are called over the Model Context Protocol using JSON-RPC 2.0 with the `to
 | [`get_atc_log`](#get_atc_log) | The latest instructions of the runtime's tower and approach to our traffic |
 | [`get_conflicts`](#get_conflicts) | Predict airborne conflicts, with the least disturbing resolution for ours as advice |
 | [`separation_minima`](#separation_minima) | Wake categories, spacing on final, departure interval and runway occupancy for a pair of types |
+| [`start_schedule`](#start_schedule) | Run a realistic airline schedule at airports: departures and arrivals appear and go by themselves |
+| [`stop_schedule`](#stop_schedule) | Stop the schedule (and remove its aircraft) |
+| [`get_schedule`](#get_schedule) | The running schedule's departure and arrival boards |
 
 ---
 
@@ -2518,3 +2521,48 @@ It returns:
 - each type's `wake` (ICAO and RECAT-EU) and `landing_occupancy_s`;
 - `wake_minimum_nm`, and `spacing_on_final_nm` with `spacing_why` (at least 6 NM in low visibility, +1 NM contaminated, reduced 2.5 NM only in good conditions);
 - `departure_interval_s` and `follower_takeoff_occupancy_s`.
+
+---
+
+## Scheduled traffic tools
+
+`start_schedule` runs a realistic airline schedule at airports in the simulator, using the library's `TrafficManager` and the same schedule as `generate_schedule`. What it does:
+
+- **Departures** appear on a free stand 10 minutes before their STD and push at it.
+- **Arrivals** appear at a STAR entry 25 minutes before their STA.
+- **Clearances:** the flights are ours and not held for clearances, so the runtime's tower and landing sequences clear and sequence them (see [Airborne ATC tools](#airborne-atc-tools)).
+- **Removal:** departed and parked aircraft are removed.
+- **Spacing and limits:** spawns are spaced (arrivals 3 min apart, departures 1 min), limited to `max_aircraft`, and retried with another model or stand when a spawn fails.
+- **Late flights:** a flight that can't start in time is cancelled.
+
+Not yet: turnarounds (an arrival becoming a later departure on its stand), arrivals appearing en route before their STAR, and overflights.
+
+## start_schedule
+
+| Name | Type | Required | Default | Description |
+|------|------|----------|---------|-------------|
+| `airports` | string | Yes | | Airports, e.g. `"LKPR"` or `"LKPR, LKTB"`; they must be loaded around the user aircraft |
+| `density` | number | No | `1` | Traffic density, 0.1–3 |
+| `max_aircraft` | number | No | `12` | Most of the schedule's aircraft at once, 1–24 |
+| `seed` | number | No | `1` | Random seed |
+
+Calling it again changes the airports and settings of the running schedule. It returns the same as `get_schedule`.
+
+## stop_schedule
+
+No more aircraft appear. With `remove=true` the schedule's aircraft are taken out of the simulator now; otherwise they fly on and are removed as they depart or park. Returns `running` and `removed` (how many were removed).
+
+## get_schedule
+
+The schedule's boards. It returns:
+
+- `running`, `airports`, `active` (the schedule's aircraft in the simulator) and `max_aircraft`;
+- `boards`: per airport, `departures` and `arrivals`.
+
+Each flight has `callsign`, `type`, `from`, `to`, `scheduled` (STD or STA, UTC) and `estimate` when late. It also has:
+
+- `status`: `scheduled`, `spawning`, `boarding`, `taxiing`, `departing`, `departed`, `approaching`, `landed`, `parked`, `done` or `cancelled`;
+- `stand` and `runway`;
+- `note`: why it waits, is late or was cancelled.
+
+Parameter: `icao` (default: all the schedule's airports).

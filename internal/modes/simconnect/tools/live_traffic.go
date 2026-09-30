@@ -180,38 +180,48 @@ func registerSpawnDeparture(mcp *mcpadapter.Server, src live.Source, tr live.Tra
 		Build()
 
 	mcp.AddTool(tool, func(ctx context.Context, args map[string]any) (*mcpadapter.CallToolResult, error) {
-		ctx, cancel := context.WithTimeout(ctx, spawnTimeout)
-		defer cancel()
-		icao, callsign, runway, g, procs, lim, bad := spawnCommon(ctx, src, args, false)
+		v, bad := spawnDepartureFrom(ctx, src, tr, args)
 		if bad != nil {
 			return bad, nil
 		}
-		s := live.DepartureSpec{Graph: g, Limits: &lim, Callsign: callsign, Stand: strings.ToUpper(strArg(args, "stand")),
-			Runway: runway, Entry: strings.ToUpper(strArg(args, "entry")), Model: strArg(args, "model"),
-			Type: strings.ToUpper(strArg(args, "aircraft_type")), Taxiways: listArg(args, "via"), HoldForClearances: true}
-		if b, ok := args["hold_for_clearances"].(bool); ok {
-			s.HoldForClearances = b
-		}
-		if procs != nil {
-			sid, ok, err := pickProcedure(procs.SIDsFor(runway), strArg(args, "sid"), "SID", runway)
-			if err != nil {
-				return mcpadapter.ErrorResult("INVALID_ARGUMENT: " + err.Error()), nil
-			}
-			if ok {
-				der, elev, _ := departureEnd(g.Layout, runway)
-				pts, err := procs.ResolveSID(sid.Name, runway, "", der, elev)
-				if err != nil {
-					return mcpadapter.ErrorResult(fmt.Sprintf("INVALID_ARGUMENT: SID %s: %v", sid.Name, err)), nil
-				}
-				s.SID, s.Departure = sid.Name, pts
-			}
-		}
-		v, err := tr.SpawnDeparture(ctx, s)
-		if err != nil {
-			return trafficError("departure "+callsign+" at "+icao, err), nil
-		}
 		return mcpadapter.JSONResult(v)
 	})
+}
+
+// spawnDepartureFrom spawns from spawn_departure's arguments: the flight, or the tool's
+// error result.
+func spawnDepartureFrom(ctx context.Context, src live.Source, tr live.Traffic, args map[string]any) (live.FlightView, *mcpadapter.CallToolResult) {
+	ctx, cancel := context.WithTimeout(ctx, spawnTimeout)
+	defer cancel()
+	icao, callsign, runway, g, procs, lim, bad := spawnCommon(ctx, src, args, false)
+	if bad != nil {
+		return live.FlightView{}, bad
+	}
+	s := live.DepartureSpec{Graph: g, Limits: &lim, Callsign: callsign, Stand: strings.ToUpper(strArg(args, "stand")),
+		Runway: runway, Entry: strings.ToUpper(strArg(args, "entry")), Model: strArg(args, "model"),
+		Type: strings.ToUpper(strArg(args, "aircraft_type")), Taxiways: listArg(args, "via"), HoldForClearances: true}
+	if b, ok := args["hold_for_clearances"].(bool); ok {
+		s.HoldForClearances = b
+	}
+	if procs != nil {
+		sid, ok, err := pickProcedure(procs.SIDsFor(runway), strArg(args, "sid"), "SID", runway)
+		if err != nil {
+			return live.FlightView{}, mcpadapter.ErrorResult("INVALID_ARGUMENT: " + err.Error())
+		}
+		if ok {
+			der, elev, _ := departureEnd(g.Layout, runway)
+			pts, err := procs.ResolveSID(sid.Name, runway, "", der, elev)
+			if err != nil {
+				return live.FlightView{}, mcpadapter.ErrorResult(fmt.Sprintf("INVALID_ARGUMENT: SID %s: %v", sid.Name, err))
+			}
+			s.SID, s.Departure = sid.Name, pts
+		}
+	}
+	v, err := tr.SpawnDeparture(ctx, s)
+	if err != nil {
+		return live.FlightView{}, trafficError("departure "+callsign+" at "+icao, err)
+	}
+	return v, nil
 }
 
 func registerSpawnArrival(mcp *mcpadapter.Server, src live.Source, tr live.Traffic) {
@@ -235,44 +245,54 @@ func registerSpawnArrival(mcp *mcpadapter.Server, src live.Source, tr live.Traff
 		Build()
 
 	mcp.AddTool(tool, func(ctx context.Context, args map[string]any) (*mcpadapter.CallToolResult, error) {
-		ctx, cancel := context.WithTimeout(ctx, spawnTimeout)
-		defer cancel()
-		icao, callsign, runway, g, procs, lim, bad := spawnCommon(ctx, src, args, true)
+		v, bad := spawnArrivalFrom(ctx, src, tr, args)
 		if bad != nil {
 			return bad, nil
 		}
-		s := live.ArrivalSpec{Graph: g, Limits: &lim, Callsign: callsign, Stand: strings.ToUpper(strArg(args, "stand")),
-			Runway: runway, Model: strArg(args, "model"), Type: strings.ToUpper(strArg(args, "aircraft_type")),
-			SpawnNM: numArg(args, "spawn_nm", 0), Taxiways: listArg(args, "via"), HoldForClearance: true}
-		if b, ok := args["hold_for_clearance"].(bool); ok {
-			s.HoldForClearance = b
-		}
-		if procs != nil {
-			star, ok, err := pickProcedure(procs.STARsFor(runway), strArg(args, "star"), "STAR", runway)
-			if err != nil {
-				return mcpadapter.ErrorResult("INVALID_ARGUMENT: " + err.Error()), nil
-			}
-			if ok {
-				pts, err := procs.Arrival(runway, starEntry(star, runway))
-				if err != nil {
-					return mcpadapter.ErrorResult(fmt.Sprintf("INVALID_ARGUMENT: STAR %s: %v", star.Name, err)), nil
-				}
-				s.STAR, s.Procedure = star.Name, pts
-				if a, ok := procs.BestApproach(runway); ok {
-					s.STAR += " → " + a.Name
-					// Flown on a go-around (else a circuit back to the final).
-					if m, err := procs.MissedApproach(a.Name); err == nil {
-						s.MissedApproach = m
-					}
-				}
-			}
-		}
-		v, err := tr.SpawnArrival(ctx, s)
-		if err != nil {
-			return trafficError("arrival "+callsign+" at "+icao, err), nil
-		}
 		return mcpadapter.JSONResult(v)
 	})
+}
+
+// spawnArrivalFrom spawns from spawn_arrival's arguments: the flight, or the tool's
+// error result.
+func spawnArrivalFrom(ctx context.Context, src live.Source, tr live.Traffic, args map[string]any) (live.FlightView, *mcpadapter.CallToolResult) {
+	ctx, cancel := context.WithTimeout(ctx, spawnTimeout)
+	defer cancel()
+	icao, callsign, runway, g, procs, lim, bad := spawnCommon(ctx, src, args, true)
+	if bad != nil {
+		return live.FlightView{}, bad
+	}
+	s := live.ArrivalSpec{Graph: g, Limits: &lim, Callsign: callsign, Stand: strings.ToUpper(strArg(args, "stand")),
+		Runway: runway, Model: strArg(args, "model"), Type: strings.ToUpper(strArg(args, "aircraft_type")),
+		SpawnNM: numArg(args, "spawn_nm", 0), Taxiways: listArg(args, "via"), HoldForClearance: true}
+	if b, ok := args["hold_for_clearance"].(bool); ok {
+		s.HoldForClearance = b
+	}
+	if procs != nil {
+		star, ok, err := pickProcedure(procs.STARsFor(runway), strArg(args, "star"), "STAR", runway)
+		if err != nil {
+			return live.FlightView{}, mcpadapter.ErrorResult("INVALID_ARGUMENT: " + err.Error())
+		}
+		if ok {
+			pts, err := procs.Arrival(runway, starEntry(star, runway))
+			if err != nil {
+				return live.FlightView{}, mcpadapter.ErrorResult(fmt.Sprintf("INVALID_ARGUMENT: STAR %s: %v", star.Name, err))
+			}
+			s.STAR, s.Procedure = star.Name, pts
+			if a, ok := procs.BestApproach(runway); ok {
+				s.STAR += " → " + a.Name
+				// Flown on a go-around (else a circuit back to the final).
+				if m, err := procs.MissedApproach(a.Name); err == nil {
+					s.MissedApproach = m
+				}
+			}
+		}
+	}
+	v, err := tr.SpawnArrival(ctx, s)
+	if err != nil {
+		return live.FlightView{}, trafficError("arrival "+callsign+" at "+icao, err)
+	}
+	return v, nil
 }
 
 // starEntry is the first fix of a STAR flown to runway: on its common route,

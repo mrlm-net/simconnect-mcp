@@ -46,13 +46,14 @@ github.com/mrlm-net/simconnect Go library guides (v0.16.0):
 - get_library_guide: Read a library guide, or a single chapter of it, as Markdown
 - search_library_docs: Search the library guides chapter by chapter
 
-## MCP Tools — SimConnect Mode (MCP_MODE=simconnect, Windows only, 36 tools)
+## MCP Tools — SimConnect Mode (MCP_MODE=simconnect, Windows only, 42 tools)
 
 - get_simvar_value: Read a single live simulation variable from the running simulator
 - get_simvar_values: Read up to 20 simulation variables in a single call
 - set_simvar_value: Write a numeric simulation variable to the user aircraft
 - transmit_event: Transmit a named SimConnect client event to the simulator
 - get_sim_state: Return a snapshot of current simulator connection state and flight status
+- get_fuel_state: The user aircraft's fuel: total quantity, capacity, weight and the main tanks
 - get_nearby_traffic: List AI and player aircraft within a radius of the user aircraft
 - get_traffic_with_phase: Nearby traffic with enriched telemetry and inferred flight phase
 - get_airports_in_range: List airports in the loaded scenery area sorted by distance
@@ -88,9 +89,17 @@ AI traffic (adds and removes AI aircraft in the simulator; at most 32 of ours, a
 - get_traffic_picture: Every aircraft around the user aircraft or an airport, with phase and airport; the user's and ours marked
 - generate_schedule: Realistic airline schedule for airports (call signs, types, routes, STD/STA); nothing is spawned
 
+Airborne ATC (the server runs a tower per runway and a landing sequence per runway end for our traffic not held for clearances):
+
+- get_landing_sequence: Each runway end's landing sequence (number, spacing, distance to go, delay) and who uses each runway, and why each waits
+- approach_instruction: An approach instruction to one of our arrivals: up, down, slow, hold, release, direct or goaround
+- get_atc_log: The latest instructions of the server's tower and approach to our traffic, as ATC says them
+- get_conflicts: Predicted airborne conflicts in the traffic picture, with the least disturbing resolution for ours as advice
+- separation_minima: Wake categories, spacing on final, departure interval and runway occupancy for a pair of aircraft types
+
 ## MCP Tools — Both Mode (MCP_MODE=both)
 
-Docs-mode tools always; on Windows, also the SimConnect-mode tools (51 in total) when the simulator is reachable at startup.
+Docs-mode tools always; on Windows, also the SimConnect-mode tools (57 in total) when the simulator is reachable at startup.
 
 ## Documentation
 

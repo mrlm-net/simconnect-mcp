@@ -46,7 +46,7 @@ github.com/mrlm-net/simconnect Go library guides (v0.15.0):
 - get_library_guide: Read a library guide, or a single chapter of it, as Markdown
 - search_library_docs: Search the library guides chapter by chapter
 
-## MCP Tools — SimConnect Mode (MCP_MODE=simconnect, Windows only, 19 tools)
+## MCP Tools — SimConnect Mode (MCP_MODE=simconnect, Windows only, 29 tools)
 
 - get_simvar_value: Read a single live simulation variable from the running simulator
 - get_simvar_values: Read up to 20 simulation variables in a single call
@@ -67,10 +67,20 @@ github.com/mrlm-net/simconnect Go library guides (v0.15.0):
 - get_ndb_details: Return detailed data for an NDB by ICAO code
 - get_waypoints_in_range: List waypoints sorted by distance from the player aircraft
 - get_waypoint_details: Return detailed data for a waypoint by ICAO code
+- get_airport_procedures: List an airport's SIDs, STARs and approaches, or resolve one into its points
+- plan_taxi_route: ATC-style taxi route between a parking stand and a runway (departure or arrival)
+- get_runway_entries_exits: Taxiways onto a runway end and the exits from it
+- find_stands: Parking stands that fit an aircraft, by wing span, airline and gate
+- get_weather: Weather at the user aircraft (no gusts, ceiling or dewpoint)
+- get_active_runway: Runways in use, wind components, expected approach, transition altitude and level
+- get_atis: ATIS broadcast composed from the simulator's weather, as text and as spoken
+- get_fix: Waypoint, VOR or NDB with its position, frequency and airways
+- find_airway_route: Airway route between two enroute fixes, e.g. VOZ M725 OKF
+- plan_flight: IFR flight plan between two airports (SID, airways, STAR, approach, profile, fuel); optionally loads it into the simulator
 
 ## MCP Tools — Both Mode (MCP_MODE=both)
 
-Docs-mode tools always; on Windows, also the SimConnect-mode tools (34 in total) when the simulator is reachable at startup.
+Docs-mode tools always; on Windows, also the SimConnect-mode tools (44 in total) when the simulator is reachable at startup.
 
 ## Documentation
 

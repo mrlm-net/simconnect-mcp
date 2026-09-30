@@ -1,11 +1,11 @@
 ---
 title: "MCP Tools — SimConnect Mode"
-description: Reference for the 19 live-data MCP tools in SimConnect mode (MCP_MODE=simconnect, Windows only).
+description: Reference for the 29 live-data MCP tools in SimConnect mode (MCP_MODE=simconnect, Windows only).
 order: 2
 section: reference
 ---
 
-All 19 MCP tools listed here are available when the server runs with `MCP_MODE=simconnect`. This mode provides live simulator data via the SimConnect SDK.
+All 29 MCP tools listed here are available when the server runs with `MCP_MODE=simconnect` (and, on Windows, with `MCP_MODE=both`, alongside the 15 docs tools — 44 in all). This mode provides live simulator data via the SimConnect SDK.
 
 **Both mode**: with `MCP_MODE=both` on Windows, the server registers these 19 tools alongside the 15 [docs-mode tools](/docs/mcp-tools-docs) — 34 tools in total — provided SimConnect opens at startup (10-second timeout). If the simulator cannot be reached, or on non-Windows platforms, both mode serves the 15 docs tools only; `simconnect_ready` in the `/health` response reports which case applies.
 
@@ -36,6 +36,16 @@ Tools are called over the Model Context Protocol using JSON-RPC 2.0 with the `to
 | [`get_airport_taxiways`](#get_airport_taxiways) | Return the taxiway network graph for a specific airport by ICAO code |
 | [`get_taxiway_names`](#get_taxiway_names) | Return only the taxiway letter/name strings for an airport (lightweight alternative) |
 | [`get_airport_parkings`](#get_airport_parkings) | Return all parking stands, gates, and ramps at a specific airport by ICAO code |
+| [`get_airport_procedures`](#get_airport_procedures) | List an airport's SIDs, STARs and approaches, or resolve one into its points |
+| [`plan_taxi_route`](#plan_taxi_route) | Plan an ATC-style taxi route from a stand to a runway holding point, or from a runway exit to a stand |
+| [`get_runway_entries_exits`](#get_runway_entries_exits) | List the taxiways onto a runway end and the exits from it |
+| [`find_stands`](#find_stands) | Find parking stands that fit an aircraft, by wing span, airline and gate |
+| [`get_weather`](#get_weather) | Return the weather at the user aircraft |
+| [`get_active_runway`](#get_active_runway) | Work out the departure and arrival runways in use and the expected approach |
+| [`get_atis`](#get_atis) | Compose an airport's ATIS broadcast, as text and as spoken |
+| [`get_fix`](#get_fix) | Look up a waypoint, VOR or NDB with the airways through it |
+| [`find_airway_route`](#find_airway_route) | Find the airway route between two enroute fixes |
+| [`plan_flight`](#plan_flight) | Plan an IFR flight between two airports: runways, SID, airways, STAR, approach, profile, time and fuel |
 
 ---
 
@@ -1211,3 +1221,661 @@ Each entry in `parkings`:
 - `INVALID_ARGUMENT`: `icao` must be 1–9 uppercase alphanumeric characters; `region` must be 0–4 uppercase alphanumeric characters.
 - `PARKING_NOT_FOUND`: No parking data was found for the given ICAO code.
 - `PARKING_ERROR`: SimConnect returned an error while fetching parking data.
+
+---
+
+## Airport, weather and navigation tools
+
+The ten tools below are built on the [mrlm-net/simconnect](https://github.com/mrlm-net/simconnect) Go library (`pkg/airport` and `pkg/nav`), which the server runs on the bridge's SimConnect connection. They are registered only with the real SimConnect bridge — a server started with the mock bridge does not list them.
+
+Shared behaviour:
+
+- **Airport data** (layouts, taxi network, stands, procedures) is loaded from the simulator on first use and cached. SimConnect does not answer for an unknown airport, so an unknown ICAO code ends in `NOT_FOUND` after about 20 s (procedures: about 30 s).
+- **Weather** comes from the simulator's ambient weather **at the user aircraft** only. SimConnect has no gust, ceiling or dewpoint variables. `get_active_runway`, `get_atis` and `plan_flight` (departure runway) use it, so they are right for the airport the aircraft is at or near.
+- **Airways** are crawled from the simulator's navdata on demand around the route. The first crawl of an area takes a few seconds and is cached; the crawl radius is capped at 400 NM from the route midpoint, beyond which the route is flown direct.
+- ICAO airport codes are 3–8 letters or digits (case-insensitive).
+
+Examples show the tool result's `text` content, formatted; the JSON-RPC envelope is the same as for the tools above. Long arrays are abridged (`…`).
+
+**Error codes** used by these tools:
+
+- `INVALID_ARGUMENT`: A parameter is missing or malformed, or names something the airport does not have (procedure, runway, stand).
+- `NOT_FOUND`: The airport or fix is not in the simulator's data.
+- `BRIDGE_DISCONNECTED`: Not connected to the simulator.
+- `TIMEOUT`: The simulator did not answer in time.
+- `SIM_ERROR`: Any other simulator or loader failure.
+- `NO_ROUTE`: No taxi route or airway route between the given points.
+- `PLAN_ERROR`: `plan_flight` could not build the plan or its `.pln` file.
+
+---
+
+## Airport procedures & ground
+
+## get_airport_procedures
+
+List an airport's SIDs, STARs and instrument approaches from the simulator's navdata, or resolve one into the points it flies. Without `name`: every procedure (optionally only those of `runway`) with its runways and transitions. With `name`: the SID, STAR or approach as points in order — ident, position, ARINC 424 leg type, true course, altitude window (ft) and speed limit, IAF/FAF/MAP — for the runway and transition given. Also returns the magnetic variation.
+
+**Requirements**: Windows + MSFS 2020 or 2024 running with SimConnect enabled.
+
+**Parameters**
+
+| Name | Type | Required | Default | Description |
+|------|------|----------|---------|-------------|
+| `icao` | string | Yes | — | Airport ICAO code, e.g. `"LKPR"` |
+| `runway` | string | No | — | Runway end, e.g. `"24"` or `"06L"`. Filters the list; required to resolve a SID or STAR serving several runways. |
+| `name` | string | No | — | Procedure to resolve: a SID or STAR name (`"VOZ5M"`) or an approach name (`"ILS 24"`, `"RNAV 06 Z"`) |
+| `transition` | string | No | — | Enroute transition of a SID/STAR, or the approach transition (IAF) of an approach |
+
+**Returns (list, without `name`)**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `icao` | string | Airport ICAO code |
+| `runway` | string | Runway filter (empty when not given) |
+| `magvar` | number | Magnetic variation in degrees |
+| `sids`, `stars` | array | `{name, runways, enroute_transitions}` per procedure |
+| `approaches` | array | `{name, runway, transitions}` per approach |
+
+**Returns (resolved, with `name`)**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `icao`, `name`, `runway`, `transition` | string | As requested |
+| `kind` | string | `"SID"`, `"STAR"` or `"APPROACH"` |
+| `magvar` | number | Magnetic variation in degrees |
+| `points` | array | Points in order (see below) |
+| `missed_approach` | array | Approach only: the missed approach points |
+
+Each point: `ident`, `kind`, `lat`, `lon`, `leg` (ARINC 424 leg type, e.g. `"TF"`), `course_true`, `alt_min_ft`, `alt_max_ft`, `speed_max_kts`, and the flags `fly_over`, `iaf`, `faf`, `map`, `vectors` (zero and false values are omitted).
+
+**Example request**
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 20,
+  "method": "tools/call",
+  "params": {
+    "name": "get_airport_procedures",
+    "arguments": { "icao": "LKPR", "name": "ILS 24" }
+  }
+}
+```
+
+**Example response (abridged)**
+
+```json
+{
+  "icao": "LKPR", "kind": "APPROACH", "name": "ILS 24", "runway": "", "transition": "", "magvar": …,
+  "points": [
+    { "ident": "…", "lat": …, "lon": …, "leg": "IF", "alt_min_ft": …, "iaf": true },
+    …,
+    { "ident": "RW24", "lat": …, "lon": …, "leg": "…", "course_true": …, "map": true }
+  ],
+  "missed_approach": [ … ]
+}
+```
+
+**Error codes**
+
+- `INVALID_ARGUMENT`: `icao` is not an airport ICAO code; `name` is not a SID, STAR or approach of the airport; or the SID/STAR serves several runways and `runway` was not given.
+- `NOT_FOUND` / `TIMEOUT`: Unknown airport or no procedures loaded (after about 30 s).
+- `BRIDGE_DISCONNECTED`, `SIM_ERROR`: See above.
+
+---
+
+## plan_taxi_route
+
+Plan a taxi route on the simulator's taxi network the way ATC would give it: fewer turns, no needless runway crossings, taxiways the aircraft fits. `direction=departure`: from the parking stand to the holding point of the runway (full length, or at `entry`). `direction=arrival`: from a runway exit (`exit`, or the one reached after `rollout_m`) to the stand. Use `get_runway_entries_exits` and `find_stands` for names.
+
+**Requirements**: Windows + MSFS 2020 or 2024 running with SimConnect enabled.
+
+**Parameters**
+
+| Name | Type | Required | Default | Description |
+|------|------|----------|---------|-------------|
+| `icao` | string | Yes | — | Airport ICAO code |
+| `parking` | string | Yes | — | Stand label, e.g. `"C22"`, `"S22A"` |
+| `runway` | string | Yes | — | Runway end, e.g. `"24"` |
+| `direction` | string | No | `"departure"` | `"departure"` or `"arrival"` |
+| `entry` | string | No | — | Departure: taxiway to enter the runway by (intersection departure), e.g. `"B"` |
+| `exit` | string | No | — | Arrival: taxiway to vacate the runway by, e.g. `"D"` |
+| `rollout_m` | number | No | `1500` | Arrival without `exit`: landing roll in metres before vacating |
+| `via` | string | No | — | Taxiways to follow in order, e.g. `"F, L"` |
+| `wingspan_m` | number | No | — | Aircraft wing span in metres; keeps to taxiways it fits (e.g. `35.8` A320, `64.8` 777-300ER) |
+| `include_points` | boolean | No | `false` | Include the route's points (lat/lon) |
+
+**Returns**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `icao`, `direction`, `parking`, `runway` | string | As planned |
+| `entry` / `exit` | string | Runway entry (departure) or exit (arrival) used |
+| `instruction` | string | ATC-style taxi instruction |
+| `length_m` | number | Route length in metres |
+| `taxiways` | array | Taxiways in order |
+| `runway_crossings` | array | Runways crossed (empty array when none) |
+| `hold_short` | string | Holding point runway; `" (ILS hold)"` appended for an ILS holding point |
+| `tight` | boolean | Present when the route uses a taxiway tight for the wing span |
+| `points` | array | `{lat, lon}` points, with `include_points=true` |
+
+**Example request**
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 21,
+  "method": "tools/call",
+  "params": {
+    "name": "plan_taxi_route",
+    "arguments": { "icao": "LKPR", "parking": "C22", "runway": "24" }
+  }
+}
+```
+
+**Example response** (MSFS 2024)
+
+```json
+{
+  "icao": "LKPR", "direction": "departure", "parking": "C22", "runway": "24",
+  "instruction": "taxi to holding point runway 24 via H1 H A",
+  "length_m": 1595, "taxiways": ["H1", "H", "A"], "runway_crossings": [], "hold_short": "06/24"
+}
+```
+
+**Error codes**
+
+- `INVALID_ARGUMENT`: `icao`, `parking` or `runway` missing; `direction` not `departure`/`arrival`; unknown stand (use `find_stands`).
+- `NO_ROUTE`: No route found, or the runway or `exit` does not exist (the message lists the runway's exits).
+- `NOT_FOUND`, `TIMEOUT`, `BRIDGE_DISCONNECTED`, `SIM_ERROR`: See above.
+
+---
+
+## get_runway_entries_exits
+
+List the taxiways onto a runway end for departures (nearest the threshold first, with the runway length remaining ahead) and the exits for landings on it (distance from the threshold, angle, high-speed, side). Names feed `plan_taxi_route`'s `entry` and `exit`.
+
+**Requirements**: Windows + MSFS 2020 or 2024 running with SimConnect enabled.
+
+**Parameters**
+
+| Name | Type | Required | Default | Description |
+|------|------|----------|---------|-------------|
+| `icao` | string | Yes | — | Airport ICAO code |
+| `runway` | string | Yes | — | Runway end, e.g. `"24"` |
+
+**Returns**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `icao`, `runway` | string | As requested |
+| `entries` | array | `{taxiway, from_threshold_m, remaining_m, angle}`, nearest the threshold first |
+| `exits` | array | `{taxiway, from_threshold_m, angle, high_speed, side}`; `side` is `"left"` or `"right"`, `high_speed` present when true |
+
+**Example request**
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 22,
+  "method": "tools/call",
+  "params": {
+    "name": "get_runway_entries_exits",
+    "arguments": { "icao": "LKPR", "runway": "24" }
+  }
+}
+```
+
+**Example response (abridged)**
+
+```json
+{
+  "icao": "LKPR", "runway": "24",
+  "entries": [
+    { "taxiway": "A", "from_threshold_m": …, "remaining_m": …, "angle": … },
+    …
+  ],
+  "exits": [
+    { "taxiway": "D", "from_threshold_m": …, "angle": …, "side": "…" },
+    …
+  ]
+}
+```
+
+**Error codes**
+
+- `INVALID_ARGUMENT`: `icao` or `runway` missing, or the airport has no such runway end.
+- `NOT_FOUND`, `TIMEOUT`, `BRIDGE_DISCONNECTED`, `SIM_ERROR`: See above.
+
+---
+
+## find_stands
+
+Find parking stands at an airport that fit an aircraft: stand label, type, size class (small/medium/heavy), radius, heading, the airlines the scenery assigns, and the stands it overlaps (split or alternate stands). Filter by wing span, airline (stands without airlines serve any) and gates only.
+
+**Requirements**: Windows + MSFS 2020 or 2024 running with SimConnect enabled.
+
+**Parameters**
+
+| Name | Type | Required | Default | Description |
+|------|------|----------|---------|-------------|
+| `icao` | string | Yes | — | Airport ICAO code |
+| `wingspan_m` | number | No | `0` | Aircraft wing span in metres; stands need a radius of at least half the span + 1 m (`0`: any stand) |
+| `airline` | string | No | — | Airline ICAO code the stand must serve, e.g. `"DLH"` |
+| `gates_only` | boolean | No | `false` | Only gates (no ramps) |
+| `limit` | number | No | `100` | Maximum stands returned, 1–500 |
+
+**Returns**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `icao` | string | Airport ICAO code |
+| `total` | number | Stands matching the filters |
+| `count` | number | Stands returned (at most `limit`) |
+| `stands` | array | `{label, type, size, radius_m, heading_true, airlines, overlaps, lat, lon}`; `type` is the SimConnect parking type (e.g. `"GATE_HEAVY"`, `"RAMP_GA_SMALL"`) |
+
+**Example request**
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 23,
+  "method": "tools/call",
+  "params": {
+    "name": "find_stands",
+    "arguments": { "icao": "LKPR", "wingspan_m": 64.8 }
+  }
+}
+```
+
+**Example response (abridged)**
+
+```json
+{
+  "icao": "LKPR", "total": 4, "count": 4,
+  "stands": [
+    { "label": "…", "type": "…", "size": "heavy", "radius_m": …, "heading_true": …, "overlaps": ["…"], "lat": …, "lon": … },
+    …
+  ]
+}
+```
+
+**Error codes**
+
+- `INVALID_ARGUMENT`: `icao` is not an airport ICAO code, or `limit` is outside 1–500.
+- `NOT_FOUND`, `TIMEOUT`, `BRIDGE_DISCONNECTED`, `SIM_ERROR`: See above.
+
+---
+
+## Weather & runway in use
+
+## get_weather
+
+Return the weather at the user aircraft: wind (degrees true, knots), visibility, temperature, QNH (hPa and inHg), precipitation, whether the aircraft is in cloud, and icing conditions (visible moisture at or below +10 °C). SimConnect has no gust, ceiling or dewpoint variables.
+
+**Requirements**: Windows + MSFS 2020 or 2024 running with SimConnect enabled.
+
+**Parameters**
+
+None.
+
+**Returns**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `wind_dir_true` | number | Wind direction, degrees true |
+| `wind_kts` | number | Wind speed, knots |
+| `calm` | boolean | Wind is calm |
+| `visibility_m` | number | Visibility in metres |
+| `temp_c` | number | Ambient temperature, °C |
+| `qnh_hpa`, `qnh_inhg` | number | Sea-level pressure in hPa and inHg |
+| `precip` | string | `"none"`, `"rain"` or `"snow"` (omitted when unknown) |
+| `in_cloud` | boolean | The aircraft is in cloud |
+| `icing_conditions` | boolean | Visible moisture at or below +10 °C |
+| `note` | string | Reminder that the weather is measured at the user aircraft |
+
+**Example request**
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 24,
+  "method": "tools/call",
+  "params": { "name": "get_weather", "arguments": {} }
+}
+```
+
+**Example response** (illustrative)
+
+```json
+{
+  "wind_dir_true": 100, "wind_kts": 8, "calm": false, "visibility_m": 20000, "temp_c": 12,
+  "qnh_hpa": 1025, "qnh_inhg": 30.27, "precip": "none", "in_cloud": false, "icing_conditions": false,
+  "note": "Measured at the user aircraft: the simulator gives the ambient weather there only. Gusts, ceiling and dewpoint are not available from SimConnect."
+}
+```
+
+**Error codes**
+
+- `TIMEOUT`: No weather from the simulator within 10 s.
+- `BRIDGE_DISCONNECTED`, `SIM_ERROR`: See above.
+
+---
+
+## get_active_runway
+
+Work out the runways in use at an airport as a tower would: the preferential runway if the wind allows, else the one with the most headwind, within the airport's tailwind and crosswind limits. Returns the departure and arrival runway, wind components, whether an ILS or visual approach is expected and the best published approach, the transition altitude and level. Uses the weather at the user aircraft, so it is right for the airport the aircraft is at or near.
+
+**Requirements**: Windows + MSFS 2020 or 2024 running with SimConnect enabled.
+
+**Parameters**
+
+| Name | Type | Required | Default | Description |
+|------|------|----------|---------|-------------|
+| `icao` | string | Yes | — | Airport ICAO code |
+
+**Returns**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `icao` | string | Airport ICAO code |
+| `departure_runway`, `arrival_runway` | string | Runways in use |
+| `headwind_kts`, `crosswind_kts` | number | Mean wind components on the arrival runway (negative headwind: tailwind) |
+| `within_wind_limits` | boolean | `false` when no runway meets the limits and the one with the most headwind was taken anyway |
+| `approach_kind` | string | `"ILS"` when visibility is below 5000 m, else `"visual/RNAV"` |
+| `approach` | string | Best published approach to the arrival runway (omitted without procedures) |
+| `transition_altitude_ft` | number | Transition altitude |
+| `transition_level` | number | Transition level (flight level) for the current QNH |
+| `preferred_runways` | array | The airport's preferential runways, if known |
+| `weather` | object | The weather used, as returned by `get_weather` |
+
+**Example request**
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 25,
+  "method": "tools/call",
+  "params": {
+    "name": "get_active_runway",
+    "arguments": { "icao": "LKPR" }
+  }
+}
+```
+
+**Example response** (MSFS 2024, weather abridged)
+
+```json
+{
+  "icao": "LKPR", "departure_runway": "06", "arrival_runway": "06",
+  "headwind_kts": 7, "crosswind_kts": 5, "within_wind_limits": true,
+  "approach_kind": "visual/RNAV", "approach": "ILS 06",
+  "transition_altitude_ft": 5000, "transition_level": 60, "preferred_runways": ["24", "06"],
+  "weather": { "wind_dir_true": 100, "wind_kts": 8, "qnh_hpa": 1025, … }
+}
+```
+
+**Error codes**
+
+- `INVALID_ARGUMENT`: `icao` is not an airport ICAO code.
+- `NOT_FOUND`, `TIMEOUT`, `BRIDGE_DISCONNECTED`, `SIM_ERROR`: See above.
+
+---
+
+## get_atis
+
+Compose the ATIS broadcast of an airport from the simulator's weather and the runway in use: information letter, time, runways, approach, wind, visibility, temperature, QNH, transition level. Returns the text as written and as spoken (phonetic, for text-to-speech). Uses the weather at the user aircraft.
+
+**Requirements**: Windows + MSFS 2020 or 2024 running with SimConnect enabled.
+
+**Parameters**
+
+| Name | Type | Required | Default | Description |
+|------|------|----------|---------|-------------|
+| `icao` | string | Yes | — | Airport ICAO code |
+| `letter` | string | No | `"A"` | Information letter A–Z (case-insensitive) |
+
+**Returns**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `icao` | string | Airport ICAO code |
+| `letter` | string | Information letter |
+| `text` | string | ATIS as written |
+| `spoken` | string | ATIS as spoken (phonetic numbers and letters) |
+| `note` | string | Reminder that the weather is measured at the user aircraft |
+
+**Example request**
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 26,
+  "method": "tools/call",
+  "params": {
+    "name": "get_atis",
+    "arguments": { "icao": "LKPR", "letter": "B" }
+  }
+}
+```
+
+**Example response** (MSFS 2024, `spoken` and `note` abridged)
+
+```json
+{
+  "icao": "LKPR", "letter": "B",
+  "text": "Ruzyne information Bravo, time 2330, runway in use 06, wind 100 degrees 8 knots, visibility 10 kilometers or more, temperature 12, QNH 1025, transition level 60, advise on initial contact you have information Bravo.",
+  "spoken": "Ruzyne information Bravo, time two three three zero, runway in use zero six, …",
+  "note": "Measured at the user aircraft: …"
+}
+```
+
+**Error codes**
+
+- `INVALID_ARGUMENT`: `icao` is not an airport ICAO code, or `letter` is not a single letter A–Z.
+- `NOT_FOUND`, `TIMEOUT`, `BRIDGE_DISCONNECTED`, `SIM_ERROR`: See above.
+
+---
+
+## Navigation & flight planning
+
+## get_fix
+
+Look up an enroute fix in the simulator's navdata: a waypoint, VOR or NDB with its position, frequency (MHz for a VOR, kHz for an NDB), name, and the airways through it (previous fix, airway, next fix). Identifiers repeat between waypoints, VORs and NDBs; without `kind` all three are tried.
+
+**Requirements**: Windows + MSFS 2020 or 2024 running with SimConnect enabled.
+
+**Parameters**
+
+| Name | Type | Required | Default | Description |
+|------|------|----------|---------|-------------|
+| `ident` | string | Yes | — | Fix identifier, e.g. `"VOZ"`, `"GOLOP"` (1–9 letters or digits) |
+| `region` | string | No | — | ICAO region, e.g. `"LK"` (recommended: identifiers repeat worldwide) |
+| `kind` | string | No | all | `W` (waypoint), `V` (VOR) or `N` (NDB) |
+
+**Returns**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `count` | number | Number of fixes found |
+| `fixes` | array | Fixes (see below) |
+
+Each fix: `key` (`IDENT.REGION.KIND`, usable as `find_airway_route`'s `from`/`to`), `ident`, `region`, `kind` (`"waypoint"`, `"VOR"` or `"NDB"`), `name`, `freq`, `lat`, `lon`, `terminal` (present when true), `airways` (`"PREV AIRWAY NEXT"` per airway through the fix).
+
+**Example request**
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 27,
+  "method": "tools/call",
+  "params": {
+    "name": "get_fix",
+    "arguments": { "ident": "VOZ", "region": "LK" }
+  }
+}
+```
+
+**Example response** (MSFS 2024)
+
+```json
+{
+  "count": 1,
+  "fixes": [
+    {
+      "key": "VOZ.LK.V", "ident": "VOZ", "region": "LK", "kind": "VOR", "name": "VOZICE", "freq": 116.95,
+      "lat": …, "lon": …,
+      "airways": ["M725 TABEM", "T709 USUPA", "Z21 NELPA", "VAKLA Z30"]
+    }
+  ]
+}
+```
+
+**Error codes**
+
+- `INVALID_ARGUMENT`: `ident` must be 1–9 and `region` 0–4 uppercase letters or digits; `kind` must be `W`, `V` or `N`.
+- `NOT_FOUND`: No such fix.
+- `BRIDGE_DISCONNECTED`, `SIM_ERROR`: See above.
+
+---
+
+## find_airway_route
+
+Find the airway route between two enroute fixes over the simulator's airway network (A*, with a penalty for every change of airway). The network is crawled from the simulator on demand around the two fixes (a few seconds the first time; cached). When the fixes are not connected, or the airways are over `max_stretch` times the direct distance, the route is direct (`DCT`).
+
+**Requirements**: Windows + MSFS 2020 or 2024 running with SimConnect enabled.
+
+**Parameters**
+
+| Name | Type | Required | Default | Description |
+|------|------|----------|---------|-------------|
+| `from` | string | Yes | — | Start fix as `IDENT`, `IDENT.REGION` or `IDENT.REGION.KIND`, e.g. `"VOZ.LK.V"` (kind defaults to waypoint) |
+| `to` | string | Yes | — | End fix, same format |
+| `max_stretch` | number | No | `1.5` | Fly direct when the airways are longer than this times the direct distance; `0` = always airways |
+
+**Returns**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `route` | string | ICAO route string, e.g. `"VOZ M725 OKF"` |
+| `distance_nm` | number | Route distance, NM |
+| `direct_nm` | number | Direct (great-circle) distance, NM |
+| `steps` | array | `{airway, fix, lat, lon, distance_nm}` per fix, with the leg distance |
+| `graph` | object | `fixes_crawled_within_nm` (crawl radius) and `segments` (airway segments loaded) |
+
+**Example request**
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 28,
+  "method": "tools/call",
+  "params": {
+    "name": "find_airway_route",
+    "arguments": { "from": "VOZ.LK.V", "to": "OKF.LK.V" }
+  }
+}
+```
+
+**Example response** (MSFS 2024, abridged)
+
+```json
+{
+  "route": "VOZ M725 OKF", "distance_nm": 42.8, "direct_nm": …,
+  "steps": [
+    { "fix": "VOZ.LK.V", "lat": …, "lon": …, "distance_nm": 0 },
+    …,
+    { "airway": "M725", "fix": "OKF.LK.V", "lat": …, "lon": …, "distance_nm": … }
+  ],
+  "graph": { "fixes_crawled_within_nm": …, "segments": … }
+}
+```
+
+**Error codes**
+
+- `INVALID_ARGUMENT`: `from` or `to` is not `IDENT[.REGION[.KIND]]`, or the kind is not `W`, `V` or `N`.
+- `NOT_FOUND`: A fix does not exist.
+- `NO_ROUTE`: No route between the fixes.
+- `TIMEOUT`: The crawl did not finish within 90 s (it completes in the background for the next call).
+- `BRIDGE_DISCONNECTED`, `SIM_ERROR`: See above.
+
+---
+
+## plan_flight
+
+Plan an IFR flight between two airports from the simulator's navdata: runways in use (weather at the user aircraft for the departure), SID, airways (crawled on demand; direct where they detour), STAR and best approach, semicircular cruise level, vertical profile with TOC/TOD, distance, time and fuel for the aircraft type. Returns the ICAO route and the waypoints; optionally the MSFS `.pln` file. Takes up to a minute the first time (airport data and the airway crawl).
+
+> **`load_into_sim=true` changes the simulator's flight plan.** The plan is written as a `.pln` file to `%TEMP%\simconnect-mcp` and loaded with `SimConnect_FlightPlanLoad` as the user aircraft's flight plan.
+
+**Requirements**: Windows + MSFS 2020 or 2024 running with SimConnect enabled.
+
+**Parameters**
+
+| Name | Type | Required | Default | Description |
+|------|------|----------|---------|-------------|
+| `departure` | string | Yes | — | Departure airport ICAO |
+| `arrival` | string | Yes | — | Arrival airport ICAO |
+| `aircraft_type` | string | No | A320 | ICAO type designator, e.g. `"A20N"`, `"B738"`, `"B77W"` (planning speeds, fuel flow) |
+| `cruise_fl` | number | No | auto | Cruise flight level, e.g. `340` (default: chosen by direction and distance) |
+| `departure_runway` | string | No | in use | Departure runway (default: the runway in use for the weather) |
+| `arrival_runway` | string | No | auto | Arrival runway (default: in use for calm wind, the longest) |
+| `airways` | boolean | No | `true` | Route over airways; `false` plans direct between SID and STAR |
+| `alternate_fuel_kg` | number | No | `0` | Alternate fuel to add, kg |
+| `include_pln` | boolean | No | `false` | Include the `.pln` file text in the result |
+| `load_into_sim` | boolean | No | `false` | Load the plan into the simulator as the user aircraft's flight plan |
+
+**Returns**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `departure`, `arrival` | string | Airport ICAO codes |
+| `aircraft_type` | string | Type planned (empty for an unknown type, planned as a generic medium jet) |
+| `departure_runway`, `arrival_runway` | string | Runways |
+| `sid`, `sid_transition`, `star`, `star_transition` | string | Procedures chosen |
+| `approach`, `approach_transition` | string | Approach chosen |
+| `route` | string | ICAO route string |
+| `cruise_fl` | number | Cruise flight level |
+| `magnetic_track` | number | Overall magnetic track (for the semicircular rule) |
+| `distance_nm`, `toc_nm`, `tod_nm` | number | Total distance; distance to top of climb and to top of descent |
+| `ete_minutes` | number | Estimated time enroute |
+| `fuel_kg` | object | `taxiKg`, `tripKg`, `contingencyKg`, `alternateKg`, `reserveKg`, `totalKg` (block fuel) |
+| `waypoints` | array | `{ident, via, phase, alt_ft, dist_nm, constraint, lat, lon}`; `phase` is `SID`, `ENROUTE`, `STAR` or `APPROACH` |
+| `pln` | string | `.pln` file text, with `include_pln=true` |
+| `loaded_into_sim` | boolean | `true` when loaded with `load_into_sim=true` |
+| `warnings` | array | Fallbacks taken, e.g. no procedures, no weather, airways unavailable or cut off beyond 400 NM |
+
+**Example request**
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 29,
+  "method": "tools/call",
+  "params": {
+    "name": "plan_flight",
+    "arguments": { "departure": "LKPR", "arrival": "LOWW", "aircraft_type": "A20N" }
+  }
+}
+```
+
+**Example response** (MSFS 2024, abridged)
+
+```json
+{
+  "departure": "LKPR", "arrival": "LOWW", "aircraft_type": "A20N",
+  "departure_runway": "06", "arrival_runway": "16",
+  "sid": "VOZ5D", "star": "LANU7W", "approach": "ILS 16",
+  "route": "VOZ5D VOZ M725 LANUX LANU7W",
+  "cruise_fl": 290, "distance_nm": 166, "ete_minutes": 32,
+  "fuel_kg": { "totalKg": 2724, … },
+  "waypoints": [ { "ident": "VOZ", "phase": "SID", "alt_ft": …, "dist_nm": …, "lat": …, "lon": … }, … ]
+}
+```
+
+**Error codes**
+
+- `INVALID_ARGUMENT`: `departure` or `arrival` is not an airport ICAO code.
+- `NOT_FOUND`: Unknown airport (after about 20 s).
+- `PLAN_ERROR`: The plan or its `.pln` file could not be built.
+- `TIMEOUT`: The plan did not finish within 90 s.
+- `BRIDGE_DISCONNECTED`, `SIM_ERROR`: Not connected, or loading the flight plan into the simulator failed.

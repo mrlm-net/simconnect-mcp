@@ -123,7 +123,7 @@ Add the following to your `claude_desktop_config.json` (or equivalent MCP client
 
 ## Available Tools
 
-The server exposes 15 MCP tools in `docs` mode — 12 for the SimConnect SDK reference and 3 for the [`github.com/mrlm-net/simconnect`](https://github.com/mrlm-net/simconnect) Go library guides — and 19 in `simconnect` mode. `both` mode on Windows serves all 34 when SimConnect is reachable at startup, and the 15 docs tools otherwise. See [docs/mcp-tools-docs.md](docs/mcp-tools-docs.md) and [docs/mcp-tools-simconnect.md](docs/mcp-tools-simconnect.md) for full parameter references, request/response examples, and error codes.
+The server exposes 15 MCP tools in `docs` mode — 12 for the SimConnect SDK reference and 3 for the [`github.com/mrlm-net/simconnect`](https://github.com/mrlm-net/simconnect) Go library guides — and 29 in `simconnect` mode. `both` mode on Windows serves all 44 when SimConnect is reachable at startup, and the 15 docs tools otherwise. See [docs/mcp-tools-docs.md](docs/mcp-tools-docs.md) and [docs/mcp-tools-simconnect.md](docs/mcp-tools-simconnect.md) for full parameter references, request/response examples, and error codes.
 
 **SimConnect SDK reference**
 
@@ -141,6 +141,9 @@ The server exposes 15 MCP tools in `docs` mode — 12 for the SimConnect SDK ref
 | `list_error_codes` | List `SIMCONNECT_EXCEPTION` enum values with pagination |
 | `get_error_code` | Fetch an error code by name or integer value |
 | `search_docs` | Keyword search across all corpus types; all query words must appear in the name or description |
+| `list_library_guides` | List the guides of the `mrlm-net/simconnect` Go library with their chapter headings |
+| `get_library_guide` | Read a library guide (or one chapter of it) as Markdown |
+| `search_library_docs` | Keyword search across the library guides; returns matching chapters with an excerpt |
 
 All paginated `list_*` tools return an envelope (`items`, `page`, `page_size`, `total_items`, `total_pages`). Default page size is 20; maximum is 100.
 
@@ -159,6 +162,8 @@ The 33 guides of the `github.com/mrlm-net/simconnect` Go library (client, manage
 `simconnect` mode connects to a running instance of MSFS 2020 or MSFS 2024 via the SimConnect SDK and exposes live simulator data as MCP tools. It is Windows-only and must be built with the `-tags windows` flag.
 
 The server reconnects automatically when the simulator restarts — no manual intervention is required.
+
+`simconnect` mode exposes 29 MCP tools; on Windows, `MCP_MODE=both` serves them together with the 15 docs tools (44 in all). See [docs/mcp-tools-simconnect.md](docs/mcp-tools-simconnect.md) for the full reference.
 
 **Simulation variables**
 
@@ -198,6 +203,33 @@ The server reconnects automatically when the simulator restarts — no manual in
 | `get_ndb_details` | Detailed NDB data: frequency and range |
 | `get_waypoints_in_range` | List waypoints within a radius |
 | `get_waypoint_details` | Detailed waypoint data: position and magvar |
+
+The following tools are built on the [mrlm-net/simconnect](https://github.com/mrlm-net/simconnect) library (`pkg/airport`, `pkg/nav`). Weather is the simulator's ambient weather at the user aircraft (no gusts, ceiling or dewpoint), so runway-in-use and ATIS results are right for the airport the aircraft is at or near.
+
+**Airport procedures & ground**
+
+| Tool | Description |
+|------|-------------|
+| `get_airport_procedures` | List an airport's SIDs, STARs and approaches, or resolve one into its points (leg type, altitude and speed limits, IAF/FAF/MAP) |
+| `plan_taxi_route` | ATC-style taxi route from a stand to a runway holding point, or from a runway exit to a stand — instruction, taxiways, crossings |
+| `get_runway_entries_exits` | Taxiways onto a runway end (with runway remaining) and exits from it (distance, angle, high-speed, side) |
+| `find_stands` | Parking stands that fit an aircraft — by wing span, airline and gates only |
+
+**Weather & runway in use**
+
+| Tool | Description |
+|------|-------------|
+| `get_weather` | Weather at the user aircraft: wind, visibility, temperature, QNH, precipitation, in-cloud, icing |
+| `get_active_runway` | Departure and arrival runways in use, wind components, expected approach, transition altitude and level |
+| `get_atis` | ATIS broadcast composed from the simulator's weather — as text and as spoken |
+
+**Navigation & flight planning**
+
+| Tool | Description |
+|------|-------------|
+| `get_fix` | Waypoint, VOR or NDB with position, frequency and the airways through it |
+| `find_airway_route` | Airway route between two enroute fixes (crawled on demand, cached), e.g. `VOZ M725 OKF` |
+| `plan_flight` | IFR flight plan between two airports: runways, SID, airways, STAR, approach, cruise level, time and fuel; optionally loads it into the simulator |
 
 ## Refreshing the Corpus
 

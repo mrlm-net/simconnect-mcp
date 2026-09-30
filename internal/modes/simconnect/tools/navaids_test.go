@@ -5,6 +5,7 @@ package tools
 import (
 	"encoding/json"
 	"net/http/httptest"
+	"strings"
 	"testing"
 
 	"github.com/gin-gonic/gin"
@@ -174,7 +175,7 @@ func TestGetVORDetails_NotFound(t *testing.T) {
 	resp := callToolEvent(t, srv.URL, "get_vor_details", map[string]any{"icao": "ZZZ"})
 	text := contentTextEvent(t, resp)
 
-	if !containsStr(text, "VOR_NOT_FOUND") {
+	if !strings.Contains(text, "VOR_NOT_FOUND") {
 		t.Errorf("expected VOR_NOT_FOUND, got: %s", text)
 	}
 }
@@ -186,7 +187,7 @@ func TestGetVORDetails_MissingICAO(t *testing.T) {
 	resp := callToolEvent(t, srv.URL, "get_vor_details", map[string]any{})
 	text := contentTextEvent(t, resp)
 
-	if !containsStr(text, "INVALID_ARGUMENT") {
+	if !strings.Contains(text, "INVALID_ARGUMENT") {
 		t.Errorf("expected INVALID_ARGUMENT, got: %s", text)
 	}
 }
@@ -198,7 +199,7 @@ func TestGetVORDetails_Disconnected(t *testing.T) {
 	resp := callToolEvent(t, srv.URL, "get_vor_details", map[string]any{"icao": "OPO"})
 	text := contentTextEvent(t, resp)
 
-	if !containsStr(text, "BRIDGE_DISCONNECTED") {
+	if !strings.Contains(text, "BRIDGE_DISCONNECTED") {
 		t.Errorf("expected BRIDGE_DISCONNECTED, got: %s", text)
 	}
 }
@@ -246,14 +247,14 @@ func TestGetNDBDetails_Found(t *testing.T) {
 	mb := &bridge.MockBridge{
 		MockState: bridge.StateConnected,
 		MockNDBDetails: &bridge.NDBDetails{
-			ICAO:        "LIS",
-			Region:      "LP",
-			Name:        "Lisboa",
-			Latitude:    38.774,
-			Longitude:   -9.134,
-			FrequencyHz: 391000,
+			ICAO:         "LIS",
+			Region:       "LP",
+			Name:         "Lisboa",
+			Latitude:     38.774,
+			Longitude:    -9.134,
+			FrequencyHz:  391000,
 			FrequencyKHz: 391.0,
-			IsTerminal:  false,
+			IsTerminal:   false,
 		},
 	}
 	srv := newNavaidServer(t, mb)
@@ -282,7 +283,7 @@ func TestGetNDBDetails_NotFound(t *testing.T) {
 	resp := callToolEvent(t, srv.URL, "get_ndb_details", map[string]any{"icao": "ZZZ"})
 	text := contentTextEvent(t, resp)
 
-	if !containsStr(text, "NDB_NOT_FOUND") {
+	if !strings.Contains(text, "NDB_NOT_FOUND") {
 		t.Errorf("expected NDB_NOT_FOUND, got: %s", text)
 	}
 }
@@ -294,7 +295,7 @@ func TestGetNDBDetails_MissingICAO(t *testing.T) {
 	resp := callToolEvent(t, srv.URL, "get_ndb_details", map[string]any{})
 	text := contentTextEvent(t, resp)
 
-	if !containsStr(text, "INVALID_ARGUMENT") {
+	if !strings.Contains(text, "INVALID_ARGUMENT") {
 		t.Errorf("expected INVALID_ARGUMENT, got: %s", text)
 	}
 }
@@ -306,7 +307,7 @@ func TestGetNDBDetails_Disconnected(t *testing.T) {
 	resp := callToolEvent(t, srv.URL, "get_ndb_details", map[string]any{"icao": "LIS"})
 	text := contentTextEvent(t, resp)
 
-	if !containsStr(text, "BRIDGE_DISCONNECTED") {
+	if !strings.Contains(text, "BRIDGE_DISCONNECTED") {
 		t.Errorf("expected BRIDGE_DISCONNECTED, got: %s", text)
 	}
 }
@@ -435,7 +436,7 @@ func TestGetWaypointDetails_NotFound(t *testing.T) {
 	resp := callToolEvent(t, srv.URL, "get_waypoint_details", map[string]any{"icao": "ZZZXX"})
 	text := contentTextEvent(t, resp)
 
-	if !containsStr(text, "WAYPOINT_NOT_FOUND") {
+	if !strings.Contains(text, "WAYPOINT_NOT_FOUND") {
 		t.Errorf("expected WAYPOINT_NOT_FOUND, got: %s", text)
 	}
 }
@@ -447,7 +448,7 @@ func TestGetWaypointDetails_MissingICAO(t *testing.T) {
 	resp := callToolEvent(t, srv.URL, "get_waypoint_details", map[string]any{})
 	text := contentTextEvent(t, resp)
 
-	if !containsStr(text, "INVALID_ARGUMENT") {
+	if !strings.Contains(text, "INVALID_ARGUMENT") {
 		t.Errorf("expected INVALID_ARGUMENT, got: %s", text)
 	}
 }
@@ -459,7 +460,7 @@ func TestGetWaypointDetails_Disconnected(t *testing.T) {
 	resp := callToolEvent(t, srv.URL, "get_waypoint_details", map[string]any{"icao": "ABRIX"})
 	text := contentTextEvent(t, resp)
 
-	if !containsStr(text, "BRIDGE_DISCONNECTED") {
+	if !strings.Contains(text, "BRIDGE_DISCONNECTED") {
 		t.Errorf("expected BRIDGE_DISCONNECTED, got: %s", text)
 	}
 }

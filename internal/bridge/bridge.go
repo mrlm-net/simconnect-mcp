@@ -114,7 +114,7 @@ type EnrichedTrafficEntry struct {
 	Longitude        float64 `json:"longitude"`
 	AltitudeFt       float64 `json:"altitude_ft"`
 	TrueHeading      float64 `json:"true_heading_deg"`
-	TrackDeg         float64 `json:"track_deg"`          // actual ground track (from velocity vectors)
+	TrackDeg         float64 `json:"track_deg"` // actual ground track (from velocity vectors)
 	GroundSpeed      float64 `json:"ground_speed_kts"`
 	VerticalSpeedFPM float64 `json:"vertical_speed_fpm"` // VELOCITY WORLD Y × 60
 	OnGround         bool    `json:"on_ground"`
@@ -137,7 +137,7 @@ type AirportEntry struct {
 // AirportRunway holds data for a single runway at an airport.
 // SimConnect's LENGTH and WIDTH fields are returned in metres.
 type AirportRunway struct {
-	Name    string  `json:"name"`     // e.g. "08L/26R"
+	Name    string  `json:"name"` // e.g. "08L/26R"
 	Heading float64 `json:"heading_deg"`
 	LengthM float64 `json:"length_m"`
 	WidthM  float64 `json:"width_m"`
@@ -172,8 +172,8 @@ type AirportFrequency struct {
 
 // AirportApproach holds summary data for one instrument approach procedure.
 type AirportApproach struct {
-	Type        string `json:"type"`         // GPS/ILS/VOR/RNAV/NDB/LOCALIZER/SDF/LDA/VORDME/NDBDME/LOCALIZER_BACK_COURSE
-	Runway      string `json:"runway"`        // e.g. "08L"; empty for circling approaches
+	Type        string `json:"type"`   // GPS/ILS/VOR/RNAV/NDB/LOCALIZER/SDF/LDA/VORDME/NDBDME/LOCALIZER_BACK_COURSE
+	Runway      string `json:"runway"` // e.g. "08L"; empty for circling approaches
 	HasLNAV     bool   `json:"has_lnav"`
 	HasLNAVVNAV bool   `json:"has_lnavvnav"`
 	HasLP       bool   `json:"has_lp"`
@@ -234,18 +234,18 @@ type NDBEntry struct {
 
 // NDBDetails holds detailed facility data for a specific NDB station.
 type NDBDetails struct {
-	ICAO        string  `json:"icao"`
-	Region      string  `json:"region"`
-	Name        string  `json:"name"`
-	Latitude    float64 `json:"latitude"`
-	Longitude   float64 `json:"longitude"`
-	AltitudeM   float64 `json:"altitude_m"`
-	FrequencyHz uint32  `json:"frequency_hz"`
+	ICAO         string  `json:"icao"`
+	Region       string  `json:"region"`
+	Name         string  `json:"name"`
+	Latitude     float64 `json:"latitude"`
+	Longitude    float64 `json:"longitude"`
+	AltitudeM    float64 `json:"altitude_m"`
+	FrequencyHz  uint32  `json:"frequency_hz"`
 	FrequencyKHz float64 `json:"frequency_khz"`
-	Type        int32   `json:"type"`
-	RangeNM     float64 `json:"range_nm"`
-	MagVar      float64 `json:"magvar_deg"`
-	IsTerminal  bool    `json:"is_terminal"`
+	Type         int32   `json:"type"`
+	RangeNM      float64 `json:"range_nm"`
+	MagVar       float64 `json:"magvar_deg"`
+	IsTerminal   bool    `json:"is_terminal"`
 }
 
 // WaypointEntry holds basic waypoint info from a facilities list scan.
@@ -275,22 +275,22 @@ type WaypointDetails struct {
 
 // AirportDetails holds detailed facility data for a specific airport.
 type AirportDetails struct {
-	ICAO        string             `json:"icao"`
-	Region      string             `json:"region"`
-	Name        string             `json:"name"`
-	Name64      string             `json:"name64"`
-	Latitude    float64            `json:"latitude"`
-	Longitude   float64            `json:"longitude"`
-	AltitudeM   float64            `json:"altitude_m"`
-	MagVar      float64            `json:"magvar_deg"`
-	IsClosed    bool               `json:"is_closed"`
-	RunwayCount  int                `json:"runway_count"`
-	Runways      []AirportRunway    `json:"runways"`
-	Frequencies  []AirportFrequency `json:"frequencies"`
-	StandCount   int                `json:"stand_count,omitempty"`
-	Stands       []AirportStand     `json:"stands,omitempty"`
-	HelipadCount int                `json:"helipad_count,omitempty"`
-	Helipads     []AirportHelipad   `json:"helipads,omitempty"`
+	ICAO           string             `json:"icao"`
+	Region         string             `json:"region"`
+	Name           string             `json:"name"`
+	Name64         string             `json:"name64"`
+	Latitude       float64            `json:"latitude"`
+	Longitude      float64            `json:"longitude"`
+	AltitudeM      float64            `json:"altitude_m"`
+	MagVar         float64            `json:"magvar_deg"`
+	IsClosed       bool               `json:"is_closed"`
+	RunwayCount    int                `json:"runway_count"`
+	Runways        []AirportRunway    `json:"runways"`
+	Frequencies    []AirportFrequency `json:"frequencies"`
+	StandCount     int                `json:"stand_count,omitempty"`
+	Stands         []AirportStand     `json:"stands,omitempty"`
+	HelipadCount   int                `json:"helipad_count,omitempty"`
+	Helipads       []AirportHelipad   `json:"helipads,omitempty"`
 	ApproachCount  int                `json:"approach_count,omitempty"`
 	Approaches     []AirportApproach  `json:"approaches,omitempty"`
 	DepartureCount int                `json:"departure_count,omitempty"`
@@ -313,14 +313,14 @@ type TaxiwayPoint struct {
 // Start and End are indices into the TaxiwayPoints slice of the parent AirportTaxiways.
 // NameIndex is an index into the Names slice.
 type TaxiwayPath struct {
-	Type              string  `json:"type"`               // NONE/TAXI/RUNWAY/PARKING/PATH/CLOSED/VEHICLE/ROAD/PAINTED_LINE
+	Type              string  `json:"type"` // NONE/TAXI/RUNWAY/PARKING/PATH/CLOSED/VEHICLE/ROAD/PAINTED_LINE
 	WidthM            float32 `json:"width_m"`
 	LeftHalfWidthM    float32 `json:"left_half_width_m"`
 	RightHalfWidthM   float32 `json:"right_half_width_m"`
 	WeightLbs         uint32  `json:"weight_lbs"`
 	RunwayNumber      int32   `json:"runway_number"`
-	RunwayDesignator  string  `json:"runway_designator"`  // L/R/C/W/A/B or empty
-	LeftEdge          string  `json:"left_edge"`          // NONE/SOLID/DASHED/SOLID_DASHED
+	RunwayDesignator  string  `json:"runway_designator"` // L/R/C/W/A/B or empty
+	LeftEdge          string  `json:"left_edge"`         // NONE/SOLID/DASHED/SOLID_DASHED
 	LeftEdgeLighted   bool    `json:"left_edge_lighted"`
 	RightEdge         string  `json:"right_edge"`
 	RightEdgeLighted  bool    `json:"right_edge_lighted"`
@@ -472,4 +472,7 @@ var (
 	ErrNotConnected    = errors.New("bridge: not connected to simulator")
 	ErrUnknownVariable = errors.New("bridge: unknown simulation variable")
 	ErrTimeout         = errors.New("bridge: request timed out")
+	// ErrNotFound: the simulator answered with no data (an airport without
+	// taxiways or parkings in its data), unlike ErrTimeout.
+	ErrNotFound = errors.New("bridge: facility not found")
 )

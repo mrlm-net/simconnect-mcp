@@ -6,6 +6,7 @@ package bridge
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log/slog"
 	"os"
@@ -75,18 +76,18 @@ type trafficDataStruct struct {
 //	[160–287] [128]byte  — Title (STRING128)
 //	[288–319] [32]byte   — Category (STRING32)
 type enrichedTrafficDataStruct struct {
-	Lat       float64    // PLANE LATITUDE
-	Lon       float64    // PLANE LONGITUDE
-	Alt       float64    // PLANE ALTITUDE
-	Head      float64    // PLANE HEADING DEGREES TRUE
-	GndSpd    float64    // GROUND VELOCITY
-	OnGround  float64    // SIM ON GROUND (as FLOAT64 to avoid int32 padding)
-	VelY      float64    // VELOCITY WORLD Y (fps, vertical — up positive)
-	VelX      float64    // VELOCITY WORLD X (fps, east positive)
-	VelZ      float64    // VELOCITY WORLD Z (fps, north positive)
-	TotalVel  float64    // TOTAL WORLD VELOCITY
-	InParking float64    // PLANE IN PARKING STATE
-	OnRunway  float64    // ON ANY RUNWAY
+	Lat        float64   // PLANE LATITUDE
+	Lon        float64   // PLANE LONGITUDE
+	Alt        float64   // PLANE ALTITUDE
+	Head       float64   // PLANE HEADING DEGREES TRUE
+	GndSpd     float64   // GROUND VELOCITY
+	OnGround   float64   // SIM ON GROUND (as FLOAT64 to avoid int32 padding)
+	VelY       float64   // VELOCITY WORLD Y (fps, vertical — up positive)
+	VelX       float64   // VELOCITY WORLD X (fps, east positive)
+	VelZ       float64   // VELOCITY WORLD Z (fps, north positive)
+	TotalVel   float64   // TOTAL WORLD VELOCITY
+	InParking  float64   // PLANE IN PARKING STATE
+	OnRunway   float64   // ON ANY RUNWAY
 	AtcID      [32]byte  // ATC ID        (STRING32)
 	AtcAirline [32]byte  // ATC AIRLINE   (STRING32)
 	Title      [128]byte // TITLE         (STRING128)
@@ -424,14 +425,14 @@ type taxiwayDefSet struct {
 // Three sub-request IDs (name, path, point) each deliver a FACILITY_DATA_END;
 // done is closed once all three ENDs have been received.
 type taxiwayCallState struct {
-	mu          sync.Mutex
-	result      *AirportTaxiways
-	nameReqID   uint32
-	pathReqID   uint32
-	pointReqID  uint32
-	endCount    int
-	done        chan struct{}
-	doneOnce    sync.Once
+	mu         sync.Mutex
+	result     *AirportTaxiways
+	nameReqID  uint32
+	pathReqID  uint32
+	pointReqID uint32
+	endCount   int
+	done       chan struct{}
+	doneOnce   sync.Once
 }
 
 // parkingCallState holds per-call state for GetAirportParkings.
@@ -523,7 +524,6 @@ func runwayDesignatorLetter(d int32) string {
 		return ""
 	}
 }
-
 
 // helipadTypeName maps SimConnect helipad TYPE integer to a human-readable label.
 func helipadTypeName(t int32) string {
@@ -817,9 +817,9 @@ type simconnectBridge struct {
 	// simvarsBatch maps requestID -> channel expecting a slice of float64 values
 	// (used by GetSimVars for multi-variable batch requests).
 	// Both share pendingMu.
-	pendingMu      sync.Mutex
-	pending        map[uint32]chan float64
-	simvarsBatch   map[uint32]simvarsBatchEntry
+	pendingMu    sync.Mutex
+	pending      map[uint32]chan float64
+	simvarsBatch map[uint32]simvarsBatchEntry
 
 	// facilityDefs holds pre-registered facility definition IDs for the current connection.
 	// Reset on reconnect (OnOpen); re-registered lazily on the first GetAirportDetails call.
@@ -849,10 +849,10 @@ type simconnectBridge struct {
 	navaidListPending map[uint32]*navaidListState
 
 	// navaidMu guards navaidDefs and all three navaid detail pending maps.
-	navaidMu             sync.Mutex
-	navaidDefs           navaidDefSet
-	vorDetailPending     map[uint32]*vorDetailState
-	ndbDetailPending     map[uint32]*ndbDetailState
+	navaidMu              sync.Mutex
+	navaidDefs            navaidDefSet
+	vorDetailPending      map[uint32]*vorDetailState
+	ndbDetailPending      map[uint32]*ndbDetailState
 	waypointDetailPending map[uint32]*waypointDetailState
 
 	// taxiwayMu guards taxiwayDefs, taxiwayPending, and parkingPending.
@@ -2212,6 +2212,19 @@ func (b *simconnectBridge) ensureTaxiwayDefs(mgr manager.Manager) (taxiwayDefSet
 // for the given ICAO airport. Fires three RequestFacilityData calls (TAXI_NAME,
 // TAXI_PATH, TAXI_POINT) and waits until all three FACILITY_DATA_END messages
 // are received or the 45-second deadline expires.
+// emptyResultError tells an airport without the data (ErrNotFound: the
+// simulator answered with none) from one the simulator never answered for
+// (ctx's error, or ErrTimeout).
+func emptyResultError(ctx context.Context, answered bool) error {
+	switch {
+	case answered:
+		return ErrNotFound
+	case ctx.Err() != nil:
+		return ctx.Err()
+	}
+	return ErrTimeout
+}
+
 func (b *simconnectBridge) GetAirportTaxiways(ctx context.Context, icao, region string) (*AirportTaxiways, error) {
 	if b.State() != StateConnected {
 		return nil, ErrNotConnected
@@ -2266,8 +2279,12 @@ func (b *simconnectBridge) GetAirportTaxiways(ctx context.Context, icao, region 
 	deadline := time.NewTimer(45 * time.Second)
 	defer deadline.Stop()
 
+	// answered: the simulator sent the data's end, so an empty result is
+	// "no data" (ErrNotFound); without it, it never answered (#113).
+	answered := false
 	select {
 	case <-state.done:
+		answered = true
 		drainTimer := time.NewTimer(200 * time.Millisecond)
 		select {
 		case <-ctx.Done():
@@ -2283,7 +2300,7 @@ func (b *simconnectBridge) GetAirportTaxiways(ctx context.Context, icao, region 
 	state.mu.Unlock()
 
 	if result == nil || (len(result.Names) == 0 && len(result.Paths) == 0 && len(result.Points) == 0) {
-		return nil, nil
+		return nil, emptyResultError(ctx, answered)
 	}
 	result.NameCount = len(result.Names)
 	result.PathCount = len(result.Paths)
@@ -2332,8 +2349,12 @@ func (b *simconnectBridge) GetAirportParkings(ctx context.Context, icao, region 
 	deadline := time.NewTimer(45 * time.Second)
 	defer deadline.Stop()
 
+	// answered: the simulator sent the data's end, so an empty result is
+	// "no data" (ErrNotFound); without it, it never answered (#113).
+	answered := false
 	select {
 	case <-state.done:
+		answered = true
 		drainTimer := time.NewTimer(200 * time.Millisecond)
 		select {
 		case <-ctx.Done():
@@ -2349,7 +2370,7 @@ func (b *simconnectBridge) GetAirportParkings(ctx context.Context, icao, region 
 	state.mu.Unlock()
 
 	if result == nil || len(result.Parkings) == 0 {
-		return nil, nil
+		return nil, emptyResultError(ctx, answered)
 	}
 	result.ParkingCount = len(result.Parkings)
 	return result, nil
@@ -2478,7 +2499,7 @@ func (b *simconnectBridge) ensureFacilityDefs(mgr manager.Manager) (facilityDefS
 // the call is automatically retried with an empty region so that airports with
 // mismatched or unknown region codes are still reachable.
 func (b *simconnectBridge) GetAirportDetails(ctx context.Context, icao, region string, expanded bool) (*AirportDetails, error) {
-	details, err := b.getAirportDetailsOnce(ctx, icao, region, expanded)
+	details, err := b.getAirportDetailsRetried(ctx, icao, region, expanded)
 	if err != nil {
 		return nil, err
 	}
@@ -2487,12 +2508,44 @@ func (b *simconnectBridge) GetAirportDetails(ctx context.Context, icao, region s
 		// given region string. Retry with an empty region, which lets SimConnect
 		// find the airport by ICAO alone regardless of its assigned region code.
 		slog.Warn("airport details region fallback: retrying with empty region", "icao", icao, "region", region)
-		details, err = b.getAirportDetailsOnce(ctx, icao, "", expanded)
+		details, err = b.getAirportDetailsRetried(ctx, icao, "", expanded)
 		if err != nil {
 			return nil, err
 		}
 	}
 	return details, nil
+}
+
+// Airport details: SimConnect now and then drops a facility subscription's
+// messages (#112), and a retry gets them. An attempt waits
+// airportDetailsAttemptWait, and up to airportDetailsAttempts are made,
+// airportDetailsBackoff apart.
+const (
+	airportDetailsAttempts    = 3
+	airportDetailsBackoff     = 200 * time.Millisecond
+	airportDetailsAttemptWait = 20 * time.Second
+)
+
+// getAirportDetailsRetried is getAirportDetailsOnce, tried again when the
+// simulator did not answer (ErrTimeout).
+func (b *simconnectBridge) getAirportDetailsRetried(ctx context.Context, icao, region string, expanded bool) (*AirportDetails, error) {
+	var err error
+	for attempt := 0; attempt < airportDetailsAttempts; attempt++ {
+		if attempt > 0 {
+			slog.Warn("airport details: no answer, retrying", "icao", icao, "attempt", attempt+1)
+			select {
+			case <-ctx.Done():
+				return nil, ctx.Err()
+			case <-time.After(airportDetailsBackoff):
+			}
+		}
+		var d *AirportDetails
+		d, err = b.getAirportDetailsOnce(ctx, icao, region, expanded)
+		if !errors.Is(err, ErrTimeout) {
+			return d, err
+		}
+	}
+	return nil, err
 }
 
 // getAirportDetailsOnce performs a single RequestFacilityData round-trip for the
@@ -2629,11 +2682,13 @@ func (b *simconnectBridge) getAirportDetailsOnce(ctx context.Context, icao, regi
 
 	// Wait for all FACILITY_DATA_END messages. handleMessage closes state.done
 	// once all expected ENDs are received.
-	deadline := time.NewTimer(45 * time.Second)
+	deadline := time.NewTimer(airportDetailsAttemptWait)
 	defer deadline.Stop()
 
+	answered := false
 	select {
 	case <-state.done:
+		answered = true
 		// All expected ENDs received. Wait a short window for late DATA records —
 		// SimConnect dispatches DATA and END via different internal paths, so a few
 		// DATA records may arrive after all ENDs have been seen.
@@ -2648,7 +2703,7 @@ func (b *simconnectBridge) getAirportDetailsOnce(ctx context.Context, icao, regi
 	case <-ctx.Done():
 		// Context cancelled — return whatever has been collected so far.
 	case <-deadline.C:
-		// 45-second hard deadline.
+		// No answer in time: retried by getAirportDetailsRetried.
 	}
 
 	// Read results under lock — handleMessage may still be writing during the
@@ -2665,6 +2720,9 @@ func (b *simconnectBridge) getAirportDetailsOnce(ctx context.Context, icao, regi
 	state.mu.Unlock()
 
 	if !foundBase {
+		if !answered && ctx.Err() == nil {
+			return nil, ErrTimeout // the messages were dropped: try again
+		}
 		return nil, nil
 	}
 	return snapshot, nil
@@ -3490,7 +3548,9 @@ func (b *simconnectBridge) handleMessage(msg engine.Message) {
 			txState.mu.Lock()
 			txState.endCount++
 			allDone = txState.endCount == 3
+			end := txState.endCount
 			txState.mu.Unlock()
+			slog.Debug("handleMessage: taxiway FACILITY_DATA_END", "rid", rid, "endCount", end)
 			if allDone {
 				txState.doneOnce.Do(func() { close(txState.done) })
 			}

@@ -24,6 +24,7 @@ func RegisterAll(mcp *mcpadapter.Server, b bridge.Bridge) (cleanup func() int) {
 	RegisterSetSimVarTool(mcp, b)
 	RegisterEventTools(mcp, b)
 	RegisterStateTools(mcp, b)
+	RegisterFuelTool(mcp, b)
 	RegisterTrafficTool(mcp, b)
 	RegisterEnrichedTrafficTool(mcp, b)
 	RegisterAirportTools(mcp, b)

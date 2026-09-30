@@ -135,6 +135,7 @@ func TestSimconnectToolsList(t *testing.T) {
 		"set_simvar_value",
 		"transmit_event",
 		"get_sim_state",
+		"get_fuel_state",
 		"get_nearby_traffic",
 		"get_traffic_with_phase",
 		"get_airports_in_range",

@@ -36,7 +36,7 @@
 	<title>SimConnect MCP — Model Context Protocol for Microsoft Flight Simulator</title>
 	<meta
 		name="description"
-		content="Model Context Protocol server for Microsoft Flight Simulator — query SimConnect SDK docs and read live simulator data from Claude, Copilot, or any MCP-compatible AI."
+		content="Model Context Protocol server for Microsoft Flight Simulator — query SimConnect SDK docs, read live simulator data, and run AI traffic with a tower and approach controller from Claude, Copilot, or any MCP-compatible AI."
 	/>
 </svelte:head>
 
@@ -71,8 +71,9 @@
 		class="mb-10 max-w-2xl text-base leading-relaxed sm:text-lg"
 		style="color: var(--color-text-secondary);"
 	>
-		Model Context Protocol server for Microsoft Flight Simulator &mdash; query SimConnect SDK docs
-		and read live simulator data from Claude, Copilot, or any MCP-compatible AI.
+		Model Context Protocol server for Microsoft Flight Simulator &mdash; query SimConnect SDK docs,
+		read live simulator data, and run AI traffic with a tower and approach controller &mdash; from
+		Claude, Copilot, or any MCP-compatible AI.
 	</p>
 
 	<!-- CTA buttons -->
@@ -596,16 +597,16 @@
 				</p>
 			</a>
 
-			<!-- Live & Traffic Tools -->
+			<!-- AI Traffic & ATC guide -->
 			<a
-				href="{base}/docs/mcp-tools-simconnect"
+				href="{base}/docs/ai-traffic"
 				class="group block rounded-lg p-5 transition-colors"
 				style="background-color: var(--color-bg-secondary);"
 				onmouseenter={(e) => { (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--color-bg-tertiary)'; }}
 				onmouseleave={(e) => { (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--color-bg-secondary)'; }}
 			>
 				<div class="mb-2 flex items-center justify-between">
-					<span class="text-sm font-semibold" style="color: var(--color-text-primary);">Live &amp; Traffic Tools</span>
+					<span class="text-sm font-semibold" style="color: var(--color-text-primary);">AI Traffic &amp; ATC</span>
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
 						width="14"
@@ -624,7 +625,7 @@
 					</svg>
 				</div>
 				<p class="text-xs leading-relaxed" style="color: var(--color-text-muted);">
-					All 45 simconnect-mode tools: live data, airports, AI traffic, ATC and schedules.
+					The guide: an airline schedule at your airport, a tower and approach controller, and what to ask.
 				</p>
 			</a>
 

@@ -1,6 +1,10 @@
 # SimConnect MCP
 
-SimConnect MCP exposes Microsoft Flight Simulator's SimConnect SDK documentation as a [Model Context Protocol (MCP)](https://modelcontextprotocol.io) server. AI assistants — Claude, GitHub Copilot, and others — can answer questions about SimVars, events, API functions, data structures, and error codes without leaving the chat.
+SimConnect MCP is a [Model Context Protocol (MCP)](https://modelcontextprotocol.io) server for Microsoft Flight Simulator. AI assistants — Claude, GitHub Copilot, and others — can:
+
+- answer questions about SimVars, events, API functions, data structures and error codes from the SimConnect SDK documentation;
+- read and control the running simulator;
+- bring your airport to life: an airline schedule that runs by itself, with AI departures, arrivals, turnarounds and overflights, cleared and sequenced by a tower and an approach controller. See the [AI Traffic & ATC guide](https://simconnect-mcp.mrlm.net/docs/ai-traffic).
 
 The server is written in Go with Gin routing and operates in two modes: **documentation fetch** (cross-platform) and **live SimConnect data** (Windows-only) — or both at once with `MCP_MODE=both`.
 
@@ -174,6 +178,7 @@ The server reconnects automatically when the simulator restarts — no manual in
 | `set_simvar_value` | Write a numeric simulation variable to the user aircraft |
 | `transmit_event` | Send a Key Event ID to the simulator (e.g., toggle landing gear, set autopilot altitude) |
 | `get_sim_state` | Return high-level simulator state: paused, running, aircraft title, position, and speed |
+| `get_fuel_state` | The user aircraft's fuel: total quantity, capacity, percent and weight, per tank |
 
 **Traffic**
 
@@ -233,7 +238,7 @@ The following tools are built on the [mrlm-net/simconnect](https://github.com/mr
 
 **AI traffic**
 
-These tools, built on the library's `pkg/traffic`, add AI aircraft of our own to the simulator and fly them on ATC clearances — at most 32 at once, at an airport loaded around the user aircraft. Conflict prediction, wake separation, approach sequencing and holds come with the library's v0.16 and are not available yet.
+These tools, built on the library's `pkg/traffic`, add AI aircraft of our own to the simulator and fly them on ATC clearances — at most 32 at once, at an airport loaded around the user aircraft. The [AI Traffic & ATC guide](https://simconnect-mcp.mrlm.net/docs/ai-traffic) explains how it all fits together.
 
 | Tool | Description |
 |------|-------------|
@@ -244,6 +249,26 @@ These tools, built on the library's `pkg/traffic`, add AI aircraft of our own to
 | `atc_clearance` | Clear one of ours: `pushback`, `taxi`, `cross`, `lineup`, `takeoff`, `hold`, `abort`, `goaround`, or `remove` it from the simulator |
 | `get_traffic_picture` | Every aircraft around the user aircraft or an airport, with phase (parked, taxiing, runway, departing, enroute, arriving) and airport; the user's and ours marked |
 | `generate_schedule` | Realistic airline schedule for airports — call signs, types, routes, STD/STA — to pick flights to spawn (nothing is spawned) |
+
+**Airborne ATC**
+
+A tower per runway clears our line-ups, take-offs and crossings, and sends arrivals around when the runway won't be free. A landing sequence per runway end spaces our arrivals and the other traffic on final, with speed, a longer downwind or a hold.
+
+| Tool | Description |
+|------|-------------|
+| `get_landing_sequence` | The landing sequence per runway end with our arrivals: order, wake category, spacing and why, and who uses each runway now |
+| `approach_instruction` | Instruct one of our arrivals: `up`, `down`, `slow`, `hold`, `release`, `direct`, `goaround` |
+| `get_atc_log` | The latest instructions of the runtime's tower and approach controllers |
+| `get_conflicts` | Predicted airborne conflicts around, with advice (speed, level or heading) where one of the pair is ours |
+| `separation_minima` | Wake categories, spacing on final, departure interval and runway occupancy for a pair of types |
+
+**Scheduled traffic**
+
+| Tool | Description |
+|------|-------------|
+| `start_schedule` | Run an airline schedule at airports: departures board and push on time, arrivals come in from en route, turnarounds on their stands, overflights cross the area |
+| `get_schedule` | The departure and arrival boards, and the overflights, with status, stand, runway and delays |
+| `stop_schedule` | Stop the schedule; its aircraft fly on until they depart, park or leave, or are removed at once |
 
 ## Refreshing the Corpus
 

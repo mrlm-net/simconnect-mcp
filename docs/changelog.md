@@ -7,6 +7,12 @@ section: changelog
 
 All notable changes to SimConnect MCP are documented here.
 
+## [Unreleased]
+
+### Added
+
+- Docs: an **AI Traffic & ATC** guide (a new Guides section and a top link on the website): what you need, spawning by hand or by schedule, what happens to each flight, the tower and approach controller, things to ask, and limits. The home page, README and Getting Started now describe the traffic features. The README lists the airborne ATC, scheduled traffic and fuel tools, and no longer says features that shipped in v0.6.0 are unavailable.
+
 ## [0.8.0] - 2026-09-30
 
 A living sky around your airport. Scheduled arrivals come in from their origins en route and are handed to the arrival controller at their STAR entry; overflights cross the area at cruise level; and arrivals turn around on their stands into their later departures. Runways in use no longer flip in a calm wind, and each release's notes on GitHub are now its changelog.

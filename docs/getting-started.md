@@ -97,3 +97,7 @@ If the simulator is not running or SimConnect is disabled, the `connected` field
 Point your MCP client at `http://localhost:8080`. The server implements the MCP protocol over HTTP with Server-Sent Events (SSE) for streaming responses.
 
 See [Claude Desktop Setup](/docs/claude-desktop) for a complete configuration example including how to register SimConnect MCP as a local MCP server in Claude Desktop.
+
+## Next: bring your airport to life
+
+In SimConnect mode, with your aircraft at an airport, ask your AI assistant to "run the airline schedule here". AI departures and arrivals of your own then appear, and a tower and approach controller clear and sequence them. The [AI Traffic & ATC guide](/docs/ai-traffic) explains what happens and what you can ask.

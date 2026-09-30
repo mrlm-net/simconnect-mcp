@@ -34,6 +34,16 @@ type Traffic interface {
 	// Picture returns the aircraft within radiusNM of the user aircraft, or
 	// of centre (an airport ICAO code) when set.
 	Picture(ctx context.Context, centre string, radiusNM float64) ([]traffic.TrackedAircraft, error)
+	// Sequences are the landing sequences at icao ("" all), Tower who
+	// uses its runways, ATCLog the latest instructions of the runtime's
+	// controllers (at most limit; 0 all).
+	Sequences(icao string) []RunwaySequence
+	Tower(icao string) []RunwayUser
+	ATCLog(limit int) []ATCMessage
+	// Approach gives one of our arrivals in a landing sequence an
+	// instruction (up, down, slow, hold, release, direct, goaround) and
+	// returns what was said.
+	Approach(callsign, action string) (string, error)
 }
 
 // DepartureSpec asks for a controlled departure. Stand, Runway and Model
@@ -64,6 +74,7 @@ type ArrivalSpec struct {
 	Type             string
 	STAR             string             // name, for the view
 	Procedure        []airport.NavPoint // STAR and approach; empty: straight in from SpawnNM
+	MissedApproach   []airport.NavPoint // flown on a go-around; empty: a circuit
 	SpawnNM          float64
 	Taxiways         []string
 	HoldForClearance bool
@@ -126,6 +137,9 @@ type flight struct {
 	left    bool
 	defBase uint32
 	id      uint32
+	// held: spawned holding for every clearance — the runtime's tower and
+	// sequencing leave it to the caller (it counts as other traffic).
+	held bool
 }
 
 // trafficState is the Runtime's traffic side; its fields are guarded by
@@ -149,6 +163,8 @@ type trafficState struct {
 
 	tmu     sync.Mutex
 	flights map[string]*flight // by call sign
+
+	atc *atcState // the towers and landing sequences (atc_windows.go)
 }
 
 func newTrafficState(client engine.Client) *trafficState {
@@ -278,11 +294,12 @@ func (r *Runtime) addScanLocked(d *types.SIMCONNECT_RECV_SIMOBJECT_DATA_BTYPE) {
 	}
 }
 
-func (r *Runtime) tickTrafficLocked() {
+func (r *Runtime) tickTrafficLocked(now time.Time) {
 	t := r.traffic
 	if t == nil {
 		return
 	}
+	r.tickATCLocked(now)
 	if t.scanOn {
 		t.scan = t.scan[:0]
 		_ = r.mgr.RequestDataOnSimObjectType(scanReqID, scanDefID, scanRadiusM, types.SIMCONNECT_SIMOBJECT_TYPE_AIRCRAFT)
@@ -495,11 +512,12 @@ func (r *Runtime) SpawnDeparture(ctx context.Context, s DepartureSpec) (FlightVi
 		traffic.TaxiWithDetail(t.detail), traffic.TaxiWithGroundPicture(t.picture.Ground(g.Layout.ICAO)))
 	if err := ctl.Start(traffic.TaxiRequest{Graph: g, Parking: stand, Runway: s.Runway, Entry: s.Entry,
 		Options: airport.RouteOptions{Taxiways: s.Taxiways}, Model: model, Livery: livery, Tail: s.Callsign,
-		HoldForClearances: s.HoldForClearances, Profile: ac.Motion, Aircraft: &ac, Departure: s.Departure, Airport: s.Limits}); err != nil {
+		HoldForClearances: s.HoldForClearances, HoldForRunway: !s.HoldForClearances, Profile: ac.Motion, Aircraft: &ac,
+		Departure: s.Departure, Airport: s.Limits}); err != nil {
 		undo()
 		return FlightView{}, err
 	}
-	f := &flight{ts: t, dep: ctl, alloc: alloc, stand: stand, defBase: defBase, view: FlightView{Callsign: s.Callsign, Kind: "departure",
+	f := &flight{ts: t, dep: ctl, alloc: alloc, stand: stand, defBase: defBase, held: s.HoldForClearances, view: FlightView{Callsign: s.Callsign, Kind: "departure",
 		ICAO: g.Layout.ICAO, Model: joinModel(model, livery), Stand: g.Layout.Parking[stand].Label(), Runway: s.Runway, Entry: s.Entry,
 		Procedure: s.SID, State: "spawning", Actions: []string{"remove"}}}
 	if rt := ctl.Route(); rt != nil {
@@ -538,12 +556,12 @@ func (r *Runtime) SpawnArrival(ctx context.Context, s ArrivalSpec) (FlightView, 
 		traffic.ArrivalWithDetail(t.detail), traffic.ArrivalWithGroundPicture(t.picture.Ground(g.Layout.ICAO)))
 	if err := ctl.Start(traffic.ArrivalRequest{Graph: g, Runway: s.Runway, Parking: stand, Model: model, Livery: livery, Tail: s.Callsign,
 		SpawnNm: s.SpawnNM, Options: airport.RouteOptions{Taxiways: s.Taxiways}, HoldForClearance: s.HoldForClearance,
-		HoldAtCrossings: s.HoldForClearance, InjectApproach: true, Profile: ac.Motion, Procedure: s.Procedure,
+		HoldAtCrossings: true, InjectApproach: true, Profile: ac.Motion, Procedure: s.Procedure, MissedApproach: s.MissedApproach,
 		Aircraft: &ac, Airport: s.Limits}); err != nil {
 		undo()
 		return FlightView{}, err
 	}
-	f := &flight{ts: t, arr: ctl, alloc: alloc, stand: stand, defBase: defBase, view: FlightView{Callsign: s.Callsign, Kind: "arrival",
+	f := &flight{ts: t, arr: ctl, alloc: alloc, stand: stand, defBase: defBase, held: s.HoldForClearance, view: FlightView{Callsign: s.Callsign, Kind: "arrival",
 		ICAO: g.Layout.ICAO, Model: joinModel(model, livery), Stand: g.Layout.Parking[stand].Label(), Runway: s.Runway,
 		Procedure: s.STAR, State: "spawning", Actions: []string{"remove"}}}
 	if p := ctl.Plan(); p != nil && p.Route != nil {

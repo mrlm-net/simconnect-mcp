@@ -282,7 +282,7 @@ func (r *Runtime) tick(now time.Time) {
 			r.finishCrawlLocked(err)
 		}
 	}
-	r.tickTrafficLocked()
+	r.tickTrafficLocked(now)
 }
 
 // ── Layouts ─────────────────────────────────────────────────────────────────

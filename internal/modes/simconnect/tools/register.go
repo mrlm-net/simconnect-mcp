@@ -33,6 +33,7 @@ func RegisterAll(mcp *mcpadapter.Server, b bridge.Bridge) (cleanup func() int) {
 		rt := live.NewRuntime(p.Manager())
 		RegisterLiveTools(mcp, rt)
 		RegisterLiveTrafficTools(mcp, rt, rt)
+		RegisterLiveATCTools(mcp, rt)
 		return rt.Close
 	}
 	return func() int { return 0 }
@@ -40,7 +41,8 @@ func RegisterAll(mcp *mcpadapter.Server, b bridge.Bridge) (cleanup func() int) {
 
 // RegisterLiveTools registers the tools built on the library: airport
 // procedures, taxi routes, stands, weather, runway in use, ATIS, fixes,
-// airway routes and flight plans. RegisterLiveTrafficTools adds the AI traffic tools.
+// airway routes and flight plans. RegisterLiveTrafficTools adds the AI traffic tools,
+// RegisterLiveATCTools the airborne ATC tools.
 func RegisterLiveTools(mcp *mcpadapter.Server, src live.Source) {
 	RegisterLiveAirportTools(mcp, src)
 	RegisterLiveNavTools(mcp, src)

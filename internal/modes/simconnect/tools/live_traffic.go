@@ -260,6 +260,10 @@ func registerSpawnArrival(mcp *mcpadapter.Server, src live.Source, tr live.Traff
 				s.STAR, s.Procedure = star.Name, pts
 				if a, ok := procs.BestApproach(runway); ok {
 					s.STAR += " → " + a.Name
+					// Flown on a go-around (else a circuit back to the final).
+					if m, err := procs.MissedApproach(a.Name); err == nil {
+						s.MissedApproach = m
+					}
 				}
 			}
 		}

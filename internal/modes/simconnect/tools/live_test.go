@@ -211,6 +211,9 @@ func TestLiveTrafficTools(t *testing.T) {
 	if a.HoldForClearance || len(a.Procedure) < 3 {
 		t.Errorf("arrival spec: hold %v, procedure points %d", a.HoldForClearance, len(a.Procedure))
 	}
+	if len(a.MissedApproach) == 0 {
+		t.Error("arrival spec: no missed approach for the go-around")
+	}
 	if last := a.Procedure[len(a.Procedure)-1]; last.Ident != "RW24" {
 		t.Errorf("arrival ends at %q, want RW24", last.Ident)
 	}

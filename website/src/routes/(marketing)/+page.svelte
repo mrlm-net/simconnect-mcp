@@ -469,8 +469,9 @@
 					<h3 class="text-sm font-semibold" style="color: var(--color-text-primary);">Scheduled Traffic</h3>
 				</div>
 				<p class="text-sm leading-relaxed" style="color: var(--color-text-muted);">
-					Run a realistic airline schedule at your airport: flights board, push, depart and
-					arrive on time by themselves, with live departure and arrival boards.
+					Run a realistic airline schedule at your airport: flights board, push and depart on
+					time, arrivals come in from en route and turn around on their stands, overflights
+					cross overhead — with live departure and arrival boards.
 				</p>
 			</div>
 

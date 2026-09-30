@@ -138,6 +138,9 @@ type flight struct {
 	arr     *traffic.ArrivalController
 	alloc   *traffic.StandAllocator
 	stand   int
+	// standOwner: the stand is reserved under this call sign — a turnaround
+	// keeps its arrival's (the aircraft seen on it is that reservation's).
+	standOwner string
 	left    bool
 	defBase uint32
 	id      uint32
@@ -446,8 +449,8 @@ func (r *Runtime) allocatorLocked(g *airport.Graph) *traffic.StandAllocator {
 }
 
 // prepare checks the call sign, starts the scan, takes an ID block and the
-// stand; undo gives them back if the spawn fails.
-func (r *Runtime) prepareLocked(g *airport.Graph, callsign, standLabel, runway, kind string, halfSpan float64) (alloc *traffic.StandAllocator, stand int, defBase, reqBase uint32, undo func(), err error) {
+// stand (reserved under owner); undo gives them back if the spawn fails.
+func (r *Runtime) prepareLocked(g *airport.Graph, callsign, owner, standLabel, runway, kind string, halfSpan float64) (alloc *traffic.StandAllocator, stand int, defBase, reqBase uint32, undo func(), err error) {
 	t, err := r.trafficLocked()
 	if err != nil {
 		return nil, 0, 0, 0, nil, err
@@ -479,7 +482,7 @@ func (r *Runtime) prepareLocked(g *airport.Graph, callsign, standLabel, runway, 
 		if stand, err = g.Layout.ParkingIndex(standLabel); err != nil {
 			return nil, 0, 0, 0, nil, err
 		}
-		if err = alloc.Occupy(stand, callsign, halfSpan); err != nil {
+		if err = alloc.Occupy(stand, owner, halfSpan); err != nil {
 			return nil, 0, 0, 0, nil, err
 		}
 	}
@@ -488,7 +491,9 @@ func (r *Runtime) prepareLocked(g *airport.Graph, callsign, standLabel, runway, 
 		return nil, 0, 0, 0, nil, err
 	}
 	undo = func() {
-		alloc.ReleaseOwner(callsign)
+		if owner == callsign { // a turnaround's stand stays its arrival's
+			alloc.ReleaseOwner(callsign)
+		}
 		t.ids.Release(defBase)
 	}
 	return alloc, stand, defBase, reqBase, undo, nil
@@ -518,18 +523,16 @@ func (r *Runtime) SpawnDeparture(ctx context.Context, s DepartureSpec) (FlightVi
 		}
 		model, livery, _ = strings.Cut(adopt.view.Model, liverySep)
 		s.Stand, objectID = adopt.view.Stand, adopt.id
-		adopt.alloc.ReleaseOwner(s.Adopt) // the stand passes to the departure
 	}
 	ac := traffic.ProfileFor(model)
-	// A failed turnaround leaves the arrival on its stand.
-	keep := func() {
-		if adopt != nil {
-			_ = adopt.alloc.Occupy(adopt.stand, s.Adopt, ac.Motion.SpanMeters/2)
-		}
+	// A turnaround keeps the stand under its arrival's call sign: the
+	// allocator sees the aircraft on it as that reservation's.
+	owner := s.Callsign
+	if adopt != nil {
+		owner = s.Adopt
 	}
-	alloc, stand, defBase, reqBase, undo, err := r.prepareLocked(g, s.Callsign, s.Stand, s.Runway, "departure", ac.Motion.SpanMeters/2)
+	alloc, stand, defBase, reqBase, undo, err := r.prepareLocked(g, s.Callsign, owner, s.Stand, s.Runway, "departure", ac.Motion.SpanMeters/2)
 	if err != nil {
-		keep()
 		return FlightView{}, err
 	}
 	t := r.traffic
@@ -540,7 +543,6 @@ func (r *Runtime) SpawnDeparture(ctx context.Context, s DepartureSpec) (FlightVi
 		HoldForClearances: s.HoldForClearances, HoldForRunway: !s.HoldForClearances, Profile: ac.Motion, Aircraft: &ac,
 		Departure: s.Departure, Airport: s.Limits, ObjectID: objectID}); err != nil {
 		undo()
-		keep()
 		return FlightView{}, err
 	}
 	if adopt != nil {
@@ -548,7 +550,7 @@ func (r *Runtime) SpawnDeparture(ctx context.Context, s DepartureSpec) (FlightVi
 		delete(t.flights, s.Adopt) // the same aircraft flies on as the departure
 		t.tmu.Unlock()
 	}
-	f := &flight{ts: t, dep: ctl, alloc: alloc, stand: stand, defBase: defBase, held: s.HoldForClearances, view: FlightView{Callsign: s.Callsign, Kind: "departure",
+	f := &flight{ts: t, dep: ctl, alloc: alloc, stand: stand, standOwner: owner, defBase: defBase, held: s.HoldForClearances, view: FlightView{Callsign: s.Callsign, Kind: "departure",
 		ICAO: g.Layout.ICAO, Model: joinModel(model, livery), Stand: g.Layout.Parking[stand].Label(), Runway: s.Runway, Entry: s.Entry,
 		Procedure: s.SID, State: "spawning", Actions: []string{"remove"}}}
 	if rt := ctl.Route(); rt != nil {
@@ -598,7 +600,7 @@ func (r *Runtime) SpawnArrival(ctx context.Context, s ArrivalSpec) (FlightView, 
 		return FlightView{}, ErrNotConnected
 	}
 	g := s.Graph
-	alloc, stand, defBase, reqBase, undo, err := r.prepareLocked(g, s.Callsign, s.Stand, s.Runway, "arrival", ac.Motion.SpanMeters/2)
+	alloc, stand, defBase, reqBase, undo, err := r.prepareLocked(g, s.Callsign, s.Callsign, s.Stand, s.Runway, "arrival", ac.Motion.SpanMeters/2)
 	if err != nil {
 		return FlightView{}, err
 	}
@@ -859,6 +861,9 @@ func (r *Runtime) removeFlight(f *flight) error {
 		err = f.arr.Cancel()
 	}
 	f.alloc.ReleaseOwner(f.view.Callsign)
+	if f.standOwner != "" && f.standOwner != f.view.Callsign {
+		f.alloc.ReleaseOwner(f.standOwner) // a turnaround's stand
+	}
 	t := f.ts
 	if f.id != 0 {
 		t.picture.ForgetOwn(f.id) // gone now, not at the next scan

@@ -164,7 +164,8 @@ func registerSpawnDeparture(mcp *mcpadapter.Server, src live.Source, tr live.Tra
 			"the sim). It pushes back, taxis the planned route to the runway, lines up and takes off, then flies the SID. " +
 			"With hold_for_clearances (default true) it waits at every step for atc_clearance: pushback, taxi, (cross), " +
 			"lineup, takeoff; otherwise it goes by itself. Stand, runway (in use for the weather), SID and model (the type " +
-			"in the call sign's airline livery) are chosen when not given. Returns the flight: stand, runway, SID, taxi " +
+			"in the call sign's airline livery) are chosen when not given; with turnaround_of, one of our arrivals parked at " +
+			"the airport becomes the departure (same aircraft, stand and livery). Returns the flight: stand, runway, SID, taxi " +
 			"route, state and the clearances it takes now. Follow it with list_our_traffic.").
 		StringParam("icao", "Airport ICAO code (required); the simulator must have it loaded around the user aircraft.").
 		StringParam("callsign", "Call sign, e.g. \"CSA123\" (required).").
@@ -176,6 +177,7 @@ func registerSpawnDeparture(mcp *mcpadapter.Server, src live.Source, tr live.Tra
 		StringParam("aircraft_type", "ICAO type to pick a model by, e.g. \"A20N\", \"B738\" (default A320).").
 		StringParam("via", "Taxiways to follow in order, e.g. \"F, L\".").
 		BoolParam("hold_for_clearances", "Wait at every step for atc_clearance (default true).").
+		StringParam("turnaround_of", "Call sign of one of our arrivals parked at the airport: its aircraft becomes this departure (stand, model and aircraft_type are then ignored).").
 		Required("icao", "callsign").
 		Build()
 
@@ -199,7 +201,8 @@ func spawnDepartureFrom(ctx context.Context, src live.Source, tr live.Traffic, a
 	}
 	s := live.DepartureSpec{Graph: g, Limits: &lim, Callsign: callsign, Stand: strings.ToUpper(strArg(args, "stand")),
 		Runway: runway, Entry: strings.ToUpper(strArg(args, "entry")), Model: strArg(args, "model"),
-		Type: strings.ToUpper(strArg(args, "aircraft_type")), Taxiways: listArg(args, "via"), HoldForClearances: true}
+		Type: strings.ToUpper(strArg(args, "aircraft_type")), Taxiways: listArg(args, "via"), HoldForClearances: true,
+		Adopt: strings.ToUpper(strArg(args, "turnaround_of"))}
 	if b, ok := args["hold_for_clearances"].(bool); ok {
 		s.HoldForClearances = b
 	}

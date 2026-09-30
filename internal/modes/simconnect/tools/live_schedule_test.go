@@ -60,3 +60,48 @@ func TestScheduleRunner(t *testing.T) {
 		t.Error("stop with remove removed nothing")
 	}
 }
+
+// An arrival turning around parks and becomes its departure: the departure
+// adopts it instead of a fresh aircraft on another stand.
+func TestScheduleTurnaround(t *testing.T) {
+	fx, err := live.NewFixture("../../../live/testdata")
+	if err != nil {
+		t.Fatal(err)
+	}
+	ft := &live.FixtureTraffic{ModelList: []string{"FSLTL A320 CSA Czech Airlines", "FSLTL B738 TVS Smartwings"}}
+	r := newScheduleRunner(fx, ft)
+	now := time.Date(2026, 9, 30, 6, 0, 0, 0, time.UTC)
+	r.clock = func() time.Time { return now }
+	r.start([]string{"LKPR"}, 2, 1, 24)
+	defer r.halt(false)
+	// Arrivals park at once, departures leave at once; four hours.
+	for i := 0; i < 4*3600; i += 30 {
+		now = now.Add(30 * time.Second)
+		for _, v := range ft.Flights() {
+			switch {
+			case v.Kind == "arrival" && v.State == "spawning":
+				ft.SetState(v.Callsign, "parked")
+			case v.Kind == "departure" && v.State == "spawning":
+				ft.SetState(v.Callsign, "complete")
+			}
+		}
+		r.tick(now)
+		time.Sleep(3 * time.Millisecond)
+	}
+	turned := 0
+	for _, d := range ft.Departures {
+		if d.Adopt == "" {
+			continue
+		}
+		turned++
+		for _, v := range ft.Flights() {
+			if v.Callsign == d.Adopt {
+				t.Errorf("%s turned into %s but is still one of ours", d.Adopt, d.Callsign)
+			}
+		}
+	}
+	if turned == 0 {
+		t.Fatalf("no turnaround in four hours (%d departures, %d arrivals)", len(ft.Departures), len(ft.Arrivals))
+	}
+	t.Logf("%d of %d departures turned around", turned, len(ft.Departures))
+}

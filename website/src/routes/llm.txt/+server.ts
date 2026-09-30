@@ -82,7 +82,7 @@ github.com/mrlm-net/simconnect Go library guides (v0.16.0):
 AI traffic (adds and removes AI aircraft in the simulator; at most 32 of ours, at an airport loaded around the user aircraft):
 
 - list_aircraft_models: Installed aircraft titles (and liveries) AI traffic can use, filtered by words
-- spawn_departure: Add an AI departure on a stand: pushback, taxi, line-up, take-off and SID, each on an ATC clearance
+- spawn_departure: Add an AI departure on a stand: pushback, taxi, line-up, take-off and SID, each on an ATC clearance; or turn one of our parked arrivals around into a departure
 - spawn_arrival: Add an AI arrival on a STAR or out on final: approach, landing, vacating and taxi to a stand
 - list_our_traffic: Our AI aircraft with state, position, speed, taxiway and the clearances they take now
 - atc_clearance: Clear one of ours: pushback, taxi, cross, lineup, takeoff, hold, abort, goaround, or remove it from the simulator
@@ -99,7 +99,7 @@ Airborne ATC (the server runs a tower per runway and a landing sequence per runw
 
 Scheduled traffic (adds and removes AI aircraft in the simulator):
 
-- start_schedule: Run a realistic airline schedule at airports; departures and arrivals appear and go by themselves, cleared by the tower
+- start_schedule: Run a realistic airline schedule at airports; departures and arrivals appear and go by themselves, cleared by the tower; arrivals turn around into later departures on their stands
 - stop_schedule: Stop the schedule, optionally removing its aircraft
 - get_schedule: The running schedule's departure and arrival boards with status, stand, runway and delays
 

@@ -176,3 +176,74 @@ Claude calls `get_sim_state` to retrieve the current connection status and fligh
 **Claude's reply (not connected)**
 
 > "The simulator is not currently connected. Start Microsoft Flight Simulator and ensure SimConnect is enabled, then try again."
+
+---
+
+## Scenario 4: Run Scheduled Traffic at an Airport
+
+**User prompt in Claude Desktop**
+
+> "Bring Prague to life — run the airline schedule at LKPR, but no more than three aircraft at once."
+
+**How it works**
+
+Claude calls `start_schedule`. The server builds the day's schedule for LKPR and, on its own, keeps it running:
+
+- departures appear on a free stand 10 minutes before their STD and push back at it;
+- arrivals appear at a STAR entry in time for their STA;
+- the tower clears them to cross, line up and take off, and the landing sequence spaces the arrivals.
+
+Claude follows the flights with `get_schedule` and `get_atc_log`, and ends the run with `stop_schedule`.
+
+**MCP tool call**
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 4,
+  "method": "tools/call",
+  "params": {
+    "name": "start_schedule",
+    "arguments": { "airports": "LKPR", "max_aircraft": 3 }
+  }
+}
+```
+
+**Later: `get_schedule` (text content, shortened)**
+
+```json
+{
+  "running": true,
+  "airports": ["LKPR"],
+  "active": 3,
+  "max_aircraft": 3,
+  "boards": [
+    {
+      "icao": "LKPR",
+      "departures": [
+        { "callsign": "WZZ794", "type": "A321", "from": "LKPR", "to": "LHBP", "scheduled": "09:30Z", "status": "taxiing", "stand": "A1", "runway": "06" },
+        { "callsign": "SWR643", "type": "A20N", "from": "LKPR", "to": "LSGG", "scheduled": "09:40Z", "status": "boarding", "stand": "A1", "runway": "06" }
+      ],
+      "arrivals": [
+        { "callsign": "AFR1094", "type": "A321", "from": "LFPG", "to": "LKPR", "scheduled": "09:55Z", "status": "approaching", "stand": "N50", "runway": "06", "note": "landing sequence" }
+      ]
+    }
+  ]
+}
+```
+
+**`get_atc_log` (messages)**
+
+```text
+WZZ794, cross runway 12/30
+AFR1094, number 2, delay 34s: 210 kt
+SWR643, cross runway 12/30
+WZZ794, runway 06, line up and wait
+WZZ794, runway 06, cleared for take-off
+```
+
+**Claude's reply**
+
+> "The LKPR schedule is running. Wizz Air 794 to Budapest is taxiing to runway 06 and has just been cleared for take-off. Swiss 643 to Geneva is taxiing behind it. Air France 1094 from Paris is number 2 for runway 06 and has been slowed to 210 knots to absorb a 34-second delay."
+
+Taken from a live run in MSFS 2024. `stop_schedule` with `remove: true` takes the schedule's aircraft out of the simulator.

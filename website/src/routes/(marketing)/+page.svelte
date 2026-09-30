@@ -389,6 +389,91 @@
 				</p>
 			</div>
 
+			<!-- 7. AI Traffic -->
+			<div>
+				<div class="mb-3 flex items-center gap-2.5">
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						width="18"
+						height="18"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						style="color: var(--color-link); flex-shrink: 0;"
+						aria-hidden="true"
+					>
+						<path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z" />
+					</svg>
+					<h3 class="text-sm font-semibold" style="color: var(--color-text-primary);">AI Traffic</h3>
+				</div>
+				<p class="text-sm leading-relaxed" style="color: var(--color-text-muted);">
+					Spawn departures and arrivals of your own, in airline liveries, on real stands, SIDs
+					and STARs. Clear them to push, taxi, cross, line up and take off.
+				</p>
+			</div>
+
+			<!-- 8. Airborne ATC -->
+			<div>
+				<div class="mb-3 flex items-center gap-2.5">
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						width="18"
+						height="18"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						style="color: var(--color-link); flex-shrink: 0;"
+						aria-hidden="true"
+					>
+						<circle cx="12" cy="12" r="2" />
+						<path d="M16.24 7.76a6 6 0 0 1 0 8.49" />
+						<path d="M7.76 16.24a6 6 0 0 1 0-8.49" />
+						<path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
+						<path d="M4.93 19.07a10 10 0 0 1 0-14.14" />
+					</svg>
+					<h3 class="text-sm font-semibold" style="color: var(--color-text-primary);">Airborne ATC</h3>
+				</div>
+				<p class="text-sm leading-relaxed" style="color: var(--color-text-muted);">
+					A tower per runway and landing sequences with wake spacing: speed control, longer
+					downwinds, holds and go-arounds, with a readable ATC log.
+				</p>
+			</div>
+
+			<!-- 9. Scheduled Traffic -->
+			<div>
+				<div class="mb-3 flex items-center gap-2.5">
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						width="18"
+						height="18"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						style="color: var(--color-link); flex-shrink: 0;"
+						aria-hidden="true"
+					>
+						<rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+						<line x1="16" y1="2" x2="16" y2="6" />
+						<line x1="8" y1="2" x2="8" y2="6" />
+						<line x1="3" y1="10" x2="21" y2="10" />
+					</svg>
+					<h3 class="text-sm font-semibold" style="color: var(--color-text-primary);">Scheduled Traffic</h3>
+				</div>
+				<p class="text-sm leading-relaxed" style="color: var(--color-text-muted);">
+					Run a realistic airline schedule at your airport: flights board, push, depart and
+					arrive on time by themselves, with live departure and arrival boards.
+				</p>
+			</div>
+
 		</div>
 	</div>
 </section>
@@ -412,7 +497,7 @@
 			Get up and running in minutes
 		</h2>
 
-		<div class="grid gap-4 sm:grid-cols-3">
+		<div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
 
 			<!-- Getting Started -->
 			<a
@@ -507,6 +592,38 @@
 				</div>
 				<p class="text-xs leading-relaxed" style="color: var(--color-text-muted);">
 					All 15 docs-mode MCP tools with parameters, examples, and error codes.
+				</p>
+			</a>
+
+			<!-- Live & Traffic Tools -->
+			<a
+				href="{base}/docs/mcp-tools-simconnect"
+				class="group block rounded-lg p-5 transition-colors"
+				style="background-color: var(--color-bg-secondary);"
+				onmouseenter={(e) => { (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--color-bg-tertiary)'; }}
+				onmouseleave={(e) => { (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--color-bg-secondary)'; }}
+			>
+				<div class="mb-2 flex items-center justify-between">
+					<span class="text-sm font-semibold" style="color: var(--color-text-primary);">Live &amp; Traffic Tools</span>
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						width="14"
+						height="14"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						style="color: var(--color-text-muted);"
+						aria-hidden="true"
+					>
+						<line x1="5" y1="12" x2="19" y2="12" />
+						<polyline points="12 5 19 12 12 19" />
+					</svg>
+				</div>
+				<p class="text-xs leading-relaxed" style="color: var(--color-text-muted);">
+					All 45 simconnect-mode tools: live data, airports, AI traffic, ATC and schedules.
 				</p>
 			</a>
 

@@ -149,7 +149,7 @@ All paginated `list_*` tools return an envelope (`items`, `page`, `page_size`, `
 
 **Go library guides**
 
-The 33 guides of the `github.com/mrlm-net/simconnect` Go library (client, manager, facilities, `pkg/airport`, `pkg/nav`, `pkg/traffic`) are embedded at the library version the server is built with — currently **v0.15.0**. The `/health` response (docs and both modes) reports it as `library_version`.
+The 35 guides of the `github.com/mrlm-net/simconnect` Go library (client, manager, facilities, `pkg/airport`, `pkg/nav`, `pkg/traffic`) are embedded at the library version the server is built with — currently **v0.16.0**. The `/health` response (docs and both modes) reports it as `library_version`.
 
 | Tool | Description |
 |------|-------------|

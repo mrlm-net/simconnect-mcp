@@ -1,7 +1,7 @@
 ---
 title: "Weather, Runway in Use & ATIS"
 description: "Read the weather with pkg/nav, choose the runway in use from the wind and broadcast an ICAO style ATIS."
-order: 1
+order: 2
 section: "nav"
 ---
 
@@ -19,8 +19,10 @@ import "github.com/mrlm-net/simconnect/pkg/nav"
 | `WeatherReader` | Reads the ambient weather at the user aircraft from your message loop |
 | `StaticWeather` | Weather set by the application (tests, fixed scenarios) |
 | `ActiveRunways` | Departure and arrival runway ends for the wind, with an approach hint |
+| `RunwaySelector` | Keeps the runway in use until it is out of limits or another has been better for a while |
 | `ATIS` | One broadcast: `Text()` with digits, `Spoken()` spelled for a voice |
 | `ATISService` | Keeps the current ATIS and advances its letter on significant changes |
+
 
 ## Reading the weather
 
@@ -50,6 +52,8 @@ It reads these SimVars of the user aircraft (`SIMCONNECT_OBJECT_ID_USER`):
 
 **Limitation:** SimConnect gives the ambient weather where the user aircraft is, not per airport. That is the airport's weather while the user is on the ground there or close by, which is the case when the airport is the world centre around the user; for other airports it is only an approximation. Gusts, ceiling and dewpoint have no SimVar: the reader leaves `GustKts` and `CeilingFt` at 0 and `DewpointC` NaN, and the ATIS leaves them out. Set them yourself (or build the whole `Weather` with `StaticWeather`) when you have them from elsewhere.
 
+The same `Weather` sets the spacing on final: `traffic.ConditionsFrom(weather, runwayHeadingTrue)` turns it into approach conditions (low visibility, runway surface, headwind), see [Weather on final](traffic-separation.md#weather-on-final).
+
 ## Runway in use
 
 ```go
@@ -68,6 +72,19 @@ For every runway end of the layout (at least `MinLengthM` long), the headwind an
 3. When no end is within the limits, the one with the most headwind is taken and `WithinLimits` is false.
 
 `PreferredArrival` gives arrivals their own preference list, for split operations (`RunwayUse.Single()` is then false). `Approach` is `ApproachILS` when visibility is below 5000 m or the ceiling below 1500 ft, else `ApproachVisual` ("visual/RNAV"); pick the actual procedure from `airport.Procedures`.
+
+### Keeping the runway in use
+
+An airport does not change runways with every wind shift. `RunwaySelector` keeps the runway in use until one of two things happens:
+- the runway in use is out of its tailwind or crosswind limits, gusts included (`MaxTailwindKts`, `MaxCrosswindKts`);
+- another runway has been the better choice for `ChangeAfter` (`RunwayChangeAfter`, 10 min).
+
+```go
+var sel nav.RunwaySelector // one per airport, kept
+use := sel.Choose(time.Now(), layout, weather, limits)
+```
+
+While it holds, the headwind and crosswind it reports are those of the runway kept. The airport map uses a selector per airport for traffic and for the Charts panel. Near a tailwind limit in light, variable wind, the runway had flipped between 06 and 24 from one minute to the next.
 
 ## ATIS
 

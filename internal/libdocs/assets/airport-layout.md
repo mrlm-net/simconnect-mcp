@@ -215,7 +215,9 @@ All except `ErrUnknownTaxiway` wrap `ErrNoRoute`. These errors appear only when 
 
 ### Runway entries and exits
 
-`RunwayEntries("24")` lists the taxiways onto a runway end for departures, nearest the threshold first, with the runway remaining ahead of each (`Remaining`) and the turn onto the runway (`Angle`). `RunwayExits("24")` lists the exits for landings on it. Both leave out taxiways that meet the runway at more than `MaxExitAngle` (90°): they point back along the runway. An entry onto 24 is an exit for landings on 06 driven the other way.
+`RunwayEntries("24")` lists the taxiways onto a runway end for departures, nearest the threshold first, with the runway remaining ahead of each (`Remaining`) and the turn onto the runway (`Angle`). `RunwayExits("24")` lists the exits for landings on it. An entry onto 24 is an exit for landings on 06 driven the other way. Exits turning more than `MaxExitAngle` (90°) point back along the runway and are left out. A departure at taxi speed turns sharper: entries may turn up to `MaxEntryAngle` (135°), because threshold entries often meet the runway square or slightly back (LKPR 12 at L, 120°).
+
+Scenery data sometimes draws a taxiway ending on another node without sharing it: at LKPR the F lead-in ends on the 06 centreline beside the runway node. `BuildGraph` joins a dead end to another node within 3 m, so the lead-in reaches the runway.
 
 ```go
 entries, _ := g.RunwayEntries("24") // A (3510 m ahead), B (2406 m), L (1549 m) at LKPR
@@ -265,7 +267,7 @@ arr, _ := p.Arrival("06", "GOLOP")
 // at or above 1219 m (4000 ft) from PR741 to FF06, the threshold RW06 the MAP.
 ```
 
-Not in the simulator's data: STAR altitude constraints at LKPR are empty (the AIP chart has them), and the `HOLDING_PATTERN` fields are rejected by MSFS 2024 — do not request them.
+Not in the simulator's data: STAR altitude constraints at LKPR are empty (the AIP chart has them), and the `HOLDING_PATTERN` fields are rejected by MSFS 2024 — do not request them. `pkg/traffic` builds its own holds on STAR fixes instead ([Holding](traffic-separation.md#holding)).
 
 ## Airport limits
 
@@ -279,7 +281,7 @@ Not in the simulator's data: STAR altitude constraints at LKPR are empty (the AI
 | `PreferredRunways` | `KnownLimits` (LKPR 24, then 06) | none |
 | `MSAFt`, `NoReverseThrust` | `KnownLimits` | unknown / false |
 
-At LKPR the SIDs climb to 1700 ft on the runway heading first; the field is at about 1200 ft, so the hand-over stays at the 1500 ft floor. Pass the limits to `traffic.TaxiRequest.Airport` / `ArrivalRequest.Airport`, and `nav.RunwayLimitsFrom(lim)` gives the preferential runways to `nav.ActiveRunways`. `Graph.Apron(node)` reports a stand's junction with the taxilane, where `ApronMaxKts` applies.
+At LKPR the SIDs climb to 1700 ft on the runway heading first; the field is at about 1200 ft, so the hand-over stays at the 1500 ft floor. Pass the limits to `traffic.TaxiRequest.Airport` / `ArrivalRequest.Airport`, and `nav.RunwayLimitsFrom(lim)` gives the preferential runways to `nav.ActiveRunways` (or to a `nav.RunwaySelector`, which keeps the runway in use, see [Keeping the runway in use](nav-weather.md#keeping-the-runway-in-use)). `Graph.Apron(node)` reports a stand's junction with the taxilane, where `ApronMaxKts` applies.
 
 ```go
 lim := airport.LimitsFor(layout, &procs) // LKPR: TA 5000, hand-over 1500 ft, 24 then 06
@@ -292,4 +294,4 @@ use := nav.ActiveRunways(layout, weather, nav.RunwayLimitsFrom(lim))
 
 The sidebar has one tab per task: **Traffic** (new flights, aircraft cards with their clearances, the [ATC game](atc-game.md)), **Charts** (procedures), **Layers** (airport data, live traffic, safe zones, raw TYPE tables) and **?** (a quick reference). Map buttons: ✈ your aircraft, ⛶ full screen with the panel, ◨ hide or show the panel.
 
-To drive an AI aircraft along a route, see [Departure Taxi](traffic-taxi.md).
+To drive an AI aircraft along a route, see [Departure Taxi](traffic-taxi.md). The map's scheduled traffic, world view and landing sequence are described in [Traffic Manager](traffic-manager.md#on-the-airport-map), [Traffic Picture](traffic-picture.md#on-the-airport-map) and [Airborne Separation](traffic-separation.md#the-landing-sequence).

@@ -14,7 +14,7 @@ This guide walks you through installing the library, connecting to Microsoft Fli
 - **Windows only.** SimConnect is a Windows-native DLL. The library will not compile on other platforms.
 - **Go 1.27+**
 - **Microsoft Flight Simulator 2020 or 2024** installed and running when you test your add-on.
-- **SimConnect.dll** — bundled with MSFS. The library auto-detects it from common SDK installation paths. You can also set the `SIMCONNECT_DLL` environment variable or pass `simconnect.ClientWithDLLPath(...)` to override detection.
+- **SimConnect.dll** — bundled with MSFS. By default the library loads `C:/MSFS 2024 SDK/SimConnect SDK/lib/SimConnect.dll`. Pass `simconnect.ClientWithDLLPath(...)` to use another path, or `simconnect.ClientWithAutoDetect()` to search the `SIMCONNECT_DLL` variable, the SDK root variables and common SDK installation paths.
 
 ## Install
 
@@ -83,8 +83,8 @@ import (
 
 // IDs can be any uint32 in the range 1–999,999,899.
 const (
-    PositionDefID uint32 = 1000
-    PositionReqID uint32 = 1001
+    PositionDefID = 1000
+    PositionReqID = 1001
 )
 
 // AircraftPosition must match the definition order and types exactly.
@@ -160,6 +160,15 @@ Use `engine.BytesToString(field[:])` to convert a fixed-size byte array to a Go 
 > **Note:** `SIMCONNECT_PERIOD_ONCE` delivers a single response and stops. For continuous updates, use `SIMCONNECT_PERIOD_SECOND` or `SIMCONNECT_PERIOD_SIM_FRAME` with `SIMCONNECT_DATA_REQUEST_FLAG_CHANGED` to receive data only when a value changes.
 
 ## Next Steps
+
+To see what the SDK can do, run the airport map. It is the main example and the tool the SDK is debugged with: the ground layout of an airport, taxi routing, AI traffic, the landing sequence and the tower on a live map.
+
+```bash
+go run ./examples/airport-map
+# open http://127.0.0.1:8080/?icao=LKPR
+```
+
+[Examples](examples.md) has a tour of it and a line on every other example.
 
 - [Configuration](config-client.md) — DLL path, heartbeat frequency, buffer size, logging
 - [Engine/Client Usage](usage-client.md) — Full API reference: events, facilities, AI traffic, flight plans

@@ -8,7 +8,7 @@ Full release history with release notes is also available on the [GitHub Release
 
 ### Added
 
-- `list_library_guides`, `get_library_guide`, and `search_library_docs` tools (docs and both modes) — serve the 33 guides of the `github.com/mrlm-net/simconnect` Go library (client, manager, facilities, `pkg/airport`, `pkg/nav`, `pkg/traffic`), embedded at the library version in `go.mod`; `get_library_guide` reads a whole guide or a single `##` chapter by heading or unique prefix, `search_library_docs` requires every query word to appear in a chapter, its heading, or the guide title
+- `list_library_guides`, `get_library_guide`, and `search_library_docs` tools (docs and both modes) — serve the 35 guides of the `github.com/mrlm-net/simconnect` Go library (client, manager, facilities, `pkg/airport`, `pkg/nav`, `pkg/traffic`, airborne separation, examples), embedded at the library version in `go.mod`; `get_library_guide` reads a whole guide or a single `##` chapter by heading or unique prefix, `search_library_docs` requires every query word to appear in a chapter, its heading, or the guide title
 - `/health` in docs and both modes now reports `library_version`
 - Library guides are refreshed with `go generate ./internal/libdocs/`; a test fails if the embedded guides drift from the library version in `go.mod`
 - Airport procedures & ground tools (simconnect and both modes, Windows): `get_airport_procedures` (SIDs, STARs and approaches, or one resolved into its points), `plan_taxi_route` (ATC-style taxi route between a stand and a runway, departure or arrival), `get_runway_entries_exits`, `find_stands` (stands that fit a wing span, airline, gates only)
@@ -23,6 +23,12 @@ Full release history with release notes is also available on the [GitHub Release
 - Bridge SimConnect data definition and request IDs now start at 1,000,002, clear of the library components' fixed default IDs (`airport.ProcedureLoader` uses 8400–8508)
 - Upgraded `github.com/mrlm-net/simconnect` SDK dependency from v0.6.0 to v0.6.1 — empty unit strings in data definitions now select the SimConnect default unit instead of raising `UNRECOGNIZED_ID` (mrlm-net/simconnect#263)
 - Upgraded `github.com/mrlm-net/simconnect` SDK dependency from v0.6.1 to v0.15.0
+- Upgraded `github.com/mrlm-net/simconnect` to v0.16.0 (airborne ATC). The traffic tools fly better as they are:
+  - turns are the airframe's standard turn instead of MSFS AI's late hard turns at waypoints;
+  - no height step when the injected final takes over;
+  - an injected take-off builds up as the engines spool;
+  - pushbacks give way to each other;
+  - taxi clearances leave out short stub taxiways.
 - Minimum Go version raised to 1.27.1 (was 1.25 with a `go1.25.8` toolchain); Docker builder image moved to `golang:1.27-alpine`
 
 ### Fixed

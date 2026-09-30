@@ -190,7 +190,8 @@ Claude calls `get_sim_state` to retrieve the current connection status and fligh
 Claude calls `start_schedule`. The server builds the day's schedule for LKPR and, on its own, keeps it running:
 
 - departures appear on a free stand 10 minutes before their STD and push back at it;
-- arrivals appear at a STAR entry in time for their STA;
+- arrivals appear in the air on their flight plan and are handed to the arrival controller at their STAR entry;
+- overflights cross the area at cruise level;
 - the tower clears them to cross, line up and take off, and the landing sequence spaces the arrivals.
 
 Claude follows the flights with `get_schedule` and `get_atc_log`, and ends the run with `stop_schedule`.

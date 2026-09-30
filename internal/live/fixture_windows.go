@@ -142,6 +142,7 @@ type FixtureTraffic struct {
 	ApproachErr  error
 	Departures   []DepartureSpec
 	Arrivals     []ArrivalSpec
+	Enroute      []EnrouteSpec
 	flights      []FlightView
 }
 
@@ -171,6 +172,18 @@ func (f *FixtureTraffic) SpawnArrival(_ context.Context, s ArrivalSpec) (FlightV
 	f.Arrivals = append(f.Arrivals, s)
 	v := FlightView{Callsign: s.Callsign, Kind: "arrival", ICAO: s.Graph.Layout.ICAO, Stand: s.Stand, Runway: s.Runway,
 		Procedure: s.STAR, State: "spawning", Actions: []string{"remove"}}
+	f.flights = append(f.flights, v)
+	return v, nil
+}
+
+func (f *FixtureTraffic) SpawnEnroute(_ context.Context, s EnrouteSpec) (FlightView, error) {
+	f.mu.Lock()
+	defer f.mu.Unlock()
+	f.Enroute = append(f.Enroute, s)
+	v := FlightView{Callsign: s.Callsign, Kind: s.Kind, ICAO: s.ICAO, Procedure: s.Plan, State: "enroute", Actions: []string{"remove"}}
+	if len(s.Route) > 0 {
+		v.Position, v.AltFt = s.Route[0].Position, s.Route[0].AltFt
+	}
 	f.flights = append(f.flights, v)
 	return v, nil
 }

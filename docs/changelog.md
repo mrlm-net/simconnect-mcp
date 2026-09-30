@@ -12,6 +12,10 @@ All notable changes to SimConnect MCP are documented here.
 ### Added
 
 - Turnarounds in scheduled traffic: an arrival whose airline and type depart again 40 min to 3 h after its STA stays on its stand and becomes that departure, the same aircraft, instead of a new aircraft on another stand. `spawn_departure` takes `turnaround_of` (one of our arrivals parked at the airport) to do the same by hand.
+- En route arrivals and overflights in scheduled traffic:
+  - **Arrivals** appear in the air 45 minutes before their STA, on a flight plan from their origin to the runway in use, and fly to their STAR entry as MSFS AI. There they are handed to an arrival controller flying the same STAR. An arrival that can't fly en route appears at its STAR entry as before.
+  - **Overflights** cross the area within 100 NM of the first airport, between airports outside it. `get_schedule` lists them under `overflights`.
+  - En route aircraft are created airborne as non-ATC AI and released to a waypoint chain, because MSFS 2024 places an enroute ATC aircraft on the ground at its departure airport.
 
 ## [0.7.0] - 2026-09-30
 

@@ -12,6 +12,7 @@ import (
 
 	"github.com/mrlm-net/simconnect-mcp/internal/live"
 	"github.com/mrlm-net/simconnect-mcp/internal/mcpadapter"
+	"github.com/mrlm-net/simconnect/pkg/airport"
 	"github.com/mrlm-net/simconnect/pkg/traffic"
 )
 
@@ -22,8 +23,8 @@ import (
 // airline and type that departs again 40 minutes to 3 hours later turns
 // around: it stays on its stand and becomes that departure. The flights are
 // ours and not held for clearances, so the runtime's tower and landing
-// sequences clear and sequence them. (No en route arrivals yet: an arrival
-// appears at its STAR.)
+// sequences clear and sequence them. Arrivals fly en route before their
+// STAR entry, and overflights cross the area (live_schedule_enroute.go).
 
 // scheduleRunner is the TrafficManager and the Spawner it spawns through.
 type scheduleRunner struct {
@@ -37,9 +38,14 @@ type scheduleRunner struct {
 	stop    chan struct{}
 	status  map[string]traffic.FlightStatus // last reported, by call sign
 	clock   func() time.Time                // time.Now; tests set it
+	// En route flights by call sign; the schedule's airports and the
+	// first one's position (the overflights' area).
+	enroute  map[string]*enrouteFlight
+	airports []string
+	centre   airport.LatLon
 }
 
-// The manager's settings for the MCP: en route arrivals off (see above), at most maxScheduled at once (the runtime keeps 32).
+// The manager's settings for the MCP: at most maxScheduled at once (the runtime keeps 32).
 const (
 	maxScheduled       = 24
 	scheduleTick       = time.Second
@@ -47,13 +53,29 @@ const (
 )
 
 func newScheduleRunner(src live.Source, tr live.Traffic) *scheduleRunner {
-	return &scheduleRunner{src: src, tr: tr, status: map[string]traffic.FlightStatus{}, clock: time.Now}
+	return &scheduleRunner{src: src, tr: tr, status: map[string]traffic.FlightStatus{}, clock: time.Now, enroute: map[string]*enrouteFlight{}}
 }
 
 // Spawn implements traffic.Spawner: in the background, the way
-// spawn_departure and spawn_arrival would, not held for clearances.
+// spawn_departure and spawn_arrival would, not held for clearances; en
+// route in the air on its flight plan.
 func (r *scheduleRunner) Spawn(f traffic.ManagedFlight) {
 	go func() {
+		r.mu.Lock()
+		mgr := r.mgr
+		r.mu.Unlock()
+		if mgr == nil {
+			return
+		}
+		if f.Stage == "enroute" {
+			v, err := r.spawnEnroute(context.Background(), f, mgr.Options().ArrivalLead)
+			if err != nil {
+				mgr.Failed(f.Callsign, err, r.clock())
+				return
+			}
+			mgr.Describe(f.Callsign, v.Model, "", "")
+			return
+		}
 		args := map[string]any{"icao": f.Airport, "callsign": f.Callsign, "aircraft_type": f.Type}
 		var v live.FlightView
 		var bad *mcpadapter.CallToolResult
@@ -66,12 +88,6 @@ func (r *scheduleRunner) Spawn(f traffic.ManagedFlight) {
 		} else {
 			args["hold_for_clearance"] = false
 			v, bad = spawnArrivalFrom(context.Background(), r.src, r.tr, args)
-		}
-		r.mu.Lock()
-		mgr := r.mgr
-		r.mu.Unlock()
-		if mgr == nil {
-			return
 		}
 		now := r.clock()
 		if bad != nil {
@@ -105,6 +121,8 @@ func flightStatus(v live.FlightView) (traffic.FlightStatus, bool, error) {
 			return 0, false, errors.New(v.Error)
 		}
 		return 0, false, errors.New(v.State)
+	case "enroute":
+		return traffic.FlightEnroute, true, nil
 	}
 	if v.Kind == "departure" {
 		switch v.State {
@@ -142,7 +160,9 @@ func (r *scheduleRunner) tick(now time.Time) {
 	for _, f := range mgr.Flights() {
 		ours[f.Callsign] = true
 	}
+	views := map[string]live.FlightView{}
 	for _, v := range r.tr.Flights() {
+		views[v.Callsign] = v
 		if !ours[v.Callsign] {
 			continue // spawned by hand
 		}
@@ -161,14 +181,16 @@ func (r *scheduleRunner) tick(now time.Time) {
 			mgr.Update(v.Callsign, s, now)
 		}
 	}
+	r.handovers(now, views)
 	mgr.Tick(now)
 }
 
-// start runs the schedule for airports, creating the manager on first use.
-func (r *scheduleRunner) start(airports []string, density float64, seed uint64, maxAircraft int) {
+// start runs the schedule for airports, creating the manager on first use;
+// centre is the first airport's position (zero: no overflights).
+func (r *scheduleRunner) start(airports []string, centre airport.LatLon, density float64, seed uint64, maxAircraft int) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
-	r.density, r.seed = density, seed
+	r.density, r.seed, r.airports, r.centre = density, seed, airports, centre
 	if r.mgr == nil {
 		cfg := traffic.DefaultScheduleConfig()
 		r.mgr = traffic.NewTrafficManager(r, traffic.ManagerOptions{
@@ -176,7 +198,9 @@ func (r *scheduleRunner) start(airports []string, density float64, seed uint64, 
 				// Under the manager's lock: reads the runner's settings only.
 				return traffic.Schedule(cfg, traffic.ScheduleOptions{Focus: airports, Density: r.density, Seed: r.seed}, from, to)
 			},
-			EnrouteLead:   -1, // arrivals appear at their STAR entry
+			Overflights: func(from, to time.Time) []traffic.Flight {
+				return r.overflights(cfg, from, to)
+			},
 			MaxAircraft:   maxAircraft,
 			MaxPerAirport: min(maxAircraft, defaultMaxPerField),
 		}, airports...)
@@ -241,8 +265,9 @@ func RegisterLiveScheduleTools(mcp *mcpadapter.Server, src live.Source, tr live.
 func registerStartSchedule(mcp *mcpadapter.Server, r *scheduleRunner) {
 	tool := mcpadapter.NewTool("start_schedule").
 		Description("Run a realistic airline schedule at airports in the simulator (this adds and removes aircraft): " +
-			"departures appear on their stands 10 minutes before their STD and push at it, arrivals appear at a STAR entry " +
-			"25 minutes before their STA; the tower and landing sequence clear and sequence them (see get_landing_sequence), " +
+			"departures appear on their stands 10 minutes before their STD and push at it, arrivals appear in the air on their " +
+			"flight plan 45 minutes before their STA and are handed to an arrival controller at their STAR entry (at the entry " +
+			"25 minutes before when they cannot fly en route), and overflights cross within 100 NM of the first airport; the tower and landing sequence clear and sequence them (see get_landing_sequence), " +
 			"and departed and parked aircraft are removed. An arrival whose airline and type depart again 40 min to 3 h " +
 			"later turns around on its stand into that departure. Airlines, types, routes and time-of-day waves as generate_schedule. " +
 			"Calling it again changes the airports and settings. The airports must be loaded around the user aircraft.").
@@ -268,7 +293,11 @@ func registerStartSchedule(mcp *mcpadapter.Server, r *scheduleRunner) {
 		if density < 0.1 || density > 3 || maxAc < 1 || maxAc > maxScheduled {
 			return mcpadapter.ErrorResult(fmt.Sprintf("INVALID_ARGUMENT: density 0.1–3, max_aircraft 1–%d", maxScheduled)), nil
 		}
-		r.start(airports, density, uint64(numArg(args, "seed", 1)), maxAc)
+		var centre airport.LatLon
+		if l, err := r.src.Layout(ctx, airports[0]); err == nil {
+			centre = airport.LatLon{Lat: l.Latitude, Lon: l.Longitude}
+		}
+		r.start(airports, centre, density, uint64(numArg(args, "seed", 1)), maxAc)
 		return scheduleView(r, "")
 	})
 }
@@ -354,6 +383,12 @@ func scheduleView(r *scheduleRunner, icao string) (*mcpadapter.CallToolResult, e
 		d, ar := mgr.Board(a)
 		boards = append(boards, board{a, conv(d, true), conv(ar, false)})
 	}
+	over := []row{}
+	for _, f := range mgr.Flights() {
+		if f.Overflight() {
+			over = append(over, row{f.Callsign, f.Type, f.Origin, f.Destination, hhmm(f.Enter), "", f.Status.String(), "", "", f.Note})
+		}
+	}
 	return mcpadapter.JSONResult(map[string]any{"running": running && mgr.Enabled(), "airports": mgr.Airports(),
-		"active": mgr.Active(), "max_aircraft": mgr.Options().MaxAircraft, "boards": boards})
+		"active": mgr.Active(), "max_aircraft": mgr.Options().MaxAircraft, "boards": boards, "overflights": over})
 }

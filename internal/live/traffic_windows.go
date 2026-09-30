@@ -27,6 +27,9 @@ type Traffic interface {
 	SpawnDeparture(ctx context.Context, s DepartureSpec) (FlightView, error)
 	// SpawnArrival puts an aircraft on its approach, to land and taxi in.
 	SpawnArrival(ctx context.Context, s ArrivalSpec) (FlightView, error)
+	// SpawnEnroute puts an aircraft in the air on its route, flown by MSFS AI
+	// (enroute_windows.go).
+	SpawnEnroute(ctx context.Context, s EnrouteSpec) (FlightView, error)
 	// Flights lists our aircraft.
 	Flights() []FlightView
 	// Clear gives one of our aircraft a clearance or instruction (Actions).
@@ -87,7 +90,7 @@ type ArrivalSpec struct {
 // FlightView is one of our aircraft as the tools show it.
 type FlightView struct {
 	Callsign       string         `json:"callsign"`
-	Kind           string         `json:"kind"` // departure | arrival
+	Kind           string         `json:"kind"` // departure | arrival | overflight
 	ICAO           string         `json:"icao"`
 	Model          string         `json:"model"`
 	Stand          string         `json:"stand"`
@@ -102,6 +105,7 @@ type FlightView struct {
 	Position       airport.LatLon `json:"position"`
 	Heading        float64        `json:"heading"`
 	GroundSpeed    float64        `json:"ground_speed_kts"`
+	AltFt          float64        `json:"alt_ft,omitempty"` // en route: altitude MSL
 	AGLFt          float64        `json:"agl_ft,omitempty"`
 	OnGround       bool           `json:"on_ground"`
 	Lights         string         `json:"lights,omitempty"`
@@ -144,6 +148,12 @@ type flight struct {
 	left    bool
 	defBase uint32
 	id      uint32
+	// enroute: flown by MSFS AI on waypoints, no controller; reqID and asked
+	// its creation request.
+	enroute   bool
+	reqID     uint32
+	asked     time.Time
+	waypoints []types.SIMCONNECT_DATA_WAYPOINT
 	// held: spawned holding for every clearance — the runtime's tower and
 	// sequencing leave it to the caller (it counts as other traffic).
 	held bool
@@ -171,6 +181,11 @@ type trafficState struct {
 	tmu     sync.Mutex
 	flights map[string]*flight // by call sign
 
+	// En route creations awaiting their object, by request ID.
+	pending     map[uint32]*flight
+	nextReq     uint32
+	waypointDef bool
+
 	atc *atcState // the towers and landing sequences (atc_windows.go)
 }
 
@@ -185,6 +200,7 @@ func newTrafficState(client engine.Client) *trafficState {
 		stands:  map[string]*traffic.StandAllocator{},
 		models:  map[string]bool{},
 		flights: map[string]*flight{},
+		pending: map[uint32]*flight{},
 	}
 }
 
@@ -260,6 +276,10 @@ func (r *Runtime) handleTrafficLocked(msg engine.Message) bool {
 			r.addModelsLocked(msg)
 			return true
 		}
+	case types.SIMCONNECT_RECV_ID_ASSIGNED_OBJECT_ID:
+		if r.enrouteCreatedLocked(msg) {
+			return true
+		}
 	case types.SIMCONNECT_RECV_ID_SIMOBJECT_DATA_BYTYPE:
 		if d := msg.AsSimObjectDataBType(); uint32(d.DwRequestID) == scanReqID {
 			r.addScanLocked(d)
@@ -307,6 +327,7 @@ func (r *Runtime) tickTrafficLocked(now time.Time) {
 		return
 	}
 	r.tickATCLocked(now)
+	r.tickEnrouteLocked(now)
 	if t.scanOn {
 		t.scan = t.scan[:0]
 		_ = r.mgr.RequestDataOnSimObjectType(scanReqID, scanDefID, scanRadiusM, types.SIMCONNECT_SIMOBJECT_TYPE_AIRCRAFT)
@@ -855,14 +876,19 @@ func (r *Runtime) Clear(callsign, action string) (FlightView, error) {
 // removeFlight takes the aircraft out of the simulator and forgets it.
 func (r *Runtime) removeFlight(f *flight) error {
 	var err error
-	if f.dep != nil {
+	switch {
+	case f.enroute:
+		err = r.removeEnroute(f)
+	case f.dep != nil:
 		err = f.dep.Cancel()
-	} else {
+	default:
 		err = f.arr.Cancel()
 	}
-	f.alloc.ReleaseOwner(f.view.Callsign)
-	if f.standOwner != "" && f.standOwner != f.view.Callsign {
-		f.alloc.ReleaseOwner(f.standOwner) // a turnaround's stand
+	if f.alloc != nil {
+		f.alloc.ReleaseOwner(f.view.Callsign)
+		if f.standOwner != "" && f.standOwner != f.view.Callsign {
+			f.alloc.ReleaseOwner(f.standOwner) // a turnaround's stand
+		}
 	}
 	t := f.ts
 	if f.id != 0 {

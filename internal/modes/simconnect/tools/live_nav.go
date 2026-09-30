@@ -479,69 +479,15 @@ func registerPlanFlight(mcp *mcpadapter.Server, src live.Source) {
 		if bad != nil {
 			return bad, nil
 		}
-		ctx, cancel := context.WithTimeout(ctx, planTimeout)
-		defer cancel()
-
-		var warnings []string
-		info := func(icao string) (nav.AirportInfo, *airport.Procedures, error) {
-			l, err := src.Layout(ctx, icao)
-			if err != nil {
-				return nav.AirportInfo{}, nil, err
-			}
-			p, err := src.Procedures(ctx, icao)
-			if err != nil {
-				warnings = append(warnings, fmt.Sprintf("%s: no procedures (%v); joins the airways direct", icao, err))
-				p = nil
-			}
-			return nav.AirportInfo{ICAO: icao, Name: l.Name, Layout: l, Procedures: p}, p, nil
+		p := planArgs{Type: strings.ToUpper(strArg(args, "aircraft_type")), CruiseFL: int(numArg(args, "cruise_fl", 0)),
+			DepartureRunway: strings.ToUpper(strArg(args, "departure_runway")), ArrivalRunway: strings.ToUpper(strArg(args, "arrival_runway")),
+			AlternateFuelKg: numArg(args, "alternate_fuel_kg", 0)}
+		if b, ok := args["airways"].(bool); ok && !b {
+			p.Direct = true
 		}
-		di, dp, err := info(dep)
-		if err != nil {
-			return sourceError("departure "+dep, err), nil
-		}
-		ai, ap, err := info(arr)
-		if err != nil {
-			return sourceError("arrival "+arr, err), nil
-		}
-
-		req := nav.FlightPlanRequest{
-			Departure: di, Arrival: ai,
-			Type:            strings.ToUpper(strArg(args, "aircraft_type")),
-			CruiseFL:        int(numArg(args, "cruise_fl", 0)),
-			DepartureRunway: strings.ToUpper(strArg(args, "departure_runway")),
-			ArrivalRunway:   strings.ToUpper(strArg(args, "arrival_runway")),
-			DepLimits:       nav.RunwayLimitsFrom(airport.LimitsFor(di.Layout, dp)),
-			ArrLimits:       nav.RunwayLimitsFrom(airport.LimitsFor(ai.Layout, ap)),
-			AlternateFuelKg: numArg(args, "alternate_fuel_kg", 0),
-		}
-		if req.DepartureRunway == "" {
-			if w, err := src.Weather(ctx); err == nil {
-				req.DepWeather = &w
-			} else {
-				warnings = append(warnings, "no weather; the departure runway is chosen for calm wind")
-			}
-		}
-
-		var graph *nav.AirwayGraph
-		if b, ok := args["airways"].(bool); !ok || b {
-			a, b := airport.LatLon{Lat: di.Layout.Latitude, Lon: di.Layout.Longitude}, airport.LatLon{Lat: ai.Layout.Latitude, Lon: ai.Layout.Longitude}
-			center, radius := crawlArea(a, b, 100)
-			seeds := append(procedureSeeds(dp), procedureSeeds(ap)...)
-			if len(seeds) == 0 {
-				warnings = append(warnings, "no SID or STAR fixes to start the airway crawl from; direct")
-			} else if g, err := src.Airways(ctx, center, radius, seeds); err == nil {
-				graph = g
-			} else {
-				warnings = append(warnings, fmt.Sprintf("airways unavailable (%v); direct", err))
-			}
-			if calc.HaversineNM(a.Lat, a.Lon, b.Lat, b.Lon)/2+100 > maxCrawlRadiusNM {
-				warnings = append(warnings, fmt.Sprintf("airways crawled within %.0f NM of the midpoint only; direct beyond", maxCrawlRadiusNM))
-			}
-		}
-
-		fp, err := nav.Plan(req, graph)
-		if err != nil {
-			return mcpadapter.ErrorResult(fmt.Sprintf("PLAN_ERROR: %v", err)), nil
+		fp, warnings, bad := planBetween(ctx, src, dep, arr, p)
+		if bad != nil {
+			return bad, nil
 		}
 
 		wps := make([]planWaypoint, 0, len(fp.Waypoints))
@@ -584,4 +530,83 @@ func registerPlanFlight(mcp *mcpadapter.Server, src live.Source) {
 		}
 		return mcpadapter.JSONResult(out)
 	})
+}
+
+// planArgs are plan_flight's options.
+type planArgs struct {
+	Type                           string
+	CruiseFL                       int
+	DepartureRunway, ArrivalRunway string
+	Direct                         bool // no airways: direct between SID and STAR
+	AlternateFuelKg                float64
+}
+
+// planBetween plans an IFR flight from dep to arr from the simulator's
+// navdata: the plan, warnings, or the tool's error result.
+func planBetween(ctx context.Context, src live.Source, dep, arr string, p planArgs) (*nav.FlightPlan, []string, *mcpadapter.CallToolResult) {
+	ctx, cancel := context.WithTimeout(ctx, planTimeout)
+	defer cancel()
+
+	var warnings []string
+	info := func(icao string) (nav.AirportInfo, *airport.Procedures, error) {
+		l, err := src.Layout(ctx, icao)
+		if err != nil {
+			return nav.AirportInfo{}, nil, err
+		}
+		p, err := src.Procedures(ctx, icao)
+		if err != nil {
+			warnings = append(warnings, fmt.Sprintf("%s: no procedures (%v); joins the airways direct", icao, err))
+			p = nil
+		}
+		return nav.AirportInfo{ICAO: icao, Name: l.Name, Layout: l, Procedures: p}, p, nil
+	}
+	di, dp, err := info(dep)
+	if err != nil {
+		return nil, nil, sourceError("departure "+dep, err)
+	}
+	ai, ap, err := info(arr)
+	if err != nil {
+		return nil, nil, sourceError("arrival "+arr, err)
+	}
+
+	req := nav.FlightPlanRequest{
+		Departure: di, Arrival: ai,
+		Type:            p.Type,
+		CruiseFL:        p.CruiseFL,
+		DepartureRunway: p.DepartureRunway,
+		ArrivalRunway:   p.ArrivalRunway,
+		DepLimits:       nav.RunwayLimitsFrom(airport.LimitsFor(di.Layout, dp)),
+		ArrLimits:       nav.RunwayLimitsFrom(airport.LimitsFor(ai.Layout, ap)),
+		AlternateFuelKg: p.AlternateFuelKg,
+	}
+	if req.DepartureRunway == "" {
+		if w, err := src.Weather(ctx); err == nil {
+			req.DepWeather = &w
+		} else {
+			warnings = append(warnings, "no weather; the departure runway is chosen for calm wind")
+		}
+	}
+
+	var graph *nav.AirwayGraph
+	if !p.Direct {
+		a, b := airport.LatLon{Lat: di.Layout.Latitude, Lon: di.Layout.Longitude}, airport.LatLon{Lat: ai.Layout.Latitude, Lon: ai.Layout.Longitude}
+		center, radius := crawlArea(a, b, 100)
+		seeds := append(procedureSeeds(dp), procedureSeeds(ap)...)
+		if len(seeds) == 0 {
+			warnings = append(warnings, "no SID or STAR fixes to start the airway crawl from; direct")
+		} else if g, err := src.Airways(ctx, center, radius, seeds); err == nil {
+			graph = g
+		} else {
+			warnings = append(warnings, fmt.Sprintf("airways unavailable (%v); direct", err))
+		}
+		if calc.HaversineNM(a.Lat, a.Lon, b.Lat, b.Lon)/2+100 > maxCrawlRadiusNM {
+			warnings = append(warnings, fmt.Sprintf("airways crawled within %.0f NM of the midpoint only; direct beyond", maxCrawlRadiusNM))
+		}
+	}
+
+	fp, err := nav.Plan(req, graph)
+	if err != nil {
+		return nil, nil, mcpadapter.ErrorResult(fmt.Sprintf("PLAN_ERROR: %v", err))
+	}
+	return fp, warnings, nil
 }

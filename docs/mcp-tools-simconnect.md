@@ -2530,14 +2530,14 @@ It returns:
 `start_schedule` runs a realistic airline schedule at airports in the simulator, using the library's `TrafficManager` and the same schedule as `generate_schedule`. What it does:
 
 - **Departures** appear on a free stand 10 minutes before their STD and push at it.
-- **Arrivals** appear at a STAR entry 25 minutes before their STA.
+- **Arrivals** appear in the air 45 minutes before their STA, on their flight plan from their origin (planned like `plan_flight`, to the runway in use), and fly to their STAR entry as MSFS AI. At the entry they are handed to an arrival controller, which flies the same STAR, approach and landing. An arrival that can't fly en route appears at its STAR entry 25 minutes before its STA instead. For example, it may have no flight plan, or be too close to the entry.
+- **Overflights** cross the area within 100 NM of the first airport, between airports outside it, and are removed as they leave it. They are listed in `get_schedule`'s `overflights`.
 - **Turnarounds:** an arrival whose airline and type depart again 40 minutes to 3 hours after its STA stays on its stand and becomes that departure. It is the same aircraft, not a new one on another stand.
 - **Clearances:** the flights are ours and not held for clearances, so the runtime's tower and landing sequences clear and sequence them (see [Airborne ATC tools](#airborne-atc-tools)).
 - **Removal:** departed and parked aircraft are removed.
 - **Spacing and limits:** spawns are spaced (arrivals 3 min apart, departures 1 min), limited to `max_aircraft`, and retried with another model or stand when a spawn fails.
 - **Late flights:** a flight that can't start in time is cancelled.
 
-Not yet: arrivals appearing en route before their STAR, and overflights.
 
 ## start_schedule
 
@@ -2559,11 +2559,12 @@ No more aircraft appear. With `remove=true` the schedule's aircraft are taken ou
 The schedule's boards. It returns:
 
 - `running`, `airports`, `active` (the schedule's aircraft in the simulator) and `max_aircraft`;
-- `boards`: per airport, `departures` and `arrivals`.
+- `boards`: per airport, `departures` and `arrivals`;
+- `overflights`: the flights crossing the area, with `scheduled` the time they enter it.
 
 Each flight has `callsign`, `type`, `from`, `to`, `scheduled` (STD or STA, UTC) and `estimate` when late. It also has:
 
-- `status`: `scheduled`, `spawning`, `boarding`, `taxiing`, `departing`, `departed`, `approaching`, `landed`, `parked`, `done` or `cancelled`;
+- `status`: `scheduled`, `spawning`, `boarding`, `taxiing`, `departing`, `departed`, `enroute`, `approaching`, `landed`, `parked`, `done` or `cancelled`;
 - `stand` and `runway`;
 - `note`: why it waits, is late or was cancelled.
 

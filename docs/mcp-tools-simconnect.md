@@ -1,13 +1,13 @@
 ---
 title: "MCP Tools — SimConnect Mode"
-description: Reference for the 29 live-data MCP tools in SimConnect mode (MCP_MODE=simconnect, Windows only).
+description: Reference for the 36 live-data and AI traffic MCP tools in SimConnect mode (MCP_MODE=simconnect, Windows only).
 order: 2
 section: reference
 ---
 
-All 29 MCP tools listed here are available when the server runs with `MCP_MODE=simconnect` (and, on Windows, with `MCP_MODE=both`, alongside the 15 docs tools — 44 in all). This mode provides live simulator data via the SimConnect SDK.
+All 36 MCP tools listed here are available when the server runs with `MCP_MODE=simconnect` (and, on Windows, with `MCP_MODE=both`, alongside the 15 docs tools — 51 in all). This mode provides live simulator data via the SimConnect SDK, and AI traffic under our control.
 
-**Both mode**: with `MCP_MODE=both` on Windows, the server registers these 19 tools alongside the 15 [docs-mode tools](/docs/mcp-tools-docs) — 34 tools in total — provided SimConnect opens at startup (10-second timeout). If the simulator cannot be reached, or on non-Windows platforms, both mode serves the 15 docs tools only; `simconnect_ready` in the `/health` response reports which case applies.
+**Both mode**: with `MCP_MODE=both` on Windows, the server registers these 36 tools alongside the 15 [docs-mode tools](/docs/mcp-tools-docs) — 51 tools in total — provided SimConnect opens at startup (10-second timeout). If the simulator cannot be reached, or on non-Windows platforms, both mode serves the 15 docs tools only; `simconnect_ready` in the `/health` response reports which case applies.
 
 **Requirements**: Windows only. Microsoft Flight Simulator 2020 or 2024 must be running with SimConnect enabled before issuing any read or transmit calls. The `get_sim_state` tool is safe to call at any time regardless of connection state.
 
@@ -46,6 +46,13 @@ Tools are called over the Model Context Protocol using JSON-RPC 2.0 with the `to
 | [`get_fix`](#get_fix) | Look up a waypoint, VOR or NDB with the airways through it |
 | [`find_airway_route`](#find_airway_route) | Find the airway route between two enroute fixes |
 | [`plan_flight`](#plan_flight) | Plan an IFR flight between two airports: runways, SID, airways, STAR, approach, profile, time and fuel |
+| [`list_aircraft_models`](#list_aircraft_models) | List the installed aircraft titles (and liveries) AI traffic can use |
+| [`spawn_departure`](#spawn_departure) | Add an AI departure of ours on a stand: pushback, taxi, line-up, take-off and SID, on clearance |
+| [`spawn_arrival`](#spawn_arrival) | Add an AI arrival of ours on a STAR or final: approach, landing, vacating and taxi to a stand |
+| [`list_our_traffic`](#list_our_traffic) | List our AI aircraft: state, position, speed, taxiway, holding point and the clearances they take now |
+| [`atc_clearance`](#atc_clearance) | Give one of our AI aircraft a clearance: pushback, taxi, cross, lineup, takeoff, hold, abort, goaround or remove |
+| [`get_traffic_picture`](#get_traffic_picture) | Every aircraft around the user aircraft or an airport, with phase and airport; the user's and ours marked |
+| [`generate_schedule`](#generate_schedule) | Generate a realistic airline schedule for airports (pure computation) |
 
 ---
 
@@ -1879,3 +1886,484 @@ Plan an IFR flight between two airports from the simulator's navdata: runways in
 - `PLAN_ERROR`: The plan or its `.pln` file could not be built.
 - `TIMEOUT`: The plan did not finish within 90 s.
 - `BRIDGE_DISCONNECTED`, `SIM_ERROR`: Not connected, or loading the flight plan into the simulator failed.
+
+---
+
+## AI traffic tools
+
+The seven tools below put AI aircraft of our own into the simulator and fly them under ATC-style control: departures push back, taxi, line up, take off and fly the SID; arrivals fly the STAR and approach, land, vacate and taxi to a stand. They are built on the [mrlm-net/simconnect](https://github.com/mrlm-net/simconnect) Go library's `pkg/traffic` and, like the tools above, are registered only with the real SimConnect bridge.
+
+> **These tools change the simulator.** `spawn_departure` and `spawn_arrival` add an aircraft to the sim; `atc_clearance` with `remove` takes it out again. `list_aircraft_models`, `list_our_traffic` and `get_traffic_picture` only read, and `generate_schedule` does not touch the simulator at all.
+
+Shared behaviour:
+
+- **The airport must be loaded around the user aircraft.** Spawns use the airport's taxi graph, stands and procedures from the simulator (see [Airport, weather and navigation tools](#airport-weather-and-navigation-tools)).
+- **Motion is injected**: the library moves each aircraft of ours along its taxi route, runway and approach (speed, heading, lights) instead of leaving it to MSFS AI.
+- **Chosen when not given**: the runway is the one in use for the weather at the user aircraft (as `get_active_runway`); the SID or STAR is the first one for the runway; the stand is a free one that fits the wing span and the call sign's airline (for arrivals, near the runway), assigned by the library's stand allocator, which also reserves each flight's stand and taxi route; the model is an installed aircraft of `aircraft_type` (default A320) in the livery of the call sign's airline — its first three letters, e.g. `CSA` in `CSA123`. `traffic.ModelsFor` ranks the type in the airline's livery first, then a type of the same size in the airline's livery, then the type in any livery.
+- **At most 32 aircraft of ours** at once. Call signs are 2–8 letters or digits and unique among ours.
+- **Clearances**: each flight lists `actions`, the `atc_clearance` actions that fit its state now (see [Clearance flow](#clearance-flow)).
+- **The traffic picture** comes from a scan of every aircraft within 80 km (about 43 NM) of the user aircraft, repeated every second once `get_traffic_picture` or a spawn has started it.
+- **Not available yet**: conflict prediction, wake-turbulence separation, approach sequencing and holding patterns are in the library's unreleased v0.16.
+
+Examples show the tool result's `text` content, formatted, from MSFS 2024 at LKPR. Long arrays are abridged (`…`).
+
+**Error codes** used by these tools:
+
+- `TRAFFIC_ERROR`: The library refused or failed: the call sign is already ours, 32 aircraft already, no free stand that fits, no installed aircraft of the type, no taxi route, or an action that does not fit the flight (the message lists the ones that do).
+- `NOT_FOUND`: The call sign is not one of ours (see `list_our_traffic`), or the airport is not in the simulator's data.
+- `INVALID_ARGUMENT`: A parameter is missing or malformed, or names something the airport does not have (runway, SID, STAR).
+- `BRIDGE_DISCONNECTED`: Not connected to the simulator.
+- `TIMEOUT`: The simulator did not answer in time (spawns: 60 s).
+
+### Clearance flow
+
+`atc_clearance` takes any action of the flight's kind; the flight's `actions` list the ones that fit now. A clearance given early means no stop at that point — `takeoff` while taxiing gives a rolling take-off. `remove` fits every state.
+
+**Departures** (`hold_for_clearances=true`)
+
+| Action | When (state) | Effect |
+|--------|--------------|--------|
+| `pushback` | `awaiting pushback` | Pushes back off the stand (`pushback`, about 3 kt, nav and beacon lights on), then `awaiting taxi` |
+| `taxi` | `awaiting pushback`, `pushback`, `awaiting taxi`, `taxiing`; `holding short` of a runway on the way | Taxis the planned route to the holding point (`taxiing`, up to about 15 kt); after `hold`, taxis on |
+| `hold` | `taxiing` | Stops where it is (0 kt) until `taxi` |
+| `cross` | `holding short` of a runway on the way | Crosses it and taxis on |
+| `lineup` | `holding short` of the departure runway | Lines up and waits (`lining up`, `lined up`) |
+| `takeoff` | `pushback`, `awaiting taxi`, `taxiing`, `holding short` of the departure runway, `lining up`, `lined up` | Takes off (`departing`) and flies the SID, then `complete` |
+| `abort` | `lining up`, `lined up`, `departing` | Rejects the take-off before V1: stops, vacates and taxis back to the holding point; past V1 it is refused and the take-off continues |
+| `remove` | any | Takes the aircraft out of the simulator |
+
+**Arrivals** (`hold_for_clearance=true`)
+
+| Action | When (state) | Effect |
+|--------|--------------|--------|
+| `goaround` | `approaching`, `landing` | Goes around before touchdown and comes back to the approach; on the runway it is refused |
+| `taxi` | `approaching`, `landing`, `rollout`, `vacating`, `awaiting taxi`, `taxiing`, `holding short` | Taxis to the stand once clear of the runway (given early: no stop); after `hold`, taxis on |
+| `hold` | `taxiing` | Stops where it is until `taxi` |
+| `cross` | `holding short` of a runway on the way | Crosses it and taxis on |
+| `remove` | any | Takes the aircraft out of the simulator |
+
+States: departures go `spawning`, `awaiting pushback`, `pushback`, `awaiting taxi`, `taxiing`, `holding short`, `lining up`, `lined up`, `departing`, `complete`; arrivals go `spawning`, `approaching`, `landing`, `rollout`, `vacating`, `awaiting taxi`, `taxiing`, `holding short`, `parking`, `parked`. Either may end `cancelled` or `failed` (see `error`). Without holding for clearances, each step clears itself after a short, varied wait.
+
+---
+
+## list_aircraft_models
+
+List the aircraft installed in the simulator that AI traffic can use, as `"title"` or `"title|livery"` — the form `spawn_departure` and `spawn_arrival` take in `model`. Without a `model`, the spawn tools pick one of `aircraft_type` in the call sign's airline livery. The simulator enumerates its aircraft once, on the first call.
+
+**Requirements**: Windows + MSFS 2020 or 2024 running with SimConnect enabled.
+
+**Parameters**
+
+| Name | Type | Required | Default | Description |
+|------|------|----------|---------|-------------|
+| `filter` | string | No | — | Words that must all appear in the title (case-insensitive), e.g. `"A320 Lufthansa"` |
+| `limit` | number | No | `100` | Maximum titles returned, 1–500 |
+
+**Returns**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `total` | number | Titles matching the filter |
+| `count` | number | Titles returned (at most `limit`) |
+| `models` | array | Titles, sorted; a title with a livery is the title, a vertical bar and the livery |
+
+**Example request**
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 30,
+  "method": "tools/call",
+  "params": {
+    "name": "list_aircraft_models",
+    "arguments": { "filter": "a320", "limit": 8 }
+  }
+}
+```
+
+**Example response** (MSFS 2024, abridged)
+
+```json
+{
+  "total": 517, "count": 8,
+  "models": [ "A320neo V2 VIP|Air Busan", … ]
+}
+```
+
+**Error codes**
+
+- `INVALID_ARGUMENT`: `limit` is outside 1–500.
+- `TIMEOUT`: The simulator did not list its aircraft within 20 s.
+- `BRIDGE_DISCONNECTED`, `TRAFFIC_ERROR`: See above.
+
+---
+
+## spawn_departure
+
+Put an AI departure under our control on a stand at an airport. It pushes back, taxis the planned route to the runway, lines up and takes off, then flies the SID. With `hold_for_clearances` (default `true`) it waits at every step for `atc_clearance` — `pushback`, `taxi`, (`cross`), `lineup`, `takeoff`; otherwise it goes by itself. Stand, runway, SID and model are chosen when not given. Follow it with `list_our_traffic`.
+
+> **Adds an aircraft to the simulator.** Take it out with `atc_clearance` `remove`.
+
+**Requirements**: Windows + MSFS 2020 or 2024 running with SimConnect enabled, and the airport loaded around the user aircraft.
+
+**Parameters**
+
+| Name | Type | Required | Default | Description |
+|------|------|----------|---------|-------------|
+| `icao` | string | Yes | — | Airport ICAO code |
+| `callsign` | string | Yes | — | Call sign, 2–8 letters or digits, e.g. `"CSA123"`; the first three letters pick the airline |
+| `stand` | string | No | free stand that fits | Stand label, e.g. `"C22"` |
+| `runway` | string | No | in use | Departure runway |
+| `entry` | string | No | full length | Runway entry taxiway for an intersection departure, e.g. `"B"` |
+| `sid` | string | No | `"auto"` | SID name, `"auto"` (the first SID for the runway) or `"none"` (climb straight ahead) |
+| `model` | string | No | chosen | Aircraft title from `list_aircraft_models`, as listed (with its livery, if any) |
+| `aircraft_type` | string | No | A320 | ICAO type to pick a model by, e.g. `"A20N"`, `"B738"` |
+| `via` | string | No | — | Taxiways to follow in order, e.g. `"F, L"` |
+| `hold_for_clearances` | boolean | No | `true` | Wait at every step for `atc_clearance` |
+
+**Returns**
+
+The flight, as in [`list_our_traffic`](#list_our_traffic): `kind` `"departure"`, airport, model, stand, runway, `entry`, `procedure` (the SID), `taxi_route`, `state` (`"spawning"` at first) and `actions`.
+
+**Example request**
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 31,
+  "method": "tools/call",
+  "params": {
+    "name": "spawn_departure",
+    "arguments": { "icao": "LKPR", "callsign": "CSA123", "aircraft_type": "A320" }
+  }
+}
+```
+
+**Example response** (MSFS 2024, abridged)
+
+```json
+{
+  "callsign": "CSA123", "kind": "departure", "icao": "LKPR",
+  "model": "FSLTL_FAIB_A320_SmartWings_CzechAirlinesLivery",
+  "stand": "A1", "runway": "06", "procedure": "ARTU5E",
+  "taxi_route": ["A1", "Z", "H", "F"],
+  "state": "spawning", "position": { "lat": …, "lon": … }, …,
+  "actions": ["remove"], "done": false
+}
+```
+
+A few seconds later `list_our_traffic` shows it `"awaiting pushback"` with actions `["pushback", "taxi", "remove"]`.
+
+**Error codes**
+
+- `INVALID_ARGUMENT`: `icao` or `callsign` missing or malformed; the airport has no such runway or SID (the message lists the runway's SIDs).
+- `TRAFFIC_ERROR`: The call sign is already ours, 32 aircraft already, no free stand that fits or an unknown or taken `stand`, no installed aircraft of the type (give `model`), or no taxi route.
+- `NOT_FOUND`, `TIMEOUT`, `BRIDGE_DISCONNECTED`: See above. Without `runway`, the weather is read to choose one.
+
+---
+
+## spawn_arrival
+
+Put an AI arrival under our control into the simulator: at the STAR's first fix (or `spawn_nm` out on final with `star="none"`), flying the STAR and the best approach, landing, vacating and taxiing to a stand. With `hold_for_clearance` (default `true`) it waits clear of the runway for `atc_clearance` `taxi` and before runway crossings; `goaround` sends it around on final. Runway, stand, STAR and model are chosen when not given. Follow it with `list_our_traffic`.
+
+> **Adds an aircraft to the simulator.** Take it out with `atc_clearance` `remove`.
+
+**Requirements**: Windows + MSFS 2020 or 2024 running with SimConnect enabled, and the airport loaded around the user aircraft.
+
+**Parameters**
+
+| Name | Type | Required | Default | Description |
+|------|------|----------|---------|-------------|
+| `icao` | string | Yes | — | Airport ICAO code |
+| `callsign` | string | Yes | — | Call sign, 2–8 letters or digits, e.g. `"DLH4AB"`; the first three letters pick the airline |
+| `runway` | string | No | in use | Landing runway |
+| `stand` | string | No | free stand that fits | Stand label; by default one near the runway |
+| `star` | string | No | `"auto"` | STAR name, `"auto"` (the first STAR for the runway) or `"none"` (straight in on final) |
+| `spawn_nm` | number | No | `5` | Straight in (`star="none"`, or no STAR for the runway): distance out on final to start, NM |
+| `model` | string | No | chosen | Aircraft title from `list_aircraft_models` |
+| `aircraft_type` | string | No | A320 | ICAO type to pick a model by |
+| `via` | string | No | — | Taxiways to follow to the stand, in order |
+| `hold_for_clearance` | boolean | No | `true` | Wait for the taxi clearance and at runway crossings |
+
+Note the singular `hold_for_clearance` here and the plural `hold_for_clearances` of `spawn_departure`.
+
+**Returns**
+
+The flight, as in [`list_our_traffic`](#list_our_traffic): `kind` `"arrival"`, model, stand, runway, `procedure` (`"STAR → approach"`, omitted when straight in), `taxi_route` from the planned runway exit, `state` and `actions`.
+
+**Example request**
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 32,
+  "method": "tools/call",
+  "params": {
+    "name": "spawn_arrival",
+    "arguments": { "icao": "LKPR", "callsign": "DLH4AB", "star": "none", "spawn_nm": 4 }
+  }
+}
+```
+
+**Example response** (MSFS 2024, abridged)
+
+```json
+{
+  "callsign": "DLH4AB", "kind": "arrival", "icao": "LKPR",
+  "model": "FSLTL A320 DLH Lufthansa",
+  "stand": "N50", "runway": "06", "taxi_route": ["B", "G"],
+  "state": "spawning", …, "actions": ["remove"], "done": false
+}
+```
+
+It then goes `"approaching"` (e.g. 827 ft AGL at 143 kt, actions `["goaround", "taxi", "remove"]`), `"landing"`, `"rollout"`, `"vacating"` by B, and waits `"awaiting taxi"`.
+
+**Error codes**
+
+- `INVALID_ARGUMENT`: `icao` or `callsign` missing or malformed; the airport has no such runway or STAR (the message lists the runway's STARs).
+- `TRAFFIC_ERROR`, `NOT_FOUND`, `TIMEOUT`, `BRIDGE_DISCONNECTED`: As for `spawn_departure`.
+
+---
+
+## list_our_traffic
+
+List the AI aircraft under our control (from `spawn_departure` and `spawn_arrival`): state, position, speed, current taxiway, what it is holding short of, errors, and `actions` — the clearances `atc_clearance` takes now. Poll it to follow the flights. A flight that has ended stays listed (`done: true`) until `atc_clearance` `remove`.
+
+**Requirements**: Windows + MSFS 2020 or 2024 running with SimConnect enabled.
+
+**Parameters**: None.
+
+**Returns**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `count` | number | Flights of ours |
+| `flights` | array | Flights, sorted by call sign (see below) |
+
+Each flight:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `callsign` | string | Call sign |
+| `kind` | string | `"departure"` or `"arrival"` |
+| `icao` | string | Airport |
+| `model` | string | Aircraft title, followed by a vertical bar and the livery when there is one |
+| `stand`, `runway` | string | Stand and runway |
+| `entry` | string | Departure runway entry, when given |
+| `procedure` | string | SID, or `"STAR → approach"` |
+| `taxi_route` | array | Planned taxiways |
+| `state` | string | See [Clearance flow](#clearance-flow) |
+| `taxiway` | string | Taxiway it is on |
+| `holding_short_of` | string | Runway it is holding short of |
+| `remaining_m` | number | Metres to the hold-short point (departure) or the stand (arrival) |
+| `position` | object | `{lat, lon}` |
+| `heading` | number | True heading, degrees |
+| `ground_speed_kts` | number | Ground speed, knots |
+| `agl_ft` | number | Height above ground, feet |
+| `on_ground` | boolean | `true` on the ground |
+| `lights` | string | `NBSTLOW` — nav, beacon, strobe, taxi, landing, logo, wing — with a dot for each light off, e.g. `"NB...O."` |
+| `error` | string | Why it failed, when it did |
+| `actions` | array | `atc_clearance` actions that fit now |
+| `done` | boolean | `true` once the flight has ended (`complete`, `parked`, `cancelled`, `failed`); only `remove` is left |
+
+Empty strings and zero `remaining_m` / `agl_ft` are omitted.
+
+**Example request**
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 33,
+  "method": "tools/call",
+  "params": { "name": "list_our_traffic", "arguments": {} }
+}
+```
+
+**Example response** (MSFS 2024, abridged)
+
+```json
+{
+  "count": 1,
+  "flights": [
+    {
+      "callsign": "CSA123", "kind": "departure", "icao": "LKPR", "stand": "A1", "runway": "06",
+      "procedure": "ARTU5E", "taxi_route": ["A1", "Z", "H", "F"],
+      "state": "pushback", "position": { "lat": …, "lon": … }, "heading": …, "ground_speed_kts": 3,
+      "on_ground": true, "lights": "NB...O.", "actions": ["taxi", "takeoff", "remove"], "done": false
+    }
+  ]
+}
+```
+
+**Error codes**: None — with no aircraft of ours it returns `{"count": 0, "flights": []}`.
+
+---
+
+## atc_clearance
+
+Give one of our AI aircraft a clearance or instruction. Departures: `pushback`, `taxi` (to the holding point), `cross` (a runway on the way), `lineup` (line up and wait), `takeoff`, `hold` (hold position), `abort` (reject the take-off before V1). Arrivals: `goaround` (on final), `taxi` (to the stand), `cross`, `hold`. Both: `remove` (take it out of the simulator). A clearance given early means no stop there. See [Clearance flow](#clearance-flow).
+
+> **`remove` takes the aircraft out of the simulator**, frees its stand and forgets the flight.
+
+**Requirements**: Windows + MSFS 2020 or 2024 running with SimConnect enabled.
+
+**Parameters**
+
+| Name | Type | Required | Default | Description |
+|------|------|----------|---------|-------------|
+| `callsign` | string | Yes | — | Call sign of one of ours (case-insensitive) |
+| `action` | string | Yes | — | `pushback`, `taxi`, `cross`, `lineup`, `takeoff`, `hold`, `abort`, `goaround` or `remove` |
+
+**Returns**
+
+The flight as the clearance finds it, as in [`list_our_traffic`](#list_our_traffic); the state changes as the aircraft reacts, so follow it with `list_our_traffic`.
+
+**Example request**
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 34,
+  "method": "tools/call",
+  "params": {
+    "name": "atc_clearance",
+    "arguments": { "callsign": "CSA123", "action": "pushback" }
+  }
+}
+```
+
+**Example response** (abridged)
+
+```json
+{ "callsign": "CSA123", "kind": "departure", "state": "awaiting pushback", …, "actions": ["pushback", "taxi", "remove"], "done": false }
+```
+
+Moments later the flight is `"pushback"` at about 3 kt with lights `"NB...O."`; `taxi` then has it `"taxiing"` at up to 15 kt, `hold` stops it (0 kt) and `taxi` sends it on.
+
+An action that does not fit, e.g. `lineup` for an arrival on its landing roll:
+
+```
+TRAFFIC_ERROR: lineup DLH4AB: DLH4AB (arrival, rollout) takes taxi, remove, not "lineup"
+```
+
+**Error codes**
+
+- `NOT_FOUND`: The call sign is not one of ours.
+- `TRAFFIC_ERROR`: The action is not one of the flight's kind (the message lists the actions that fit now), or the library refused it, e.g. `abort` past V1 or `goaround` on the runway.
+
+---
+
+## get_traffic_picture
+
+The traffic picture: every aircraft the simulator has around the user aircraft (or an airport) with call sign, aircraft title, position, altitude, ground speed, heading, vertical speed and phase — `parked`, `taxiing`, `runway`, `departing`, `enroute` or `arriving` — and the airport it belongs to. The user aircraft and ours are marked. The first call starts the scan and takes a few seconds.
+
+**Requirements**: Windows + MSFS 2020 or 2024 running with SimConnect enabled.
+
+**Parameters**
+
+| Name | Type | Required | Default | Description |
+|------|------|----------|---------|-------------|
+| `centre` | string | No | user aircraft | Airport ICAO code to centre on |
+| `radius_nm` | number | No | `40` | Radius in NM, at most `40`. The scan reaches about 43 NM from the user aircraft, so an airport farther away shows only what is in reach |
+
+**Returns**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `centre` | string | Airport centred on (empty: the user aircraft) |
+| `radius_nm` | number | Radius used |
+| `count` | number | Aircraft returned |
+| `aircraft` | array | Aircraft (see below) |
+
+Each aircraft: `callsign` (ATC ID), `title`, `phase`, `airport` (omitted enroute), `lat`, `lon`, `alt_ft`, `agl_ft`, `ground_speed_kts`, `heading_true`, `vs_fpm`, and `user: true` for the user aircraft or `ours: true` for one of ours.
+
+**Example request**
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 35,
+  "method": "tools/call",
+  "params": {
+    "name": "get_traffic_picture",
+    "arguments": { "radius_nm": 10 }
+  }
+}
+```
+
+**Example response** (MSFS 2024, abridged)
+
+```json
+{
+  "centre": "", "radius_nm": 10, "count": 2,
+  "aircraft": [
+    { "callsign": "…", "title": "…", "phase": "parked", "airport": "LKPR", "lat": …, "lon": …, "alt_ft": …, "ground_speed_kts": 0, …, "user": true },
+    { "callsign": "CSA123", "title": "FSLTL_FAIB_A320_SmartWings_CzechAirlinesLivery", "phase": "taxiing", "airport": "LKPR", "lat": …, "lon": …, …, "ours": true }
+  ]
+}
+```
+
+**Error codes**
+
+- `INVALID_ARGUMENT`: `centre` is not an airport ICAO code, or `radius_nm` is outside 1–40.
+- `NOT_FOUND`, `TIMEOUT`, `BRIDGE_DISCONNECTED`, `TRAFFIC_ERROR`: See above.
+
+---
+
+## generate_schedule
+
+Generate a realistic airline schedule for airports: flights with call sign, airline, aircraft type, origin, destination, STD/STA (UTC) and distance, following time-of-day waves and each airline's bases and fleet (17 European airlines, about 80 airports). Deterministic for a seed. Pure computation — nothing is spawned; use it to pick flights for `spawn_departure` and `spawn_arrival`.
+
+**Requirements**: Registered with the other traffic tools; it does not read the simulator.
+
+**Parameters**
+
+| Name | Type | Required | Default | Description |
+|------|------|----------|---------|-------------|
+| `airports` | string | Yes | — | Airports to schedule, e.g. `"LKPR"` or `"LKPR, EDDM"` |
+| `hours` | number | No | `2` | Hours from `start`, 1–24 |
+| `start` | string | No | now (UTC) | Start time, RFC 3339, e.g. `"2026-10-01T06:00:00Z"` |
+| `density` | number | No | `1` | Traffic density, 0.1–3 |
+| `seed` | number | No | `1` | Random seed |
+| `limit` | number | No | `100` | Maximum flights returned, 1–500 |
+
+**Returns**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `from` | string | Start time (UTC) |
+| `hours` | number | Hours scheduled |
+| `total` | number | Flights generated |
+| `count` | number | Flights returned (at most `limit`) |
+| `flights` | array | `{callsign, airline, type, origin, destination, std, sta, distanceNM}`; `airline` and `type` are ICAO codes |
+| `warning` | string | Airports not in the schedule's airport list (few or no flights) |
+
+**Example request**
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 36,
+  "method": "tools/call",
+  "params": {
+    "name": "generate_schedule",
+    "arguments": { "airports": "LKPR", "hours": 1, "start": "2026-10-01T06:00:00Z" }
+  }
+}
+```
+
+**Example response (abridged)**
+
+```json
+{
+  "from": "2026-10-01T06:00:00Z", "hours": 1, "total": …, "count": …,
+  "flights": [
+    { "callsign": "…", "airline": "…", "type": "…", "origin": "LKPR", "destination": "…", "std": "…", "sta": "…", "distanceNM": … },
+    …
+  ]
+}
+```
+
+**Error codes**
+
+- `INVALID_ARGUMENT`: `airports` missing or not ICAO codes; `hours`, `density` or `limit` out of range; `start` not RFC 3339.

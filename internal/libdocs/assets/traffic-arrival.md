@@ -152,7 +152,7 @@ With `InjectApproach` the aircraft spawns exactly where the injected approach st
 | `DerotateSeconds` / `DerotateDecel` | 4 s / 0.5 m/s² |
 
 - **Phases** (`ApproachPhase`): `ApproachFinal` on the glide path; `ApproachFlare` below `FlareFt`, sink rate easing to `TouchdownFpm` while the pitch rises; `ApproachDerotate` on the main wheels, the nose coming down; `ApproachDone` with all wheels down.
-- **Flaps** run to full over `FlapsFullSeconds` (5 s) when passing `FlapsFullFt` (1000 ft), the stabilised-approach gate. Once clear of the runway they retract over `FlapsRetractSeconds` (20 s).
+- **Flaps** run to full over `FlapsFullSeconds` (5 s) when passing `FlapsFullFt` (1400 ft), set before the 1000 ft stabilised-approach gate. Once clear of the runway they retract over `FlapsRetractSeconds` (20 s), with the spoilers stowing and the strobes and landing lights off (the after-landing flow); the taxi light follows `TaxiLightDelay` later. `ArrivalController.Sequence()` lists the landing step by step (takeover on final, gear, flaps, flare, touchdown, nose down, vacated) with time, height and speed.
 - **Spoilers** deploy over `SpoilerDeploySeconds` (1 s) at main-gear touchdown (`Injector.SetSpoilers`) and stow once clear of the runway.
 - **Hand-over:** at `ApproachDone` the injected rollout continues from exactly that pose.
 - Thrust reversers cannot be shown on an AI aircraft.
@@ -271,4 +271,4 @@ go run ./examples/ai-arrival -inject -inject-approach -hold-crossings
 | `-keep` | `false` | Leave the parked aircraft in the sim on exit |
 | `-ground-agl` / `-no-stop` | `false` | MSFS AI comparisons: ground waypoints at 0 ft AGL; no active stop at the stand |
 
-[`examples/airport-map`](../examples/airport-map) spawns arrivals and departures from the map and gives every clearance, including progressive taxi by clicking a route point.
+[`cmd/airport-map`](../cmd/airport-map) spawns arrivals and departures from the map and gives every clearance, including progressive taxi by clicking a route point.

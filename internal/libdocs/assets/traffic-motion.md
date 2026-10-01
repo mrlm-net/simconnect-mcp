@@ -123,7 +123,7 @@ With `ArrivalRequest.InjectApproach` (and `ArrivalWithInjector`) MSFS AI does no
   - speed easing from `StartKts` to `ApproachKts` by 1 nm;
   - a flare from 30 ft, with the sink rate easing to `TouchdownFpm` (−120) while the pitch rises from 2.5° to 5.5°;
   - after touchdown, the nose coming down over 4 s.
-- Flaps are at `ApproachFlapsPct` (flaps 3) on final and run to full over 5 s when passing `FlapsFullFt` (1000 ft), the stabilised-approach gate.
+- Flaps are at `ApproachFlapsPct` (flaps 3) on final and run to full over 5 s when passing `FlapsFullFt` (1400 ft), set before the 1000 ft stabilised-approach gate.
 - Ground spoilers come out over `SpoilerDeploySeconds` at main-gear touchdown (`Injector.SetSpoilers`).
 - With the nose wheel down, the injected rollout takes over from exactly that pose.
 - Once clear of the runway the spoilers stow and the flaps retract over `FlapsRetractSeconds`.
@@ -185,6 +185,26 @@ ids.Release(def)
 ```
 
 A controller on a reused block clears its definitions before adding to them: the Fleet remembers which it defined on the connection. The injector drives up to 96 aircraft and tugs.
+
+## Traffic time
+
+MSFS AI flies its parts of a flight (STAR, SID, en route, holds) in simulator time. That follows the simulation rate (time acceleration, or slower) and stops while the simulator is paused. Injected motion and every timer must run on the same time, or at 2× an injected final lags the STAR before it and the landing sequence's times are wrong (#413).
+
+`SimClock` is that time. It follows the wall clock at the simulation rate and stands still while paused, and a change of either takes effect without a jump:
+
+```go
+clock := traffic.NewSimClock()
+clock.SetRate(rate)     // the simulator's SIMULATION RATE
+clock.SetPaused(paused) // the "Pause" system event
+
+taxi := traffic.NewTaxiController(fleet, traffic.TaxiWithClock(clock.Now) /* , … */)
+arr := traffic.NewArrivalController(fleet, traffic.ArrivalWithClock(clock.Now) /* , … */)
+manager.Tick(clock.Now()) // and the sequencer, the tower, the picture: pass it the same time
+```
+
+A controller moves by the clock's time between frames, at most `MaxFrameStepSeconds` (1 s) a frame. At a high rate with fewer frames far away (level of detail) a frame can be a quarter of a second or more; a longer gap, a stall, is not made up at once.
+
+The airport map reads `SIMULATION RATE` with the user aircraft every second and subscribes to "Pause". All its traffic runs on the clock: controllers, the schedule, sequencing, the tower, conflicts, spawn separation and the runway in use. The aircraft line shows "sim 2×" or "⏸ sim paused", and markers glide at the rate. Logs keep the wall clock.
 
 ## Measured in MSFS 2024
 

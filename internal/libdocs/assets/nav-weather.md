@@ -73,6 +73,21 @@ For every runway end of the layout (at least `MinLengthM` long), the headwind an
 
 `PreferredArrival` gives arrivals their own preference list, for split operations (`RunwayUse.Single()` is then false). `Approach` is `ApproachILS` when visibility is below 5000 m or the ceiling below 1500 ft, else `ApproachVisual` ("visual/RNAV"); pick the actual procedure from `airport.Procedures`.
 
+### Parallel runways used together
+
+With parallel runways (headings within 15°), `ActiveRunways` also uses the parallels of the chosen end that are in the same direction and within the wind limits. `RunwayUse.Departures` and `Arrivals` list every end in use; `Departure` and `Arrival` are the first of them. `Parallel` says how they work together, and `SpacingM` is the distance between their centre lines.
+
+The mode follows the spacing (`ParallelModeFor`). The figures are from the ICAO draft manual on simultaneous operations on parallel instrument runways (AN-Conf/11-IP/3):
+
+| Spacing | Mode | Use |
+|---------|------|-----|
+| under 760 m | `ParallelNone` | one runway, for wake turbulence (2.3.3.2) |
+| 760 m | `ParallelSegregated` | arrivals on one runway, departures on the other (departures side by side from 760 m, 3.3.2) |
+| 915 m | `ParallelDependent` | both runways mixed; approaches dependent, 2 NM diagonally between adjacent finals (2.3.1.1, 2.3.2.2) |
+| 1035 m | `ParallelIndependent` | both runways mixed; each final on its own (the Annex 14 distance) |
+
+Runways that cross are never used together. A third parallel joins only if it is far enough from both. `RunwayLimits.Parallel` sets an airport's own mode, never more than the spacing allows; for example `ParallelSegregated` for an airport that keeps one runway for arrivals, or `ParallelNone` for one runway only. `Nearest(layout, ends, p)` is the parallel nearest a point, such as a stand. The ATIS names every runway in use: "runways in use 26L and 26R", or "landing runway 27R, departure runway 27L".
+
 ### Keeping the runway in use
 
 An airport does not change runways with every wind shift. `RunwaySelector` keeps the runway in use until one of two things happens:
@@ -84,7 +99,7 @@ var sel nav.RunwaySelector // one per airport, kept
 use := sel.Choose(time.Now(), layout, weather, limits)
 ```
 
-While it holds, the headwind and crosswind it reports are those of the runway kept. The airport map uses a selector per airport for traffic and for the Charts panel. Near a tailwind limit in light, variable wind, the runway had flipped between 06 and 24 from one minute to the next.
+While it holds, the headwind and crosswind it reports are those of the runway kept. The airport map uses a selector per airport for traffic and for the Airport panel. Near a tailwind limit in light, variable wind, the runway had flipped between 06 and 24 from one minute to the next.
 
 ## ATIS
 
@@ -119,6 +134,8 @@ The broadcast includes, when known: split landing/departure runways, "expect ILS
 - the wind turns 60° or more with 10 kt or more, or the wind or gust speed changes by 10 kt or more;
 - visibility crosses 800, 1500, 3000 or 5000 m, or precipitation starts or stops;
 - the broadcast is older than `DefaultATISMaxAge` (1 hour; `ATISWithMaxAge`).
+
+The runway in use holds through wind shifts near a limit: the service keeps a `RunwaySelector`, or shares the traffic's with `ATISWithSelector(sel)`, so the ATIS says the runway the traffic uses (#454).
 
 Smaller changes keep the current broadcast, as a real ATIS does between reports.
 

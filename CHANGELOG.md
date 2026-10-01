@@ -13,6 +13,7 @@ Full release history with release notes is also available on the [GitHub Release
 ### Changed
 
 - License: new versions are under the Business Source License 1.1 instead of Apache-2.0. Non-commercial use (personal and hobby use, the flight-simulation community, education, research, non-profits) is allowed; commercial use, such as a paid add-on or product, a paid service or use inside a business, needs a separate licence. Each version becomes Apache-2.0 four years after it is published. Versions up to and including v0.8.0 stay under Apache-2.0.
+- Upgraded `github.com/mrlm-net/simconnect` from v0.16.0 to v0.18.4. The library guides served by the docs tools now include 39 guides (new: traffic radio and phraseology, how the traffic decides, and the add-on camera). Airport tools pick up the library's layout fixes, for example `get_runway_entries_exits` now lists entry Z onto runway 24 at LKPR.
 
 ## [0.8.0] - 2026-09-30
 

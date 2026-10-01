@@ -67,7 +67,8 @@ mgr.OnMessage(func(msg engine.Message) {
 
 | | |
 |---|---|
-| IDs | 6 facility definition IDs from `DefaultLoaderDefinitionBase` (7100) and 96 request IDs from `DefaultLoaderRequestBase` (7200). Move them with `LoaderWithIDs(defBase, reqBase)` if they clash with your own. |
+| Frequencies | `Layout.Frequencies`: the airport's radio frequencies (kind, MHz, name) and `FrequencyFor(kind)` with ATC's fallbacks (#416). |
+| IDs | 7 facility definition IDs from `DefaultLoaderDefinitionBase` (7100) and 112 request IDs from `DefaultLoaderRequestBase` (7200). Move them with `LoaderWithIDs(defBase, reqBase)` if they clash with your own. |
 | Concurrency | Up to 16 airports in flight at once. `Pending()` lists them. |
 | Timeout | `LoaderWithTimeout` (default 30 s). SimConnect sends **nothing** for an unknown ICAO code, so an unknown airport ends in `ErrTimeout` via `Expire`. |
 | Reconnect | Call `Reset(newClient)` so the definitions are registered again on the new connection. |
@@ -290,8 +291,8 @@ use := nav.ActiveRunways(layout, weather, nav.RunwayLimitsFrom(lim))
 
 ## Seeing it on a map
 
-[`examples/airport-map`](../examples/airport-map) serves the layout on a Leaflet map with every feature's raw values, a route viewer and overlapping-stand highlighting. The route viewer has a departure mode (stand → runway, full length or at an entry) and an arrival mode (runway exit → stand, with the vacate stop and the stop point on the stand). Pick the entry or exit in the panel or click its marker on the map. Run it with `-dump` to save an airport's raw records, and with `-file` to view them without the simulator. The Procedures panel draws the SIDs, STARs and approaches of a runway as charts do: pick one from the list to see its fixes (VOR, NDB, waypoint symbols), constraints, tracks and distances, direction arrows, and where a STAR ends in radar vectors.
+[`cmd/airport-map`](../cmd/airport-map) serves the layout on a Leaflet map with every feature's raw values, a route viewer and overlapping-stand highlighting. The route viewer has a departure mode (stand → runway, full length or at an entry) and an arrival mode (runway exit → stand, with the vacate stop and the stop point on the stand). Pick the entry or exit in the panel or click its marker on the map. Run it with `-dump` to save an airport's raw records, and with `-file` to view them without the simulator. The Procedures panel draws the SIDs, STARs and approaches of a runway as charts do: pick one from the list to see its fixes (VOR, NDB, waypoint symbols), constraints, tracks and distances, direction arrows, and where a STAR ends in radar vectors.
 
-The sidebar has one tab per task: **Traffic** (new flights, aircraft cards with their clearances, the [ATC game](atc-game.md)), **Charts** (procedures), **Layers** (airport data, live traffic, safe zones, raw TYPE tables) and **?** (a quick reference). Map buttons: ✈ your aircraft, ⛶ full screen with the panel, ◨ hide or show the panel.
+The sidebar has one tab per task: **Traffic** (new flights, aircraft cards with their clearances, the [ATC game](atc-game.md)), **Airport** (airport info, weather, ATIS, de-icing pads, procedures), **Layers** (airport data, live traffic, safe zones, raw TYPE tables) and **?** (a quick reference). Map buttons: ✈ your aircraft, ⛶ full screen with the panel, ◨ hide or show the panel.
 
 To drive an AI aircraft along a route, see [Departure Taxi](traffic-taxi.md). The map's scheduled traffic, world view and landing sequence are described in [Traffic Manager](traffic-manager.md#on-the-airport-map), [Traffic Picture](traffic-picture.md#on-the-airport-map) and [Airborne Separation](traffic-separation.md#the-landing-sequence).

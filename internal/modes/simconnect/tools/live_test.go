@@ -79,7 +79,7 @@ func TestLiveTools(t *testing.T) {
 		{"plan_taxi_route", map[string]any{"icao": "LKPR", "parking": "ZZ99", "runway": "24"}, true, nil},
 		{"get_runway_entries_exits", map[string]any{"icao": "LKPR", "runway": "24"}, false, func(t *testing.T, got map[string]any) {
 			entries := got["entries"].([]any)
-			if len(entries) != 3 || entries[0].(map[string]any)["taxiway"] != "A" {
+			if len(entries) != 4 || entries[0].(map[string]any)["taxiway"] != "A" {
 				t.Errorf("entries onto 24: %v", entries)
 			}
 		}},

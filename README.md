@@ -307,3 +307,7 @@ Unit tests live alongside the code in `_test.go` files. Integration tests are in
 ## Contributing
 
 All development happens on `main`. Browse open issues and submit bug reports or feature requests at [github.com/mrlm-net/simconnect-mcp/issues](https://github.com/mrlm-net/simconnect-mcp/issues).
+
+## License
+
+Business Source License 1.1, see [LICENSE](LICENSE), for versions after v0.8.0. Non-commercial use is free: personal and hobby use, the flight-simulation community, education, research and non-profits. Commercial use, such as a paid add-on or product, a paid service or use inside a business, needs a separate licence; [open an issue](https://github.com/mrlm-net/simconnect-mcp/issues) to ask. Each version becomes Apache-2.0 four years after it is published, and versions up to and including v0.8.0 remain under Apache-2.0.

@@ -199,7 +199,7 @@
 			class="inline-flex items-center rounded-full px-3 py-0.5 text-xs font-medium transition-opacity hover:opacity-80"
 			style="background-color: var(--color-bg-tertiary); color: var(--color-text-muted); border: 1px solid var(--color-border);"
 		>
-			Apache 2.0
+			BSL 1.1 · non-commercial
 		</a>
 	</div>
 </section>
@@ -732,7 +732,7 @@
 							rel="noopener noreferrer"
 							style="color: var(--color-link);"
 						>github.com/mrlm-net/simconnect</a>
-						&middot; Apache 2.0
+						&middot; BSL 1.1
 					</p>
 				</div>
 

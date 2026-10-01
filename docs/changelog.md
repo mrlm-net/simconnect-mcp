@@ -7,7 +7,9 @@ section: changelog
 
 All notable changes to SimConnect MCP are documented here.
 
-## [Unreleased]
+## [0.9.0] - 2026-10-02
+
+New versions are under the Business Source License 1.1: free for non-commercial use, Apache-2.0 four years after each release. The server now runs on simconnect v0.18.4, with 39 library guides (radio, phraseology, traffic decisions, camera), and the docs gain an AI Traffic & ATC guide.
 
 ### Added
 

@@ -25,8 +25,9 @@ type InputSchema struct {
 
 // SchemaProperty describes a single input parameter.
 type SchemaProperty struct {
-	Type        string `json:"type"`
-	Description string `json:"description,omitempty"`
+	Type        string          `json:"type"`
+	Description string          `json:"description,omitempty"`
+	Items       *SchemaProperty `json:"items,omitempty"` // an array's elements
 }
 
 // Content is a single content item in a tool result.
@@ -75,6 +76,13 @@ func (b *ToolBuilder) NumberParam(name, description string) *ToolBuilder {
 // BoolParam adds a boolean input parameter.
 func (b *ToolBuilder) BoolParam(name, description string) *ToolBuilder {
 	return b.addParam(name, "boolean", description)
+}
+
+// ObjectArrayParam adds a parameter that is an array of objects.
+func (b *ToolBuilder) ObjectArrayParam(name, description string) *ToolBuilder {
+	b.tool.InputSchema.Properties[name] = SchemaProperty{Type: "array", Description: description,
+		Items: &SchemaProperty{Type: "object"}}
+	return b
 }
 
 // Required marks the named parameters as required.

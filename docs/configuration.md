@@ -15,6 +15,7 @@ SimConnect MCP is configured entirely through environment variables. There are n
 | `PORT` | `8080` | TCP port to listen on |
 | `SIMCONNECT_APP_NAME` | `simconnect-mcp` | Application name registered with SimConnect (SimConnect and both modes) |
 | `SIMCONNECT_AIRCRAFT_PROFILES` | *(none)* | Directory of local aircraft systems profile overrides (`*.json`), read by the user aircraft tools (SimConnect and both modes) |
+| `SIMCONNECT_TRAFFIC_DATA` | *(user cache)* | Directory where the traffic engine keeps what it learns: each airport's airways read from the simulator, de-icing pads (SimConnect and both modes) |
 | `DOCS_MSFS_VERSION` | `2024` | MSFS version for the docs corpus: `2020`, `2024`, or `both` |
 | `DOCS_OVERRIDE_PATH` | *(embedded)* | Filesystem path to a directory of JSON corpus files. Overrides the embedded corpus. See security note below. |
 | `GIN_MODE` | `debug` | Gin server mode: `debug` or `release`. In `release` mode, CORS is restricted to localhost only (DNS rebinding protection). |
@@ -24,8 +25,8 @@ SimConnect MCP is configured entirely through environment variables. There are n
 Selects the operating mode at startup. The server does not support switching modes at runtime; restart with a different value to change modes.
 
 - `docs` — serves SimConnect SDK reference documentation and the `github.com/mrlm-net/simconnect` Go library guides (15 tools). Cross-platform, no simulator required.
-- `simconnect` — connects to a running MSFS instance via the SimConnect SDK (51 tools, including the AI traffic, airborne ATC, scheduled traffic and user aircraft tools). Windows only; requires the `windows` build tag and the SimConnect SDK.
-- `both` — always serves the docs tools, and on Windows also the SimConnect tools (66 tools in total). The SimConnect tools are registered only if the connection to the simulator opens at startup (10-second timeout); otherwise, and on non-Windows platforms, the server runs docs-only with the 15 docs tools. The `simconnect_ready` field of `/health` reports which case applies.
+- `simconnect` — connects to a running MSFS instance via the SimConnect SDK (58 tools, including the AI traffic, airborne ATC, scheduled traffic and user aircraft tools). Windows only; requires the `windows` build tag and the SimConnect SDK.
+- `both` — always serves the docs tools, and on Windows also the SimConnect tools (73 tools in total). The SimConnect tools are registered only if the connection to the simulator opens at startup (10-second timeout); otherwise, and on non-Windows platforms, the server runs docs-only with the 15 docs tools. The `simconnect_ready` field of `/health` reports which case applies.
 
 ### PORT
 
@@ -38,6 +39,10 @@ The name SimConnect MCP registers with the simulator when establishing a connect
 ### SIMCONNECT_AIRCRAFT_PROFILES
 
 A directory of local aircraft systems profiles: JSON files in the format of the library's `pkg/systems` (see the `systems` library guide). `get_aircraft_systems` and the other user aircraft tools read the user aircraft through a profile: the standard SimVars, the library's shipped profile for the model on top (the Fenix A320 family), then each matching file from this directory on top of that, winning per value. Files are read again on every call, so an edit applies without a restart; `get_aircraft_systems` lists the files that applied and any that did not read. Only applies in `simconnect` and `both` modes.
+
+### SIMCONNECT_TRAFFIC_DATA
+
+A writable directory where the AI traffic engine (the library's `pkg/traffic/world`) keeps what it learns between runs: each airport's airways read from the simulator (re-read after a week), and the optional `deicing.json`, `custom-pushes.json` and `stations.json`. Default: `simconnect-mcp\traffic` in the user cache folder (`%LocalAppData%`). Only applies in `simconnect` and `both` modes.
 
 ### DOCS_MSFS_VERSION
 

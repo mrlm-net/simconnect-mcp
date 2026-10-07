@@ -9,7 +9,7 @@ All notable changes to SimConnect MCP are documented here.
 
 ## [Unreleased]
 
-The user aircraft: its systems through the library's aircraft profiles, its doors, ground equipment and the sim's ground services, its radios, squawk and ATC call sign, and the add-ons installed. The server now runs on simconnect v0.23.1, with 45 library guides.
+AI traffic on the library's traffic engine, the airport map's: stand services and tugs from each airport's fleet, crews on the radio, flights at chosen times, real-world traffic, airliners around you in cruise, and your own runway clearances respected. And the user aircraft: its systems through the library's aircraft profiles, its doors, ground equipment and the sim's ground services, its radios, squawk and ATC call sign, and the add-ons installed. The server now runs on simconnect v0.23.1, with 45 library guides.
 
 ### Added
 
@@ -21,11 +21,26 @@ The user aircraft: its systems through the library's aircraft profiles, its door
   - `set_atc_callsign`: the call sign the sim's ATC uses (ATC AIRLINE, ATC FLIGHT NUMBER).
   - `list_addons`: the installed MSFS packages, Community, Official and streamed, with streamed airports by ICAO.
 - `SIMCONNECT_AIRCRAFT_PROFILES`: a directory of local aircraft profile overrides (`pkg/systems` JSON), winning per value over the shipped profiles.
-- Tool counts: docs 15, simconnect 51, both 66
+- AI traffic on the library's traffic engine, `pkg/traffic/world` (the airport map's), on the server's connection: departures get stand services from each airport's fleet (fuel truck; stairs and GPU at remote stands) and a tug, crews talk to delivery, ground, tower and approach, and the engine runs again after a simulator reconnect with its settings. New tools:
+  - `add_flights`: flights at chosen times in the running schedule (std_in_min / sta_in_min).
+  - `set_real_traffic`, `observe_traffic`: fly real-world aircraft from a feed (ADS-B sightings) instead of the timetable.
+  - `set_traffic_corridor`: airliners around the user's flight in cruise (same way, opposite, crossing).
+  - `set_player_clearance`: what the user's ATC cleared, so our traffic keeps off that runway and fits around the user's landing.
+  - `get_traffic_status`, `get_traffic_airport_info`: the engine's state, and an airport as it works it (runways in use, ATIS, ILS).
+- `SIMCONNECT_TRAFFIC_DATA`: where the traffic engine keeps each airport's airways and its data files.
+- Tool counts: docs 15, simconnect 58, both 73
 
 ### Changed
 
 - Upgraded `github.com/mrlm-net/simconnect` from v0.18.4 to v0.23.1. The library guides served by the docs tools now include 45 guides (new: aircraft systems profiles, radios and transponder, installed add-ons, replaceable dictionaries, VFR traffic and the traffic world engine). The airport, navigation, traffic and ATC tools pick up the library's fixes since v0.18.4, among them the runway surface from the facility data, STAR descents with their constraints, and variable wind.
+- The traffic tools moved from the server's own runtime (the library's `TrafficManager`) to the library's traffic engine. Tool names stay; what changed:
+  - `atc_clearance` takes more actions (`pushstart`, `startup`, `upto`, `lineupbehind`, `entry`, `rush`, `land`, `standto`, `depart`, `manual`), and any action but `remove` makes the aircraft manual.
+  - `approach_instruction` adds `speed`, `joinfinal` and `holdat`.
+  - `spawn_departure` adds `fuel`, `push_in_min`, `stand_use` and `squawk`, and drops `turnaround_of`. `spawn_arrival` adds `turnaround` and `dwell_min`, and drops `spawn_nm`.
+  - `list_our_traffic`, `get_landing_sequence`, `get_conflicts`, `get_schedule` and `get_atc_log` return the engine's views; `get_atc_log` is now the radio.
+  - `start_schedule` adds `ifr`, `vfr`, `generator`, `offset_min` and `others`.
+  - `stop_schedule` without `remove` returns at once; the aircraft finish their flights.
+- Stdio transport: anything else printed to stdout (the traffic engine logs there) goes to stderr, so it can't break the protocol.
 
 ## [0.9.0] - 2026-10-02
 

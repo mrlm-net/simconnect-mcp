@@ -86,7 +86,8 @@ func NewTrafficWorld(mgr manager.Manager, dataDir string) *TrafficWorld {
 		_ = os.MkdirAll(dataDir, 0o755)
 	}
 	t := &TrafficWorld{mgr: mgr}
-	t.w = world.New(world.Options{IDBase: worldIDBase, QueueSize: worldQueue, DataDir: dataDir})
+	// Its console lines go to stderr: stdout may be the stdio transport.
+	t.w = world.New(world.Options{IDBase: worldIDBase, QueueSize: worldQueue, DataDir: dataDir, Output: os.Stderr})
 	mgr.OnMessage(func(msg engine.Message) {
 		t.mu.Lock()
 		running := t.cancel != nil

@@ -55,6 +55,7 @@ func RegisterWorldTrafficTools(mcp *mcpadapter.Server, w live.World) {
 	registerWorldPlayer(mcp, w)
 	registerWorldStatus(mcp, w)
 	registerWorldAirportInfo(mcp, w)
+	registerWorldTCAS(mcp, w)
 	registerGenerateSchedule(mcp)
 	registerSeparationMinima(mcp)
 }
@@ -1161,4 +1162,37 @@ func rawResult(v json.RawMessage) *mcpadapter.CallToolResult {
 		v = json.RawMessage("{}")
 	}
 	return mcpadapter.TextResult(string(v))
+}
+
+func registerWorldTCAS(mcp *mcpadapter.Server, w live.World) {
+	tool := mcpadapter.NewTool("get_tcas").
+		Description("TCAS II for our airborne traffic: each of ours sees every aircraft around it (ours, the user's, other "+
+			"traffic) within 12 NM, gets traffic (TA) and resolution advisories (RA), flies an RA after the crew's reaction "+
+			"time and reports it on the frequency. Returns how many TAs and RAs there are now (ta, ra) and the latest "+
+			"advisories as they happened (events: at, callsign, intruder, advisory TA/RA/clear, aural, rangeNM, dzFt). Each "+
+			"aircraft's advisory now is also on list_our_traffic as tcas.").
+		NumberParam("limit", "At most this many latest events (default 30).").
+		Build()
+
+	mcp.AddTool(tool, func(ctx context.Context, args map[string]any) (*mcpadapter.CallToolResult, error) {
+		if !w.Running() {
+			return mcpadapter.JSONResult(map[string]any{"ta": 0, "ra": 0, "events": []any{}, "engine": "not started"})
+		}
+		var v struct {
+			TA     int               `json:"ta"`
+			RA     int               `json:"ra"`
+			Events []json.RawMessage `json:"events"`
+		}
+		if err := w.Get("/api/tcas", &v); err != nil {
+			return worldError("tcas", err), nil
+		}
+		limit := int(numArg(args, "limit", 30))
+		if limit > 0 && len(v.Events) > limit {
+			v.Events = v.Events[len(v.Events)-limit:]
+		}
+		if v.Events == nil {
+			v.Events = []json.RawMessage{}
+		}
+		return mcpadapter.JSONResult(v)
+	})
 }

@@ -4,9 +4,22 @@ All notable changes to SimConnect MCP are documented here. The format follows [K
 
 Full release history with release notes is also available on the [GitHub Releases page](https://github.com/mrlm-net/simconnect-mcp/releases).
 
-## [Unreleased]
+## [0.11.0] - 2026-10-07
+
+TCAS for our traffic, on simconnect v0.24.0: traffic and resolution advisories with coordinated RAs, AI aircraft that taxi round pushbacks and climb out with an eased pitch, and docs brought up to date with v0.10.0.
+
+### Added
+
+- `get_tcas`: TCAS II for our airborne traffic (the library's v0.24): traffic and resolution advisories now, and the latest as they happened. Each of ours flies its RA, reports it on the frequency and is coordinated with the other of ours; `list_our_traffic` shows each aircraft's advisory as `tcas`.
+- Tool counts: docs 15, simconnect 59, both 74
 
 ### Changed
+
+- Upgraded `github.com/mrlm-net/simconnect` from v0.23.1 to v0.24.0. With it:
+  - routes and taxiing aircraft keep clear of pushbacks;
+  - gear goes up at 150–400 ft with an eased take-off pitch;
+  - runway entries at the same distance come in a fixed order.
+- The traffic engine writes its console lines to stderr (the library's new `Output` option) instead of stdout.
 
 - Docs brought up to date with v0.10.0:
   - Scenario 4 in Examples shows the traffic engine's `get_schedule` and radio shapes.

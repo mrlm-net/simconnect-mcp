@@ -260,7 +260,7 @@ These tools run on the library's traffic engine, `pkg/traffic/world` (the airpor
 | `spawn_departure` | Add a departure on a stand — pushback, taxi, line-up, take-off and SID, each on clearance; stand, runway, SID and model (type in the call sign's airline livery) chosen when not given |
 | `spawn_arrival` | Add an arrival on a STAR or out on final — approach, landing, vacating and taxi to a stand |
 | `list_our_traffic` | Our AI aircraft: state, position, speed, taxiway, holding point, lights and the clearances they take now |
-| `atc_clearance` | Clear one of ours: `pushback`, `taxi`, `cross`, `lineup`, `takeoff`, `hold`, `abort`, `goaround`, `manual`, `remove` it from the simulator, and more (`list_our_traffic` lists what fits now) |
+| `atc_clearance` | Clear one of ours: `pushback`, `taxi`, `cross`, `lineup`, `takeoff`, `hold`, `abort`, `goaround`, `follow`, `manual`, `remove` it from the simulator, and more (`list_our_traffic` lists what fits now) |
 | `get_traffic_picture` | Every aircraft around the user aircraft or an airport, with phase (parked, taxiing, runway, departing, enroute, arriving) and airport; the user's and ours marked |
 | `generate_schedule` | Realistic airline schedule for airports — call signs, types, routes, STD/STA — to pick flights to spawn (nothing is spawned) |
 

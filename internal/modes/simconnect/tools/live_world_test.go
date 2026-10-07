@@ -128,6 +128,13 @@ func TestWorldTrafficTools(t *testing.T) {
 		!fw.called("POST /api/control/3/pushback?facing=east") {
 		t.Errorf("clearance: %v", fw.calls)
 	}
+	if _, isErr := call("atc_clearance", map[string]any{"callsign": "CSA7", "action": "follow", "behind": "tvs2"}); isErr ||
+		!fw.called("POST /api/control/3/follow?tail=TVS2") {
+		t.Errorf("follow: %v", fw.calls)
+	}
+	if _, isErr := call("atc_clearance", map[string]any{"callsign": "CSA7", "action": "follow"}); !isErr {
+		t.Error("follow without behind accepted")
+	}
 	if got, isErr := call("atc_clearance", map[string]any{"callsign": "XYZ9", "action": "taxi"}); !isErr {
 		t.Errorf("unknown call sign: %v", got)
 	}

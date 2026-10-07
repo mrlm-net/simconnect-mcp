@@ -2215,6 +2215,7 @@ A clearance or instruction to one of ours. Any action but `remove` puts the airc
 | `entry` | string | For `entry` | The entry taxiway (`""` full length) |
 | `node` | number | For `upto` | The taxi node to stop at |
 | `facing` | string | No | `pushback`: the direction to face after the push, e.g. `"east"` |
+| `behind` | string | For `follow` | The call sign of the one of ours to follow, at the same airport |
 | `startup` | boolean | No | `pushback`: start engines during the push |
 | `on` | boolean | No | `manual`, `rush`: on (default) or off |
 
@@ -2227,6 +2228,7 @@ A clearance or instruction to one of ours. Any action but `remove` puts the airc
 | `land`, `goaround` | arrivals | Cleared to land (spoken); go around |
 | `standto` | arrivals | Another stand |
 | `depart` | turnarounds | Depart now, skipping the dwell |
+| `follow` | both, on the ground | Stays behind another of ours (`behind`) wherever their ways meet, told the way ground says it |
 | `manual` | both | `on: true` the caller clears it; `on: false` the engine does |
 | `remove` | both | Takes it out of the simulator and frees its stand and vehicles |
 

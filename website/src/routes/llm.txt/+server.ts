@@ -94,7 +94,7 @@ AI traffic (the library's traffic engine, pkg/traffic/world; adds and removes AI
 - spawn_departure: Add an AI departure on a stand: stand services, pushback with a tug, taxi, line-up, take-off and SID, on your clearances or the engine's
 - spawn_arrival: Add an AI arrival on its STAR: sequenced, approach, landing, vacating and taxi to a stand; optionally a turnaround
 - list_our_traffic: Our AI aircraft with state, position, frequency, ground vehicles and the clearances they take now
-- atc_clearance: Clear one of ours: pushback, taxi, upto, cross, lineup, takeoff, hold, abort, goaround, standto, manual, remove and more
+- atc_clearance: Clear one of ours: pushback, taxi, upto, cross, lineup, takeoff, hold, abort, goaround, standto, follow, manual, remove and more
 - get_traffic_picture: Every aircraft around the user aircraft or an airport, with phase and airport; the user's and ours marked
 - generate_schedule: Realistic airline schedule for airports (call signs, types, routes, STD/STA); nothing is spawned
 

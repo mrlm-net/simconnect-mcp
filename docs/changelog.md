@@ -7,6 +7,20 @@ section: changelog
 
 All notable changes to SimConnect MCP are documented here.
 
+## [Unreleased]
+
+### Added
+
+- `atc_clearance` `follow` with `behind`: one of ours stays behind another of ours on the ground wherever their ways meet, told the way ground says it (the library's v0.25).
+
+### Changed
+
+- Upgraded `github.com/mrlm-net/simconnect` from v0.24.0 to v0.25.0. With it:
+  - our traffic gives way to a crossing tail;
+  - departures climb to their cleared level;
+  - arrivals stop their engines once parked, and get one dog-leg, lengthened in place;
+  - an arrival's route is no longer taken from the wrong STAR point when it was asked for before the aircraft's first position.
+
 ## [0.11.0] - 2026-10-07
 
 TCAS for our traffic, on simconnect v0.24.0: traffic and resolution advisories with coordinated RAs, AI aircraft that taxi round pushbacks and climb out with an eased pitch, and docs brought up to date with v0.10.0.

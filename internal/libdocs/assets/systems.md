@@ -1,0 +1,153 @@
+---
+title: "Aircraft Systems Profiles"
+description: "Read the user aircraft's power, radios, engines, lights, doors, transponder, flaps and gear with pkg/systems: standard SimVars, per-model profiles as data, local overrides."
+order: 13
+section: "packages"
+---
+
+# Aircraft Systems Profiles
+
+`pkg/systems` reads the user aircraft's systems through a **profile**. A profile is plain data: which variables give each value. There are three layers:
+
+1. **Default:** the standard SimVars, for every aircraft that follows them.
+2. **Shipped per-model profiles:** go on top for aircraft that run their systems on their own variables. The first one is the Fenix A320 family, on L:vars.
+3. **Local override files:** the application's own, on top of both. They win per value.
+
+```go
+a := systems.Aircraft{Package: pkg.Folder, Title: title, ATCType: atcType} // addons.AircraftPackage gives the folder
+p := systems.For(a, localOverrides...)
+r := systems.NewReader(client, defID, reqID)
+r.Use(p)
+r.Request(types.SIMCONNECT_PERIOD_SECOND)
+// in the message loop:
+if s, ok := r.Handle(msg); ok { /* s.Battery, s.Powered, s.ExtOn, s.Squawk, … */ }
+```
+
+After a reconnect, call `Reset`. When another aircraft loads, call `Use` with its profile; the next `Request` registers the new variables.
+
+## Values
+
+| Value | State field | Default (standard SimVar) |
+|---|---|---|
+| `battery` | Battery | ELECTRICAL MASTER BATTERY |
+| `volts` | Volts | ELECTRICAL MAIN BUS VOLTAGE |
+| `powered` | Powered | ELECTRICAL MAIN BUS VOLTAGE ≥ 10 V |
+| `avionics` | Avionics | AVIONICS MASTER SWITCH |
+| `extAvailable`, `extOn` | ExtAvailable, ExtOn | EXTERNAL POWER AVAILABLE:1, EXTERNAL POWER ON:1 |
+| `com1`, `com2` | COM1, COM2 (working) | COM STATUS:1/2 = 0 |
+| `engines`, `engineRunning1–4`, `starter1–4` | Engines, Running, Starter | NUMBER OF ENGINES, GENERAL ENG COMBUSTION:n, GENERAL ENG STARTER:n |
+| `parkingBrake` | ParkingBrake | BRAKE PARKING INDICATOR |
+| `lightBeacon`, `lightNav`, `lightStrobe`, `lightLanding`, `lightTaxi` | Beacon, Nav, Strobe, Landing, Taxi | LIGHT BEACON / NAV / STROBE / LANDING / TAXI |
+| `door0–3` | Doors | EXIT OPEN:0–3 |
+| `xpdrState`, `xpdrCode` | XPDRState, Squawk ("4521") | TRANSPONDER STATE:1, TRANSPONDER CODE:1 (Bco16) |
+| `flapsPct`, `gearDown` | FlapsPct, GearDown | FLAPS HANDLE PERCENT, GEAR HANDLE POSITION |
+
+`State.Values` holds every resolved value by name, including any that a profile adds.
+
+## The profile format
+
+```json
+{
+  "name": "Fenix A320 family",
+  "match": { "packagePrefix": ["fnx-aircraft"], "titleContains": ["FNX"], "atcType": [] },
+  "measured": "how and where it was measured",
+  "values": {
+    "battery":     { "vars": ["L:S_OH_ELEC_BAT1", "L:S_OH_ELEC_BAT2"], "combine": "any", "note": "measured" },
+    "volts":       { "vars": ["L:N_ELEC_VOLT_BAT_1", "L:N_ELEC_VOLT_BAT_2"], "combine": "max" },
+    "lightStrobe": { "vars": ["L:S_OH_EXT_LT_STROBE"], "trueAt": [2] }
+  }
+}
+```
+
+**Frequencies.** `com1Active`, `com1Standby`, `com2Active` and `com2Standby` are the COM frequencies in MHz (State.COM1Active and the others). The default reads them from `COM ACTIVE/STANDBY FREQUENCY:n`.
+
+**Match.** A profile applies when any one rule matches:
+- `packagePrefix`: the start of the aircraft's package folder (`addons.AircraftPackage`);
+- `titleContains`: part of the title, any case;
+- `atcType`: the ATC TYPE.
+
+**Values.** Each value lists its `vars` in `unit` (default `number`, as L:vars are read), then:
+- `combine` joins several vars: `any` is true when any is not 0; `max` and `min` take the largest or smallest; no `combine` takes the first var;
+- `trueAt` makes a var true only at those positions, e.g. a three-position switch on only at 2;
+- `atLeast` makes the result true at that value or more, e.g. volts as powered;
+- `note` says whether the value was measured or assumed.
+
+`ReadProfile` reads a profile from JSON and refuses a value with no vars or an unknown `combine`.
+
+**Order and overrides.** `For(aircraft, overrides...)` builds the profile in three steps:
+1. starts from `Default()`;
+2. puts the first matching shipped profile (`Profiles()`) on top;
+3. puts each matching override on top, in the order given.
+
+An override wins per value: values it doesn't name stay as they were. The same applies to an override without a `match` that has the matched profile's `name`. `Merge(base, over)` is that step on its own.
+
+## The Fenix A320 family
+
+`profiles/fenix-a320.json` matches package folders starting with `fnx-aircraft`. It was measured live in MSFS 2024 at LKPR on the A319 by toggling each switch while tracing both sets of variables. The standard battery, avionics and external power values don't follow the Fenix:
+- battery and avionics read on with the aircraft dark;
+- the main bus reads 28 V, battery 2's own voltage;
+- external power reads "not feeding" with EXT PWR on.
+
+So the profile reads these from the Fenix's L:vars:
+- **battery:** BAT1 or BAT2;
+- **volts:** the higher of the two battery voltages;
+- **powered:** any AC or DC bus powered;
+- **avionics:** AC ESS bus powered;
+- **external power:** its AVAIL and ON lights.
+
+Lights, parking brake, EXIT OPEN:0 and the transponder follow the standard variables and stay as they are. Live, the two profiles disagreed only where the Fenix differs: external power on, and the volts.
+
+**Radios.** These come from the RMPs, measured powered and dark:
+- COM working: `L:B_PED_RMP1_POWER` and `RMP2_POWER`.
+- The frequencies: `L:N_PED_RMP1_ACTIVE` and `_STDBY`, in kHz scaled to MHz (`scale`: 0.001). `COM STANDBY FREQUENCY:1` does not follow the RMP.
+- RMP 2 is assumed to work as RMP 1, and marked so.
+
+The profile's **actions** give the COM swap as the RMP transfer key, `L:S_PED_RMP1_XFER` (see [Radios and Transponder](avionics.md)).
+
+## Actions
+
+`actions` names how a control is operated on a model where the standard key events do not do it: `{"com1Swap": {"press": "L:S_PED_RMP1_XFER"}}` presses that variable (1, then 0). `pkg/avionics` takes them with `Radios.Use(profile.Actions)`. They merge like values: an override wins per action.
+
+An action is one of: `press` (a button variable clicked), `set` (a variable set to the state wanted, 1 or 0), `event` (a key event; with `toggle` sent only when the state differs, with `data` for its parameter), or `efb` (a boolean data ref written through the aircraft's tablet API, `Profile.EFB`; `Controls.SetEFBHost` for an app on another machine).
+
+## Ground controls
+
+`Controls` operates the user aircraft's ground controls by name, the same way for every aircraft (#667): `Door(n)`, `Chocks`, `GPU`, `ParkingBrake`. The profile says how:
+
+- **Default:** the exits by `TOGGLE_AIRCRAFT_EXIT` with their index from 1, toggled only when not as wanted; the parking brake by `PARKING_BRAKES`, likewise. No chocks or GPU.
+- **Fenix A320 family** (measured live on the Fenix A319, 2026-10-04): the main door and the parking brake by the default key events; chocks and its GPU through its EFB API (`efb` actions: `fenix.efb.chocks`, `groundservice.groundpower`, GraphQL `writeBool` on port 8083, as its EFB does; a write to `L:B_CONFIG_CHOCKS` or `L:B_CONFIG_GPU` does not stick); read back from those L:vars. With the chocks off the Fenix reads its parking brake released.
+
+```go
+ctl := systems.NewControls(client, 0)
+ctl.Use(profile) // systems.For(the aircraft)
+if ctl.Can(systems.Chocks) {
+	ctl.Set(systems.Chocks, false, reader.State()) // remove them
+}
+ctl.Set(systems.Door(0), true, reader.State()) // open the main door
+```
+
+A profile's `doors` names its exits. As names (`["Door 1", "Door 2"]`) they go in the order of EXIT OPEN and TOGGLE_AIRCRAFT_EXIT (`Door(0)` is exit 1): "Door 1"…"Door 4" by default. As objects they name each door's exit (`Profile.Exits`): the Fenix A319's passenger doors `[{"name":"L1","exit":1},{"name":"L2","exit":4},{"name":"R1","exit":5},{"name":"R2","exit":8}]` (measured 2026-10-05; exits 2, 3, 6, 7, 12 and 13 move but are no passenger door, not named yet). TOGGLE_AIRCRAFT_EXIT k toggles EXIT OPEN:k-1, so each door reads and toggles its exit. Their number is how many it has. `State.DoorsOpen` and `DoorNames` are all of them (`Doors` keeps the first four).
+
+`State` reads `Chocks` and `GPU`, with `HasChocks` and `HasGPU` when the model has them. `Can` tells the app which buttons to show.
+
+## Ground services
+
+The sim's own ground services for the user aircraft are requested by name with `Controls.Request` (#666): `Jetway` (`TOGGLE_JETWAY`, at a parking spot; asked again, sent away), `Stairs` (`TOGGLE_RAMPTRUCK`), `Baggage` (`REQUEST_LUGGAGE`), `Catering` (`REQUEST_CATERING`), `PowerSupply` (`REQUEST_POWER_SUPPLY`), `FuelTruck` (`REQUEST_FUEL_KEY`, at a parking spot) and `Pushback` (`TOGGLE_PUSHBACK`): the standard key events (MSFS 2024 SDK Key Events) by default, a model's own way where its profile gives one. `State` reads the pushback: `PushbackAttached`, `PushbackAvailable`, `PushbackWait` (Services Variables). An app that drives GSX uses it instead where GSX runs.
+
+## EFB
+
+A profile's `efb` is where the aircraft serves its tablet over HTTP: the Fenix's EFB on port 8083 (`{"port": 8083, "path": "/"}`, plain HTTP, all interfaces); none in the default.
+
+## Type bases, cabin signs and counted buttons
+
+Profiles come in layers (#759): the default for any aircraft, then a base for the aircraft's type, then the model's profile where it differs. A base has `"base": true` and matches by type (`a320-family.json`: ATC TYPE A318 to A321, A20N, A21N, or the title). It is used alone when no model's profile matches. A model's profile names its base with `"extends"`: the Fenix extends "A320 family".
+
+| Name | Base (A320 family) | Fenix A319 (measured 2026-10-05) |
+|---|---|---|
+| `seatbelts` | CABIN SEATBELTS ALERT SWITCH; CABIN_SEATBELTS_ALERT_SWITCH_TOGGLE | read the standard variable (it follows); set L:S_OH_SIGNS 0/1 |
+| `noSmoking` | CABIN NO SMOKING ALERT SWITCH; CABIN_NO_SMOKING_ALERT_SWITCH_TOGGLE | L:S_OH_SIGNS_SMOKING 0 off, 1 auto, 2 on (the standard stays 0) |
+| `extPower` | EXTERNAL POWER ON:1; TOGGLE_EXTERNAL_POWER 1 | the ON light L:I_OH_ELEC_EXT_PWR_L; pressed on the counted L:S_OH_ELEC_EXT_PWR |
+| `cabinCall` | none | pressed on the counted L:S_OH_CALLS_ALL |
+| cargo doors | none | "FWD cargo" exit 9 (EXIT OPEN:8), "AFT cargo" exit 10 (EXIT OPEN:9), moved through the EFB: `doors.cargo.forward`, `doors.cargo.aft` |
+
+A door object may carry `"efb"`: that door moves through the tablet (`Profile.DoorEFB`), not TOGGLE_AIRCRAFT_EXIT. An action's `"counter"` is a push button counted up, as FSUIPC's presets press it: from an even count to +1 (press), then +2 (release). Its count is read as the value `<action>Counter`. `Controls.Press(name, now)` presses a control once whatever its state (`cabinCall`). `Controls.SetValue(name, v, now)` sets a many-way switch (`noSmoking` 2).

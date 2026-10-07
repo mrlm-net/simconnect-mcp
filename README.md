@@ -127,7 +127,7 @@ Add the following to your `claude_desktop_config.json` (or equivalent MCP client
 
 ## Available Tools
 
-The server exposes 15 MCP tools in `docs` mode — 12 for the SimConnect SDK reference and 3 for the [`github.com/mrlm-net/simconnect`](https://github.com/mrlm-net/simconnect) Go library guides — and 45 in `simconnect` mode. `both` mode on Windows serves all 60 when SimConnect is reachable at startup, and the 15 docs tools otherwise. See [docs/mcp-tools-docs.md](docs/mcp-tools-docs.md) and [docs/mcp-tools-simconnect.md](docs/mcp-tools-simconnect.md) for full parameter references, request/response examples, and error codes.
+The server exposes 15 MCP tools in `docs` mode — 12 for the SimConnect SDK reference and 3 for the [`github.com/mrlm-net/simconnect`](https://github.com/mrlm-net/simconnect) Go library guides — and 58 in `simconnect` mode. `both` mode on Windows serves all 73 when SimConnect is reachable at startup, and the 15 docs tools otherwise. See [docs/mcp-tools-docs.md](docs/mcp-tools-docs.md) and [docs/mcp-tools-simconnect.md](docs/mcp-tools-simconnect.md) for full parameter references, request/response examples, and error codes.
 
 **SimConnect SDK reference**
 
@@ -153,7 +153,7 @@ All paginated `list_*` tools return an envelope (`items`, `page`, `page_size`, `
 
 **Go library guides**
 
-The 39 guides of the `github.com/mrlm-net/simconnect` Go library (client, manager, facilities, `pkg/airport`, `pkg/nav`, `pkg/traffic`) are embedded at the library version the server is built with — currently **v0.18.4**. The `/health` response (docs and both modes) reports it as `library_version`.
+The 45 guides of the `github.com/mrlm-net/simconnect` Go library (client, manager, facilities, `pkg/airport`, `pkg/nav`, `pkg/traffic`, `pkg/systems`, `pkg/avionics`, `pkg/addons`, `pkg/camera`) are embedded at the library version the server is built with — currently **v0.23.1**. The `/health` response (docs and both modes) reports it as `library_version`.
 
 | Tool | Description |
 |------|-------------|
@@ -167,7 +167,7 @@ The 39 guides of the `github.com/mrlm-net/simconnect` Go library (client, manage
 
 The server reconnects automatically when the simulator restarts — no manual intervention is required.
 
-`simconnect` mode exposes 45 MCP tools; on Windows, `MCP_MODE=both` serves them together with the 15 docs tools (60 in all). See [docs/mcp-tools-simconnect.md](docs/mcp-tools-simconnect.md) for the full reference.
+`simconnect` mode exposes 58 MCP tools; on Windows, `MCP_MODE=both` serves them together with the 15 docs tools (73 in all). See [docs/mcp-tools-simconnect.md](docs/mcp-tools-simconnect.md) for the full reference.
 
 **Simulation variables**
 
@@ -179,6 +179,17 @@ The server reconnects automatically when the simulator restarts — no manual in
 | `transmit_event` | Send a Key Event ID to the simulator (e.g., toggle landing gear, set autopilot altitude) |
 | `get_sim_state` | Return high-level simulator state: paused, running, aircraft title, position, and speed |
 | `get_fuel_state` | The user aircraft's fuel: total quantity, capacity, percent and weight, per tank |
+
+**User aircraft**
+
+| Tool | Description |
+|------|-------------|
+| `get_aircraft_systems` | Power, radios, engines, lights, doors by name, transponder, chocks, GPU, cabin signs and pushback state, read through the aircraft's systems profile (Fenix A320 family on its own L:vars) |
+| `set_aircraft_control` | Open or close a door, set chocks, GPU, parking brake, cabin signs or external power, or call the cabin, the way the aircraft's profile says |
+| `request_ground_service` | Ask for the sim's jetway, stairs, baggage, catering, ground power, fuel truck or pushback |
+| `set_radio` | Set a COM active or standby frequency, swap a COM, or set the squawk |
+| `set_atc_callsign` | Set the call sign the sim's ATC uses (ATC AIRLINE and ATC FLIGHT NUMBER) |
+| `list_addons` | The installed MSFS packages: Community, Official and streamed, with streamed airports by ICAO |
 
 **Traffic**
 
@@ -238,7 +249,7 @@ The following tools are built on the [mrlm-net/simconnect](https://github.com/mr
 
 **AI traffic**
 
-These tools, built on the library's `pkg/traffic`, add AI aircraft of our own to the simulator and fly them on ATC clearances — at most 32 at once, at an airport loaded around the user aircraft. The [AI Traffic & ATC guide](https://simconnect-mcp.mrlm.net/docs/ai-traffic) explains how it all fits together.
+These tools run on the library's traffic engine, `pkg/traffic/world` (the airport map's): AI aircraft of our own with stand services, pushback, taxi, the tower, landing sequences, separation and the radio, at airports loaded around the user aircraft. The [AI Traffic & ATC guide](https://simconnect-mcp.mrlm.net/docs/ai-traffic) explains how it all fits together.
 
 | Tool | Description |
 |------|-------------|
@@ -256,19 +267,26 @@ A tower per runway clears our line-ups, take-offs and crossings, and sends arriv
 
 | Tool | Description |
 |------|-------------|
-| `get_landing_sequence` | The landing sequence per runway end with our arrivals: order, wake category, spacing and why, and who uses each runway now |
-| `approach_instruction` | Instruct one of our arrivals: `up`, `down`, `slow`, `hold`, `release`, `direct`, `goaround` |
-| `get_atc_log` | The latest instructions of the runtime's tower and approach controllers |
-| `get_conflicts` | Predicted airborne conflicts around, with advice (speed, level or heading) where one of the pair is ours |
+| `get_landing_sequence` | The landing sequence per runway end: order, wake category, spacing and why, distance to go, delays |
+| `approach_instruction` | Instruct one of our arrivals: `up`, `down`, `slow`, `speed`, `hold`, `release`, `direct`, `joinfinal`, `holdat`, `goaround` |
+| `get_atc_log` | The radio: the engine's controllers' and crews' latest transmissions |
+| `get_conflicts` | Separation: closest pairs, losses, predicted conflicts and the resolutions given to ours |
 | `separation_minima` | Wake categories, spacing on final, departure interval and runway occupancy for a pair of types |
+| `set_player_clearance` | Tell the engine what the user's ATC cleared, so our traffic keeps off that runway and fits around the user's landing |
+| `get_traffic_status` | The engine's state, settings and last error |
+| `get_traffic_airport_info` | An airport as the engine works it: runways in use, ATIS, ILS, weather |
 
 **Scheduled traffic**
 
 | Tool | Description |
 |------|-------------|
-| `start_schedule` | Run an airline schedule at airports: departures board and push on time, arrivals come in from en route, turnarounds on their stands, overflights cross the area |
-| `get_schedule` | The departure and arrival boards, and the overflights, with status, stand, runway and delays |
-| `stop_schedule` | Stop the schedule; its aircraft fly on until they depart, park or leave, or are removed at once |
+| `start_schedule` | Run scheduled traffic at airports: an airline timetable and light aircraft, departures with stand services and pushback, arrivals en route, turnarounds, overflights |
+| `get_schedule` | The departure and arrival boards with status, stand, runway and estimates, and traffic time now |
+| `stop_schedule` | Stop the schedule; its aircraft finish their flights, or are removed at once |
+| `add_flights` | Add flights at chosen times, e.g. an arrival just before the user's ETA |
+| `set_real_traffic` | Fly real-world traffic at an airport instead of the timetable |
+| `observe_traffic` | Feed real-world sightings (ADS-B) to the engine, or drop them |
+| `set_traffic_corridor` | Keep airliners around the user's flight in cruise: same way, opposite and crossing |
 
 ## Refreshing the Corpus
 

@@ -31,7 +31,7 @@ for msg := range client.Stream() {
 The picture is fed, not self-driving:
 
 - **`Observe(now, scan)`** with each aircraft scan. SimConnect's `RequestDataOnSimObjectType` reaches at most `MaxScanRadiusMeters` (200 km): MSFS AI farther away is not seen. Aircraft outside the radius, or not seen for `PictureStaleAfter`, leave the picture.
-- **`SetAirports`** with the airports around, e.g. from `AirportLister` (SimConnect's facilities list: the airports the simulator has loaded around the user, about 180 NM in MSFS 2024). `AddAirport` adds one it does not reach, such as a flight's destination.
+- **`SetAirports`** with the airports around, e.g. from `AirportLister` (SimConnect's facilities list: the airports the simulator has loaded around the user, about 180 NM in MSFS 2024). `AddAirport` adds one it does not reach, such as a flight's destination. `AirportLister.RequestAll()` asks for every airport the simulator knows, worldwide (`RequestAllFacilities`; live in MSFS 2024: 85,723 airports in about a second), collected by the same `Handle`. Each `AirportRef` carries the ICAO, region, position and elevation (`AltM`); names and runways are looked up per ICAO.
 - **`SetOwn(objectID, phase, icao)`** for the aircraft our controllers drive — they know their phase best; `ForgetOwn` when a controller lets go.
 
 ## Centre
@@ -44,13 +44,38 @@ A fixed centre stays put; `SetCentre` moves it, `SetRadius` changes the radius. 
 
 | Phase | For aircraft not ours |
 |---|---|
-| `parked` | on the ground, not moving |
-| `taxiing` | on the ground, up to 40 kt |
-| `runway` | on the ground, faster (take-off or landing roll) |
-| `departing` / `arriving` | airborne within `AirportTerminalNM` of an airport below 10 000 ft, climbing / descending |
-| `enroute` | anything else airborne |
+| `parked` | on a stand below `StandMovingKts` (3 kt: creeping into position is not taxiing), or still where the layout is unknown |
+| `pushback` | moving tail first: the track more than `PushbackOffNoseDeg` (120°) off the nose, at 1 kt or more |
+| `holding` | stopped off a stand |
+| `taxiing` | moving on the ground off the runways |
+| `runway` | on a runway, slow (lining up, vacating, waiting on it) |
+| `takeoff` / `landing` | on a runway faster than `RollKts` (30 kt); a landing roll within `LandingRollFor` (90 s) of touching down |
+| `departing` / `arriving` | climbing / descending within `AirportTerminalNM` of an airport below 10 000 ft |
+| `approach` | descending below `ApproachBelowFt` (3000 ft) near an airport; it lasts until a climb (a go-around) or back above 4000 ft |
+| `climbing` / `descending` | climbing / descending elsewhere |
+| `enroute` | level in the air |
 
-An aircraft on the ground belongs to the airport within `AirportNearNM`. `Airports()` are the airports inside the radius with their distance from the centre. `Events()` reports aircraft and airports entering and leaving, and recentring (dropped when the channel is full; the picture itself stays current).
+The simulator reports 0 kt for AI aircraft on the ground however they move (measured at LKPR: taxiing at 6–32 kt by their positions, 0.0 reported). Below `MovingKts` on the ground the picture works out the speed from the movement since the last scan (`SpeedDerived`, #622); such a speed counts as movement only above `DerivedMovingKts` (2 kt), as a metre of jitter between scans is about 1 kt. Climbing and descending follow the altitude over the last `ProfileWindow` (30 s): a climb or descent starts past `ProfileEnterFpm` (400 ft/min) and ends inside `ProfileLeaveFpm` (150) (#623).
+
+The reported vertical speed is used only on the first scan of an aircraft. MSFS gives FSLTL AI on short final the wrong sign: BAW1989 at LKPR read +500 to +940 fpm while descending about 1,100 fpm.
+
+- **`VSFpm`** of every aircraft in the air except the user's is that altitude trend (`VSDerived`).
+- **First seen**, the reported vertical speed sets the phase for that one scan. One that has just lifted off counts as departing. The phase then stands until `ProfileMin` (4 s) of history is in.
+
+On the ground, **where** an aircraft is comes from `airport.Locate` among the airports within `AirportNearNM` whose layout `PictureOptions.Layout` gives (`Where`: runway, parking, taxiway; `WhereName`: "06/24", "C22", "A"). Without layouts the phase is by speed alone and the airport the nearest within `AirportNearNM`. The phases follow the MyCrew app's observer, which measured the simulator live (mycrew-online/app `internal/agent/traffic_phase.go`).
+
+An aircraft on the ground belongs to the airport within `AirportNearNM`. A departing or arriving aircraft belongs to its airport in this order:
+
+1. **Origin or destination**, when the observation names it (`Observation.From`/`To`, from AI TRAFFIC FROMAIRPORT/TOAIRPORT). It counts when it is within `AirportTerminalNM` or the picture does not know where it is. FSLTL aircraft leave these empty.
+2. **Ahead of it:** among the airports within `AirportTerminalNM`, one within `AirportAheadDeg` (60°) of its heading; for a departing aircraft, one as far behind it. Among these, in order:
+   - one with a runway lined up with its track (layout needed): within `AlignedRunwayDeg` (20°), and within `AlignedCentrelineNM` (1.5 NM, or a tenth of the distance) of the extended centreline, before the threshold arriving, past it departing;
+   - higher up, one with a layout loaded, then the longest runway;
+   - then the nearest.
+
+   Live, OKLTU on LKPR 06's centreline read LKHY, nearer and also with a layout.
+3. **The nearest**, when none is ahead.
+
+Before this, BAW1989 descending through 8,000 ft toward LKPR was given LKKQ, the nearest airport. `Airports()` are the airports inside the radius with their distance from the centre. `Events()` reports aircraft and airports entering and leaving, and recentring (dropped when the channel is full; the picture itself stays current).
 
 ## Feeding the controllers
 

@@ -1,13 +1,13 @@
 ---
 title: "MCP Tools — SimConnect Mode"
-description: Reference for the 45 live-data, AI traffic, airborne ATC and scheduled traffic MCP tools in SimConnect mode (MCP_MODE=simconnect, Windows only).
+description: Reference for the 58 live-data, user aircraft, AI traffic, airborne ATC and scheduled traffic MCP tools in SimConnect mode (MCP_MODE=simconnect, Windows only).
 order: 2
 section: reference
 ---
 
-All 45 MCP tools listed here are available when the server runs with `MCP_MODE=simconnect` (and, on Windows, with `MCP_MODE=both`, alongside the 15 docs tools — 60 in all). This mode provides live simulator data via the SimConnect SDK, and AI traffic under our control.
+All 58 MCP tools listed here are available when the server runs with `MCP_MODE=simconnect` (and, on Windows, with `MCP_MODE=both`, alongside the 15 docs tools — 73 in all). This mode provides live simulator data via the SimConnect SDK, and AI traffic under our control.
 
-**Both mode**: with `MCP_MODE=both` on Windows, the server registers these 45 tools alongside the 15 [docs-mode tools](/docs/mcp-tools-docs) — 60 tools in total — provided SimConnect opens at startup (10-second timeout). If the simulator cannot be reached, or on non-Windows platforms, both mode serves the 15 docs tools only; `simconnect_ready` in the `/health` response reports which case applies.
+**Both mode**: with `MCP_MODE=both` on Windows, the server registers these 58 tools alongside the 15 [docs-mode tools](/docs/mcp-tools-docs) — 73 tools in total — provided SimConnect opens at startup (10-second timeout). If the simulator cannot be reached, or on non-Windows platforms, both mode serves the 15 docs tools only; `simconnect_ready` in the `/health` response reports which case applies.
 
 **Requirements**: Windows only. Microsoft Flight Simulator 2020 or 2024 must be running with SimConnect enabled before issuing any read or transmit calls. The `get_sim_state` tool is safe to call at any time regardless of connection state.
 
@@ -23,6 +23,12 @@ Tools are called over the Model Context Protocol using JSON-RPC 2.0 with the `to
 | [`transmit_event`](#transmit_event) | Transmit a named SimConnect client event to the simulator |
 | [`get_sim_state`](#get_sim_state) | Return a snapshot of current simulator connection state and flight status |
 | [`get_fuel_state`](#get_fuel_state) | The user aircraft's fuel: total, weight and the main tanks |
+| [`get_aircraft_systems`](#get_aircraft_systems) | The user aircraft's systems through its profile: power, radios, lights, doors, transponder, ground equipment |
+| [`set_aircraft_control`](#set_aircraft_control) | Operate a door, chocks, GPU, parking brake, cabin signs, external power or the cabin call |
+| [`request_ground_service`](#request_ground_service) | Ask for the sim's jetway, stairs, baggage, catering, ground power, fuel truck or pushback |
+| [`set_radio`](#set_radio) | Set a COM frequency, swap a COM, or set the squawk |
+| [`set_atc_callsign`](#set_atc_callsign) | Set the call sign the sim's ATC uses for the user aircraft |
+| [`list_addons`](#list_addons) | The installed MSFS packages: Community, Official and streamed |
 | [`get_nearby_traffic`](#get_nearby_traffic) | List AI and player aircraft within a radius of the user aircraft |
 | [`get_traffic_with_phase`](#get_traffic_with_phase) | Like `get_nearby_traffic` with enriched telemetry and inferred flight phase |
 | [`get_airports_in_range`](#get_airports_in_range) | List airports in the simulator's loaded scenery area sorted by distance |
@@ -62,6 +68,13 @@ Tools are called over the Model Context Protocol using JSON-RPC 2.0 with the `to
 | [`start_schedule`](#start_schedule) | Run a realistic airline schedule at airports: departures and arrivals appear and go by themselves |
 | [`stop_schedule`](#stop_schedule) | Stop the schedule (and remove its aircraft) |
 | [`get_schedule`](#get_schedule) | The running schedule's departure and arrival boards |
+| [`add_flights`](#add_flights) | Add flights to the schedule at chosen times |
+| [`set_real_traffic`](#set_real_traffic) | Fly real-world traffic at an airport instead of the timetable |
+| [`observe_traffic`](#observe_traffic) | Feed real-world sightings (ADS-B) to the engine, or drop them |
+| [`set_traffic_corridor`](#set_traffic_corridor) | Keep airliners around the user's flight in cruise |
+| [`set_player_clearance`](#set_player_clearance) | Tell the engine what the user's ATC cleared, so our traffic keeps off the runway |
+| [`get_traffic_status`](#get_traffic_status) | The traffic engine's state and settings |
+| [`get_traffic_airport_info`](#get_traffic_airport_info) | An airport as the engine works it: runways in use, ATIS, ILS |
 
 ---
 
@@ -405,6 +418,162 @@ The user aircraft's fuel: total quantity and capacity, percent full and weight, 
 
 - `BRIDGE_DISCONNECTED`: Not connected to the simulator.
 - `INTERNAL_ERROR`: The simulator refused a fuel SimVar.
+
+---
+
+## get_aircraft_systems
+
+The user aircraft's systems, read through its systems profile (the library's `pkg/systems`). The profile is the standard SimVars, the library's shipped profile for the model on top (the Fenix A320 family reads power, radios, chocks and GPU from its own L:vars and tablet), then the local override files from `SIMCONNECT_AIRCRAFT_PROFILES` on top of that. The model is matched by its package (found from the aircraft the sim loaded, with `pkg/addons`), its title or its ATC type.
+
+**Requirements**: Windows + MSFS 2020 or 2024 running with SimConnect enabled.
+
+**Parameters**: none.
+
+**Returns**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `aircraft` | object | `title`, `atc_type` (empty when the aircraft gives an untranslated key), `path` (the aircraft.cfg loaded), `package` and `package_source` when found |
+| `profile` | object | `name`, `measured` (how the model's profile was measured), `local_overrides` and `local_override_errors` |
+| `power` | object | `battery`, `powered`, `bus_volts`, `avionics`, `external_available`, `external_on` |
+| `radios` | object | `com1`, `com2`: `working`, `active_mhz`, `standby_mhz` (0 when the radio gives none, e.g. dark) |
+| `transponder` | object | `state` (`off`, `standby`, `test`, `on`, `alt`) and `squawk` |
+| `engines` | array | `engine`, `running`, `starter` per engine |
+| `parking_brake`, `gear_down` | boolean | |
+| `flaps_pct` | number | Flaps handle, percent |
+| `lights` | object | `beacon`, `nav`, `strobe`, `landing`, `taxi` |
+| `doors` | array | Every door the profile names: `control` (`door0`…, for `set_aircraft_control`), `name` (`L1`, `FWD cargo`), `open` |
+| `ground` | object | `chocks`, `gpu` and whether the model has them (`has_chocks`, `has_gpu`); the sim's pushback: `pushback_attached`, `pushback_available`, `pushback_wait` |
+| `seatbelts` | boolean | When the profile gives the sign |
+| `no_smoking` | number | 0 off, 1 auto, 2 on, when the profile gives the sign |
+| `values` | object | Every value the profile resolved, by name |
+| `can`, `cannot` | array | Controls and ground services the profile can and cannot operate |
+
+**Example response** (a cold and dark Fenix A319, shortened)
+
+```json
+{
+  "aircraft": { "title": "FenixA319 CFM WF HD", "atc_type": "", "package": "fnx-aircraft-319-321", "package_source": "Community" },
+  "profile": { "name": "Fenix A320 family" },
+  "power": { "battery": false, "powered": false, "bus_volts": 27.5, "external_available": true, "external_on": false },
+  "radios": { "com1": { "working": false, "active_mhz": 0, "standby_mhz": 0 } },
+  "transponder": { "state": "off", "squawk": "2000" },
+  "doors": [ { "control": "door0", "name": "L1", "open": false }, { "control": "door4", "name": "FWD cargo", "open": false } ],
+  "ground": { "chocks": true, "has_chocks": true, "gpu": true, "has_gpu": true, "pushback_available": true },
+  "can": ["baggage", "cabinCall", "chocks", "door0", "gpu", "jetway", "parkingBrake", "pushback", "seatbelts"]
+}
+```
+
+**Error codes**
+
+- `BRIDGE_DISCONNECTED`: Not connected to the simulator.
+- `TIMEOUT`: The simulator did not answer in 5 s.
+
+---
+
+## set_aircraft_control
+
+Operate one of the user aircraft's controls the way its profile says: the standard key events by default, the model's own variables or tablet where it has them (the Fenix's chocks and GPU go through its EFB). A toggling event is sent only when the state differs from the one asked for.
+
+**Parameters**
+
+| Name | Type | Required | Default | Description |
+|------|------|----------|---------|-------------|
+| `control` | string | Yes | | A door by name (`L1`, `Door 2`) or `door0`…; `chocks`, `gpu`, `parking_brake`, `seatbelts`, `ext_power`, `no_smoking`, `cabin_call` |
+| `state` | string | No | `on` | `on`/`open` or `off`/`closed`; `auto` for `no_smoking`. Ignored for `cabin_call`, which is a press |
+
+**Returns** `control`, `requested` (1 on, 0 off; `no_smoking` 0–2) and `state_now`, the value read right after the command (doors and tablet controls take a few seconds); `cabin_call` returns `pressed`.
+
+**Error codes**
+
+- `INVALID_ARGUMENT`: Unknown control or state; the message lists the aircraft's doors.
+- `NOT_APPLICABLE`: The aircraft's profile gives no way to operate it (`get_aircraft_systems` lists `can`).
+- `BRIDGE_DISCONNECTED`, `TIMEOUT`.
+
+---
+
+## request_ground_service
+
+Ask for one of the simulator's own ground services for the user aircraft, by the MSFS key events (`TOGGLE_JETWAY`, `TOGGLE_RAMPTRUCK`, `REQUEST_LUGGAGE`, `REQUEST_CATERING`, `REQUEST_POWER_SUPPLY`, `REQUEST_FUEL_KEY`, `TOGGLE_PUSHBACK`) or the model's own way where its profile gives one. The jetway, stairs and pushback toggle: asking again sends them away. The simulator decides whether the service can come where the aircraft is.
+
+**Parameters**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `service` | string | Yes | `jetway`, `stairs`, `baggage`, `catering`, `powerSupply`, `fuelTruck` or `pushback` (`fuel_truck` style works too) |
+
+**Returns** `service` and `requested: true`.
+
+**Error codes**: `INVALID_ARGUMENT`, `NOT_APPLICABLE`, `BRIDGE_DISCONNECTED`, `TIMEOUT`.
+
+---
+
+## set_radio
+
+Set the user aircraft's radios with the library's `pkg/avionics`. The aircraft must be powered: a dark radio ignores it. On the Fenix the swap presses its RMP transfer key (`L:S_PED_RMP1_XFER`), because the stock swap event does not reach its RMP. `get_aircraft_systems` reads the result back.
+
+**Parameters**
+
+| Name | Type | Required | Default | Description |
+|------|------|----------|---------|-------------|
+| `action` | string | Yes | | `com_active`, `com_standby`, `com_swap` or `squawk` |
+| `com` | number | No | `1` | COM radio 1, 2 or 3 |
+| `frequency_mhz` | number | For `com_active`, `com_standby` | | 118.000–136.990 MHz, 8.33 kHz channels included |
+| `squawk` | string | For `squawk` | | Four octal digits, e.g. `"4521"` |
+
+**Returns** the request and `sent: true`.
+
+**Error codes**
+
+- `INVALID_ARGUMENT`: A radio other than 1–3, a frequency out of the band, or a squawk that is not four digits 0–7. Nothing is sent.
+- `BRIDGE_DISCONNECTED`, `TIMEOUT`.
+
+---
+
+## set_atc_callsign
+
+Set the call sign the simulator's ATC uses for the user aircraft: `ATC AIRLINE` (the airline's call sign as said) and `ATC FLIGHT NUMBER`. Either may be left out to keep it. The registration (`ATC ID`) is not changed.
+
+**Parameters**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `airline` | string | No | The spoken call sign, e.g. `"Speedbird"`, up to 63 characters |
+| `flight_number` | string | No | The flight number, e.g. `"123"`, up to 7 characters |
+
+At least one is required. **Returns** `set: true` and the values set.
+
+**Error codes**: `INVALID_ARGUMENT`, `BRIDGE_DISCONNECTED`.
+
+---
+
+## list_addons
+
+What is installed in Microsoft Flight Simulator on this machine, with the library's `pkg/addons`. It reads files only: the `UserCfg.opt` of MSFS 2024 or 2020 (Steam or Microsoft Store) gives the packages folder, then each package's `manifest.json`. Streamed packages have no manifest; when a folder name reads as an airport (`fs20-orbx-airport-lkpr-prague`), its ICAO and publisher are given. A streamed folder shows that the sim knows the package, not that it is owned. The scan is cached for 5 minutes.
+
+**Parameters**
+
+| Name | Type | Required | Default | Description |
+|------|------|----------|---------|-------------|
+| `source` | string | No | `Community` | `Community` (both Community folders), `Community2024`, `Official`, `Streamed` or `all` |
+| `search` | string | No | | Only packages whose folder, title, creator or ICAO contains this text |
+| `refresh` | boolean | No | `false` | Scan the disk again |
+| `limit` | number | No | `200` | At most this many packages |
+
+**Returns**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `install` | object | `sim` (`2024`, `2020`), `store` (`steam`, `store`), `packages_path` |
+| `fingerprint` | string | Changes whenever the set of packages changes |
+| `by_source` | object | Package count per source |
+| `matched` | number | Packages matching the filters (the list stops at `limit`) |
+| `packages` | array | `source`, `folder`, `title`, `creator`, `content_type` (as written, not reliable), `version`; streamed airports `icao`, `publisher`, `cached_archives` |
+
+**Error codes**
+
+- `NOT_FOUND`: No MSFS 2024 or 2020 installation found.
+- `SIM_ERROR`: The packages folder could not be read.
 
 ---
 
@@ -1940,424 +2109,140 @@ Plan an IFR flight between two airports from the simulator's navdata: runways in
 
 ## AI traffic tools
 
-The seven tools below put AI aircraft of our own into the simulator and fly them under ATC-style control: departures push back, taxi, line up, take off and fly the SID; arrivals fly the STAR and approach, land, vacate and taxi to a stand. They are built on the [mrlm-net/simconnect](https://github.com/mrlm-net/simconnect) Go library's `pkg/traffic` and, like the tools above, are registered only with the real SimConnect bridge.
+The AI traffic and ATC tools run on the library's traffic engine, `pkg/traffic/world` (the engine of the library's airport map), on the server's own SimConnect connection. The engine starts with the first tool that needs it, and runs again after the simulator reconnects, with its schedule, real traffic and corridor set again. What it does for each aircraft of ours:
 
-> **These tools change the simulator.** `spawn_departure` and `spawn_arrival` add an aircraft to the sim; `atc_clearance` with `remove` takes it out again. `list_aircraft_models`, `list_our_traffic` and `get_traffic_picture` only read, and `generate_schedule` does not touch the simulator at all.
+- **Departures:** stand services from the airport's fleet (a fuel truck; boarding stairs and a GPU at a remote stand), a pushback with a tug, the taxi route to the runway, line-up, take-off and the SID. The crew talks to delivery, ground and tower.
+- **Arrivals:** en route or on a STAR, sequenced by the approach controller (speed, vectors, holds), the approach, landing, vacating and taxi to a stand. Turnarounds stay on their stand and depart again.
+- **ATC:** a tower per runway, landing sequences, airborne separation with conflict resolutions, and the radio (`get_atc_log`).
 
-Shared behaviour:
+**Manual or automatic.** An aircraft the engine clears by itself is *automatic*. One spawned with `hold_for_clearances` / `hold_for_clearance` (the default), or given any `atc_clearance` other than `remove`, is *manual*: it waits for your clearances. `atc_clearance` with `action: "manual", on: false` hands it back to the engine.
 
-- **The airport must be loaded around the user aircraft.** Spawns use the airport's taxi graph, stands and procedures from the simulator (see [Airport, weather and navigation tools](#airport-weather-and-navigation-tools)).
-- **Motion is injected**: the library moves each aircraft of ours along its taxi route, runway and approach (speed, heading, lights) instead of leaving it to MSFS AI.
-- **Chosen when not given**: the runway is the one in use for the weather at the user aircraft (as `get_active_runway`); the SID or STAR is the first one for the runway; the stand is a free one that fits the wing span and the call sign's airline (for arrivals, near the runway), assigned by the library's stand allocator, which also reserves each flight's stand and taxi route; the model is an installed aircraft of `aircraft_type` (default A320) in the livery of the call sign's airline — its first three letters, e.g. `CSA` in `CSA123`. `traffic.ModelsFor` ranks the type in the airline's livery first, then a type of the same size in the airline's livery, then the type in any livery.
-- **At most 32 aircraft of ours** at once. Call signs are 2–8 letters or digits and unique among ours.
-- **Clearances**: each flight lists `actions`, the `atc_clearance` actions that fit its state now (see [Clearance flow](#clearance-flow)).
-- **The traffic picture** comes from a scan of every aircraft within 80 km (about 43 NM) of the user aircraft, repeated every second once `get_traffic_picture` or a spawn has started it.
-- **Airborne ATC**: the runtime's tower and landing sequences clear and sequence the flights not held for clearances (see [Airborne ATC tools](#airborne-atc-tools)).
+**Shutdown.** When the server stops it turns the schedule and corridor off and removes our aircraft from the simulator. En route aircraft the schedule created are not on the engine's list; they go when the connection closes.
 
-Examples show the tool result's `text` content, formatted, from MSFS 2024 at LKPR. Long arrays are abridged (`…`).
-
-**Error codes** used by these tools:
-
-- `TRAFFIC_ERROR`: The library refused or failed: the call sign is already ours, 32 aircraft already, no free stand that fits, no installed aircraft of the type, no taxi route, or an action that does not fit the flight (the message lists the ones that do).
-- `NOT_FOUND`: The call sign is not one of ours (see `list_our_traffic`), or the airport is not in the simulator's data.
-- `INVALID_ARGUMENT`: A parameter is missing or malformed, or names something the airport does not have (runway, SID, STAR).
-- `BRIDGE_DISCONNECTED`: Not connected to the simulator.
-- `TIMEOUT`: The simulator did not answer in time (spawns: 60 s).
-
-### Clearance flow
-
-`atc_clearance` takes any action of the flight's kind; the flight's `actions` list the ones that fit now. A clearance given early means no stop at that point — `takeoff` while taxiing gives a rolling take-off. `remove` fits every state.
-
-**Departures** (`hold_for_clearances=true`)
-
-| Action | When (state) | Effect |
-|--------|--------------|--------|
-| `pushback` | `awaiting pushback` | Pushes back off the stand (`pushback`, about 3 kt, nav and beacon lights on), then `awaiting taxi` |
-| `taxi` | `awaiting pushback`, `pushback`, `awaiting taxi`, `taxiing`; `holding short` of a runway on the way | Taxis the planned route to the holding point (`taxiing`, up to about 15 kt); after `hold`, taxis on |
-| `hold` | `taxiing` | Stops where it is (0 kt) until `taxi` |
-| `cross` | `holding short` of a runway on the way | Crosses it and taxis on |
-| `lineup` | `holding short` of the departure runway | Lines up and waits (`lining up`, `lined up`) |
-| `takeoff` | `pushback`, `awaiting taxi`, `taxiing`, `holding short` of the departure runway, `lining up`, `lined up` | Takes off (`departing`) and flies the SID, then `complete` |
-| `abort` | `lining up`, `lined up`, `departing` | Rejects the take-off before V1: stops, vacates and taxis back to the holding point; past V1 it is refused and the take-off continues |
-| `remove` | any | Takes the aircraft out of the simulator |
-
-**Arrivals** (`hold_for_clearance=true`)
-
-| Action | When (state) | Effect |
-|--------|--------------|--------|
-| `goaround` | `approaching`, `landing` | Goes around before touchdown and comes back to the approach; on the runway it is refused |
-| `taxi` | `approaching`, `landing`, `rollout`, `vacating`, `awaiting taxi`, `taxiing`, `holding short` | Taxis to the stand once clear of the runway (given early: no stop); after `hold`, taxis on |
-| `hold` | `taxiing` | Stops where it is until `taxi` |
-| `cross` | `holding short` of a runway on the way | Crosses it and taxis on |
-| `remove` | any | Takes the aircraft out of the simulator |
-
-States: departures go `spawning`, `awaiting pushback`, `pushback`, `awaiting taxi`, `taxiing`, `holding short`, `lining up`, `lined up`, `departing`, `complete`; arrivals go `spawning`, `approaching`, `landing`, `rollout`, `vacating`, `awaiting taxi`, `taxiing`, `holding short`, `parking`, `parked`. Either may end `cancelled` or `failed` (see `error`). Without holding for clearances, the ground steps clear themselves after a short, varied wait, and the runway steps (line-up, take-off, crossings) come from the tower when the runway allows. Arrivals are sequenced, lose their delays, and go around by themselves when the runway is not free.
+**IDs.** The engine's library helpers sit at IDBase 950,000,000; its fixed IDs (2000–2021, 8200+, 10010, 20000–31279) clash with none of the server's.
 
 ---
 
 ## list_aircraft_models
 
-List the aircraft installed in the simulator that AI traffic can use, as `"title"` or `"title|livery"` — the form `spawn_departure` and `spawn_arrival` take in `model`. Without a `model`, the spawn tools pick one of `aircraft_type` in the call sign's airline livery. The simulator enumerates its aircraft once, on the first call.
-
-**Requirements**: Windows + MSFS 2020 or 2024 running with SimConnect enabled.
-
-**Parameters**
+The installed models the engine can spawn: titles, with the livery after the separator.
 
 | Name | Type | Required | Default | Description |
 |------|------|----------|---------|-------------|
-| `filter` | string | No | — | Words that must all appear in the title (case-insensitive), e.g. `"A320 Lufthansa"` |
-| `limit` | number | No | `100` | Maximum titles returned, 1–500 |
+| `search` | string | No | | Only titles containing this text |
+| `limit` | number | No | `100` | At most this many |
 
-**Returns**
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `total` | number | Titles matching the filter |
-| `count` | number | Titles returned (at most `limit`) |
-| `models` | array | Titles, sorted; a title with a livery is the title, a vertical bar and the livery |
-
-**Example request**
-
-```json
-{
-  "jsonrpc": "2.0",
-  "id": 30,
-  "method": "tools/call",
-  "params": {
-    "name": "list_aircraft_models",
-    "arguments": { "filter": "a320", "limit": 8 }
-  }
-}
-```
-
-**Example response** (MSFS 2024, abridged)
-
-```json
-{
-  "total": 517, "count": 8,
-  "models": [ "A320neo V2 VIP|Air Busan", … ]
-}
-```
-
-**Error codes**
-
-- `INVALID_ARGUMENT`: `limit` is outside 1–500.
-- `TIMEOUT`: The simulator did not list its aircraft within 20 s.
-- `BRIDGE_DISCONNECTED`, `TRAFFIC_ERROR`: See above.
+Returns `count` (all matching) and `models`.
 
 ---
 
 ## spawn_departure
 
-Put an AI departure under our control on a stand at an airport. It pushes back, taxis the planned route to the runway, lines up and takes off, then flies the SID. With `hold_for_clearances` (default `true`) it waits at every step for `atc_clearance` — `pushback`, `taxi`, (`cross`), `lineup`, `takeoff`; otherwise it goes by itself. Stand, runway, SID and model are chosen when not given. With `turnaround_of`, one of our arrivals parked at the airport becomes the departure: the same aircraft, on its stand, in its livery. Follow it with `list_our_traffic`.
-
-> **Adds an aircraft to the simulator.** Take it out with `atc_clearance` `remove`.
-
-**Requirements**: Windows + MSFS 2020 or 2024 running with SimConnect enabled, and the airport loaded around the user aircraft.
-
-**Parameters**
+Puts an AI departure of ours on a stand. The stand, the runway in use, the SID and the model are chosen when not given.
 
 | Name | Type | Required | Default | Description |
 |------|------|----------|---------|-------------|
-| `icao` | string | Yes | — | Airport ICAO code |
-| `callsign` | string | Yes | — | Call sign, 2–8 letters or digits, e.g. `"CSA123"`; the first three letters pick the airline |
+| `icao` | string | Yes | | The airport; the simulator must have it loaded around the user aircraft |
+| `callsign` | string | Yes | | 2–8 letters and digits, not already ours |
 | `stand` | string | No | free stand that fits | Stand label, e.g. `"C22"` |
 | `runway` | string | No | in use | Departure runway |
-| `entry` | string | No | full length | Runway entry taxiway for an intersection departure, e.g. `"B"` |
-| `sid` | string | No | `"auto"` | SID name, `"auto"` (the first SID for the runway) or `"none"` (climb straight ahead) |
-| `model` | string | No | chosen | Aircraft title from `list_aircraft_models`, as listed (with its livery, if any) |
-| `aircraft_type` | string | No | A320 | ICAO type to pick a model by, e.g. `"A20N"`, `"B738"` |
-| `via` | string | No | — | Taxiways to follow in order, e.g. `"F, L"` |
-| `hold_for_clearances` | boolean | No | `true` | Wait at every step for `atc_clearance` |
-| `tug` | boolean | No | `true` | A pushback tug pushes it |
-| `turnaround_of` | string | No | | Call sign of one of our arrivals parked at the airport; its aircraft becomes this departure (`stand`, `model` and `aircraft_type` are then ignored) |
+| `entry` | string | No | full length | Runway entry taxiway for an intersection departure |
+| `sid` | string | No | `auto` | A SID name, `auto` or `none` |
+| `model` | string | No | | A title from `list_aircraft_models` |
+| `aircraft_type` | string | No | | ICAO type to pick a model by when no model is given |
+| `via` | string | No | | Taxiways in order, e.g. `"F, L"` |
+| `squawk` | string | No | assigned | SSR code |
+| `push_in_min` | number | No | when ready | Push this many minutes from now, giving the stand services their time |
+| `stand_use` | string | No | airliner | `ga` or `cargo` when no stand is given |
+| `hold_for_clearances` | boolean | No | `true` | Wait for `atc_clearance` at every step |
+| `tug` | boolean | No | `true` | A tug pushes it |
+| `fuel` | boolean | No | `true` | A fuel truck comes before the push |
 
-**Returns**
+Returns the aircraft as `list_our_traffic` shows it.
 
-The flight, as in [`list_our_traffic`](#list_our_traffic): `kind` `"departure"`, airport, model, stand, runway, `entry`, `procedure` (the SID), `taxi_route`, `state` (`"spawning"` at first) and `actions`.
-
-**Example request**
-
-```json
-{
-  "jsonrpc": "2.0",
-  "id": 31,
-  "method": "tools/call",
-  "params": {
-    "name": "spawn_departure",
-    "arguments": { "icao": "LKPR", "callsign": "CSA123", "aircraft_type": "A320" }
-  }
-}
-```
-
-**Example response** (MSFS 2024, abridged)
-
-```json
-{
-  "callsign": "CSA123", "kind": "departure", "icao": "LKPR",
-  "model": "FSLTL_FAIB_A320_SmartWings_CzechAirlinesLivery",
-  "stand": "A1", "runway": "06", "procedure": "ARTU5E",
-  "taxi_route": ["A1", "Z", "H", "F"],
-  "state": "spawning", "position": { "lat": …, "lon": … }, …,
-  "actions": ["remove"], "done": false
-}
-```
-
-A few seconds later `list_our_traffic` shows it `"awaiting pushback"` with actions `["pushback", "taxi", "remove"]`.
-
-**Error codes**
-
-- `INVALID_ARGUMENT`: `icao` or `callsign` missing or malformed; the airport has no such runway or SID (the message lists the runway's SIDs).
-- `TRAFFIC_ERROR`: The call sign is already ours, 32 aircraft already, no free stand that fits or an unknown or taken `stand`, no installed aircraft of the type (give `model`), or no taxi route.
-- `NOT_FOUND`, `TIMEOUT`, `BRIDGE_DISCONNECTED`: See above. Without `runway`, the weather is read to choose one.
+**Error codes**: `INVALID_ARGUMENT`, `NOT_FOUND` (stand), `NOT_APPLICABLE` (the engine refused the spawn, e.g. no flight plan), `BRIDGE_DISCONNECTED`, `TIMEOUT`.
 
 ---
 
 ## spawn_arrival
 
-Put an AI arrival under our control into the simulator: at the STAR's first fix (or `spawn_nm` out on final with `star="none"`), flying the STAR and the best approach, landing, vacating and taxiing to a stand. With `hold_for_clearance` (default `true`) it waits clear of the runway for `atc_clearance` `taxi` and before runway crossings; `goaround` sends it around on final. Runway, stand, STAR and model are chosen when not given. Follow it with `list_our_traffic`.
-
-> **Adds an aircraft to the simulator.** Take it out with `atc_clearance` `remove`.
-
-**Requirements**: Windows + MSFS 2020 or 2024 running with SimConnect enabled, and the airport loaded around the user aircraft.
-
-**Parameters**
+Puts an AI arrival of ours into the simulator, on its STAR (or straight in with `star: "none"`). It is sequenced by the approach controller, lands, vacates and taxis to a stand.
 
 | Name | Type | Required | Default | Description |
 |------|------|----------|---------|-------------|
-| `icao` | string | Yes | — | Airport ICAO code |
-| `callsign` | string | Yes | — | Call sign, 2–8 letters or digits, e.g. `"DLH4AB"`; the first three letters pick the airline |
+| `icao` | string | Yes | | The airport |
+| `callsign` | string | Yes | | Call sign |
 | `runway` | string | No | in use | Landing runway |
-| `stand` | string | No | free stand that fits | Stand label; by default one near the runway |
-| `star` | string | No | `"auto"` | STAR name, `"auto"` (the first STAR for the runway) or `"none"` (straight in on final) |
-| `spawn_nm` | number | No | `5` | Straight in (`star="none"`, or no STAR for the runway): distance out on final to start, NM |
-| `model` | string | No | chosen | Aircraft title from `list_aircraft_models` |
-| `aircraft_type` | string | No | A320 | ICAO type to pick a model by |
-| `via` | string | No | — | Taxiways to follow to the stand, in order |
-| `hold_for_clearance` | boolean | No | `true` | Wait for the taxi clearance and at runway crossings |
-
-Note the singular `hold_for_clearance` here and the plural `hold_for_clearances` of `spawn_departure`.
-
-**Returns**
-
-The flight, as in [`list_our_traffic`](#list_our_traffic): `kind` `"arrival"`, model, stand, runway, `procedure` (`"STAR → approach"`, omitted when straight in), `taxi_route` from the planned runway exit, `state` and `actions`.
-
-**Example request**
-
-```json
-{
-  "jsonrpc": "2.0",
-  "id": 32,
-  "method": "tools/call",
-  "params": {
-    "name": "spawn_arrival",
-    "arguments": { "icao": "LKPR", "callsign": "DLH4AB", "star": "none", "spawn_nm": 4 }
-  }
-}
-```
-
-**Example response** (MSFS 2024, abridged)
-
-```json
-{
-  "callsign": "DLH4AB", "kind": "arrival", "icao": "LKPR",
-  "model": "FSLTL A320 DLH Lufthansa",
-  "stand": "N50", "runway": "06", "taxi_route": ["B", "G"],
-  "state": "spawning", …, "actions": ["remove"], "done": false
-}
-```
-
-It then goes `"approaching"` (e.g. 827 ft AGL at 143 kt, actions `["goaround", "taxi", "remove"]`), `"landing"`, `"rollout"`, `"vacating"` by B, and waits `"awaiting taxi"`.
-
-**Error codes**
-
-- `INVALID_ARGUMENT`: `icao` or `callsign` missing or malformed; the airport has no such runway or STAR (the message lists the runway's STARs).
-- `TRAFFIC_ERROR`, `NOT_FOUND`, `TIMEOUT`, `BRIDGE_DISCONNECTED`: As for `spawn_departure`.
+| `stand` | string | No | free stand that fits | Stand label |
+| `star` | string | No | `auto` | A STAR name, `auto` or `none` |
+| `model`, `aircraft_type`, `via` | | No | | As for `spawn_departure` |
+| `hold_for_clearance` | boolean | No | `true` | Wait for the taxi clearance after vacating |
+| `turnaround` | boolean | No | `false` | Stay on the stand and depart again |
+| `dwell_min` | number | No | the engine's | With `turnaround`: minutes on the stand |
 
 ---
 
 ## list_our_traffic
 
-List the AI aircraft under our control (from `spawn_departure` and `spawn_arrival`): state, position, speed, current taxiway, what it is holding short of, errors, and `actions` — the clearances `atc_clearance` takes now. Poll it to follow the flights. A flight that has ended stays listed (`done: true`) until `atc_clearance` `remove`.
+Our aircraft, spawned or scheduled. Each one has:
 
-**Requirements**: Windows + MSFS 2020 or 2024 running with SimConnect enabled.
+- **Identity:** `id`, `callsign`, `kind` (`departure`, `arrival`), `rules`, `icao`, `model`, `squawk`.
+- **Plan:** `stand`, `runway`, `procedure`.
+- **State:** `state`, `atc` and `frequency` (the position working it), `onGround`, `position`, `heading`, `groundSpeed`, `holdingShortOf`, `taxiRemainingM`, `entry`, `deicing`, `pushbackHeld`, `error`.
+- **Control:** `manual` and `actions` (what `atc_clearance` takes now).
+- **Ground vehicles:** `vehicles`, each with `kind`, `title`, `state` (`waiting`, `inbound`, `attached`, `fuelling`, `outbound`, `removed`), `position`, `heading` and route.
+- **Real traffic:** `real`, `observedId`, `registration`.
 
-**Parameters**: None.
+| Name | Type | Required | Default | Description |
+|------|------|----------|---------|-------------|
+| `icao` | string | No | | Only this airport's aircraft |
+| `detail` | boolean | No | `false` | Include routes, taxi nodes and air fixes |
 
-**Returns**
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `count` | number | Flights of ours |
-| `flights` | array | Flights, sorted by call sign (see below) |
-
-Each flight:
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `callsign` | string | Call sign |
-| `kind` | string | `"departure"` or `"arrival"` |
-| `icao` | string | Airport |
-| `model` | string | Aircraft title, followed by a vertical bar and the livery when there is one |
-| `stand`, `runway` | string | Stand and runway |
-| `entry` | string | Departure runway entry, when given |
-| `procedure` | string | SID, or `"STAR → approach"` |
-| `taxi_route` | array | Planned taxiways |
-| `state` | string | See [Clearance flow](#clearance-flow) |
-| `taxiway` | string | Taxiway it is on |
-| `holding_short_of` | string | Runway it is holding short of |
-| `remaining_m` | number | Metres to the hold-short point (departure) or the stand (arrival) |
-| `position` | object | `{lat, lon}` |
-| `heading` | number | True heading, degrees |
-| `ground_speed_kts` | number | Ground speed, knots |
-| `agl_ft` | number | Height above ground, feet |
-| `on_ground` | boolean | `true` on the ground |
-| `lights` | string | `NBSTLOW` — nav, beacon, strobe, taxi, landing, logo, wing — with a dot for each light off, e.g. `"NB...O."` |
-| `error` | string | Why it failed, when it did |
-| `actions` | array | `atc_clearance` actions that fit now |
-| `done` | boolean | `true` once the flight has ended (`complete`, `parked`, `cancelled`, `failed`); only `remove` is left |
-
-Empty strings and zero `remaining_m` / `agl_ft` are omitted.
-
-**Example request**
-
-```json
-{
-  "jsonrpc": "2.0",
-  "id": 33,
-  "method": "tools/call",
-  "params": { "name": "list_our_traffic", "arguments": {} }
-}
-```
-
-**Example response** (MSFS 2024, abridged)
-
-```json
-{
-  "count": 1,
-  "flights": [
-    {
-      "callsign": "CSA123", "kind": "departure", "icao": "LKPR", "stand": "A1", "runway": "06",
-      "procedure": "ARTU5E", "taxi_route": ["A1", "Z", "H", "F"],
-      "state": "pushback", "position": { "lat": …, "lon": … }, "heading": …, "ground_speed_kts": 3,
-      "on_ground": true, "lights": "NB...O.", "actions": ["taxi", "takeoff", "remove"], "done": false
-    }
-  ]
-}
-```
-
-**Error codes**: None — with no aircraft of ours it returns `{"count": 0, "flights": []}`.
+Before the engine has started it returns no aircraft and `engine: "not started"`.
 
 ---
 
 ## atc_clearance
 
-Give one of our AI aircraft a clearance or instruction. Departures: `pushback`, `taxi` (to the holding point), `cross` (a runway on the way), `lineup` (line up and wait), `takeoff`, `hold` (hold position), `abort` (reject the take-off before V1). Arrivals: `goaround` (on final), `taxi` (to the stand), `cross`, `hold`. Both: `remove` (take it out of the simulator). A clearance given early means no stop there. See [Clearance flow](#clearance-flow).
+A clearance or instruction to one of ours. Any action but `remove` puts the aircraft under manual control.
 
-> **`remove` takes the aircraft out of the simulator**, frees its stand and forgets the flight.
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `callsign` | string | Yes | One of ours (or its engine `id`) |
+| `action` | string | Yes | See below |
+| `stand` | string | For `standto` | The stand label |
+| `entry` | string | For `entry` | The entry taxiway (`""` full length) |
+| `node` | number | For `upto` | The taxi node to stop at |
+| `facing` | string | No | `pushback`: the direction to face after the push, e.g. `"east"` |
+| `startup` | boolean | No | `pushback`: start engines during the push |
+| `on` | boolean | No | `manual`, `rush`: on (default) or off |
 
-**Requirements**: Windows + MSFS 2020 or 2024 running with SimConnect enabled.
+| Action | For | What it does |
+|--------|-----|--------------|
+| `pushback`, `pushstart`, `startup` | departures | Push back (and start); start engines |
+| `taxi`, `upto`, `cross`, `hold` | both | Taxi on, taxi up to a node, cross a runway, hold position |
+| `lineup`, `lineupbehind`, `takeoff`, `abort` | departures | Line up (behind the one landing), take off, reject the take-off |
+| `entry`, `rush` | departures | Change the runway entry; expedite |
+| `land`, `goaround` | arrivals | Cleared to land (spoken); go around |
+| `standto` | arrivals | Another stand |
+| `depart` | turnarounds | Depart now, skipping the dwell |
+| `manual` | both | `on: true` the caller clears it; `on: false` the engine does |
+| `remove` | both | Takes it out of the simulator and frees its stand and vehicles |
 
-**Parameters**
+Returns the aircraft after the action; `removed: true` after `remove`.
 
-| Name | Type | Required | Default | Description |
-|------|------|----------|---------|-------------|
-| `callsign` | string | Yes | — | Call sign of one of ours (case-insensitive) |
-| `action` | string | Yes | — | `pushback`, `taxi`, `cross`, `lineup`, `takeoff`, `hold`, `abort`, `goaround` or `remove` |
-
-**Returns**
-
-The flight as the clearance finds it, as in [`list_our_traffic`](#list_our_traffic); the state changes as the aircraft reacts, so follow it with `list_our_traffic`.
-
-**Example request**
-
-```json
-{
-  "jsonrpc": "2.0",
-  "id": 34,
-  "method": "tools/call",
-  "params": {
-    "name": "atc_clearance",
-    "arguments": { "callsign": "CSA123", "action": "pushback" }
-  }
-}
-```
-
-**Example response** (abridged)
-
-```json
-{ "callsign": "CSA123", "kind": "departure", "state": "awaiting pushback", …, "actions": ["pushback", "taxi", "remove"], "done": false }
-```
-
-Moments later the flight is `"pushback"` at about 3 kt with lights `"NB...O."`; `taxi` then has it `"taxiing"` at up to 15 kt, `hold` stops it (0 kt) and `taxi` sends it on.
-
-An action that does not fit, e.g. `lineup` for an arrival on its landing roll:
-
-```
-TRAFFIC_ERROR: lineup DLH4AB: DLH4AB (arrival, rollout) takes taxi, remove, not "lineup"
-```
-
-**Error codes**
-
-- `NOT_FOUND`: The call sign is not one of ours.
-- `TRAFFIC_ERROR`: The action is not one of the flight's kind (the message lists the actions that fit now), or the library refused it, e.g. `abort` past V1 or `goaround` on the runway.
+**Error codes**: `NOT_FOUND` (not one of ours), `NOT_APPLICABLE` (the action does not fit now: see `actions`), `INVALID_ARGUMENT`.
 
 ---
 
 ## get_traffic_picture
 
-The traffic picture: every aircraft the simulator has around the user aircraft (or an airport) with call sign, aircraft title, position, altitude, ground speed, heading, vertical speed and phase — `parked`, `taxiing`, `runway`, `departing`, `enroute` or `arriving` — and the airport it belongs to. The user aircraft and ours are marked. The first call starts the scan and takes a few seconds.
-
-**Requirements**: Windows + MSFS 2020 or 2024 running with SimConnect enabled.
-
-**Parameters**
+Every aircraft the simulator has around the user aircraft, or around an airport: call sign, title, phase (`parked`, `taxiing`, `runway`, `departing`, `enroute`, `arriving`, `holding`), the airport it belongs to, position, altitude, AGL, ground speed, heading and vertical speed. The user's and ours are marked. It reads the engine's picture as it is (the engine's area is not moved) and keeps the aircraft within `radius_nm`; the first call can take a few seconds.
 
 | Name | Type | Required | Default | Description |
 |------|------|----------|---------|-------------|
-| `centre` | string | No | user aircraft | Airport ICAO code to centre on |
-| `radius_nm` | number | No | `40` | Radius in NM, at most `40`. The scan reaches about 43 NM from the user aircraft, so an airport farther away shows only what is in reach |
-
-**Returns**
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `centre` | string | Airport centred on (empty: the user aircraft) |
-| `radius_nm` | number | Radius used |
-| `count` | number | Aircraft returned |
-| `aircraft` | array | Aircraft (see below) |
-
-Each aircraft: `callsign` (ATC ID), `title`, `phase`, `airport` (omitted enroute), `lat`, `lon`, `alt_ft`, `agl_ft`, `ground_speed_kts`, `heading_true`, `vs_fpm`, and `user: true` for the user aircraft or `ours: true` for one of ours.
-
-**Example request**
-
-```json
-{
-  "jsonrpc": "2.0",
-  "id": 35,
-  "method": "tools/call",
-  "params": {
-    "name": "get_traffic_picture",
-    "arguments": { "radius_nm": 10 }
-  }
-}
-```
-
-**Example response** (MSFS 2024, abridged)
-
-```json
-{
-  "centre": "", "radius_nm": 10, "count": 2,
-  "aircraft": [
-    { "callsign": "…", "title": "…", "phase": "parked", "airport": "LKPR", "lat": …, "lon": …, "alt_ft": …, "ground_speed_kts": 0, …, "user": true },
-    { "callsign": "CSA123", "title": "FSLTL_FAIB_A320_SmartWings_CzechAirlinesLivery", "phase": "taxiing", "airport": "LKPR", "lat": …, "lon": …, …, "ours": true }
-  ]
-}
-```
-
-**Error codes**
-
-- `INVALID_ARGUMENT`: `centre` is not an airport ICAO code, or `radius_nm` is outside 1–40.
-- `NOT_FOUND`, `TIMEOUT`, `BRIDGE_DISCONNECTED`, `TRAFFIC_ERROR`: See above.
+| `centre` | string | No | the user aircraft | Airport ICAO code to centre on |
+| `radius_nm` | number | No | `40` | Radius, 1–40 NM |
 
 ---
 
@@ -2423,86 +2308,178 @@ Generate a realistic airline schedule for airports: flights with call sign, airl
 
 ## Airborne ATC tools
 
-The live runtime runs a controller for every airport where we have traffic, using the library's v0.16 (airborne ATC):
-
-- **A tower per runway** clears our departures' line-up and take-off and our aircraft's runway crossings. It works in mixed mode: departures go in the gaps between arrivals, after the wake and same-SID interval. It sends an arrival around when the runway will not be free on short final (someone lined up, crossing, or still on it after landing). The go-around flies the published missed approach and is sequenced again.
-- **A landing sequence per runway end**, first come first served, of our arrivals and the other traffic on the final. Spacing is the wake minimum, at least 5 NM, and more in low visibility or on a contaminated runway (the weather at the user aircraft). Our arrivals lose their delays by themselves: slower first, then a longer downwind, then a hold at the STAR fix (stacked 1000 ft apart), left once the delay is down to a minute.
-
-Flights spawned with `hold_for_clearances` / `hold_for_clearance` are yours: the tower and the sequence count them but never clear or instruct them.
-
-The five tools below read the sequence and the tower, give approach instructions, predict conflicts, and compute separation minima.
+The engine runs, at each airport it works, a tower per runway, a landing sequence per runway end (spacing by wake, at least the minimum, more in low visibility), airborne separation with conflict resolutions for ours, and the radio. Manual aircraft are counted but never cleared or instructed by it.
 
 ---
 
 ## get_landing_sequence
 
-The landing sequence of each runway end with our arrivals, and who uses each runway now.
-
-**Parameters**
+The landing sequences at an airport the engine works, or at all of them: per runway its approach `conditions`, `lvp`, and `sequence`. Each entry has `callsign`, `number`, `leader`, `wake`, `spacingNM`, `spacingWhy`, `minimumNM`, `distanceToGoNM`, `eta`, `landing`, `delay` (nanoseconds) and `fixed` (established).
 
 | Name | Type | Required | Default | Description |
 |------|------|----------|---------|-------------|
-| `icao` | string | No | all | Airport ICAO code |
-
-**Returns**: `sequences` has one entry per runway end: `icao`, `runway`, `conditions` (visibility, ceiling, headwind, surface), and `arrivals`, first to land first. Each arrival has:
-
-- `number`, `callsign`, `wake` (`M/D`: ICAO/RECAT-EU);
-- `behind` and `spacing_nm`, with `spacing_why` when the conditions change it;
-- `distance_to_go_nm` along what it still flies;
-- `predicted_landing` and `sequenced_landing` (UTC);
-- `delay_s`, and `established` inside 8 NM.
-
-`tower` lists who uses each runway: `runway`, `callsign`, `phase` (holding short, lined up, on the runway, final), `ours`, and `waiting` (why it waits, e.g. `"CSA1 on a 3.0 NM final"`, `"1m20s behind DLH2"`).
+| `icao` | string | No | every airport the engine works | The airport |
 
 ---
 
 ## approach_instruction
 
-Give one of our arrivals in a landing sequence an approach controller's instruction. It returns what was said (`said`).
+An approach controller's instruction to one of our arrivals.
 
-| `instruction` | Effect |
-|---|---|
-| `up`, `down` | A place earlier or later in the landing order; it keeps the place |
-| `slow` | Loses another minute: slower, then a longer downwind |
-| `hold` | Holds at its STAR's hold fix, stacked above the others |
-| `release` | Leaves the hold and continues the arrival |
-| `direct` | Straight to the final, leaving out the rest of its STAR |
-| `goaround` | Goes around (the published missed approach) and is sequenced again |
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `callsign` | string | Yes | Our arrival |
+| `instruction` | string | Yes | `up`, `down`, `slow`, `speed`, `hold`, `release`, `direct`, `joinfinal`, `holdat`, `goaround` |
+| `kts` | number | For `speed` | The speed; 0 resumes normal speed |
+| `lat`, `lon` | number | For `joinfinal`, `holdat`; optional for `direct` | The point |
 
-**Error codes**:
+`up` / `down` move it a place in the landing order, `slow` loses another minute, `hold` holds at its STAR's hold fix (`release` ends it), `direct` goes to the point (else to the final), `joinfinal` joins the final at the point, `holdat` holds at the point.
 
-- `NOT_FOUND`: not in a landing sequence.
-- `NOT_APPLICABLE`: established (inside 8 NM), on the final, already holding or not holding.
-- `INVALID_ARGUMENT`: an unknown instruction.
+**Error codes**: `NOT_FOUND` (not in a sequence), `NOT_APPLICABLE` (not one of our arrivals, established), `INVALID_ARGUMENT`.
 
 ---
 
 ## get_atc_log
 
-The latest instructions of the runtime's controllers, newest last, as ATC says them. For example:
+The radio: the engine's latest transmissions, oldest first, each with `at`, `airport`, `frequency`, `position` (delivery, ground, tower, approach), `controller` or `pilot`, `callsign`, `intent`, `params` and `text`.
 
-- `"CSA123, runway 24, line up, cleared for take-off"`
-- `"DLH4AB, number 2, delay 1m30s: 210 kt, +4.1 NM"`
-- `"KLM7, hold at PR722, direct entry, maintain 7000 ft, expect further clearance 1042Z"`
-- `"CSA1, go around, I say again, go around — TVS3 on the runway"`
-
-Parameters: `icao`, `callsign`, `limit` (1–200, default 50). Returns `messages`: `at`, `icao`, `callsign`, `text`.
+| Name | Type | Required | Default | Description |
+|------|------|----------|---------|-------------|
+| `icao` | string | No | all | Only this airport's |
+| `limit` | number | No | `30` | At most this many |
 
 ---
 
 ## get_conflicts
 
-Airborne conflicts in the traffic picture: pairs that, flying on as they are (track, ground speed, vertical speed), come closer than 5 NM (3 NM near an airport) and 1000 ft within the look-ahead.
+Airborne separation as the engine sees it: `minNM`, the `closest` pairs, `open` and past `losses` of separation, predicted `conflicts`, and the `resolutions` given to ours with what was said.
 
-- Departures and arrivals at the same airport low near the runway are left to the tower.
-- Where one of the pair is ours, the least disturbing resolution comes as advice: a speed (±10–20 %), a level (1000 or 2000 ft, by the semicircular rule) or a heading (20–45°), whichever keeps it clear of everyone.
+---
 
-Parameters: `centre`, `radius_nm` (1–40), `lookahead_min` (1–10, default 5).
+## get_traffic_status
 
-Returns `conflicts`. Each conflict has `pair`, `loss_in_s`, `closest_nm`, `closest_vertical_ft`, `closest_in_s` and `minimum_nm`, plus either:
+The engine's state: `running`, `connected`, `aircraft` (ours), `dropped_messages`, the `schedule`, `real_traffic` and `corridor` settings, `player` (the user's place in a landing sequence) and the last `error`.
 
-- `resolution`: `callsign`, `kind` (speed, level, heading), `kts`, `altFt` or `headingDeg`, and `why`;
-- `resolution_note`, when there is none.
+---
+
+## get_traffic_airport_info
+
+An airport as the engine works it: `runways`, `use` (the runways in use with head- and crosswind, within limits), `atis` (letter, text, spoken), `ils`, `limits` and `weather`. While our traffic runs there, this is what its ATC uses; `get_atis` and `get_active_runway` compute their own.
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `icao` | string | Yes | The airport |
+
+---
+
+## set_player_clearance
+
+Tells the engine what the user's own ATC cleared the user aircraft to do. The engine never controls or calls the user aircraft. While the user lines up, takes off or lands on a runway, none of our traffic is cleared onto it. Landing, the user is in that runway's landing sequence and our traffic fits around it. `vacated` ends it.
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `icao` | string | Yes | The airport |
+| `runway` | string | Yes | The runway end, e.g. `"24"` |
+| `phase` | string | Yes | `pushback`, `taxi`, `holding_short`, `lineup`, `takeoff`, `landing` or `vacated` |
+| `callsign` | string | No | The user's call sign as said (default `Player`) |
+| `model` | string | No | The user's model, for its wake and speed |
+
+Returns the `clearance` and, landing, the user's `place` (number, leader, spacing, distances to go).
+
+---
+
+## Scheduled traffic tools
+
+`start_schedule` runs the engine's scheduled traffic at airports: an airline timetable (the same schedule as `generate_schedule`) and light aircraft in the circuit by day.
+
+- **Departures** appear on their stand before their STD, get their stand services and push on time.
+- **Arrivals** come in en route and join their STAR.
+- **Turnarounds and overflights** are flown too.
+- **ATC:** the engine's tower, sequences and separation clear them.
+- **Removal:** departed and parked aircraft are removed.
+
+`add_flights` adds flights at chosen times, `set_real_traffic` and `observe_traffic` fly real-world aircraft instead of the timetable, and `set_traffic_corridor` keeps airliners around the user's flight in cruise.
+
+## start_schedule
+
+| Name | Type | Required | Default | Description |
+|------|------|----------|---------|-------------|
+| `airports` | string | Yes | | Airports, e.g. `"LKPR"` or `"LKPR, LKTB"`; loaded around the user aircraft |
+| `density` | number | No | `1` | Traffic density (1: the timetable as it is) |
+| `max_aircraft` | number | No | the engine's | Most of the schedule's aircraft at once |
+| `seed` | number | No | | Random seed |
+| `ifr` | boolean | No | `true` | Airline flights |
+| `vfr` | boolean | No | `true` | Light aircraft in the circuit |
+| `generator` | boolean | No | `true` | The generated timetable; `false`: only flights from `add_flights` |
+| `offset_min` | number | No | `0` | Fly the timetable this many minutes later now (600 puts a morning wave into an evening) |
+| `others` | string | No | `respect` | `respect` or `ignore` the traffic that is not ours |
+
+Calling it again changes the settings. Returns the schedule's settings, `now` (traffic time), `active` and `flight_count`.
+
+## stop_schedule
+
+No more aircraft appear; those flying finish their flights. With `remove: true` every aircraft of ours on the engine's list is taken out now. Returns `running` and `removed`.
+
+## get_schedule
+
+The schedule's settings and `now`, and per airport (`icao`, default every scheduled airport) its `boards`: `departures` and `arrivals`. Each flight has `callsign`, `airline`, `type`, `origin`, `destination`, `std`, `sta`, `status`, `stand`, `runway`, `estimated`, `note` and, for a real one, `observed`.
+
+## add_flights
+
+Adds flights to the running schedule at chosen times: an arrival just before the user's ETA, say, or a departure just after their off-block. `start_schedule` with `generator: false` runs only these.
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `flights` | array | Yes | Flight objects: `callsign`, `origin`, `destination` (one of them a scheduled airport), `type` (default A320), `airline`, and `std_in_min` / `sta_in_min` (minutes from traffic time now) or `std` / `sta` (RFC 3339, traffic time) |
+
+A departure needs an STD, an arrival an STA. An STA too soon (inside 15 minutes with the defaults) is refused with `NOT_APPLICABLE`. Returns `now` and the flights `added`.
+
+## set_real_traffic
+
+Flies real-world traffic at an airport instead of the generated timetable. Generated flights not yet in the simulator go at once, those flying finish. `on: false` brings the timetable back.
+
+| Name | Type | Required | Default | Description |
+|------|------|----------|---------|-------------|
+| `on` | boolean | No | `true` | On or off |
+| `icao` | string | When on | | The airport |
+
+## observe_traffic
+
+Feeds real-world sightings to the engine, from a feed such as ADS-B. What happens to each:
+
+- **IDs:** each is identified by its ICAO 24-bit address and spawned once; later sightings only refresh its registration, origin and destination.
+- **Parked and departing** aircraft go on a stand within 80 m of where they are seen. A parked one waits, with no push, until its departure is seen.
+- **Arrivals** appear on their projected track and join a STAR of the runway in use.
+- **Overflights** are not flown.
+- **Unknown** origins and destinations stay unknown.
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `sightings` | array | No | Objects: `id`, `callsign`, `registration`, `type`, `lat`, `lon`, `altFt`, `groundKts`, `trackDeg`, `vsFpm`, `onGround`, `seenAt` (default now), and optional `kind`, `origin`, `destination`, `departAt` |
+| `drop` | string | No | IDs the feed no longer sees, e.g. `"49d2a1, 4ca7b2"`; one in progress finishes first |
+
+Returns `results`, one per sighting: `id`, `kind`, `callsign`, `airport`, `status` (`added`, `updated`, `retimed`, `turnaround`, `ignored`) and `reason`. It also returns `dropped`.
+
+## set_traffic_corridor
+
+Keeps a few airliners around the user's flight in cruise, flown by MSFS AI:
+
+- **same:** ahead on the route, 25–45 NM, same direction, 2000 ft above or below.
+- **opposite:** 70–100 NM ahead, coming the other way, 1000 ft above or below.
+- **crossing:** 45–70 NM ahead, across the route at 60–120°, 1000 or 2000 ft above or below.
+
+One more than `despawn_nm` from the user aircraft and moving away is replaced.
+
+| Name | Type | Required | Default | Description |
+|------|------|----------|---------|-------------|
+| `enabled` | boolean | No | `true` | On, or off (takes them all out) |
+| `route` | string | When on | | The user's route ahead, in its direction: `"lat,lon; lat,lon; …"`, at least two points |
+| `level_ft` | number | When on | | The user's cruise level, feet |
+| `kts` | number | No | | The user's cruise speed |
+| `same`, `opposite`, `crossing` | number | No | `1` each | How many of each |
+| `despawn_nm` | number | No | `80` | Replace one this far away |
+
+Returns the corridor and its `aircraft`.
 
 ---
 
@@ -2526,47 +2503,3 @@ It returns:
 
 ---
 
-## Scheduled traffic tools
-
-`start_schedule` runs a realistic airline schedule at airports in the simulator, using the library's `TrafficManager` and the same schedule as `generate_schedule`. What it does:
-
-- **Departures** appear on a free stand 10 minutes before their STD and push at it.
-- **Arrivals** appear in the air 45 minutes before their STA, on their flight plan from their origin (planned like `plan_flight`, to the runway in use), and fly to their STAR entry as MSFS AI. At the entry they are handed to an arrival controller, which flies the same STAR, approach and landing. An arrival that can't fly en route appears at its STAR entry 25 minutes before its STA instead. For example, it may have no flight plan, or be too close to the entry.
-- **Overflights** cross the area within 100 NM of the first airport, between airports outside it, and are removed as they leave it. They are listed in `get_schedule`'s `overflights`.
-- **Turnarounds:** an arrival whose airline and type depart again 40 minutes to 3 hours after its STA stays on its stand and becomes that departure. It is the same aircraft, not a new one on another stand.
-- **Clearances:** the flights are ours and not held for clearances, so the runtime's tower and landing sequences clear and sequence them (see [Airborne ATC tools](#airborne-atc-tools)).
-- **Removal:** departed and parked aircraft are removed.
-- **Spacing and limits:** spawns are spaced (arrivals 3 min apart, departures 1 min), limited to `max_aircraft`, and retried with another model or stand when a spawn fails.
-- **Late flights:** a flight that can't start in time is cancelled.
-
-
-## start_schedule
-
-| Name | Type | Required | Default | Description |
-|------|------|----------|---------|-------------|
-| `airports` | string | Yes | | Airports, e.g. `"LKPR"` or `"LKPR, LKTB"`; they must be loaded around the user aircraft |
-| `density` | number | No | `1` | Traffic density, 0.1–3 |
-| `max_aircraft` | number | No | `12` | Most of the schedule's aircraft at once, 1–24 |
-| `seed` | number | No | `1` | Random seed |
-
-Calling it again changes the airports and settings of the running schedule. It returns the same as `get_schedule`.
-
-## stop_schedule
-
-No more aircraft appear. With `remove=true` the schedule's aircraft are taken out of the simulator now. Otherwise those in the simulator fly on: en route arrivals are still handed to the arrival controller at their STAR entry, and aircraft are removed as they depart, park or leave the area. The schedule stops when the last one is gone. Returns `running`, `removed` (how many were removed) and `flying_on` (how many fly on).
-
-## get_schedule
-
-The schedule's boards. It returns:
-
-- `running`, `airports`, `active` (the schedule's aircraft in the simulator) and `max_aircraft`;
-- `boards`: per airport, `departures` and `arrivals`;
-- `overflights`: the flights crossing the area, with `scheduled` the time they enter it.
-
-Each flight has `callsign`, `type`, `from`, `to`, `scheduled` (STD or STA, UTC) and `estimate` when late. It also has:
-
-- `status`: `scheduled`, `spawning`, `boarding`, `taxiing`, `departing`, `departed`, `enroute`, `approaching`, `landed`, `parked`, `done` or `cancelled`;
-- `stand` and `runway`;
-- `note`: why it waits, is late or was cancelled.
-
-Parameter: `icao` (default: all the schedule's airports).

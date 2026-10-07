@@ -41,7 +41,7 @@ The text is made from the intent and parameters by one phrasebook (`Say`), so ev
 - `Sequenced`, `DirectToFinal`, `HoldAt`, `LeaveHoldAt`, `HoldDescend`;
 - `Resolved` for a conflict resolution: speed, level (`LevelSaid`: "flight level 210", "altitude 9000 feet") or heading.
 
-The wording follows [Phraseology](traffic-phraseology.md): ICAO Doc 4444 chapter 12, with the UK CAP 413 for wording and order where Doc 4444 leaves them open, each phrase pinned by a test to its source (#462). The departure clearance gives the destination, the SID by its fix (`SaidProcedure`: "BALTU 7D"), the runway, the initial climb (`LevelSaidAbove`, against the transition altitude) and a squawk; start-up and pushback are two approvals; the take-off and landing clearances carry the wind after the clearance (`WindSaid`); the tower clears the next arrival to land within 6 NM with the runway free (`RunwayClearances.Land`) and tells it on the landing roll to call ground when vacated (`WhenVacatedContact`). The crew's clearance request to delivery follows the order of CAP 413 4.9; its exact wording is not in Doc 4444.
+The wording follows [Phraseology](traffic-phraseology.md): ICAO Doc 4444 chapter 12, with the UK CAP 413 for wording and order where Doc 4444 leaves them open, each phrase pinned by a test to its source (#462). The departure clearance gives the destination, the SID by its fix (`SaidProcedure`: "BALTU 7D"), the runway, the initial climb (`LevelSaidAbove`, against the transition altitude) and a squawk; start-up and pushback are two approvals, mostly given in one ("push back and start-up approved"; the map's crews ask so 85% of the time); the take-off and landing clearances carry the wind after the clearance (`WindSaid`); the tower clears the next arrival to land within 6 NM with the runway free (`RunwayClearances.Land`) and tells it on the landing roll to call ground when vacated (`WhenVacatedContact`). The crew's clearance request to delivery follows the order of CAP 413 4.9; its exact wording is not in Doc 4444.
 
 The text is what a voice library such as `voice-goio` takes as it is: it normalises "CSA123, runway 24, cleared for take-off" into speech itself.
 
@@ -58,6 +58,21 @@ recent := radio.Recent("LKPR", 50) // oldest first
 ```
 
 On the airport map every ATC line of the traffic log comes from its radio: the ground and tower clearances, the tower's automatic ones, the sequencer's delays and holds, the Sequence section's actions and the conflict resolutions. The wording is unchanged. `GET /api/radio?icao=LKPR&n=50` serves the recent transmissions.
+
+### Whom the controller calls first
+
+On the airport map each controller decides whom to call next (`cmd/airport-map/agenda.go`). A clearance it has decided waits on its frequency's agenda until the controller's answer time (1–5 s). It goes out once the frequency has been quiet for `atcAnswerDelay` (1 s), one call at a time. The most urgent ready call goes first, by class:
+
+1. a go-around;
+2. a landing clearance;
+3. a take-off, line-up or runway crossing;
+4. an approach clearance;
+5. taxi for an arrival that has vacated (it is in the way at its exit);
+6. taxi for a departure;
+7. pushback and start-up;
+8. a departure clearance.
+
+Within a class the call that has waited longest goes first. A call no longer wanted when its turn comes is dropped: a crew that no longer asks, or a runway clearance the runway controller no longer grants (not granted for `grantFresh`, 2.5 s). A dropped runway clearance is given again once it is granted again. Hold position, cancel take-off and the other safety calls are said at once, as before. Before, each answer went out in the order it was decided, so a landing clearance waited behind line-ups and pushbacks.
 
 ## Frequencies and handoffs
 
@@ -78,7 +93,7 @@ Who works an aircraft follows its state:
 
 Runway crossings stay on the ground frequency, the tower having agreed, as at most airports.
 
-A change of position is a handoff, said by the position handing over. `Handoff` gives "CSA123, contact Praha Tower 118.105" (`StationName` makes "Praha Tower" from the scenery's name). With `RadioOptions.FrequencyOf` the radio puts each transmission on its position's frequency and says one at a time on each frequency. While one transmission is said (`SpeakingTime`: about 160 words a minute), the next is stamped for when it ends, so a voice plays them in turn.
+A change of position is a handoff, said by the position handing over. `Handoff` gives "CSA123, contact Praha Tower 118.105" (`StationName` makes "Praha Tower" from the scenery's name). `StationFor(layout, pos)` gives a position's station and frequency as the airport map says them: the AIP's unit call sign where the scenery's names do not give the unit (`AIPUnitName`; at LKPR "Ruzyne Delivery", "Ruzyne Ground", "Ruzyne Tower", "Ruzyne Radar", "Praha Radar"), else `StationName` for what the frequency is; a position with no frequency of its own (departure at LKPR) talks on the one that serves it (approach). With `RadioOptions.FrequencyOf` the radio puts each transmission on its position's frequency and says one at a time on each frequency. While one transmission is said (`SpeakingTime`: about 160 words a minute), the next is stamped for when it ends, so a voice plays them in turn.
 
 On the airport map each aircraft's card shows who works it and on what frequency ("📻 tower 118.105"), and the traffic log reads as the radio: the clearance on each frequency, then "contact Praha Ground 121.905".
 
@@ -127,9 +142,10 @@ A clearance built by `Say` is said again in FAA wording at a US airport, and `Tr
 | Taxi | "taxi to and hold short of runway 24 via B, A" | "runway 04L, taxi via B, A" |
 | Take-off | "runway 24, cleared for take-off, wind 240 degrees 8 knots" | "runway 04L, cleared for takeoff" (no wind in the civil phrase) |
 | Approach | "cleared ILS approach runway 24, QNH 1013, report established" | "cleared ILS runway 04L approach" |
+| Vectors (#661) | "fly heading 060, for spacing", "turn left heading 150, for base", "resume own navigation direct GOLOP"; then "turn left heading 245 to intercept, cleared ILS approach runway 24, QNH 1013, report established" | the same vectors; the approach clearance "turn left heading 245, cleared ILS runway 24 approach" (5-9-4) |
 | Departure's check-in answered | "identified, climb to flight level 240" | "radar contact, climb and maintain 5000" |
 
-On the runway, a conditional line-up ("behind the landing …, line up and wait runway 24, behind") is ICAO only. The FAA does not allow conditions on the runway.
+On the runway, a conditional line-up ("behind the landing …, line up and wait runway 24, behind") is ICAO only. So is a conditional crossing (`ClearedCrossBehind`: "behind the landing A320, cross runway 12, behind"). The tower gives one to an aircraft holding short of a crossing when only the next arrival is in the way (`RunwayClearances.CrossBehind`). The aircraft crosses once that arrival is off the runway. The FAA does not allow conditions on the runway.
 
 ## Expedite, weather and direct
 
@@ -149,6 +165,22 @@ Crews can also ask for the weather or for a shortcut:
 
 No source we have read gives the wording of the two requests themselves, so it is the project's own; the answers are quoted ones.
 
+## VFR departures and squawks
+
+`VFRDepartureInstructions` and `VFRDepartureReadback` say a VFR departure's instructions from a controlled aerodrome, following CAP 413 (Edition 24, Figure 24, "VFR – Departure Instructions and Take-off Clearance"): "G-CD, after departure, left turn approved, climb not above altitude 2500 feet until reaching the zone boundary".
+
+- **Wording:** the figure says "departure", not "take-off", and "approved", not "cleared", and asks for a full readback: "Left turn approved, not above altitude 2500 feet until zone boundary, G-CD".
+- **Route out:** a visual reporting point is given as in CAP 413 6.7, "route via Whiskey".
+- **Squawk:** added last when one is given ("squawk 7000").
+
+Combining the route and squawk with the figure's wording is the project's own; each part is quoted.
+
+`Squawks` hands out discrete SSR codes. No source for per-airport code banks has been found, so the scheme is simple and documented:
+
+- **The bank:** codes from 4001 to 4777 by default (octal).
+- **Which code:** the first code tried is picked from the call sign, so a flight keeps its code; then the next free one.
+- **Never given:** codes in use (`Reserve` adds codes seen elsewhere, `Release` frees one), and the special codes 0000, 1200, 2000, 7000, 7500, 7600 and 7700 (`SpecialSquawk`).
+
 ## The radio panel
 
 The airport map's **Radio** tab (#425) shows what is said on the airport's frequencies. Each frequency the scenery lists (Delivery, Ground, Tower, Approach, ATIS…) has a button with the number of transmissions heard on it. Pick the one to follow, as on a receiver: one frequency at a time (#462). Pilot lines and the ATIS are coloured apart from the controllers'. The choice is remembered.
@@ -156,3 +188,39 @@ The airport map's **Radio** tab (#425) shows what is said on the airport's frequ
 ## Voice
 
 The airport map speaks the radio through [voice-goio](https://github.com/mrlm-net/voice-goio) (#419). The Radio tab's **🔇 Sound off** switch turns the voice on for the frequency you follow. Tuned to the ATIS, you join its continuous broadcast where it is. Each controller position has a voice and radio sound of its own, each crew its own voice, and the ATIS plays on a loop in its broadcast voice while its frequency is followed. To stay live on a busy frequency, anything not said within 20 s is dropped. The map is its own module, so the SDK keeps zero dependencies. The [airport-map README](../cmd/airport-map/README.md#voice) covers installing piper and the voice models.
+
+## Variety
+
+A real frequency is not a script (#721). `RadioOptions.Variety` (or `Radio.SetVariety`; nil is off) varies what is said and when, never what is cleared: every transmission keeps its intent and parameters.
+
+- **Crew style:** each call sign gets a style from the seed: quick, normal or slow to answer (about 0.5–3 s with the breath), chatty or terse.
+- **Greetings:** most crews greet on their first call to a station (chatty ones nearly always, fewer on a busy frequency), in words and places picked at random: "Ruzyne Radar, good morning, CSA1, …", "Good afternoon, Ruzyne Radar, CSA1, …", "Ruzyne Radar, CSA1, hello, …" (by the time of day, its short form, "good day", "hello").
+- **Greeted back:** the controller's first answer to a first call often greets after the call sign ("CSA1, good morning, cleared …"): mostly when the crew greeted, now and then when it did not.
+- **Pleasantries:** a controller may end a handoff with "good day" or "bye" when the frequency is quiet, never when it is busy. A chatty crew answers a handoff with "good day", "bye", "bye bye", "cheers" or "see you".
+- **Say again:** about 2 % of clearances. The crew asks "Say again", the controller repeats the clearance (`ParamRepeat`), then the crew reads it back.
+- **Missed calls:** about 3 % of handoffs get no answer; after 6 to 10 s of silence the controller calls again, then the crew reads it back (`MissedCall`).
+- **Readback errors:** about 1 % of clearances. The crew reads one number back wrong: frequency, heading, level, squawk, speed or altitude, never the runway. The controller corrects it with `CheckReadback` ("negative, …"), and the crew reads it back right.
+
+The same seed and the same traffic give the same radio. The world turns it on by default (seed 721). `GET /api/radio/variety` shows it; `POST` `{"enabled":false}` turns it off; `{"enabled":true,"seed":7,"sayAgain":0.05,"readbackError":0.02}` sets it.
+
+## Stations and controllers
+
+An airport may have several stations per position, and one controller may work several frequencies (#722). `traffic.Station` is a position, a name, a frequency, a controller and a sector:
+
+- **Sector:** `taxiways` (ground: by taxiway name), `area` (a polygon, an apron) or `runways` (tower). A station without a sector takes the rest of its position's traffic.
+- **Controller:** stations with the same `controller` are one person. The same voice speaks on each frequency (voice-goio `Utterance.Controller`), and the radio lets one controller say one thing at a time across all of them (`RadioOptions.ControllerOf`). The default is the airport and frequency, so positions on one frequency share a controller (approach and departure on 118.31 at LKPR).
+
+`DefaultStations` builds them from the scenery's frequencies. `StationsWith` adds an airport's own stations: a position the override gives replaces its defaults. `PickStation` picks the station that works an aircraft by its taxiways, runway and position.
+
+In the world, each aircraft talks to the station of its sector. Taxiing into another ground station's sector, it is handed over: "CSA1, contact Ruzyne Apron 121.8". An airport's own stations live in the local settings (`stations.json` beside the other overrides), set with `PUT /api/stations?icao=LKPR` and a list of stations. `DELETE` goes back to the defaults; `GET` shows the stations as worked. A night with ground and tower combined:
+
+```json
+[{"position":"ground","name":"Ruzyne Ground","freq":"121.91","controller":"LKPR night"},
+ {"position":"tower","name":"Ruzyne Tower","freq":"134.56","controller":"LKPR night"}]
+```
+
+## Descend via the STAR
+
+`DescendVia(pos, cs, star, levelFt, transitionFt)` clears an arrival down its STAR, keeping the published level and speed restrictions (#754). ICAO: "CSA1, descend via STAR to flight level 100" (Doc 4444 6.5.2.4.1 a); `WithCancelled(t, "level")` or `"speed"` adds "cancel level restrictions" or "cancel speed restrictions" (6.5.2.4.1 b, d). FAA: "CSA1, descend via the VOZ 5A arrival", the published altitudes and no level (JO 7110.65 4-5-7 h). The readback repeats it and `CheckReadback` checks the level. `CrossAt(pos, cs, fix, altFt, transitionFt, above)` is "CSA1, cross VOZ at or above flight level 120" (Doc 4444 12.3.2.4 a; 7110.65 4-5-7).
+
+The constraints come from the procedures: `airport.LegConstraints(legs)` lists each constrained fix with `AtOrAboveFt`, `AtOrBelowFt` and `SpeedKts`. `Procedures.FitSTAR(filed, runway, entryFix)` keeps a filed STAR that serves the runway in use, else picks one from the entry fix of the same family (LKPR: VLM5S filed for 24, VLM6T for 06) (#755). `Procedures.MissedOf(approach)` sums up the published missed approach: its points, first fix and climb altitude (#756).

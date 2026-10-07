@@ -57,7 +57,6 @@ type Runtime struct {
 	fixes     *nav.NavLoader
 	crawlNav  *nav.NavLoader
 	weather   *nav.WeatherReader
-	traffic   *trafficState
 	runways   RunwayMemory
 
 	layoutWait map[string][]chan layoutResult
@@ -138,15 +137,10 @@ func NewRuntime(mgr manager.Manager) *Runtime {
 	return r
 }
 
-// Close takes our AI aircraft out of the simulator and stops the Runtime's
-// timer; it returns how many aircraft it removed. The simulator keeps AI
-// objects after their client disconnects, so call it before closing the
-// connection. Its handlers stay registered with the manager, which is closed
-// with it.
-func (r *Runtime) Close() int {
-	n := r.RemoveAll()
+// Close stops the Runtime's timer. Its handlers stay registered with the
+// manager, which is closed with it. (The AI traffic is the TrafficWorld's.)
+func (r *Runtime) Close() {
 	r.once.Do(func() { close(r.stop) })
-	return n
 }
 
 // resetLocked creates the loaders anew: after a reconnect their facility
@@ -158,9 +152,6 @@ func (r *Runtime) resetLocked() {
 	r.fixes = nav.NewNavLoaderWithIDs(r.mgr, fixDefBase, fixReqBase, fixSlots)
 	r.crawlNav = nav.NewNavLoaderWithIDs(r.mgr, crawlDefBase, crawlReqBase, crawlSlots)
 	r.weather = nav.NewWeatherReader(r.mgr, weatherDefID, weatherReqID)
-	// The simulator removed our aircraft with the old connection; the
-	// traffic state is made again for the new one when needed.
-	r.traffic = nil
 	r.wxSubbed = false
 }
 
@@ -243,7 +234,6 @@ func (r *Runtime) handle(msg engine.Message) {
 			r.finishCrawlLocked(err)
 		}
 	}
-	r.handleTrafficLocked(msg)
 }
 
 func (r *Runtime) tickLoop() {
@@ -288,7 +278,6 @@ func (r *Runtime) tick(now time.Time) {
 			r.finishCrawlLocked(err)
 		}
 	}
-	r.tickTrafficLocked(now)
 }
 
 // ── Layouts ─────────────────────────────────────────────────────────────────

@@ -827,6 +827,40 @@
 	</div>
 </section>
 
+<!-- Commercial use -->
+<section
+	class="border-t px-6 py-16 text-center"
+	style="background-color: var(--color-bg-primary); border-color: var(--color-border);"
+>
+	<div class="mb-4 flex justify-center">
+		<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--color-link);" aria-hidden="true">
+			<rect x="2" y="7" width="20" height="14" rx="2" ry="2" />
+			<path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
+		</svg>
+	</div>
+	<h2 class="mb-1 text-xl font-bold tracking-tight" style="color: var(--color-text-primary);">
+		Commercial use
+	</h2>
+	<p class="mb-4 text-xs font-semibold uppercase tracking-widest" style="color: var(--color-text-muted);">
+		Business Source License 1.1
+	</p>
+	<p class="mx-auto mb-7 max-w-sm text-sm leading-relaxed" style="color: var(--color-text-secondary);">
+		Want to use SimConnect MCP for commercial stuff — a paid add-on or product, a paid
+		service, or inside a business? Contact me and we'll sort out a licence.
+	</p>
+	<a
+		href="mailto:support@mrlm.net?subject=SimConnect%20MCP%20commercial%20use"
+		class="inline-flex items-center gap-2 rounded-md px-6 py-2.5 text-sm font-semibold transition-opacity hover:opacity-90"
+		style="background-color: var(--color-link); color: #fff;"
+	>
+		support@mrlm.net
+		<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+			<path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+			<polyline points="22,6 12,13 2,6" />
+		</svg>
+	</a>
+</section>
+
 <!-- Sponsor / Support -->
 <section
 	class="border-t px-6 py-16 text-center"

@@ -1,13 +1,13 @@
 ---
 title: "MCP Tools — SimConnect Mode"
-description: Reference for the 45 live-data, AI traffic, airborne ATC and scheduled traffic MCP tools in SimConnect mode (MCP_MODE=simconnect, Windows only).
+description: Reference for the 51 live-data, user aircraft, AI traffic, airborne ATC and scheduled traffic MCP tools in SimConnect mode (MCP_MODE=simconnect, Windows only).
 order: 2
 section: reference
 ---
 
-All 45 MCP tools listed here are available when the server runs with `MCP_MODE=simconnect` (and, on Windows, with `MCP_MODE=both`, alongside the 15 docs tools — 60 in all). This mode provides live simulator data via the SimConnect SDK, and AI traffic under our control.
+All 51 MCP tools listed here are available when the server runs with `MCP_MODE=simconnect` (and, on Windows, with `MCP_MODE=both`, alongside the 15 docs tools — 66 in all). This mode provides live simulator data via the SimConnect SDK, and AI traffic under our control.
 
-**Both mode**: with `MCP_MODE=both` on Windows, the server registers these 45 tools alongside the 15 [docs-mode tools](/docs/mcp-tools-docs) — 60 tools in total — provided SimConnect opens at startup (10-second timeout). If the simulator cannot be reached, or on non-Windows platforms, both mode serves the 15 docs tools only; `simconnect_ready` in the `/health` response reports which case applies.
+**Both mode**: with `MCP_MODE=both` on Windows, the server registers these 51 tools alongside the 15 [docs-mode tools](/docs/mcp-tools-docs) — 66 tools in total — provided SimConnect opens at startup (10-second timeout). If the simulator cannot be reached, or on non-Windows platforms, both mode serves the 15 docs tools only; `simconnect_ready` in the `/health` response reports which case applies.
 
 **Requirements**: Windows only. Microsoft Flight Simulator 2020 or 2024 must be running with SimConnect enabled before issuing any read or transmit calls. The `get_sim_state` tool is safe to call at any time regardless of connection state.
 
@@ -23,6 +23,12 @@ Tools are called over the Model Context Protocol using JSON-RPC 2.0 with the `to
 | [`transmit_event`](#transmit_event) | Transmit a named SimConnect client event to the simulator |
 | [`get_sim_state`](#get_sim_state) | Return a snapshot of current simulator connection state and flight status |
 | [`get_fuel_state`](#get_fuel_state) | The user aircraft's fuel: total, weight and the main tanks |
+| [`get_aircraft_systems`](#get_aircraft_systems) | The user aircraft's systems through its profile: power, radios, lights, doors, transponder, ground equipment |
+| [`set_aircraft_control`](#set_aircraft_control) | Operate a door, chocks, GPU, parking brake, cabin signs, external power or the cabin call |
+| [`request_ground_service`](#request_ground_service) | Ask for the sim's jetway, stairs, baggage, catering, ground power, fuel truck or pushback |
+| [`set_radio`](#set_radio) | Set a COM frequency, swap a COM, or set the squawk |
+| [`set_atc_callsign`](#set_atc_callsign) | Set the call sign the sim's ATC uses for the user aircraft |
+| [`list_addons`](#list_addons) | The installed MSFS packages: Community, Official and streamed |
 | [`get_nearby_traffic`](#get_nearby_traffic) | List AI and player aircraft within a radius of the user aircraft |
 | [`get_traffic_with_phase`](#get_traffic_with_phase) | Like `get_nearby_traffic` with enriched telemetry and inferred flight phase |
 | [`get_airports_in_range`](#get_airports_in_range) | List airports in the simulator's loaded scenery area sorted by distance |
@@ -405,6 +411,162 @@ The user aircraft's fuel: total quantity and capacity, percent full and weight, 
 
 - `BRIDGE_DISCONNECTED`: Not connected to the simulator.
 - `INTERNAL_ERROR`: The simulator refused a fuel SimVar.
+
+---
+
+## get_aircraft_systems
+
+The user aircraft's systems, read through its systems profile (the library's `pkg/systems`). The profile is the standard SimVars, the library's shipped profile for the model on top (the Fenix A320 family reads power, radios, chocks and GPU from its own L:vars and tablet), then the local override files from `SIMCONNECT_AIRCRAFT_PROFILES` on top of that. The model is matched by its package (found from the aircraft the sim loaded, with `pkg/addons`), its title or its ATC type.
+
+**Requirements**: Windows + MSFS 2020 or 2024 running with SimConnect enabled.
+
+**Parameters**: none.
+
+**Returns**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `aircraft` | object | `title`, `atc_type` (empty when the aircraft gives an untranslated key), `path` (the aircraft.cfg loaded), `package` and `package_source` when found |
+| `profile` | object | `name`, `measured` (how the model's profile was measured), `local_overrides` and `local_override_errors` |
+| `power` | object | `battery`, `powered`, `bus_volts`, `avionics`, `external_available`, `external_on` |
+| `radios` | object | `com1`, `com2`: `working`, `active_mhz`, `standby_mhz` (0 when the radio gives none, e.g. dark) |
+| `transponder` | object | `state` (`off`, `standby`, `test`, `on`, `alt`) and `squawk` |
+| `engines` | array | `engine`, `running`, `starter` per engine |
+| `parking_brake`, `gear_down` | boolean | |
+| `flaps_pct` | number | Flaps handle, percent |
+| `lights` | object | `beacon`, `nav`, `strobe`, `landing`, `taxi` |
+| `doors` | array | Every door the profile names: `control` (`door0`…, for `set_aircraft_control`), `name` (`L1`, `FWD cargo`), `open` |
+| `ground` | object | `chocks`, `gpu` and whether the model has them (`has_chocks`, `has_gpu`); the sim's pushback: `pushback_attached`, `pushback_available`, `pushback_wait` |
+| `seatbelts` | boolean | When the profile gives the sign |
+| `no_smoking` | number | 0 off, 1 auto, 2 on, when the profile gives the sign |
+| `values` | object | Every value the profile resolved, by name |
+| `can`, `cannot` | array | Controls and ground services the profile can and cannot operate |
+
+**Example response** (a cold and dark Fenix A319, shortened)
+
+```json
+{
+  "aircraft": { "title": "FenixA319 CFM WF HD", "atc_type": "", "package": "fnx-aircraft-319-321", "package_source": "Community" },
+  "profile": { "name": "Fenix A320 family" },
+  "power": { "battery": false, "powered": false, "bus_volts": 27.5, "external_available": true, "external_on": false },
+  "radios": { "com1": { "working": false, "active_mhz": 0, "standby_mhz": 0 } },
+  "transponder": { "state": "off", "squawk": "2000" },
+  "doors": [ { "control": "door0", "name": "L1", "open": false }, { "control": "door4", "name": "FWD cargo", "open": false } ],
+  "ground": { "chocks": true, "has_chocks": true, "gpu": true, "has_gpu": true, "pushback_available": true },
+  "can": ["baggage", "cabinCall", "chocks", "door0", "gpu", "jetway", "parkingBrake", "pushback", "seatbelts"]
+}
+```
+
+**Error codes**
+
+- `BRIDGE_DISCONNECTED`: Not connected to the simulator.
+- `TIMEOUT`: The simulator did not answer in 5 s.
+
+---
+
+## set_aircraft_control
+
+Operate one of the user aircraft's controls the way its profile says: the standard key events by default, the model's own variables or tablet where it has them (the Fenix's chocks and GPU go through its EFB). A toggling event is sent only when the state differs from the one asked for.
+
+**Parameters**
+
+| Name | Type | Required | Default | Description |
+|------|------|----------|---------|-------------|
+| `control` | string | Yes | | A door by name (`L1`, `Door 2`) or `door0`…; `chocks`, `gpu`, `parking_brake`, `seatbelts`, `ext_power`, `no_smoking`, `cabin_call` |
+| `state` | string | No | `on` | `on`/`open` or `off`/`closed`; `auto` for `no_smoking`. Ignored for `cabin_call`, which is a press |
+
+**Returns** `control`, `requested` (1 on, 0 off; `no_smoking` 0–2) and `state_now`, the value read right after the command (doors and tablet controls take a few seconds); `cabin_call` returns `pressed`.
+
+**Error codes**
+
+- `INVALID_ARGUMENT`: Unknown control or state; the message lists the aircraft's doors.
+- `NOT_APPLICABLE`: The aircraft's profile gives no way to operate it (`get_aircraft_systems` lists `can`).
+- `BRIDGE_DISCONNECTED`, `TIMEOUT`.
+
+---
+
+## request_ground_service
+
+Ask for one of the simulator's own ground services for the user aircraft, by the MSFS key events (`TOGGLE_JETWAY`, `TOGGLE_RAMPTRUCK`, `REQUEST_LUGGAGE`, `REQUEST_CATERING`, `REQUEST_POWER_SUPPLY`, `REQUEST_FUEL_KEY`, `TOGGLE_PUSHBACK`) or the model's own way where its profile gives one. The jetway, stairs and pushback toggle: asking again sends them away. The simulator decides whether the service can come where the aircraft is.
+
+**Parameters**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `service` | string | Yes | `jetway`, `stairs`, `baggage`, `catering`, `powerSupply`, `fuelTruck` or `pushback` (`fuel_truck` style works too) |
+
+**Returns** `service` and `requested: true`.
+
+**Error codes**: `INVALID_ARGUMENT`, `NOT_APPLICABLE`, `BRIDGE_DISCONNECTED`, `TIMEOUT`.
+
+---
+
+## set_radio
+
+Set the user aircraft's radios with the library's `pkg/avionics`. The aircraft must be powered: a dark radio ignores it. On the Fenix the swap presses its RMP transfer key (`L:S_PED_RMP1_XFER`), because the stock swap event does not reach its RMP. `get_aircraft_systems` reads the result back.
+
+**Parameters**
+
+| Name | Type | Required | Default | Description |
+|------|------|----------|---------|-------------|
+| `action` | string | Yes | | `com_active`, `com_standby`, `com_swap` or `squawk` |
+| `com` | number | No | `1` | COM radio 1, 2 or 3 |
+| `frequency_mhz` | number | For `com_active`, `com_standby` | | 118.000–136.990 MHz, 8.33 kHz channels included |
+| `squawk` | string | For `squawk` | | Four octal digits, e.g. `"4521"` |
+
+**Returns** the request and `sent: true`.
+
+**Error codes**
+
+- `INVALID_ARGUMENT`: A radio other than 1–3, a frequency out of the band, or a squawk that is not four digits 0–7. Nothing is sent.
+- `BRIDGE_DISCONNECTED`, `TIMEOUT`.
+
+---
+
+## set_atc_callsign
+
+Set the call sign the simulator's ATC uses for the user aircraft: `ATC AIRLINE` (the airline's call sign as said) and `ATC FLIGHT NUMBER`. Either may be left out to keep it. The registration (`ATC ID`) is not changed.
+
+**Parameters**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `airline` | string | No | The spoken call sign, e.g. `"Speedbird"`, up to 63 characters |
+| `flight_number` | string | No | The flight number, e.g. `"123"`, up to 7 characters |
+
+At least one is required. **Returns** `set: true` and the values set.
+
+**Error codes**: `INVALID_ARGUMENT`, `BRIDGE_DISCONNECTED`.
+
+---
+
+## list_addons
+
+What is installed in Microsoft Flight Simulator on this machine, with the library's `pkg/addons`. It reads files only: the `UserCfg.opt` of MSFS 2024 or 2020 (Steam or Microsoft Store) gives the packages folder, then each package's `manifest.json`. Streamed packages have no manifest; when a folder name reads as an airport (`fs20-orbx-airport-lkpr-prague`), its ICAO and publisher are given. A streamed folder shows that the sim knows the package, not that it is owned. The scan is cached for 5 minutes.
+
+**Parameters**
+
+| Name | Type | Required | Default | Description |
+|------|------|----------|---------|-------------|
+| `source` | string | No | `Community` | `Community` (both Community folders), `Community2024`, `Official`, `Streamed` or `all` |
+| `search` | string | No | | Only packages whose folder, title, creator or ICAO contains this text |
+| `refresh` | boolean | No | `false` | Scan the disk again |
+| `limit` | number | No | `200` | At most this many packages |
+
+**Returns**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `install` | object | `sim` (`2024`, `2020`), `store` (`steam`, `store`), `packages_path` |
+| `fingerprint` | string | Changes whenever the set of packages changes |
+| `by_source` | object | Package count per source |
+| `matched` | number | Packages matching the filters (the list stops at `limit`) |
+| `packages` | array | `source`, `folder`, `title`, `creator`, `content_type` (as written, not reliable), `version`; streamed airports `icao`, `publisher`, `cached_archives` |
+
+**Error codes**
+
+- `NOT_FOUND`: No MSFS 2024 or 2020 installation found.
+- `SIM_ERROR`: The packages folder could not be read.
 
 ---
 

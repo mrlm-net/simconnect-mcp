@@ -7,6 +7,26 @@ section: changelog
 
 All notable changes to SimConnect MCP are documented here.
 
+## [Unreleased]
+
+The user aircraft: its systems through the library's aircraft profiles, its doors, ground equipment and the sim's ground services, its radios, squawk and ATC call sign, and the add-ons installed. The server now runs on simconnect v0.23.1, with 45 library guides.
+
+### Added
+
+- User aircraft tools (simconnect and both modes, Windows), on the library's `pkg/systems`, `pkg/avionics` and `pkg/addons`:
+  - `get_aircraft_systems`: power, COM radios and frequencies, engines, parking brake, lights, doors by name, transponder, flaps and gear, chocks and GPU, cabin signs and the sim's pushback state, read through the aircraft's systems profile: the standard SimVars, the library's profile for the model on top (the Fenix A320 family on its own L:vars and tablet), then local overrides. It names the profile, the aircraft's package and what can be operated.
+  - `set_aircraft_control`: open or close a door by its name, set the chocks, GPU, parking brake, seat belt and no smoking signs or external power, or call the cabin, the way the aircraft's profile says.
+  - `request_ground_service`: the sim's jetway, stairs, baggage, catering, ground power, fuel truck or pushback.
+  - `set_radio`: a COM's active or standby frequency, a COM swap (the Fenix's RMP transfer key), or the squawk.
+  - `set_atc_callsign`: the call sign the sim's ATC uses (ATC AIRLINE, ATC FLIGHT NUMBER).
+  - `list_addons`: the installed MSFS packages, Community, Official and streamed, with streamed airports by ICAO.
+- `SIMCONNECT_AIRCRAFT_PROFILES`: a directory of local aircraft profile overrides (`pkg/systems` JSON), winning per value over the shipped profiles.
+- Tool counts: docs 15, simconnect 51, both 66
+
+### Changed
+
+- Upgraded `github.com/mrlm-net/simconnect` from v0.18.4 to v0.23.1. The library guides served by the docs tools now include 45 guides (new: aircraft systems profiles, radios and transponder, installed add-ons, replaceable dictionaries, VFR traffic and the traffic world engine). The airport, navigation, traffic and ATC tools pick up the library's fixes since v0.18.4, among them the runway surface from the facility data, STAR descents with their constraints, and variable wind.
+
 ## [0.9.0] - 2026-10-02
 
 New versions are under the Business Source License 1.1: free for non-commercial use, Apache-2.0 four years after each release. The server now runs on simconnect v0.18.4, with 39 library guides (radio, phraseology, traffic decisions, camera), and the docs gain an AI Traffic & ATC guide.

@@ -100,9 +100,27 @@ The magnetic variation comes from the departure's procedures (`Procedures.MagVar
 
 Runway thresholds, computed points and TOC/TOD are left out: the simulator rebuilds the procedures from their names.
 
+### Reading a .pln
+
+`ReadPLN(r)` and `ReadPLNFile(path)` read a `.pln` as MSFS 2020/2024 and `PLN()` write it, into a `PLNPlan`. They take what the file says and work nothing out:
+
+- **Header:** title, rules (`FPType`), route type, cruise altitude in feet, departure and destination ID, and `DeparturePosition`.
+- **Procedures:** the SID with its runway (`DepartureFP`, `RunwayNumberFP` and `RunwayDesignatorFP`: "6" becomes "06", "LEFT" becomes "L"), the STAR, and the approach with its runway, read from the waypoints. The MSFS 2024 layout (`AppVersionMajor` 12, e.g. SimBrief's "M24" export) names them in `DepartureDetails`, `ArrivalDetails` and `ApproachDetails` instead; those are read as well, and the waypoints win where both say. The approach's runway is the arrival runway.
+- **Waypoints:** id, type, ident and region, position and altitude (`ParseLLA`), and the airway they are reached by. The MSFS 2024 layout has no `WorldPosition` on its waypoints: their position stays 0,0, and `PLNResolver` looks them up (#679).
+
+`NewPLNResolver(nav.NewNavLoader(client), plan, airportAt)` fills them in: intersections, VORs and NDBs by ident, region and kind through the facility API (a fix in the plan twice asked once), airports with `airportAt` (an `AirportLister.RequestAll` list, loaded layouts; nil leaves them). Call `Start`, feed every message to `Handle`, `Expire` now and then, until `Done`; `Missing` lists what stayed without a position (unknown fixes, user points, airports the lookup did not know). Live, SimBrief's M24 export LKPR–LKPD: BEKVI.LK at 50.0734, 14.7224.
+
+A `.pln` has no alternate airport field, so none is read.
+
+**The active plan in MSFS 2024.** The `FlightPlan` system state is the active plan's path, and the `FlightLoaded` state is the flight's `.FLT`. Live, with no plan loaded, MSFS 2024 gave an empty `FlightPlan` and `…\MISSIONS\Custom\CustomFlight\CustomFlight.FLT`, with `[ATC_Aircraft.0] ActiveFlightPlan=False`. What 2024 reports for a plan made in the EFB or on the world map has not been checked yet.
+
 ## Performance
 
 `PerformanceFor` knows A20N, A320, A321, B738, B38M, B77W, B789, E190, CRJ9, AT76 and DH8D; other types plan as a generic medium jet (`Performance.Type` is then empty). The figures are typical round numbers, not a particular airframe's.
+
+### Top of descent
+
+`TopOfDescent(PerformanceFor(type), fromFt, toFt, gsKts, extraNM)` is how far before the point where it should be at `toFt` an aircraft starts down from `fromFt` (#693): at its descent rate (`DescentFPM`) and ground speed above FL100, at the 250 kt limit below it (SERA.6001; 14 CFR 91.117), plus about a mile per 10 kt to slow to 250 kt (the pilots' rule of thumb) and `extraNM` (the slow-down to approach speed, a level segment). From FL360 to 4000 ft at 420 kt: about 137 NM with a 5 NM margin (132 without). `Performance.DescentMach` and `DescentIASKts` are the descent speeds, rounded and checked against the EUROCONTROL Aircraft Performance Database (indicative figures); a turboprop has no Mach.
 
 ## Limits
 

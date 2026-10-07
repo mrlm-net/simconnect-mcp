@@ -342,7 +342,21 @@ When the body ahead faces at least `oncomingDeg` (120°) off the path, the aircr
 - another aircraft's fuselage within the half-span + 3 m (`PushClearMarginMeters`) of the corridor. If that aircraft is moving (it reports a path), its own half-span is added, so its wing keeps clear too (#446).
 - another aircraft's reported path within both half-spans + 10 m. This includes a taxiing aircraft's path, a neighbour's push and the planned taxi of an aircraft waiting after its push. Two pushes into one corridor would otherwise each stop for the other (#452).
 
+**Before the stand is given** (`StandAllocator.Assign`), neighbours due off together are kept apart: a stand within 90 m (`StandPushNeighbourMeters`) of one whose aircraft is due off within 8 minutes (`StandPushConflictWindow`) of this one ranks as if its taxi-in were up to 600 m (`StandPushConflictMeters`) longer, the full amount for the same time and less as the times are further apart (`pushConflict`, `stands.go`). The map's schedule gives departures their STD and arrivals their turnaround's STD.
+
 **Under way** (`holdPushForTraffic`) the push reports what it still sweeps (`ReportPush`), and taxiing traffic gives way to it. The push itself stops only for a fuselage within the half-span + 3 m of what it still has to sweep. An aircraft that stopped short to give way would otherwise hold it for ever (#466). It brakes to a stop `v² / (2 × 0.25) + 0.2 m` ahead, using the push profile's 0.25 m/s² deceleration. `TaxiEvent.PushbackHeld` reports the hold.
+
+### Service vehicles
+
+Tugs and fuel trucks give way to aircraft on their way to and from their depot (`vehicle_yield.go`, `GroundPicture.VehicleConflict`). The vehicle looks `VehicleLookMeters` (40 m) ahead along its way. It stops `VehicleStopShortMeters` (3 m) short of the first point that comes within both half widths plus `VehicleClearMeters` (8 m) of a moving aircraft. That means the aircraft's body, or the first `VehicleAircraftLookMeters` (120 m) of its path ahead. It waits there until the aircraft has passed. A vehicle already in an aircraft's path (within `VehicleCommitMeters`, 4 m, of its front) drives on to clear it. Parked aircraft and aircraft waiting for a clearance do not count, since the roads pass them, and neither does the vehicle's own aircraft. Aircraft do not see the vehicles and keep their way. At LKPR B9 a tug meeting an A320 taxiing across its road stops about 29 m short of the crossing.
+
+Vehicles also respect each other. Each tug and fuel truck reports itself to the airport's ground picture (`ReportVehicle`). On the roads it drives `VehicleLaneMeters` (2 m) right of the centreline, blended in over the first and last 15 m of its way, so oncoming vehicles pass each other. It stops `VehicleStopShortMeters` (3 m) short of another vehicle's body within both half widths plus `VehicleGapMeters` (3 m) of its way, as follows:
+
+- **ahead of it:** it waits behind and follows;
+- **behind it:** it ignores it, since that one waits;
+- **side by side** (two leaving one depot together), **or crossing:** the one with the higher object ID waits, so two never wait for each other.
+
+After `VehicleWaitMax` (1 min) waiting for vehicles, it drives on regardless for 20 s, so one parked on its way cannot hold it for ever. At LKPR two tugs leaving the same depot for B9 and B10 together keep at least 4 m apart.
 
 ### Braking
 
@@ -434,6 +448,8 @@ At the holding points, departures and crossings go first come, first served, by 
 
 The longest of the route and wake intervals applies.
 
+**Speeds** (`DepartureIntervalSpeeds`, `RunwayUser.ClimbKts`). On the same route, a follower climbing `CatchUpFromKts` (20 kt) or more faster than the departure before it waits `CatchUpPer40Kts` (1 min) more per 40 kt, at most `CatchUpMax` (3 min). Otherwise it would close on the leader after take-off. At the holding points, one `DepartureFirstKts` (40 kt) or more faster on the same route, there no more than `DepartureFirstWithin` (2 min) after the other, goes first. The map takes the climb speed from `nav.PerformanceFor`, or for a business type without data from its published cruise speed. These numbers are the project's own: no source read gives them.
+
 ### Spacing on final
 
 `ArrivalSpacing` (`conditions.go`) starts from the wake minimum of the pair (`ArrivalSeparationNM` in `wake.go`), at least `MinRadarSeparationNM` (3 NM):
@@ -467,6 +483,10 @@ The code comments attribute these values to ICAO Doc 4444 and RECAT-EU. The cond
 
 **Order.** Arrivals inside `FreezeNM` (8 NM), or `Fixed`, keep their predicted time. The others are taken first come, first served, by the prediction they had when they joined, or their prediction now if it is earlier (a shortcut). Two of them change places only when their keys part by more than `SwapMargin` (90 s). Each takes the earliest time that keeps the gap behind the one before it, and is pushed behind any planned landing it would come within a gap of. Its delay is that time minus its ETA. A delay change under `DelayStep` (30 s) is not reported. `Move` lets a controller change the order, and `Rejoin` re-sequences an arrival after a go-around like a newcomer. The airport map uses `MinSpacingNM` 5 (`sepMinNM`), so 5 NM is the least spacing whatever the wake.
 
+**Compression.** A follower faster on final than its leader closes on it all the way down, and any error in either prediction comes off the spacing. Its spacing grows by `CompressionNMPer30Kts` (1 NM) per 30 kt of difference in approach speed, at most `CompressionMaxNM` (2 NM; negative: none), shown as "compression". A B738 at 140 kt behind a PC-24 at 108 kt gets about 1.1 NM more. Live at LKPR without it, TVS251 behind the PC-24 OKCAQ was 31 s short on the final and went around.
+
+**Tactical swaps.** First come, first served can waste time. An arrival slowed on its downwind keeps its place ahead of one that could now land first. So two neighbours already in the sequence, neither fixed, change places when the swap cuts their delay by `TacticalSwapGain` (60 s) or more, and costs the one moved back no more than `TacticalSwapMaxCost` (3 min). Their order keys are exchanged, so the next look keeps the new order, and neither is swapped again for `TacticalSwapHold` (3 min): the one moved back is given its delay, and its new prediction must not swap it straight back (live, three arrivals traded places every few seconds without it). A newcomer, an arrival placed by `Move` and one told to follow another (`Behind`) are never swapped. Live at LKPR, OKYDV could land before TVS223, which was turning base with room to extend. **Fixed arrivals keep their order:** one established on the final is never passed by another fixed later that is closer in by its prediction. The one behind shows the spacing it lacks (`ShortBy`).
+
 ### Delay absorption
 
 `PlanAbsorption` and `ArrivalController.AbsorbDelay` (`absorb.go`, #391) lose a delay on the STAR, before the final. The align and join points are never changed.
@@ -478,8 +498,9 @@ The code comments attribute these values to ICAO Doc 4444 and RECAT-EU. The cond
 On the airport map (`cmd/airport-map/sequence.go`):
 
 - a delay is absorbed once it reaches 30 s (`absorbFrom`), at most every 90 s per arrival (`absorbEvery`);
-- an arrival holds when 1 min or more is left (`holdFrom`);
-- it leaves the hold when its delay is down to 1 min (`holdRelease`).
+- an arrival holds only when 4 min or more is left (`holdFrom`, one racetrack);
+- it leaves the hold when its delay is down to 1 min (`holdRelease`);
+- **shortcuts:** an arrival with a minute or more of room ahead of it (`shortcutFrom`) is sent direct to a named fix further on its STAR (`ArrivalController.Shortcut`). It uses at most 70 % of that room (number 1: up to 15 NM), saves at least `ShortcutMinNM` (2 NM), and is given only where it can still descend to that fix at `ShortcutDescentFtPerNM` (320 ft/NM, about 3°) or less, once each 3 min, and only where it makes sense: a turn of 60° at most (`ShortcutMaxTurnDeg`), the fix 10 NM or more from the threshold (`ShortcutFixFromThresholdNM`), the leg 4 NM clear of the runway (`ShortcutAirportClearNM`) and not across the final within 20 NM (`ShortcutFinalClearNM`), with 20 NM or more of the STAR left (`ShortcutMinToGoNM`): "cleared direct to PR722".
 
 **Closing up on the final.** An established arrival keeps its predicted time, so the sequencer cannot delay it. Instead it reports `ShortBy`: how much sooner than its spacing the arrival would land behind its leader. From 10 s short (`spacingActFrom`), the map acts before they meet:
 
@@ -505,18 +526,22 @@ The holds are ours, not the simulator's (`hold.go`, #392):
 
 Pairs are skipped when the tower separates them (`TowerPair`: same airport, one below `TowerBelowFt`, 2500 ft above the ground) or when they cannot meet within the look-ahead. The airport map uses 5 NM in both cases (`conflictOpts`) and checks every 5 s.
 
-`ResolveConflict` tries changes to one of ours, cheapest first, and takes the first that keeps it clear of everyone through the look-ahead. Both aircraft are tried; on equal cost the first aircraft of the pair is chosen. Other traffic is never steered.
+`ResolveConflict` tries changes to one of ours, cheapest first, and takes the first that keeps it clear of everyone through the look-ahead. Both aircraft are tried; on equal cost the first aircraft of the pair is chosen. Other traffic is never steered. What comes first depends on the geometry: tracks within `SameRouteDeg` (45°) of each other are on the same route (in trail), more apart they cross.
 
-| Change | Cost |
-|---|---|
-| Speed × 0.9 or × 1.1 (not above 250 kt below 10,000 ft) | 1.5 |
-| Speed × 0.8 or × 1.2 | 2.0 |
-| Level ±1000 ft (at 1500 fpm, not below 1500 ft above the ground) | 2.5 |
-| Level ±2000 ft | 3.0 |
-| Level against the semicircular rule (level at 10,000 ft or above: odd thousands eastbound) | +1 |
-| Heading 20° right / left | 3.44 / 3.54 |
-| Heading 30° right / left | 3.67 / 3.77 |
-| Heading 45° right / left | 4.0 / 4.1 |
+| Change | Crossing | Same route |
+|---|---|---|
+| Stop the climb or descent at the next 1000 ft on its way / the one after | 0.8 / 1.3 | 3.8 / 4.3 |
+| Level ±1000 ft (at 1500 fpm, not below 1500 ft above the ground; never back against a climb or descent) | 2.5 | 5.5 |
+| Level ±2000 ft | 3.0 | 6.0 |
+| Level against the semicircular rule (level at 10,000 ft or above: odd thousands eastbound) | +1 | +1 |
+| Speed × 0.9 or × 1.1 (not above 250 kt below 10,000 ft) | 5.0 | 1.5 |
+| Speed × 0.8 or × 1.2 | 5.5 | 2.0 |
+| Shortcut: direct to a named fix past the next (`DirectFixes`; ≥ 5 NM away, ≤ 60° off), + turn/60 | 4.5 | 2.5 |
+| Heading 20° right / left (a leg extended) | 3.44 / 3.54 | 3.44 / 3.54 |
+| Heading 30° right / left | 3.67 / 3.77 | 3.67 / 3.77 |
+| Heading 45° right / left | 4.0 / 4.1 | 4.0 / 4.1 |
+
+On the map a departure is never given a speed change (live, AUA818 was told "reduce speed to 200 knots" climbing out). A stopped climb or descent goes on at the first look after the look-ahead has run with the aircraft out of conflict: "climb to flight level 240" for a departure (the level departure clears it to), else to the highest (lowest) level of its planned route. A departure stopped before departure answers its check-in is told "identified" alone: the climb comes with the clearance on. Another kind of change given meanwhile keeps the stop to be cleared on.
 
 The resolved aircraft flies the change for the look-ahead and then goes back to its route (`ResolvedRoute`). On the map it is not steered again for 5 min. Two of our arrivals on their STARs are not steered by the en-route resolver. Instead, the one landing later loses time (speed, then a dog-leg). If it is still in conflict 90 s later, it holds (#455, `cmd/airport-map/conflicts.go`).
 

@@ -3,6 +3,8 @@
 package tools
 
 import (
+	"os"
+
 	"github.com/mrlm-net/simconnect-mcp/internal/bridge"
 	"github.com/mrlm-net/simconnect-mcp/internal/live"
 	"github.com/mrlm-net/simconnect-mcp/internal/mcpadapter"
@@ -35,6 +37,7 @@ func RegisterAll(mcp *mcpadapter.Server, b bridge.Bridge) (cleanup func() int) {
 		RegisterLiveTools(mcp, rt)
 		RegisterLiveTrafficTools(mcp, rt, rt)
 		RegisterLiveATCTools(mcp, rt)
+		RegisterLiveAircraftTools(mcp, live.NewAircraft(p.Manager(), os.Getenv("SIMCONNECT_AIRCRAFT_PROFILES")))
 		stopSchedule := RegisterLiveScheduleTools(mcp, rt, rt)
 		return func() int {
 			stopSchedule() // no more spawns, then our aircraft go

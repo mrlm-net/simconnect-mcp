@@ -5,7 +5,7 @@ order: 1
 section: reference
 ---
 
-All 15 MCP tools listed here are available when the server runs with `MCP_MODE=docs` (and also with `MCP_MODE=both`). Twelve of them provide read-only access to the scraped SimConnect SDK documentation corpus: simulation variables, client events, API functions, data structures, and exception/error codes. The other three serve the guides of the [`github.com/mrlm-net/simconnect`](https://github.com/mrlm-net/simconnect) Go library (currently v0.18.4), embedded at the library version the server is built against. The server is cross-platform in this mode — no simulator installation is required.
+All 15 MCP tools listed here are available when the server runs with `MCP_MODE=docs` (and also with `MCP_MODE=both`). Twelve of them provide read-only access to the scraped SimConnect SDK documentation corpus: simulation variables, client events, API functions, data structures, and exception/error codes. The other three serve the guides of the [`github.com/mrlm-net/simconnect`](https://github.com/mrlm-net/simconnect) Go library (currently v0.23.1), embedded at the library version the server is built against. The server is cross-platform in this mode — no simulator installation is required.
 
 Tools are called over the Model Context Protocol using JSON-RPC 2.0 with the `tools/call` method. Error responses are returned as text content (not JSON-RPC errors) with a prefix token followed by a colon and a human-readable message.
 
@@ -836,7 +836,7 @@ Each `SearchResult` has:
 
 ## Library Guides
 
-These three tools serve the guides of the [`github.com/mrlm-net/simconnect`](https://github.com/mrlm-net/simconnect) Go library — the SimConnect client and manager, facilities, input events, client data areas, `pkg/airport` (ground layouts, taxi routing, SID/STAR/approach procedures), `pkg/nav` (airways, weather, active runway, ATIS, flight plans), `pkg/traffic` (AI traffic, departures, arrivals, schedules, sequencing, separation, radio) and `pkg/camera` (add-on camera). The 39 guides are embedded in the server binary at the library version `go.mod` requires (currently v0.18.4), so they always match the library the server is built with. In docs and both modes the `/health` endpoint reports that version as `library_version`.
+These three tools serve the guides of the [`github.com/mrlm-net/simconnect`](https://github.com/mrlm-net/simconnect) Go library — the SimConnect client and manager, facilities, input events, client data areas, `pkg/airport` (ground layouts, taxi routing, SID/STAR/approach procedures), `pkg/nav` (airways, weather, active runway, ATIS, flight plans), `pkg/traffic` (AI traffic, departures, arrivals, schedules, sequencing, separation, radio), `pkg/camera` (add-on camera), `pkg/systems` (aircraft systems profiles), `pkg/avionics` (radios and transponder) and `pkg/addons` (installed add-ons). The 45 guides are embedded in the server binary at the library version `go.mod` requires (currently v0.23.1), so they always match the library the server is built with. In docs and both modes the `/health` endpoint reports that version as `library_version`.
 
 Each guide is split into chapters at its `##` headings. The usual flow is `search_library_docs` or `list_library_guides` to find a guide, then `get_library_guide` with a `chapter` to read only the relevant part — whole guides can be long.
 

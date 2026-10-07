@@ -4,11 +4,14 @@ All notable changes to SimConnect MCP are documented here. The format follows [K
 
 Full release history with release notes is also available on the [GitHub Releases page](https://github.com/mrlm-net/simconnect-mcp/releases).
 
-## [Unreleased]
+## [0.12.0] - 2026-10-07
+
+On simconnect v0.25.0: our traffic gives way to a crossing tail, climbs to its cleared level and shuts down when parked; aircraft can follow one another on the ground; and the website tells you how to use SimConnect MCP commercially.
 
 ### Added
 
 - `atc_clearance` `follow` with `behind`: one of ours stays behind another of ours on the ground wherever their ways meet, told the way ground says it (the library's v0.25).
+- Website: a "Commercial use" section on the home page, before "Support the project", with a contact at support@mrlm.net.
 
 ### Changed
 

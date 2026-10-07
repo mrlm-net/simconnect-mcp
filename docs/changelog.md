@@ -7,7 +7,7 @@ section: changelog
 
 All notable changes to SimConnect MCP are documented here.
 
-## [Unreleased]
+## [0.10.0] - 2026-10-07
 
 AI traffic on the library's traffic engine, the airport map's: stand services and tugs from each airport's fleet, crews on the radio, flights at chosen times, real-world traffic, airliners around you in cruise, and your own runway clearances respected. And the user aircraft: its systems through the library's aircraft profiles, its doors, ground equipment and the sim's ground services, its radios, squawk and ATC call sign, and the add-ons installed. The server now runs on simconnect v0.23.1, with 45 library guides.
 

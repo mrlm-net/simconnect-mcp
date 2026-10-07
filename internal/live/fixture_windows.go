@@ -3,18 +3,15 @@
 package live
 
 import (
-	"sync"
 	"context"
 	"encoding/json"
 	"fmt"
 	"os"
 	"path/filepath"
-	"slices"
 	"strings"
 
 	"github.com/mrlm-net/simconnect/pkg/airport"
 	"github.com/mrlm-net/simconnect/pkg/nav"
-	"github.com/mrlm-net/simconnect/pkg/traffic"
 )
 
 // Fixture is a Source serving captured data, for tests: raw airport records
@@ -25,9 +22,9 @@ type Fixture struct {
 	// Loaded collects the .pln files LoadFlightPlan received.
 	Loaded [][]byte
 
-	cache *airport.Cache
-	procs map[string]*airport.Procedures
-	graph *nav.AirwayGraph
+	cache   *airport.Cache
+	procs   map[string]*airport.Procedures
+	graph   *nav.AirwayGraph
 	runways RunwayMemory
 }
 
@@ -131,128 +128,4 @@ func (f *Fixture) Airways(context.Context, airport.LatLon, float64, []nav.FixKey
 func (f *Fixture) LoadFlightPlan(_ context.Context, pln []byte) error {
 	f.Loaded = append(f.Loaded, pln)
 	return nil
-}
-
-// FixtureTraffic is a Traffic for tests: it records spawns and clearances.
-type FixtureTraffic struct {
-	mu sync.Mutex // spawns come from goroutines (scheduled traffic)
-
-	ModelList    []string
-	PictureList  []traffic.TrackedAircraft
-	SequenceList []RunwaySequence
-	TowerList    []RunwayUser
-	Log          []ATCMessage
-	Instructions []string // "CS action", as given to Approach
-	ApproachSaid string
-	ApproachErr  error
-	Departures   []DepartureSpec
-	Arrivals     []ArrivalSpec
-	Enroute      []EnrouteSpec
-	flights      []FlightView
-}
-
-func (f *FixtureTraffic) Models(context.Context) ([]string, error) { return f.ModelList, nil }
-
-func (f *FixtureTraffic) SpawnDeparture(_ context.Context, s DepartureSpec) (FlightView, error) {
-	f.mu.Lock()
-	defer f.mu.Unlock()
-	if s.Adopt != "" { // a turnaround: the parked arrival becomes the departure
-		i := slices.IndexFunc(f.flights, func(v FlightView) bool { return v.Callsign == s.Adopt })
-		if i < 0 || f.flights[i].Kind != "arrival" || f.flights[i].State != "parked" {
-			return FlightView{}, fmt.Errorf("turnaround of %s: not an arrival parked on its stand", s.Adopt)
-		}
-		s.Stand = f.flights[i].Stand
-		f.flights = slices.Delete(f.flights, i, i+1)
-	}
-	f.Departures = append(f.Departures, s)
-	v := FlightView{Callsign: s.Callsign, Kind: "departure", ICAO: s.Graph.Layout.ICAO, Stand: s.Stand, Runway: s.Runway,
-		Entry: s.Entry, Procedure: s.SID, State: "spawning", Actions: []string{"remove"}}
-	f.flights = append(f.flights, v)
-	return v, nil
-}
-
-func (f *FixtureTraffic) SpawnArrival(_ context.Context, s ArrivalSpec) (FlightView, error) {
-	f.mu.Lock()
-	defer f.mu.Unlock()
-	f.Arrivals = append(f.Arrivals, s)
-	v := FlightView{Callsign: s.Callsign, Kind: "arrival", ICAO: s.Graph.Layout.ICAO, Stand: s.Stand, Runway: s.Runway,
-		Procedure: s.STAR, State: "spawning", Actions: []string{"remove"}}
-	f.flights = append(f.flights, v)
-	return v, nil
-}
-
-func (f *FixtureTraffic) SpawnEnroute(_ context.Context, s EnrouteSpec) (FlightView, error) {
-	f.mu.Lock()
-	defer f.mu.Unlock()
-	f.Enroute = append(f.Enroute, s)
-	v := FlightView{Callsign: s.Callsign, Kind: s.Kind, ICAO: s.ICAO, Procedure: s.Plan, State: "enroute", Actions: []string{"remove"}}
-	if len(s.Route) > 0 {
-		v.Position, v.AltFt = s.Route[0].Position, s.Route[0].AltFt
-	}
-	f.flights = append(f.flights, v)
-	return v, nil
-}
-
-func (f *FixtureTraffic) Flights() []FlightView {
-	f.mu.Lock()
-	defer f.mu.Unlock()
-	return append([]FlightView(nil), f.flights...)
-}
-
-// SetState sets a flight's state, as its controller would.
-func (f *FixtureTraffic) SetState(callsign, state string) {
-	f.mu.Lock()
-	defer f.mu.Unlock()
-	for i := range f.flights {
-		if f.flights[i].Callsign == callsign {
-			f.flights[i].State = state
-		}
-	}
-}
-
-// Specs returns copies of the spawn requests received so far.
-func (f *FixtureTraffic) Specs() ([]DepartureSpec, []ArrivalSpec, []EnrouteSpec) {
-	f.mu.Lock()
-	defer f.mu.Unlock()
-	return slices.Clone(f.Departures), slices.Clone(f.Arrivals), slices.Clone(f.Enroute)
-}
-
-// Spawned counts the departures and arrivals spawned.
-func (f *FixtureTraffic) Spawned() (departures, arrivals int) {
-	f.mu.Lock()
-	defer f.mu.Unlock()
-	return len(f.Departures), len(f.Arrivals)
-}
-
-func (f *FixtureTraffic) Clear(callsign, action string) (FlightView, error) {
-	f.mu.Lock()
-	defer f.mu.Unlock()
-	for i, v := range f.flights {
-		if v.Callsign == callsign {
-			if action == "remove" {
-				f.flights = slices.Delete(f.flights, i, i+1)
-			}
-			return v, nil
-		}
-	}
-	return FlightView{}, fmt.Errorf("%s: %w", callsign, ErrUnknownFlight)
-}
-
-func (f *FixtureTraffic) Picture(context.Context, string, float64) ([]traffic.TrackedAircraft, error) {
-	return f.PictureList, nil
-}
-
-// Sequences, Tower and ATCLog return the fixture's; Approach records the
-// instruction and answers from ApproachSaid.
-func (f *FixtureTraffic) Sequences(string) []RunwaySequence { return f.SequenceList }
-func (f *FixtureTraffic) Tower(string) []RunwayUser         { return f.TowerList }
-func (f *FixtureTraffic) ATCLog(limit int) []ATCMessage {
-	if limit > 0 && len(f.Log) > limit {
-		return f.Log[len(f.Log)-limit:]
-	}
-	return f.Log
-}
-func (f *FixtureTraffic) Approach(callsign, action string) (string, error) {
-	f.Instructions = append(f.Instructions, callsign+" "+action)
-	return f.ApproachSaid, f.ApproachErr
 }

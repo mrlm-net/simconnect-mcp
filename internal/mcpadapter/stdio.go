@@ -20,7 +20,12 @@ import (
 func (s *Server) ServeStdio(ctx context.Context) error {
 	scanner := bufio.NewScanner(os.Stdin)
 	scanner.Buffer(make([]byte, 1024*1024), 1024*1024)
-	enc := json.NewEncoder(os.Stdout)
+	// Stdout carries the protocol only: whatever else prints to it from now
+	// on (the library's traffic engine logs with fmt.Println) goes to stderr.
+	out := os.Stdout
+	os.Stdout = os.Stderr
+	defer func() { os.Stdout = out }()
+	enc := json.NewEncoder(out)
 
 	for {
 		select {

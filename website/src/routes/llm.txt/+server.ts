@@ -40,13 +40,13 @@ SimConnect SDK reference:
 - get_error_code: Fetch an error code by name or integer value
 - search_docs: Full-text search across all corpus types
 
-github.com/mrlm-net/simconnect Go library guides (v0.16.0):
+github.com/mrlm-net/simconnect Go library guides (v0.23.1):
 
 - list_library_guides: List the library guides and their chapters, optionally filtered by section
 - get_library_guide: Read a library guide, or a single chapter of it, as Markdown
 - search_library_docs: Search the library guides chapter by chapter
 
-## MCP Tools — SimConnect Mode (MCP_MODE=simconnect, Windows only, 45 tools)
+## MCP Tools — SimConnect Mode (MCP_MODE=simconnect, Windows only, 58 tools)
 
 - get_simvar_value: Read a single live simulation variable from the running simulator
 - get_simvar_values: Read up to 20 simulation variables in a single call
@@ -79,33 +79,49 @@ github.com/mrlm-net/simconnect Go library guides (v0.16.0):
 - find_airway_route: Airway route between two enroute fixes, e.g. VOZ M725 OKF
 - plan_flight: IFR flight plan between two airports (SID, airways, STAR, approach, profile, fuel); optionally loads it into the simulator
 
-AI traffic (adds and removes AI aircraft in the simulator; at most 32 of ours, at an airport loaded around the user aircraft):
+User aircraft (its systems through the library's aircraft profiles):
 
-- list_aircraft_models: Installed aircraft titles (and liveries) AI traffic can use, filtered by words
-- spawn_departure: Add an AI departure on a stand: pushback, taxi, line-up, take-off and SID, each on an ATC clearance; or turn one of our parked arrivals around into a departure
-- spawn_arrival: Add an AI arrival on a STAR or out on final: approach, landing, vacating and taxi to a stand
-- list_our_traffic: Our AI aircraft with state, position, speed, taxiway and the clearances they take now
-- atc_clearance: Clear one of ours: pushback, taxi, cross, lineup, takeoff, hold, abort, goaround, or remove it from the simulator
+- get_aircraft_systems: Power, radios, engines, lights, named doors, transponder, chocks, GPU, cabin signs and pushback state, through the aircraft's systems profile
+- set_aircraft_control: Open or close a door, set chocks, GPU, parking brake, cabin signs or external power, or call the cabin
+- request_ground_service: The sim's jetway, stairs, baggage, catering, ground power, fuel truck or pushback
+- set_radio: A COM active or standby frequency, a COM swap, or the squawk
+- set_atc_callsign: The call sign the sim's ATC uses (ATC AIRLINE, ATC FLIGHT NUMBER)
+- list_addons: The installed MSFS packages, Community, Official and streamed
+
+AI traffic (the library's traffic engine, pkg/traffic/world; adds and removes AI aircraft in the simulator, at airports loaded around the user aircraft):
+
+- list_aircraft_models: Installed aircraft models the engine can spawn, filtered by text
+- spawn_departure: Add an AI departure on a stand: stand services, pushback with a tug, taxi, line-up, take-off and SID, on your clearances or the engine's
+- spawn_arrival: Add an AI arrival on its STAR: sequenced, approach, landing, vacating and taxi to a stand; optionally a turnaround
+- list_our_traffic: Our AI aircraft with state, position, frequency, ground vehicles and the clearances they take now
+- atc_clearance: Clear one of ours: pushback, taxi, upto, cross, lineup, takeoff, hold, abort, goaround, standto, manual, remove and more
 - get_traffic_picture: Every aircraft around the user aircraft or an airport, with phase and airport; the user's and ours marked
 - generate_schedule: Realistic airline schedule for airports (call signs, types, routes, STD/STA); nothing is spawned
 
-Airborne ATC (the server runs a tower per runway and a landing sequence per runway end for our traffic not held for clearances):
+Airborne ATC (the engine's tower, landing sequences, separation and radio):
 
-- get_landing_sequence: Each runway end's landing sequence (number, spacing, distance to go, delay) and who uses each runway, and why each waits
-- approach_instruction: An approach instruction to one of our arrivals: up, down, slow, hold, release, direct or goaround
-- get_atc_log: The latest instructions of the server's tower and approach to our traffic, as ATC says them
-- get_conflicts: Predicted airborne conflicts in the traffic picture, with the least disturbing resolution for ours as advice
+- get_landing_sequence: Each runway end's landing sequence: number, spacing and why, distance to go, delay
+- approach_instruction: An approach instruction to one of our arrivals: up, down, slow, speed, hold, release, direct, joinfinal, holdat or goaround
+- get_atc_log: The radio: the engine's latest transmissions by position and frequency
+- get_conflicts: Closest pairs, losses of separation, predicted conflicts and the resolutions given to ours
 - separation_minima: Wake categories, spacing on final, departure interval and runway occupancy for a pair of aircraft types
+- set_player_clearance: Tell the engine what the user's ATC cleared, so our traffic keeps off that runway and fits around the user's landing
+- get_traffic_status: The engine's state, settings and last error
+- get_traffic_airport_info: An airport as the engine works it: runways in use, ATIS, ILS, weather
 
-Scheduled traffic (adds and removes AI aircraft in the simulator):
+Scheduled and real traffic (adds and removes AI aircraft in the simulator):
 
-- start_schedule: Run a realistic airline schedule at airports; departures and arrivals appear and go by themselves, cleared by the tower; arrivals come in en route from their origin and turn around into later departures on their stands; overflights cross the area
-- stop_schedule: Stop the schedule; its aircraft fly on until they depart, park or leave, or are removed at once
-- get_schedule: The running schedule's departure and arrival boards with status, stand, runway and delays
+- start_schedule: Run scheduled traffic at airports: an airline timetable and light aircraft, by themselves under the engine's ATC
+- stop_schedule: Stop the schedule; its aircraft finish their flights, or are removed at once
+- get_schedule: The departure and arrival boards with status, stand, runway and estimates
+- add_flights: Add flights to the schedule at chosen times
+- set_real_traffic: Fly real-world traffic at an airport instead of the timetable
+- observe_traffic: Feed real-world sightings (ADS-B) to the engine, or drop them
+- set_traffic_corridor: Keep airliners around the user's flight in cruise
 
 ## MCP Tools — Both Mode (MCP_MODE=both)
 
-Docs-mode tools always; on Windows, also the SimConnect-mode tools (60 in total) when the simulator is reachable at startup.
+Docs-mode tools always; on Windows, also the SimConnect-mode tools (73 in total) when the simulator is reachable at startup.
 
 ## Documentation
 

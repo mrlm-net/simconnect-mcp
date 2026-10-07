@@ -7,7 +7,9 @@ section: changelog
 
 All notable changes to SimConnect MCP are documented here.
 
-## [Unreleased]
+## [0.11.0] - 2026-10-07
+
+TCAS for our traffic, on simconnect v0.24.0: traffic and resolution advisories with coordinated RAs, AI aircraft that taxi round pushbacks and climb out with an eased pitch, and docs brought up to date with v0.10.0.
 
 ### Added
 

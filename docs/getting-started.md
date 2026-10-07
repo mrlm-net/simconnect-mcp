@@ -5,7 +5,7 @@ order: 1
 section: getting-started
 ---
 
-SimConnect MCP is a [Model Context Protocol](https://modelcontextprotocol.io/) server for Microsoft Flight Simulator (MSFS 2020/2024), Prepar3D, and FSX. It operates in three modes:
+SimConnect MCP is a [Model Context Protocol](https://modelcontextprotocol.io/) server for Microsoft Flight Simulator (MSFS 2020/2024). It operates in three modes:
 
 - **Docs mode** — serves SimConnect SDK reference documentation and the `github.com/mrlm-net/simconnect` Go library guides to MCP clients. Cross-platform, no simulator required.
 - **SimConnect mode** — reads real-time simulator data via the SimConnect SDK. Windows only, requires a running simulator.
@@ -64,7 +64,7 @@ Verify the server is running:
 
 ```bash
 curl http://localhost:8080/health
-# {"status":"ok","mode":"docs"}
+# {"docs_loaded":true,"docs_source":"embedded","library_version":"v0.24.0","mode":"docs","msfs_version":"2024","status":"ok",...}
 ```
 
 The server listens on port `8080` by default. See [Configuration](/docs/configuration) to change the port or MSFS version used for documentation.
@@ -87,10 +87,10 @@ Verify the server is running and connected:
 
 ```bash
 curl http://localhost:8080/health
-# {"status":"ok","mode":"simconnect","connected":true}
+# {"app_name":"simconnect-mcp","connection_state":"connected","mode":"simconnect","sim_connected":true,"status":"ok"}
 ```
 
-If the simulator is not running or SimConnect is disabled, the `connected` field will be `false` and the server will return errors for data requests until a connection is established.
+If the simulator is not running or SimConnect is disabled, `sim_connected` is `false` (`connection_state` says `disconnected` or `connecting`) and the server will return errors for data requests until a connection is established.
 
 ## MCP Client Setup
 

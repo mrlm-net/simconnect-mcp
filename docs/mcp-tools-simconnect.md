@@ -1,13 +1,13 @@
 ---
 title: "MCP Tools — SimConnect Mode"
-description: Reference for the 58 live-data, user aircraft, AI traffic, airborne ATC and scheduled traffic MCP tools in SimConnect mode (MCP_MODE=simconnect, Windows only).
+description: Reference for the 59 live-data, user aircraft, AI traffic, airborne ATC and scheduled traffic MCP tools in SimConnect mode (MCP_MODE=simconnect, Windows only).
 order: 2
 section: reference
 ---
 
-All 58 MCP tools listed here are available when the server runs with `MCP_MODE=simconnect` (and, on Windows, with `MCP_MODE=both`, alongside the 15 docs tools — 73 in all). This mode provides live simulator data via the SimConnect SDK, and AI traffic under our control.
+All 59 MCP tools listed here are available when the server runs with `MCP_MODE=simconnect` (and, on Windows, with `MCP_MODE=both`, alongside the 15 docs tools — 74 in all). This mode provides live simulator data via the SimConnect SDK, and AI traffic under our control.
 
-**Both mode**: with `MCP_MODE=both` on Windows, the server registers these 58 tools alongside the 15 [docs-mode tools](/docs/mcp-tools-docs) — 73 tools in total — provided SimConnect opens at startup (10-second timeout). If the simulator cannot be reached, or on non-Windows platforms, both mode serves the 15 docs tools only; `simconnect_ready` in the `/health` response reports which case applies.
+**Both mode**: with `MCP_MODE=both` on Windows, the server registers these 59 tools alongside the 15 [docs-mode tools](/docs/mcp-tools-docs) — 74 tools in total — provided SimConnect opens at startup (10-second timeout). If the simulator cannot be reached, or on non-Windows platforms, both mode serves the 15 docs tools only; `simconnect_ready` in the `/health` response reports which case applies.
 
 **Requirements**: Windows only. Microsoft Flight Simulator 2020 or 2024 must be running with SimConnect enabled before issuing any read or transmit calls. The `get_sim_state` tool is safe to call at any time regardless of connection state.
 
@@ -75,6 +75,7 @@ Tools are called over the Model Context Protocol using JSON-RPC 2.0 with the `to
 | [`set_player_clearance`](#set_player_clearance) | Tell the engine what the user's ATC cleared, so our traffic keeps off the runway |
 | [`get_traffic_status`](#get_traffic_status) | The traffic engine's state and settings |
 | [`get_traffic_airport_info`](#get_traffic_airport_info) | An airport as the engine works it: runways in use, ATIS, ILS |
+| [`get_tcas`](#get_tcas) | TCAS advisories (TA, RA) of our airborne traffic |
 
 ---
 
@@ -2369,6 +2370,18 @@ An airport as the engine works it: `runways`, `use` (the runways in use with hea
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
 | `icao` | string | Yes | The airport |
+
+---
+
+## get_tcas
+
+TCAS II for our airborne traffic. Each of ours sees every aircraft around it (ours, the user's and other traffic) within 12 NM, as TCAS II does. It gets traffic advisories (TA) and resolution advisories (RA), flies an RA after the crew's reaction time and reports it on the frequency ("TCAS RA"), then "clear of conflict, returning to assigned altitude". Meanwhile approach gives it no instruction. Between two of ours the RAs are coordinated. Each aircraft's advisory now is also on `list_our_traffic` as `tcas` (`advisory`, `intruder`, `aural`, `sense`).
+
+| Name | Type | Required | Default | Description |
+|------|------|----------|---------|-------------|
+| `limit` | number | No | `30` | At most this many latest events |
+
+Returns `ta` and `ra` (how many advisories now) and `events`, each with `at`, `callsign`, `intruder`, `advisory` (`TA`, `RA` or `clear`), `aural`, `rangeNM` and `dzFt`.
 
 ---
 

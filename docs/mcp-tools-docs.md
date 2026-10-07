@@ -5,7 +5,7 @@ order: 1
 section: reference
 ---
 
-All 15 MCP tools listed here are available when the server runs with `MCP_MODE=docs` (and also with `MCP_MODE=both`). Twelve of them provide read-only access to the scraped SimConnect SDK documentation corpus: simulation variables, client events, API functions, data structures, and exception/error codes. The other three serve the guides of the [`github.com/mrlm-net/simconnect`](https://github.com/mrlm-net/simconnect) Go library (currently v0.23.1), embedded at the library version the server is built against. The server is cross-platform in this mode — no simulator installation is required.
+All 15 MCP tools listed here are available when the server runs with `MCP_MODE=docs` (and also with `MCP_MODE=both`). Twelve of them provide read-only access to the scraped SimConnect SDK documentation corpus: simulation variables, client events, API functions, data structures, and exception/error codes. The other three serve the guides of the [`github.com/mrlm-net/simconnect`](https://github.com/mrlm-net/simconnect) Go library (currently v0.24.0), embedded at the library version the server is built against. The server is cross-platform in this mode — no simulator installation is required.
 
 Tools are called over the Model Context Protocol using JSON-RPC 2.0 with the `tools/call` method. Error responses are returned as text content (not JSON-RPC errors) with a prefix token followed by a colon and a human-readable message.
 
@@ -42,6 +42,18 @@ All paginated `list_*` tools (every `list_*` tool except `list_simvar_categories
 | `page_size` | integer | Maximum items per page as requested |
 | `total_items` | integer | Total record count across all pages |
 | `total_pages` | integer | Total page count (`ceil(total_items / page_size)`); `0` when `total_items` is `0` |
+
+---
+
+## Live scraping confirmation
+
+When the server runs with `DOCS_LIVE_SCRAPE=true` (see [Configuration](/docs/configuration)), the twelve SDK reference tools (SimVars, events, functions, structures, error codes and `search_docs`) take one more parameter:
+
+| Name | Type | Required | Default | Description |
+|------|------|----------|---------|-------------|
+| `confirm_live_scraping` | boolean | When `DOCS_LIVE_SCRAPE=true` | `false` | Confirms you accept responsibility for live requests to external documentation sites |
+
+Without it, these tools answer with a request to confirm and retry. The three library guide tools never need it. `/health` reports the setting as `live_scrape`.
 
 ---
 
@@ -836,7 +848,7 @@ Each `SearchResult` has:
 
 ## Library Guides
 
-These three tools serve the guides of the [`github.com/mrlm-net/simconnect`](https://github.com/mrlm-net/simconnect) Go library — the SimConnect client and manager, facilities, input events, client data areas, `pkg/airport` (ground layouts, taxi routing, SID/STAR/approach procedures), `pkg/nav` (airways, weather, active runway, ATIS, flight plans), `pkg/traffic` (AI traffic, departures, arrivals, schedules, sequencing, separation, radio), `pkg/camera` (add-on camera), `pkg/systems` (aircraft systems profiles), `pkg/avionics` (radios and transponder) and `pkg/addons` (installed add-ons). The 45 guides are embedded in the server binary at the library version `go.mod` requires (currently v0.23.1), so they always match the library the server is built with. In docs and both modes the `/health` endpoint reports that version as `library_version`.
+These three tools serve the guides of the [`github.com/mrlm-net/simconnect`](https://github.com/mrlm-net/simconnect) Go library — the SimConnect client and manager, facilities, input events, client data areas, `pkg/airport` (ground layouts, taxi routing, SID/STAR/approach procedures), `pkg/nav` (airways, weather, active runway, ATIS, flight plans), `pkg/traffic` (AI traffic, departures, arrivals, schedules, sequencing, separation, radio), `pkg/camera` (add-on camera), `pkg/systems` (aircraft systems profiles), `pkg/avionics` (radios and transponder) and `pkg/addons` (installed add-ons). The 45 guides are embedded in the server binary at the library version `go.mod` requires (currently v0.24.0), so they always match the library the server is built with. In docs and both modes the `/health` endpoint reports that version as `library_version`.
 
 Each guide is split into chapters at its `##` headings. The usual flow is `search_library_docs` or `list_library_guides` to find a guide, then `get_library_guide` with a `chapter` to read only the relevant part — whole guides can be long.
 
@@ -848,7 +860,7 @@ List the library guides, optionally filtered by section, with the chapter headin
 
 | Name | Type | Required | Default | Description |
 |------|------|----------|---------|-------------|
-| `section` | string | No | — | Filter to one section: `airport`, `client`, `datasets`, `events`, `internals`, `manager`, `nav`, `packages`, `traffic` (case-insensitive). Omit to list all guides. |
+| `section` | string | No | — | Filter to one section: `airport`, `client`, `datasets`, `events`, `examples`, `internals`, `manager`, `nav`, `packages`, `traffic` (case-insensitive). Omit to list all guides. |
 
 **Returns**
 
@@ -857,7 +869,7 @@ An object with the following fields:
 | Field | Type | Description |
 |-------|------|-------------|
 | `library` | string | Always `"github.com/mrlm-net/simconnect"` |
-| `version` | string | Library version the guides were taken from (e.g., `"v0.18.4"`) |
+| `version` | string | Library version the guides were taken from (e.g., `"v0.24.0"`) |
 | `total` | integer | Number of guides returned |
 | `guides` | Guide[] | Guides, ordered by section and position within the section |
 
@@ -897,7 +909,7 @@ Each `Guide` has:
     "content": [
       {
         "type": "text",
-        "text": "{\"library\":\"github.com/mrlm-net/simconnect\",\"version\":\"v0.18.4\",\"total\":1,\"guides\":[{\"slug\":\"airport-layout\",\"title\":\"Airport Layout & Taxi Routing\",\"description\":\"Load an airport's ground layout with pkg/airport and compute taxi routes between stands and runways.\",\"section\":\"airport\",\"chapters\":[\"Loading a layout\",\"The Layout model\",\"Taxi graph and routes\",\"GeoJSON\",\"Procedures: SIDs, STARs, approaches\",\"Airport limits\",\"Seeing it on a map\"]}]}"
+        "text": "{\"library\":\"github.com/mrlm-net/simconnect\",\"version\":\"v0.24.0\",\"total\":1,\"guides\":[{\"slug\":\"airport-layout\",\"title\":\"Airport Layout & Taxi Routing\",\"description\":\"Load an airport's ground layout with pkg/airport and compute taxi routes between stands and runways.\",\"section\":\"airport\",\"chapters\":[\"Loading a layout\",\"The Layout model\",\"Taxi graph and routes\",\"GeoJSON\",\"Procedures: SIDs, STARs, approaches\",\"Airport limits\",\"Which airport an aircraft is at\",\"Seeing it on a map\"]}]}"
       }
     ]
   }

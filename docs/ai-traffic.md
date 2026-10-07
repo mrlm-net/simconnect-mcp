@@ -49,7 +49,7 @@ At each airport it works, the engine runs:
 
 - **A tower per runway**, which clears line-ups, take-offs and runway crossings, and sends an arrival around when the runway won't be free.
 - **A landing sequence per runway end**, which orders the arrivals on the final by wake, keeps at least the minimum spacing (more in low visibility), and has them lose delays with speed, vectors and holds.
-- **Separation**, with conflicts predicted and resolved for ours.
+- **Separation**, with conflicts predicted and resolved for ours, and TCAS II on each of ours (`get_tcas`).
 - **The radio**: every instruction and readback, by position and frequency.
 
 You can watch them with `get_landing_sequence`, `get_conflicts` and `get_atc_log`, and step in with `approach_instruction`. With it you can move an arrival up or down the order, slow it or set its speed, hold it (at its STAR fix or at a point), release it, send it direct, have it join the final at a point, or send it around. `get_traffic_airport_info` shows the runways in use and the ATIS the engine's controllers work with.
@@ -82,8 +82,8 @@ You can watch them with `get_landing_sequence`, `get_conflicts` and `get_atc_log
 | Run a schedule | [`start_schedule`](/docs/mcp-tools-simconnect#start_schedule), [`get_schedule`](/docs/mcp-tools-simconnect#get_schedule), [`stop_schedule`](/docs/mcp-tools-simconnect#stop_schedule), [`add_flights`](/docs/mcp-tools-simconnect#add_flights) |
 | Real traffic and cruise | [`set_real_traffic`](/docs/mcp-tools-simconnect#set_real_traffic), [`observe_traffic`](/docs/mcp-tools-simconnect#observe_traffic), [`set_traffic_corridor`](/docs/mcp-tools-simconnect#set_traffic_corridor) |
 | Add and clear aircraft by hand | [`spawn_departure`](/docs/mcp-tools-simconnect#spawn_departure), [`spawn_arrival`](/docs/mcp-tools-simconnect#spawn_arrival), [`atc_clearance`](/docs/mcp-tools-simconnect#atc_clearance), [`list_our_traffic`](/docs/mcp-tools-simconnect#list_our_traffic) |
-| Approach and tower | [`get_landing_sequence`](/docs/mcp-tools-simconnect#get_landing_sequence), [`approach_instruction`](/docs/mcp-tools-simconnect#approach_instruction), [`get_atc_log`](/docs/mcp-tools-simconnect#get_atc_log), [`get_conflicts`](/docs/mcp-tools-simconnect#get_conflicts), [`separation_minima`](/docs/mcp-tools-simconnect#separation_minima), [`set_player_clearance`](/docs/mcp-tools-simconnect#set_player_clearance) |
+| Approach and tower | [`get_tcas`](/docs/mcp-tools-simconnect#get_tcas), [`get_landing_sequence`](/docs/mcp-tools-simconnect#get_landing_sequence), [`approach_instruction`](/docs/mcp-tools-simconnect#approach_instruction), [`get_atc_log`](/docs/mcp-tools-simconnect#get_atc_log), [`get_conflicts`](/docs/mcp-tools-simconnect#get_conflicts), [`separation_minima`](/docs/mcp-tools-simconnect#separation_minima), [`set_player_clearance`](/docs/mcp-tools-simconnect#set_player_clearance) |
 | Look around | [`get_traffic_picture`](/docs/mcp-tools-simconnect#get_traffic_picture), [`get_traffic_status`](/docs/mcp-tools-simconnect#get_traffic_status), [`list_aircraft_models`](/docs/mcp-tools-simconnect#list_aircraft_models), [`generate_schedule`](/docs/mcp-tools-simconnect#generate_schedule) |
 | The airport | [`get_traffic_airport_info`](/docs/mcp-tools-simconnect#get_traffic_airport_info), [`get_active_runway`](/docs/mcp-tools-simconnect#get_active_runway), [`get_atis`](/docs/mcp-tools-simconnect#get_atis), [`plan_taxi_route`](/docs/mcp-tools-simconnect#plan_taxi_route), [`find_stands`](/docs/mcp-tools-simconnect#find_stands), [`get_airport_procedures`](/docs/mcp-tools-simconnect#get_airport_procedures) |
 
-For a worked example, see [Scenario 4 in Examples](/docs/examples). Its tool results were captured before the move to the traffic engine, so field names differ.
+For a worked example, see [Scenario 4 in Examples](/docs/examples).

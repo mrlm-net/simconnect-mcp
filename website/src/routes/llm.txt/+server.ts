@@ -40,13 +40,13 @@ SimConnect SDK reference:
 - get_error_code: Fetch an error code by name or integer value
 - search_docs: Full-text search across all corpus types
 
-github.com/mrlm-net/simconnect Go library guides (v0.23.1):
+github.com/mrlm-net/simconnect Go library guides (v0.24.0):
 
 - list_library_guides: List the library guides and their chapters, optionally filtered by section
 - get_library_guide: Read a library guide, or a single chapter of it, as Markdown
 - search_library_docs: Search the library guides chapter by chapter
 
-## MCP Tools — SimConnect Mode (MCP_MODE=simconnect, Windows only, 58 tools)
+## MCP Tools — SimConnect Mode (MCP_MODE=simconnect, Windows only, 59 tools)
 
 - get_simvar_value: Read a single live simulation variable from the running simulator
 - get_simvar_values: Read up to 20 simulation variables in a single call
@@ -108,6 +108,7 @@ Airborne ATC (the engine's tower, landing sequences, separation and radio):
 - set_player_clearance: Tell the engine what the user's ATC cleared, so our traffic keeps off that runway and fits around the user's landing
 - get_traffic_status: The engine's state, settings and last error
 - get_traffic_airport_info: An airport as the engine works it: runways in use, ATIS, ILS, weather
+- get_tcas: TCAS II for our airborne traffic: traffic and resolution advisories now and the latest events
 
 Scheduled and real traffic (adds and removes AI aircraft in the simulator):
 
@@ -121,7 +122,7 @@ Scheduled and real traffic (adds and removes AI aircraft in the simulator):
 
 ## MCP Tools — Both Mode (MCP_MODE=both)
 
-Docs-mode tools always; on Windows, also the SimConnect-mode tools (73 in total) when the simulator is reachable at startup.
+Docs-mode tools always; on Windows, also the SimConnect-mode tools (74 in total) when the simulator is reachable at startup.
 
 ## Documentation
 

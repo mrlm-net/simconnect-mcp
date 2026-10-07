@@ -55,7 +55,7 @@
 			style="background-color: #3fb950;"
 			aria-hidden="true"
 		></span>
-		Go 1.25+ &middot; MCP Protocol &middot; MSFS 2020 &amp; 2024
+		Go 1.27+ &middot; MCP Protocol &middot; MSFS 2020 &amp; 2024
 	</div>
 
 	<!-- Title -->
@@ -250,7 +250,7 @@
 				</div>
 				<p class="text-sm leading-relaxed" style="color: var(--color-text-muted);">
 					Query the full SimConnect SDK reference — simulation variables, events, API functions,
-					and data structures — from any MCP client.
+					and data structures — and the 45 guides of the Go library it is built on, from any MCP client.
 				</p>
 			</div>
 
@@ -411,8 +411,8 @@
 					<h3 class="text-sm font-semibold" style="color: var(--color-text-primary);">AI Traffic</h3>
 				</div>
 				<p class="text-sm leading-relaxed" style="color: var(--color-text-muted);">
-					Spawn departures and arrivals of your own, in airline liveries, on real stands, SIDs
-					and STARs. Clear them to push, taxi, cross, line up and take off.
+					Departures and arrivals of your own on real stands, SIDs and STARs, with fuel trucks,
+					stairs, GPUs and tugs. Clear them yourself, or let the tower and ground do it.
 				</p>
 			</div>
 
@@ -442,7 +442,7 @@
 				</div>
 				<p class="text-sm leading-relaxed" style="color: var(--color-text-muted);">
 					A tower per runway and landing sequences with wake spacing: speed control, longer
-					downwinds, holds and go-arounds, with a readable ATC log.
+					downwinds, holds and go-arounds, with every call on the radio.
 				</p>
 			</div>
 
@@ -473,6 +473,92 @@
 					Run a realistic airline schedule at your airport: flights board, push and depart on
 					time, arrivals come in from en route and turn around on their stands, overflights
 					cross overhead — with live departure and arrival boards.
+				</p>
+			</div>
+
+			<!-- 10. Your Aircraft -->
+			<div>
+				<div class="mb-3 flex items-center gap-2.5">
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						width="18"
+						height="18"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						style="color: var(--color-link); flex-shrink: 0;"
+						aria-hidden="true"
+					>
+						<rect x="4" y="4" width="16" height="16" rx="2" />
+						<line x1="9" y1="9" x2="15" y2="9" />
+						<line x1="9" y1="13" x2="15" y2="13" />
+						<line x1="9" y1="17" x2="12" y2="17" />
+					</svg>
+					<h3 class="text-sm font-semibold" style="color: var(--color-text-primary);">Your Aircraft</h3>
+				</div>
+				<p class="text-sm leading-relaxed" style="color: var(--color-text-muted);">
+					Power, lights, doors by name, chocks and GPU through each aircraft's systems profile
+					(the Fenix on its own variables). Set radios and squawk, call ground services, list
+					your add-ons.
+				</p>
+			</div>
+
+			<!-- 11. Real-World Traffic -->
+			<div>
+				<div class="mb-3 flex items-center gap-2.5">
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						width="18"
+						height="18"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						style="color: var(--color-link); flex-shrink: 0;"
+						aria-hidden="true"
+					>
+						<circle cx="12" cy="12" r="10" />
+						<circle cx="12" cy="12" r="6" />
+						<line x1="12" y1="12" x2="19" y2="5" />
+					</svg>
+					<h3 class="text-sm font-semibold" style="color: var(--color-text-primary);">Real-World Traffic</h3>
+				</div>
+				<p class="text-sm leading-relaxed" style="color: var(--color-text-muted);">
+					Fly the aircraft a feed such as ADS-B sees instead of the timetable — parked, departing
+					and arriving, each with stand services, ATC and radio.
+				</p>
+			</div>
+
+			<!-- 12. Traffic Around You -->
+			<div>
+				<div class="mb-3 flex items-center gap-2.5">
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						width="18"
+						height="18"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						style="color: var(--color-link); flex-shrink: 0;"
+						aria-hidden="true"
+					>
+						<line x1="2" y1="12" x2="22" y2="12" />
+						<polyline points="16 6 22 12 16 18" />
+						<line x1="12" y1="2" x2="12" y2="22" />
+					</svg>
+					<h3 class="text-sm font-semibold" style="color: var(--color-text-primary);">Traffic Around You</h3>
+				</div>
+				<p class="text-sm leading-relaxed" style="color: var(--color-text-muted);">
+					In cruise, airliners ahead the same way, coming the other way and crossing your route,
+					1,000 or 2,000 ft above or below — replaced as you fly on.
 				</p>
 			</div>
 

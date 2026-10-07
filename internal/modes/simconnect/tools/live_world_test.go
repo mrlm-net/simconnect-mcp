@@ -176,6 +176,12 @@ func TestWorldTrafficTools(t *testing.T) {
 		t.Error("bad phase accepted")
 	}
 
+	fw.answers["GET /api/tcas"] = map[string]any{"ta": 1, "ra": 0, "events": []map[string]any{
+		{"callsign": "CSA7", "advisory": "TA"}, {"callsign": "CSA7", "advisory": "clear"}}}
+	if got, isErr := call("get_tcas", map[string]any{"limit": 1.0}); isErr || got["ta"] != float64(1) || len(got["events"].([]any)) != 1 {
+		t.Errorf("tcas: %v", got)
+	}
+
 	if got, isErr := call("stop_schedule", map[string]any{"remove": true}); isErr || got["removed"] != float64(1) {
 		t.Errorf("stop: %v", got)
 	}

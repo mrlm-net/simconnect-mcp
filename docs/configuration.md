@@ -5,7 +5,7 @@ order: 2
 section: getting-started
 ---
 
-SimConnect MCP is configured entirely through environment variables. There are no configuration files or command-line flags. All variables have safe defaults so the server runs without any configuration in docs mode.
+SimConnect MCP is configured entirely through environment variables. There are no configuration files, and no command-line flags other than `--version`. All variables have safe defaults so the server runs without any configuration in docs mode.
 
 ## Environment Variables
 
@@ -18,6 +18,7 @@ SimConnect MCP is configured entirely through environment variables. There are n
 | `SIMCONNECT_TRAFFIC_DATA` | *(user cache)* | Directory where the traffic engine keeps what it learns: each airport's airways read from the simulator, de-icing pads (SimConnect and both modes) |
 | `DOCS_MSFS_VERSION` | `2024` | MSFS version for the docs corpus: `2020`, `2024`, or `both` |
 | `DOCS_OVERRIDE_PATH` | *(embedded)* | Filesystem path to a directory of JSON corpus files. Overrides the embedded corpus. See security note below. |
+| `DOCS_LIVE_SCRAPE` | `false` | `true`: the SDK reference tools need `confirm_live_scraping: true` on every call |
 | `GIN_MODE` | `debug` | Gin server mode: `debug` or `release`. In `release` mode, CORS is restricted to localhost only (DNS rebinding protection). |
 
 ### MCP_MODE
@@ -25,8 +26,8 @@ SimConnect MCP is configured entirely through environment variables. There are n
 Selects the operating mode at startup. The server does not support switching modes at runtime; restart with a different value to change modes.
 
 - `docs` — serves SimConnect SDK reference documentation and the `github.com/mrlm-net/simconnect` Go library guides (15 tools). Cross-platform, no simulator required.
-- `simconnect` — connects to a running MSFS instance via the SimConnect SDK (58 tools, including the AI traffic, airborne ATC, scheduled traffic and user aircraft tools). Windows only; requires the `windows` build tag and the SimConnect SDK.
-- `both` — always serves the docs tools, and on Windows also the SimConnect tools (73 tools in total). The SimConnect tools are registered only if the connection to the simulator opens at startup (10-second timeout); otherwise, and on non-Windows platforms, the server runs docs-only with the 15 docs tools. The `simconnect_ready` field of `/health` reports which case applies.
+- `simconnect` — connects to a running MSFS instance via the SimConnect SDK (59 tools, including the AI traffic, airborne ATC, scheduled traffic and user aircraft tools). Windows only; requires the `windows` build tag and the SimConnect SDK.
+- `both` — always serves the docs tools, and on Windows also the SimConnect tools (74 tools in total). The SimConnect tools are registered only if the connection to the simulator opens at startup (10-second timeout); otherwise, and on non-Windows platforms, the server runs docs-only with the 15 docs tools. The `simconnect_ready` field of `/health` reports which case applies.
 
 ### PORT
 
@@ -54,6 +55,10 @@ Points the server at a local directory of JSON corpus files instead of the compi
 
 **Security note**: `DOCS_OVERRIDE_PATH` must point to a trusted local directory. Never derive it from user-provided input. In production, leave it unset to use the embedded corpus.
 
+### DOCS_LIVE_SCRAPE
+
+Set to `true` to mark the documentation source as live. The twelve SDK reference tools then take a `confirm_live_scraping` parameter and answer with a request to confirm until it is `true` (see [Live scraping confirmation](/docs/mcp-tools-docs#live-scraping-confirmation)). `/health` reports `live_scrape: true` and `docs_source: "live"`. Default `false`. Only applies in `docs` and `both` modes.
+
 ### GIN_MODE
 
 Controls Gin's logging verbosity and CORS behaviour.
@@ -67,7 +72,7 @@ To check the installed binary version:
 
 ```bash
 simconnect-mcp --version
-# simconnect-mcp v0.1.0 (commit abc1234, built 2026-03-01)
+# simconnect-mcp 0.10.0 (commit bd955d715f3b17cd2f8a0dfdea176d610bf18ed0, built 2026-10-07T14:45:32Z)
 ```
 
 The version, commit hash, and build date are embedded at build time by GoReleaser. Binaries built locally with `go build` will show `dev / none / unknown`.

@@ -45,6 +45,18 @@ All paginated `list_*` tools (every `list_*` tool except `list_simvar_categories
 
 ---
 
+## Live scraping confirmation
+
+When the server runs with `DOCS_LIVE_SCRAPE=true` (see [Configuration](/docs/configuration)), the twelve SDK reference tools (SimVars, events, functions, structures, error codes and `search_docs`) take one more parameter:
+
+| Name | Type | Required | Default | Description |
+|------|------|----------|---------|-------------|
+| `confirm_live_scraping` | boolean | When `DOCS_LIVE_SCRAPE=true` | `false` | Confirms you accept responsibility for live requests to external documentation sites |
+
+Without it, these tools answer with a request to confirm and retry. The three library guide tools never need it. `/health` reports the setting as `live_scrape`.
+
+---
+
 ## SimVars
 
 ### list_simvar_categories
@@ -848,7 +860,7 @@ List the library guides, optionally filtered by section, with the chapter headin
 
 | Name | Type | Required | Default | Description |
 |------|------|----------|---------|-------------|
-| `section` | string | No | — | Filter to one section: `airport`, `client`, `datasets`, `events`, `internals`, `manager`, `nav`, `packages`, `traffic` (case-insensitive). Omit to list all guides. |
+| `section` | string | No | — | Filter to one section: `airport`, `client`, `datasets`, `events`, `examples`, `internals`, `manager`, `nav`, `packages`, `traffic` (case-insensitive). Omit to list all guides. |
 
 **Returns**
 
@@ -857,7 +869,7 @@ An object with the following fields:
 | Field | Type | Description |
 |-------|------|-------------|
 | `library` | string | Always `"github.com/mrlm-net/simconnect"` |
-| `version` | string | Library version the guides were taken from (e.g., `"v0.18.4"`) |
+| `version` | string | Library version the guides were taken from (e.g., `"v0.23.1"`) |
 | `total` | integer | Number of guides returned |
 | `guides` | Guide[] | Guides, ordered by section and position within the section |
 
@@ -897,7 +909,7 @@ Each `Guide` has:
     "content": [
       {
         "type": "text",
-        "text": "{\"library\":\"github.com/mrlm-net/simconnect\",\"version\":\"v0.18.4\",\"total\":1,\"guides\":[{\"slug\":\"airport-layout\",\"title\":\"Airport Layout & Taxi Routing\",\"description\":\"Load an airport's ground layout with pkg/airport and compute taxi routes between stands and runways.\",\"section\":\"airport\",\"chapters\":[\"Loading a layout\",\"The Layout model\",\"Taxi graph and routes\",\"GeoJSON\",\"Procedures: SIDs, STARs, approaches\",\"Airport limits\",\"Seeing it on a map\"]}]}"
+        "text": "{\"library\":\"github.com/mrlm-net/simconnect\",\"version\":\"v0.23.1\",\"total\":1,\"guides\":[{\"slug\":\"airport-layout\",\"title\":\"Airport Layout & Taxi Routing\",\"description\":\"Load an airport's ground layout with pkg/airport and compute taxi routes between stands and runways.\",\"section\":\"airport\",\"chapters\":[\"Loading a layout\",\"The Layout model\",\"Taxi graph and routes\",\"GeoJSON\",\"Procedures: SIDs, STARs, approaches\",\"Airport limits\",\"Which airport an aircraft is at\",\"Seeing it on a map\"]}]}"
       }
     ]
   }

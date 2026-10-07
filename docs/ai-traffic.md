@@ -86,4 +86,4 @@ You can watch them with `get_landing_sequence`, `get_conflicts` and `get_atc_log
 | Look around | [`get_traffic_picture`](/docs/mcp-tools-simconnect#get_traffic_picture), [`get_traffic_status`](/docs/mcp-tools-simconnect#get_traffic_status), [`list_aircraft_models`](/docs/mcp-tools-simconnect#list_aircraft_models), [`generate_schedule`](/docs/mcp-tools-simconnect#generate_schedule) |
 | The airport | [`get_traffic_airport_info`](/docs/mcp-tools-simconnect#get_traffic_airport_info), [`get_active_runway`](/docs/mcp-tools-simconnect#get_active_runway), [`get_atis`](/docs/mcp-tools-simconnect#get_atis), [`plan_taxi_route`](/docs/mcp-tools-simconnect#plan_taxi_route), [`find_stands`](/docs/mcp-tools-simconnect#find_stands), [`get_airport_procedures`](/docs/mcp-tools-simconnect#get_airport_procedures) |
 
-For a worked example, see [Scenario 4 in Examples](/docs/examples). Its tool results were captured before the move to the traffic engine, so field names differ.
+For a worked example, see [Scenario 4 in Examples](/docs/examples).

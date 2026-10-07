@@ -187,12 +187,11 @@ Claude calls `get_sim_state` to retrieve the current connection status and fligh
 
 **How it works**
 
-Claude calls `start_schedule`. The server builds the day's schedule for LKPR and, on its own, keeps it running:
+Claude calls `start_schedule`. The first traffic tool starts the server's traffic engine (the library's `pkg/traffic/world`), which builds the day's schedule for LKPR and keeps it running on its own:
 
-- departures appear on a free stand 10 minutes before their STD and push back at it;
-- arrivals appear in the air on their flight plan and are handed to the arrival controller at their STAR entry;
-- overflights cross the area at cruise level;
-- the tower clears them to cross, line up and take off, and the landing sequence spaces the arrivals.
+- departures appear on a stand before their STD, get their stand services (a fuel truck, stairs and a GPU at a remote stand) and push back behind a tug;
+- arrivals come in en route and join their STAR, sequenced by the approach controller;
+- the tower clears runway crossings, line-ups and take-offs, and the crews talk to delivery, ground, tower and approach.
 
 Claude follows the flights with `get_schedule` and `get_atc_log`, and ends the run with `stop_schedule`.
 
@@ -214,37 +213,37 @@ Claude follows the flights with `get_schedule` and `get_atc_log`, and ends the r
 
 ```json
 {
-  "running": true,
+  "enabled": true,
   "airports": ["LKPR"],
+  "maxAircraft": 3,
   "active": 3,
-  "max_aircraft": 3,
-  "boards": [
-    {
-      "icao": "LKPR",
+  "now": "2026-10-07T09:31:12Z",
+  "boards": {
+    "LKPR": {
       "departures": [
-        { "callsign": "WZZ794", "type": "A321", "from": "LKPR", "to": "LHBP", "scheduled": "09:30Z", "status": "taxiing", "stand": "A1", "runway": "06" },
-        { "callsign": "SWR643", "type": "A20N", "from": "LKPR", "to": "LSGG", "scheduled": "09:40Z", "status": "boarding", "stand": "A1", "runway": "06" }
+        { "callsign": "WZZ794", "airline": "WZZ", "type": "A321", "origin": "LKPR", "destination": "LHBP", "std": "2026-10-07T09:30:00Z", "kind": "departure", "status": "taxiing", "stand": "A1", "runway": "24" },
+        { "callsign": "SWR643", "airline": "SWR", "type": "A20N", "origin": "LKPR", "destination": "LSGG", "std": "2026-10-07T09:40:00Z", "kind": "departure", "status": "boarding", "stand": "B14", "runway": "24" }
       ],
       "arrivals": [
-        { "callsign": "AFR1094", "type": "A321", "from": "LFPG", "to": "LKPR", "scheduled": "09:55Z", "status": "approaching", "stand": "N50", "runway": "06", "note": "landing sequence" }
+        { "callsign": "AFR1094", "airline": "AFR", "type": "A321", "origin": "LFPG", "destination": "LKPR", "sta": "2026-10-07T09:55:00Z", "kind": "arrival", "status": "approaching", "stand": "C18", "runway": "24" }
       ]
     }
-  ]
+  }
 }
 ```
 
-**`get_atc_log` (messages)**
+**`get_atc_log` (transmissions' `position` and `text`)**
 
 ```text
-WZZ794, cross runway 12/30
-AFR1094, number 2, delay 34s: 210 kt
-SWR643, cross runway 12/30
-WZZ794, runway 06, line up and wait
-WZZ794, runway 06, cleared for take-off
+ground    Wizz Air 794, pushback approved, facing north-west
+tower     Wizz Air 794, runway 24, line up and wait
+tower     Wizz Air 794, runway 24, cleared for take-off, wind calm
+approach  Air France 1094, reduce speed to 210 knots
+ground    Swiss 643, pushback approved, facing north-west
 ```
 
 **Claude's reply**
 
-> "The LKPR schedule is running. Wizz Air 794 to Budapest is taxiing to runway 06 and has just been cleared for take-off. Swiss 643 to Geneva is taxiing behind it. Air France 1094 from Paris is number 2 for runway 06 and has been slowed to 210 knots to absorb a 34-second delay."
+> "The LKPR schedule is running. Wizz Air 794 to Budapest has just been cleared for take-off on runway 24. Swiss 643 to Geneva is boarding on B14 and will push next. Air France 1094 from Paris is on the approach and has been slowed to 210 knots for spacing."
 
-Taken from a live run in MSFS 2024. `stop_schedule` with `remove: true` takes the schedule's aircraft out of the simulator.
+An illustration of the shapes (field names as the engine returns them, values shortened). `stop_schedule` with `remove: true` takes the schedule's aircraft out of the simulator.

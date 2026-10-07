@@ -38,7 +38,7 @@ Use this configuration to enable SimConnect SDK documentation lookup. This mode 
 
 ### SimConnect mode (Windows only)
 
-Use this configuration to enable live data exchange with Microsoft Flight Simulator 2020 / 2024, Prepar3D, or FSX. Microsoft Flight Simulator must be running before Claude Desktop starts the server.
+Use this configuration to enable live data exchange with Microsoft Flight Simulator 2020 / 2024. Microsoft Flight Simulator must be running before Claude Desktop starts the server.
 
 ```json
 {

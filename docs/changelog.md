@@ -7,6 +7,18 @@ section: changelog
 
 All notable changes to SimConnect MCP are documented here.
 
+## [Unreleased]
+
+### Changed
+
+- Docs brought up to date with v0.10.0:
+  - Scenario 4 in Examples shows the traffic engine's `get_schedule` and radio shapes.
+  - The `/health` examples in Getting Started use the real fields (`sim_connected`, `connection_state`).
+  - `DOCS_LIVE_SCRAPE` and `confirm_live_scraping` are documented, and the README's environment table lists the two new variables.
+  - Tool counts in the API index, guide sections and the library version in the docs-mode reference are corrected.
+  - Prepar3D and FSX mentions are removed (the server supports MSFS 2020 and 2024).
+  - The website's home page gets cards for the user aircraft tools, real-world traffic and traffic around you in cruise, and its hero says Go 1.27+.
+
 ## [0.10.0] - 2026-10-07
 
 AI traffic on the library's traffic engine, the airport map's: stand services and tugs from each airport's fleet, crews on the radio, flights at chosen times, real-world traffic, airliners around you in cruise, and your own runway clearances respected. And the user aircraft: its systems through the library's aircraft profiles, its doors, ground equipment and the sim's ground services, its radios, squawk and ATC call sign, and the add-ons installed. The server now runs on simconnect v0.23.1, with 45 library guides.

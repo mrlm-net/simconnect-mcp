@@ -30,11 +30,8 @@ func RegisterNavaidTools(mcp *mcpadapter.Server, b bridge.Bridge) {
 
 func registerGetVORsInRange(mcp *mcpadapter.Server, b bridge.Bridge) {
 	tool := mcpadapter.NewTool("get_vors_in_range").
-		Description("Return a list of VOR navigation stations in the simulator's reality bubble, " +
-			"sorted by distance from the player aircraft. Each entry includes ICAO code, region, " +
-			"lat/lon, altitude (metres MSL), frequency (Hz), magnetic variation, and distance (km). " +
-			"Use radius_km to limit results; defaults to 200 km, maximum 500 km.").
-		NumberParam("radius_km", "Maximum distance from player aircraft in kilometres (default 200, max 500).").
+		Description("VORs in the reality bubble, nearest first.").
+		NumberParam("radius_km", "km (default 200, max 500)").
 		Build()
 
 	mcp.AddTool(tool, func(ctx context.Context, args map[string]any) (*mcpadapter.CallToolResult, error) {
@@ -80,12 +77,9 @@ func registerGetVORsInRange(mcp *mcpadapter.Server, b bridge.Bridge) {
 
 func registerGetVORDetails(mcp *mcpadapter.Server, b bridge.Bridge) {
 	tool := mcpadapter.NewTool("get_vor_details").
-		Description("Return detailed data for a specific VOR navigation station by ICAO code. " +
-			"Includes position, frequency, magnetic variation, nav range, and capability flags " +
-			"(is_nav, is_dme, is_tacan, has_glide_slope, has_back_course). " +
-			"Leave region empty (default) for best results.").
-		StringParam("icao", "ICAO identifier of the VOR (e.g. \"VOR\", \"OPO\").").
-		StringParam("region", "Optional ICAO region code (e.g. \"LP\"). Leave empty to match any region.").
+		Description("A VOR's position, frequency, range and capabilities.").
+		StringParam("icao", "VOR ident, e.g. \"OKF\"").
+		StringParam("region", "ICAO region; best left empty").
 		Build()
 
 	mcp.AddTool(tool, func(ctx context.Context, args map[string]any) (*mcpadapter.CallToolResult, error) {
@@ -116,11 +110,8 @@ func registerGetVORDetails(mcp *mcpadapter.Server, b bridge.Bridge) {
 
 func registerGetNDBsInRange(mcp *mcpadapter.Server, b bridge.Bridge) {
 	tool := mcpadapter.NewTool("get_ndbs_in_range").
-		Description("Return a list of NDB navigation stations in the simulator's reality bubble, " +
-			"sorted by distance from the player aircraft. Each entry includes ICAO code, region, " +
-			"lat/lon, altitude (metres MSL), frequency (Hz), magnetic variation, and distance (km). " +
-			"Use radius_km to limit results; defaults to 200 km, maximum 500 km.").
-		NumberParam("radius_km", "Maximum distance from player aircraft in kilometres (default 200, max 500).").
+		Description("NDBs in the reality bubble, nearest first.").
+		NumberParam("radius_km", "km (default 200, max 500)").
 		Build()
 
 	mcp.AddTool(tool, func(ctx context.Context, args map[string]any) (*mcpadapter.CallToolResult, error) {
@@ -166,12 +157,9 @@ func registerGetNDBsInRange(mcp *mcpadapter.Server, b bridge.Bridge) {
 
 func registerGetNDBDetails(mcp *mcpadapter.Server, b bridge.Bridge) {
 	tool := mcpadapter.NewTool("get_ndb_details").
-		Description("Return detailed data for a specific NDB navigation station by ICAO code. " +
-			"Includes position, frequency (Hz and kHz), type, range, magnetic variation, " +
-			"name, and terminal flag. " +
-			"Leave region empty (default) for best results.").
-		StringParam("icao", "ICAO identifier of the NDB (e.g. \"BKK\", \"LIS\").").
-		StringParam("region", "Optional ICAO region code (e.g. \"LP\"). Leave empty to match any region.").
+		Description("An NDB's position, frequency, type and range.").
+		StringParam("icao", "NDB ident").
+		StringParam("region", "ICAO region; best left empty").
 		Build()
 
 	mcp.AddTool(tool, func(ctx context.Context, args map[string]any) (*mcpadapter.CallToolResult, error) {
@@ -202,12 +190,9 @@ func registerGetNDBDetails(mcp *mcpadapter.Server, b bridge.Bridge) {
 
 func registerGetWaypointsInRange(mcp *mcpadapter.Server, b bridge.Bridge) {
 	tool := mcpadapter.NewTool("get_waypoints_in_range").
-		Description("Return a list of waypoints in the simulator's reality bubble, " +
-			"sorted by distance from the player aircraft. Each entry includes ICAO code, region, " +
-			"lat/lon, altitude (metres MSL), magnetic variation, and distance (km). " +
-			"Use radius_km to limit results (default 100 km, max 500 km) and limit to cap the count.").
-		NumberParam("radius_km", "Maximum distance from player aircraft in kilometres (default 100, max 500).").
-		NumberParam("limit", "Maximum number of waypoints to return (default 200, max 1000).").
+		Description("Waypoints in the reality bubble, nearest first.").
+		NumberParam("radius_km", "km (default 100, max 500)").
+		NumberParam("limit", "Max 1000 (default 200)").
 		Build()
 
 	mcp.AddTool(tool, func(ctx context.Context, args map[string]any) (*mcpadapter.CallToolResult, error) {
@@ -266,12 +251,9 @@ func registerGetWaypointsInRange(mcp *mcpadapter.Server, b bridge.Bridge) {
 
 func registerGetWaypointDetails(mcp *mcpadapter.Server, b bridge.Bridge) {
 	tool := mcpadapter.NewTool("get_waypoint_details").
-		Description("Return detailed data for a specific waypoint by ICAO code. " +
-			"Includes position, type, magnetic variation, number of airways routes, " +
-			"and terminal flag. " +
-			"Leave region empty (default) for best results.").
-		StringParam("icao", "ICAO identifier of the waypoint (e.g. \"ABRIX\", \"TANGO\").").
-		StringParam("region", "Optional ICAO region code (e.g. \"LP\"). Leave empty to match any region.").
+		Description("A waypoint's position, type and airway count.").
+		StringParam("icao", "Waypoint ident").
+		StringParam("region", "ICAO region; best left empty").
 		Build()
 
 	mcp.AddTool(tool, func(ctx context.Context, args map[string]any) (*mcpadapter.CallToolResult, error) {

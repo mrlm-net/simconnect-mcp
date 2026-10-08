@@ -2182,7 +2182,7 @@ Returns `count` (all matching) and `models`.
 
 ## spawn_departure
 
-Puts an AI departure of ours on a stand. The stand, the runway in use, the SID and the model are chosen when not given.
+Puts an AI departure of ours on a stand. The stand, the runway in use, the SID and the model are chosen when not given. The traffic engine gives it its stand services (fuel truck; stairs and GPU at a remote stand), a pushback with a tug, the taxi route, line-up, take-off and its SID, and its crew talks to delivery, ground and tower. With `hold_for_clearances` (default) it waits for `atc_clearance` at each step; `false` lets the engine's tower clear it.
 
 | Name | Type | Required | Default | Description |
 |------|------|----------|---------|-------------|

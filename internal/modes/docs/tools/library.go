@@ -19,11 +19,9 @@ func RegisterLibraryTools(s *mcpadapter.Server, lib *libdocs.Library) {
 
 func registerListLibraryGuides(s *mcpadapter.Server, lib *libdocs.Library) {
 	tool := mcpadapter.NewTool("list_library_guides").
-		Description(fmt.Sprintf("List the guides of the mrlm-net/simconnect Go library (%s): SimConnect client and manager, "+
-			"facilities, input events, client data areas, pkg/airport (ground layouts, taxi routing, SID/STAR/approach procedures), "+
-			"pkg/nav (airways, weather, active runway, ATIS, flight plans) and pkg/traffic (AI traffic, departures, arrivals, "+
-			"schedules, sequencing, separation). Each guide lists its chapter headings; read one with get_library_guide.", lib.Version)).
-		StringParam("section", "Optional section filter: "+strings.Join(lib.Sections(), ", ")+".").
+		Description(fmt.Sprintf("List the guides of the mrlm-net/simconnect Go library (%s) with their chapters "+
+			"(client, manager, pkg/airport, pkg/nav, pkg/traffic and more); read one with get_library_guide.", lib.Version)).
+		StringParam("section", strings.Join(lib.Sections(), ", ")).
 		Build()
 
 	s.AddTool(tool, func(_ context.Context, args map[string]any) (*mcpadapter.CallToolResult, error) {
@@ -52,10 +50,9 @@ func registerListLibraryGuides(s *mcpadapter.Server, lib *libdocs.Library) {
 
 func registerGetLibraryGuide(s *mcpadapter.Server, lib *libdocs.Library) {
 	tool := mcpadapter.NewTool("get_library_guide").
-		Description("Read a guide of the mrlm-net/simconnect Go library as Markdown. Pass chapter to read a single \"##\" chapter "+
-			"(its heading, or a unique prefix of it) instead of the whole guide — guides can be long.").
-		StringParam("slug", "Guide slug from list_library_guides or search_library_docs, e.g. \"airport-layout\" (required).").
-		StringParam("chapter", "Optional chapter heading, e.g. \"Taxi graph\".").
+		Description("Read a guide of the mrlm-net/simconnect Go library as Markdown, whole or one \"##\" chapter.").
+		StringParam("slug", "Guide slug, e.g. \"airport-layout\"").
+		StringParam("chapter", "Chapter heading or unique prefix").
 		Required("slug").
 		Build()
 
@@ -80,12 +77,10 @@ func registerGetLibraryGuide(s *mcpadapter.Server, lib *libdocs.Library) {
 
 func registerSearchLibraryDocs(s *mcpadapter.Server, lib *libdocs.Library) {
 	tool := mcpadapter.NewTool("search_library_docs").
-		Description("Search the mrlm-net/simconnect Go library guides. Every word of the query must appear in a chapter, its "+
-			"heading or its guide's title (order-independent, case-insensitive). Use Go identifiers or concepts, e.g. "+
-			"\"RouteToRunway\", \"holding pattern\", \"wake separation\", \"weather reader\". Returns chapters with an excerpt; "+
-			"read one with get_library_guide(slug, chapter).").
-		StringParam("query", "Search words (required).").
-		NumberParam("limit", "Maximum results, 1–50 (default 10).").
+		Description("Search the mrlm-net/simconnect library guides by Go identifiers or concepts (all words must match); "+
+			"returns chapters with an excerpt.").
+		StringParam("query", "Search words").
+		NumberParam("limit", "1–50 (default 10)").
 		Required("query").
 		Build()
 

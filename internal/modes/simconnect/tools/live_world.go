@@ -178,10 +178,9 @@ func standIndex(w live.World, icao, label string) (int, error) {
 
 func registerWorldModels(mcp *mcpadapter.Server, w live.World) {
 	tool := mcpadapter.NewTool("list_aircraft_models").
-		Description("List the installed aircraft models (titles, with their livery after \"|\") the traffic engine can spawn, "+
-			"for spawn_departure and spawn_arrival's model.").
-		StringParam("search", "Only titles containing this text, e.g. \"A320\" or \"Lufthansa\".").
-		NumberParam("limit", "At most this many (default 100).").
+		Description("Installed aircraft titles (with livery after \"|\") for the spawn tools' model.").
+		StringParam("search", "Text in the title").
+		NumberParam("limit", "Default 100").
 		Build()
 
 	mcp.AddTool(tool, func(ctx context.Context, args map[string]any) (*mcpadapter.CallToolResult, error) {
@@ -285,27 +284,23 @@ func boolArg(args map[string]any, key string, def bool) bool {
 
 func registerWorldSpawnDeparture(mcp *mcpadapter.Server, w live.World) {
 	tool := mcpadapter.NewTool("spawn_departure").
-		Description("Put an AI departure of ours on a stand (this adds an aircraft to the sim). The traffic engine gives it "+
-			"its stand services (fuel truck; stairs and GPU at a remote stand), a pushback with a tug, the taxi route to the "+
-			"runway, line-up, take-off and its SID, and its crew talks to delivery, ground and tower. With "+
-			"hold_for_clearances (default true) it waits for atc_clearance at each step; false lets the engine's tower clear "+
-			"it. Stand, runway in use, SID and model are chosen when not given. Returns the aircraft; follow it with "+
-			"list_our_traffic.").
-		StringParam("icao", "Airport ICAO code (required); the simulator must have it loaded around the user aircraft.").
-		StringParam("callsign", "Call sign, e.g. \"CSA123\" (required).").
-		StringParam("stand", "Stand label, e.g. \"C22\" (default: a free stand that fits).").
-		StringParam("runway", "Departure runway (default: in use).").
-		StringParam("entry", "Runway entry taxiway for an intersection departure, e.g. \"B\" (default: full length).").
-		StringParam("sid", "SID name, \"auto\" (default: one for the runway) or \"none\".").
-		StringParam("model", "Model title from list_aircraft_models.").
-		StringParam("aircraft_type", "ICAO type to pick a model by, e.g. \"B738\" (when no model is given).").
-		StringParam("via", "Taxiways to follow in order, e.g. \"F, L\".").
-		StringParam("squawk", "SSR code (default: one is assigned).").
-		NumberParam("push_in_min", "Push this many minutes from now, giving the stand services their time (default: when ready).").
-		StringParam("stand_use", "Stand kind when none is given: \"ga\" or \"cargo\" (default: an airliner stand).").
-		BoolParam("hold_for_clearances", "Wait for atc_clearance at every step (default true).").
-		BoolParam("tug", "A pushback tug pushes it (default true).").
-		BoolParam("fuel", "A fuel truck comes before the push (default true).").
+		Description("Add an AI departure of ours on a stand (adds an aircraft to the sim); the engine gives it services, "+
+			"push, taxi, take-off, SID and radio.").
+		StringParam("icao", "Airport ICAO, loaded around the user").
+		StringParam("callsign", "e.g. \"CSA123\"").
+		StringParam("stand", "Default: a free one that fits").
+		StringParam("runway", "Default: in use").
+		StringParam("entry", "Intersection taxiway (default full length)").
+		StringParam("sid", "Name, auto (default) or none").
+		StringParam("model", "Title from list_aircraft_models").
+		StringParam("aircraft_type", "ICAO type when no model").
+		StringParam("via", "Taxiways in order").
+		StringParam("squawk", "Default: assigned").
+		NumberParam("push_in_min", "Push in N minutes (default when ready)").
+		StringParam("stand_use", "ga or cargo (default airliner)").
+		BoolParam("hold_for_clearances", "Wait for atc_clearance each step (default true)").
+		BoolParam("tug", "Tug pushes it (default true)").
+		BoolParam("fuel", "Fuel truck before push (default true)").
 		Required("icao", "callsign").
 		Build()
 
@@ -325,22 +320,19 @@ func registerWorldSpawnDeparture(mcp *mcpadapter.Server, w live.World) {
 
 func registerWorldSpawnArrival(mcp *mcpadapter.Server, w live.World) {
 	tool := mcpadapter.NewTool("spawn_arrival").
-		Description("Put an AI arrival of ours into the simulator (this adds an aircraft to the sim): on its STAR, sequenced "+
-			"by the engine's approach controller, flying the approach, landing, vacating and taxiing to a stand. With "+
-			"hold_for_clearance (default true) it waits for atc_clearance taxi after vacating; false lets ground clear it. "+
-			"With turnaround it stays on its stand and departs again after dwell_min. Runway in use, stand, STAR and model "+
-			"are chosen when not given. Returns the aircraft; follow it with list_our_traffic and get_landing_sequence.").
-		StringParam("icao", "Airport ICAO code (required).").
-		StringParam("callsign", "Call sign, e.g. \"DLH4AB\" (required).").
-		StringParam("runway", "Landing runway (default: in use).").
-		StringParam("stand", "Stand label (default: a free stand that fits).").
-		StringParam("star", "STAR name, \"auto\" (default) or \"none\" (straight in on final).").
-		StringParam("model", "Model title from list_aircraft_models.").
-		StringParam("aircraft_type", "ICAO type to pick a model by (when no model is given).").
-		StringParam("via", "Taxiways to follow to the stand, in order.").
-		BoolParam("hold_for_clearance", "Wait for the taxi clearance after vacating (default true).").
-		BoolParam("turnaround", "Stay on the stand and depart again (default false).").
-		NumberParam("dwell_min", "With turnaround: minutes on the stand before departing (default: the engine's).").
+		Description("Add an AI arrival of ours on its STAR (adds an aircraft to the sim); sequenced, it lands and taxis "+
+			"to a stand.").
+		StringParam("icao", "Airport ICAO").
+		StringParam("callsign", "e.g. \"DLH4AB\"").
+		StringParam("runway", "Default: in use").
+		StringParam("stand", "Default: a free one that fits").
+		StringParam("star", "Name, auto (default) or none").
+		StringParam("model", "Title from list_aircraft_models").
+		StringParam("aircraft_type", "ICAO type when no model").
+		StringParam("via", "Taxiways to the stand").
+		BoolParam("hold_for_clearance", "Wait for taxi clearance after vacating (default true)").
+		BoolParam("turnaround", "Depart again (default false)").
+		NumberParam("dwell_min", "Turnaround minutes on stand").
 		Required("icao", "callsign").
 		Build()
 
@@ -359,12 +351,9 @@ func registerWorldSpawnArrival(mcp *mcpadapter.Server, w live.World) {
 
 func registerWorldListOurTraffic(mcp *mcpadapter.Server, w live.World) {
 	tool := mcpadapter.NewTool("list_our_traffic").
-		Description("List the AI aircraft of ours (spawned or scheduled): call sign, kind, airport, model, stand, runway, "+
-			"procedure, state, the position and frequency working it, position and speed, what it holds short of, its ground "+
-			"vehicles (tug, fuel truck, stairs, GPU) and their state, whether it is manual (waiting for atc_clearance) and "+
-			"actions — the clearances atc_clearance takes now. Real-world aircraft (set_real_traffic) are marked real.").
-		StringParam("icao", "Only this airport's aircraft.").
-		BoolParam("detail", "Include routes, taxi nodes and air fixes (default false).").
+		Description("Our AI aircraft: state, position, ATC, vehicles and the atc_clearance actions that fit now.").
+		StringParam("icao", "Only this airport").
+		BoolParam("detail", "Add routes and fixes (default false)").
 		Build()
 
 	mcp.AddTool(tool, func(ctx context.Context, args map[string]any) (*mcpadapter.CallToolResult, error) {
@@ -390,21 +379,17 @@ func registerWorldListOurTraffic(mcp *mcpadapter.Server, w live.World) {
 
 func registerWorldClearance(mcp *mcpadapter.Server, w live.World) {
 	tool := mcpadapter.NewTool("atc_clearance").
-		Description("Give one of our AI aircraft a clearance or instruction (its actions in list_our_traffic list what fits "+
-			"now). Departures: pushback (facing, startup), pushstart, startup, taxi, upto (a taxi node), cross, lineup, "+
-			"lineupbehind, takeoff, hold, abort, entry (an intersection, \"\" full length), rush. Arrivals: land, hold, "+
-			"goaround, taxi, upto, cross, standto (another stand), depart (a turnaround now). Both: follow (behind another of ours on the ground, wherever their ways meet), manual (on: the caller "+
-			"clears it; off: the engine's ATC does), remove (out of the simulator). Any action but remove puts it under "+
-			"manual control.").
-		StringParam("callsign", "Call sign of one of ours (required).").
-		StringParam("action", "The action (required), e.g. pushback, taxi, lineup, takeoff, goaround, remove.").
-		StringParam("stand", "standto: the stand label.").
-		StringParam("entry", "entry: the entry taxiway (\"\" full length).").
-		NumberParam("node", "upto: the taxi node to stop at.").
-		StringParam("facing", "pushback: the direction to face after the push, e.g. \"east\".").
-		StringParam("behind", "follow: the call sign of the one of ours to follow, at the same airport.").
-		BoolParam("startup", "pushback: start engines during the push.").
-		BoolParam("on", "manual, rush: on (default true) or off.").
+		Description("Give one of our AI aircraft a clearance (see its actions in list_our_traffic); any action but "+
+			"remove makes it manual.").
+		StringParam("callsign", "One of ours").
+		StringParam("action", "e.g. pushback, taxi, lineup, takeoff, land, goaround, follow, manual, remove").
+		StringParam("stand", "standto: stand label").
+		StringParam("entry", "entry: taxiway (\"\" full length)").
+		NumberParam("node", "upto: taxi node").
+		StringParam("facing", "pushback: face after push, e.g. \"east\"").
+		StringParam("behind", "follow: call sign to follow").
+		BoolParam("startup", "pushback: start engines").
+		BoolParam("on", "manual, rush: default true").
 		Required("callsign", "action").
 		Build()
 
@@ -467,12 +452,9 @@ func registerWorldClearance(mcp *mcpadapter.Server, w live.World) {
 
 func registerWorldPicture(mcp *mcpadapter.Server, w live.World) {
 	tool := mcpadapter.NewTool("get_traffic_picture").
-		Description("The traffic picture: every aircraft the simulator has around the user aircraft (or an airport) with call "+
-			"sign, title, position, altitude, ground speed, heading, vertical speed, phase (parked, taxiing, runway, "+
-			"departing, enroute, arriving) and the airport it belongs to; ours and the user's are marked. The first call "+
-			"starts the engine's scan and can take a few seconds.").
-		StringParam("centre", "Airport ICAO code to centre on (default: the user aircraft).").
-		NumberParam("radius_nm", "Radius, NM (default 40, at most 40).").
+		Description("Every aircraft around the user aircraft or an airport, with phase; ours and the user's marked.").
+		StringParam("centre", "Airport ICAO (default the user)").
+		NumberParam("radius_nm", "NM, max 40 (default 40)").
 		Build()
 
 	mcp.AddTool(tool, func(ctx context.Context, args map[string]any) (*mcpadapter.CallToolResult, error) {
@@ -591,11 +573,8 @@ func airportsArg(w live.World, args map[string]any) ([]string, *mcpadapter.CallT
 
 func registerWorldLandingSequence(mcp *mcpadapter.Server, w live.World) {
 	tool := mcpadapter.NewTool("get_landing_sequence").
-		Description("The landing sequence of each runway at an airport the traffic engine works: for every arrival its "+
-			"number, the one ahead, the spacing it keeps and why (wake, minimum, low visibility), its distance to go, "+
-			"predicted and sequenced landing, and its delay; with the approach conditions and low-visibility procedures. "+
-			"The engine's approach controller loses delays (speed, vectors, holds); approach_instruction steers it.").
-		StringParam("icao", "Airport ICAO code (default: every airport the engine works).").
+		Description("Each runway's landing sequence at the engine's airports: order, spacing, delays, conditions.").
+		StringParam("icao", "Default: all").
 		Build()
 
 	mcp.AddTool(tool, func(ctx context.Context, args map[string]any) (*mcpadapter.CallToolResult, error) {
@@ -623,15 +602,13 @@ var worldApproachActions = []string{"up", "down", "slow", "speed", "hold", "rele
 
 func registerWorldApproach(mcp *mcpadapter.Server, w live.World) {
 	tool := mcpadapter.NewTool("approach_instruction").
-		Description("Give one of our arrivals an approach controller's instruction: up / down (a place earlier or later in "+
-			"the landing order), slow (lose another minute), speed (kts; 0 resumes normal speed), hold (at its STAR's hold "+
-			"fix) and release, direct (to a point given, else to the final), joinfinal (join the final at a point), holdat "+
-			"(hold at a point), goaround. Established arrivals keep their place.").
-		StringParam("callsign", "Our arrival's call sign (required).").
-		StringParam("instruction", strings.Join(worldApproachActions, ", ")+" (required).").
-		NumberParam("kts", "speed: the speed, kts.").
-		NumberParam("lat", "direct, joinfinal, holdat: the point's latitude.").
-		NumberParam("lon", "direct, joinfinal, holdat: the point's longitude.").
+		Description("Give one of our arrivals an approach instruction (order, speed, hold, direct, join final, "+
+			"go-around).").
+		StringParam("callsign", "Our arrival").
+		StringParam("instruction", strings.Join(worldApproachActions, ", ")).
+		NumberParam("kts", "speed: kts (0 resumes)").
+		NumberParam("lat", "direct, joinfinal, holdat: latitude").
+		NumberParam("lon", "direct, joinfinal, holdat: longitude").
 		Required("callsign", "instruction").
 		Build()
 
@@ -669,11 +646,9 @@ func registerWorldApproach(mcp *mcpadapter.Server, w live.World) {
 
 func registerWorldATCLog(mcp *mcpadapter.Server, w live.World) {
 	tool := mcpadapter.NewTool("get_atc_log").
-		Description("The radio: the latest transmissions of the traffic engine's controllers and crews, oldest first, with "+
-			"time, airport, frequency, position (delivery, ground, tower, approach), controller or pilot, call sign, intent "+
-			"and text.").
-		StringParam("icao", "Only this airport's.").
-		NumberParam("limit", "At most this many (default 30).").
+		Description("The engine's latest radio transmissions, oldest first.").
+		StringParam("icao", "Only this airport").
+		NumberParam("limit", "Default 30").
 		Build()
 
 	mcp.AddTool(tool, func(ctx context.Context, args map[string]any) (*mcpadapter.CallToolResult, error) {
@@ -697,8 +672,7 @@ func registerWorldATCLog(mcp *mcpadapter.Server, w live.World) {
 
 func registerWorldConflicts(mcp *mcpadapter.Server, w live.World) {
 	tool := mcpadapter.NewTool("get_conflicts").
-		Description("Airborne separation as the traffic engine sees it: the minimum in force, the closest pairs, open and " +
-			"past losses of separation, predicted conflicts, and the resolutions given to ours with what was said.").
+		Description("Airborne separation: minimum, closest pairs, losses, predicted conflicts and resolutions.").
 		Build()
 
 	mcp.AddTool(tool, func(ctx context.Context, args map[string]any) (*mcpadapter.CallToolResult, error) {
@@ -715,19 +689,17 @@ func registerWorldConflicts(mcp *mcpadapter.Server, w live.World) {
 
 func registerWorldStartSchedule(mcp *mcpadapter.Server, w live.World) {
 	tool := mcpadapter.NewTool("start_schedule").
-		Description("Run scheduled traffic at airports with the traffic engine's ATC: an airline timetable (and light "+
-			"aircraft in daylight), departures with stand services, pushback, taxi and their SID, arrivals en route and on "+
-			"their STAR, turnarounds, overflights, sequencing and separation. Calling it again changes the settings. The "+
-			"engine keeps it across a simulator reconnect.").
-		StringParam("airports", "Airports, e.g. \"LKPR\" or \"LKPR, LKTB\" (required); loaded around the user aircraft.").
-		NumberParam("density", "Traffic density (default 1: the timetable as it is).").
-		NumberParam("max_aircraft", "Most of the schedule's aircraft at once (default: no limit).").
-		NumberParam("seed", "Random seed.").
-		BoolParam("ifr", "Airline flights (default true).").
-		BoolParam("vfr", "Light aircraft in the circuit (default true).").
-		BoolParam("generator", "The generated timetable (default true); false: only flights from add_flights.").
-		NumberParam("offset_min", "Fly the timetable this many minutes later now, e.g. 600 puts a morning wave into an evening.").
-		StringParam("others", "\"respect\" (default) or \"ignore\" the traffic that is not ours.").
+		Description("Run scheduled traffic (airline timetable, light aircraft) at airports with the engine's ATC; "+
+			"calling again changes the settings.").
+		StringParam("airports", "e.g. \"LKPR, LKTB\"").
+		NumberParam("density", "Default 1").
+		NumberParam("max_aircraft", "Default: no limit").
+		NumberParam("seed", "Random seed").
+		BoolParam("ifr", "Airline flights (default true)").
+		BoolParam("vfr", "Light aircraft (default true)").
+		BoolParam("generator", "Generated timetable (default true)").
+		NumberParam("offset_min", "Shift the timetable, minutes").
+		StringParam("others", "respect (default) or ignore").
 		Required("airports").
 		Build()
 
@@ -778,9 +750,8 @@ func scheduleStatus(w live.World) (*mcpadapter.CallToolResult, error) {
 
 func registerWorldStopSchedule(mcp *mcpadapter.Server, w live.World) {
 	tool := mcpadapter.NewTool("stop_schedule").
-		Description("Stop the scheduled traffic: no more aircraft appear. Those flying finish their flights; with remove=true "+
-			"every aircraft of ours on the engine's list is taken out of the simulator now.").
-		BoolParam("remove", "Take our aircraft out now (default false).").
+		Description("Stop the scheduled traffic; remove=true takes ours out now.").
+		BoolParam("remove", "Default false").
 		Build()
 
 	mcp.AddTool(tool, func(ctx context.Context, args map[string]any) (*mcpadapter.CallToolResult, error) {
@@ -808,10 +779,8 @@ func registerWorldStopSchedule(mcp *mcpadapter.Server, w live.World) {
 
 func registerWorldGetSchedule(mcp *mcpadapter.Server, w live.World) {
 	tool := mcpadapter.NewTool("get_schedule").
-		Description("The scheduled traffic: its settings, traffic time now (what add_flights' std and sta are in), and per "+
-			"airport the departure and arrival boards — call sign, type, origin, destination, STD/STA, status, stand, "+
-			"runway, estimate, note.").
-		StringParam("icao", "Only this airport's boards (default: every scheduled airport).").
+		Description("The schedule's settings, traffic time and departure/arrival boards.").
+		StringParam("icao", "Default: all").
 		Build()
 
 	mcp.AddTool(tool, func(ctx context.Context, args map[string]any) (*mcpadapter.CallToolResult, error) {
@@ -856,12 +825,8 @@ func objectsArg(args map[string]any, key string, v any) error {
 
 func registerWorldAddFlights(mcp *mcpadapter.Server, w live.World) {
 	tool := mcpadapter.NewTool("add_flights").
-		Description("Add flights to the running schedule at chosen times, e.g. an arrival just before the user's ETA or a "+
-			"departure just after their off-block (start_schedule with generator=false runs only these). Each flight: "+
-			"callsign, origin, destination (one of them a scheduled airport), type (default A320), airline, and its times as "+
-			"std_in_min / sta_in_min (minutes from traffic time now) or std / sta (RFC 3339, traffic time). A departure "+
-			"appears on its stand before its STD, an arrival in time for its STA; an STA too soon is refused.").
-		ObjectArrayParam("flights", "The flights (required): [{\"callsign\":\"CSA7\",\"origin\":\"EDDM\",\"destination\":\"LKPR\",\"type\":\"A320\",\"sta_in_min\":30}].").
+		Description("Add flights to the running schedule at chosen times.").
+		ObjectArrayParam("flights", "[{callsign, origin, destination, type, airline, std_in_min|sta_in_min or std|sta (RFC 3339)}]").
 		Required("flights").
 		Build()
 
@@ -909,11 +874,10 @@ func registerWorldAddFlights(mcp *mcpadapter.Server, w live.World) {
 
 func registerWorldRealTraffic(mcp *mcpadapter.Server, w live.World) {
 	tool := mcpadapter.NewTool("set_real_traffic").
-		Description("Fly real-world traffic at an airport instead of the generated timetable: the engine flies the aircraft "+
-			"observe_traffic reports (from a feed such as ADS-B), each with stand services, push, taxi, ATC and radio. "+
-			"Generated flights not yet in the simulator go at once; those flying finish. on=false brings the timetable back.").
-		BoolParam("on", "On (default true) or off.").
-		StringParam("icao", "The airport (required when on).").
+		Description("Fly real-world traffic (fed by observe_traffic) at an airport instead of the timetable; on=false "+
+			"restores it.").
+		BoolParam("on", "Default true").
+		StringParam("icao", "Airport ICAO (when on)").
 		Build()
 
 	mcp.AddTool(tool, func(ctx context.Context, args map[string]any) (*mcpadapter.CallToolResult, error) {
@@ -946,13 +910,11 @@ func registerWorldRealTraffic(mcp *mcpadapter.Server, w live.World) {
 
 func registerWorldObserve(mcp *mcpadapter.Server, w live.World) {
 	tool := mcpadapter.NewTool("observe_traffic").
-		Description("Feed real-world sightings to the engine (after set_real_traffic): each aircraft seen, by its ICAO 24-bit "+
-			"address. Parked and departing aircraft go on a stand near where they are seen, arrivals appear on their "+
-			"projected track and join a STAR; overflights are not flown. An ID is spawned once; later sightings only refresh "+
-			"it. drop ends aircraft the feed no longer sees (one in progress finishes first). Unknown origins and "+
-			"destinations stay unknown.").
-		ObjectArrayParam("sightings", "Sightings: [{\"id\":\"49d2a1\",\"callsign\":\"CSA7\",\"registration\":\"OK-TVR\",\"type\":\"B738\",\"lat\":50.1,\"lon\":14.26,\"altFt\":1200,\"groundKts\":150,\"trackDeg\":240,\"vsFpm\":-700,\"onGround\":false,\"seenAt\":\"2026-10-07T13:00:00Z\",\"origin\":\"EGLL\",\"destination\":\"LKPR\"}].").
-		StringParam("drop", "IDs to drop, e.g. \"49d2a1, 4ca7b2\".").
+		Description("Feed real-world sightings (e.g. ADS-B, by ICAO 24-bit address) to the engine after "+
+			"set_real_traffic; drop ends ones no longer seen.").
+		ObjectArrayParam("sightings", "[{id, callsign, registration, type, lat, lon, altFt, groundKts, trackDeg, vsFpm, onGround, seenAt, "+
+			"origin, destination}]").
+		StringParam("drop", "IDs, e.g. \"49d2a1, 4ca7b2\"").
 		Build()
 
 	mcp.AddTool(tool, func(ctx context.Context, args map[string]any) (*mcpadapter.CallToolResult, error) {
@@ -1019,18 +981,16 @@ func routeArg(s string) ([]airport.LatLon, error) {
 
 func registerWorldCorridor(mcp *mcpadapter.Server, w live.World) {
 	tool := mcpadapter.NewTool("set_traffic_corridor").
-		Description("Keep a few airliners around the user's flight in cruise: same (ahead on the route, 25–45 NM, same "+
-			"direction, 2000 ft above or below), opposite (70–100 NM ahead, coming the other way, 1000 ft above or below) "+
-			"and crossing (45–70 NM ahead, across the route). They are flown by MSFS AI and replaced once far behind. "+
-			"enabled=false takes them all out. Returns the corridor and its aircraft.").
-		BoolParam("enabled", "On (default true) or off.").
-		StringParam("route", "The user's route ahead, in its direction: \"lat,lon; lat,lon; …\" (at least two points; required when on).").
-		NumberParam("level_ft", "The user's cruise level, feet (required when on).").
-		NumberParam("kts", "The user's cruise speed, kts.").
-		NumberParam("same", "How many going the same way (default 1).").
-		NumberParam("opposite", "How many coming the other way (default 1).").
-		NumberParam("crossing", "How many crossing (default 1).").
-		NumberParam("despawn_nm", "Take one out this far from the user aircraft, moving away (default 80).").
+		Description("Keep a few MSFS AI airliners around the user's cruise (same way, opposite, crossing); enabled=false "+
+			"removes them.").
+		BoolParam("enabled", "Default true").
+		StringParam("route", "\"lat,lon; lat,lon; …\" ahead (when on)").
+		NumberParam("level_ft", "User cruise level, ft (when on)").
+		NumberParam("kts", "User cruise speed").
+		NumberParam("same", "Default 1").
+		NumberParam("opposite", "Default 1").
+		NumberParam("crossing", "Default 1").
+		NumberParam("despawn_nm", "Default 80").
 		Build()
 
 	mcp.AddTool(tool, func(ctx context.Context, args map[string]any) (*mcpadapter.CallToolResult, error) {
@@ -1067,15 +1027,12 @@ var playerPhases = []string{"pushback", "taxi", "holding_short", "lineup", "take
 
 func registerWorldPlayer(mcp *mcpadapter.Server, w live.World) {
 	tool := mcpadapter.NewTool("set_player_clearance").
-		Description("Tell the traffic engine what the user's own ATC cleared the user aircraft to do (the engine never "+
-			"controls or calls it): while the user lines up, takes off or lands on a runway, none of our traffic is cleared "+
-			"onto it; landing, the user is put in that runway's landing sequence and our traffic fits around it. vacated "+
-			"ends it. Returns the user's place in the sequence when there is one.").
-		StringParam("icao", "The airport (required).").
-		StringParam("runway", "The runway end, e.g. \"24\" (required).").
-		StringParam("phase", strings.Join(playerPhases, ", ")+" (required).").
-		StringParam("callsign", "The user's call sign as said (default \"Player\").").
-		StringParam("model", "The user's model, for its wake and speed.").
+		Description("Tell the engine what the user's ATC cleared (runway use, landing), so our traffic keeps clear.").
+		StringParam("icao", "Airport ICAO").
+		StringParam("runway", "Runway end, e.g. \"24\"").
+		StringParam("phase", strings.Join(playerPhases, ", ")).
+		StringParam("callsign", "Default \"Player\"").
+		StringParam("model", "For wake and speed").
 		Required("icao", "runway", "phase").
 		Build()
 
@@ -1107,8 +1064,7 @@ func registerWorldPlayer(mcp *mcpadapter.Server, w live.World) {
 
 func registerWorldStatus(mcp *mcpadapter.Server, w live.World) {
 	tool := mcpadapter.NewTool("get_traffic_status").
-		Description("The traffic engine's state: whether it runs, how many aircraft of ours, the schedule, real traffic and " +
-			"corridor settings, the user's place in a landing sequence, messages dropped, and the last error.").
+		Description("The traffic engine's state, settings and last error.").
 		Build()
 
 	mcp.AddTool(tool, func(ctx context.Context, args map[string]any) (*mcpadapter.CallToolResult, error) {
@@ -1137,10 +1093,8 @@ func registerWorldStatus(mcp *mcpadapter.Server, w live.World) {
 
 func registerWorldAirportInfo(mcp *mcpadapter.Server, w live.World) {
 	tool := mcpadapter.NewTool("get_traffic_airport_info").
-		Description("An airport as the traffic engine works it: runways, the runways in use with head- and crosswind, the "+
-			"ATIS (letter, text, spoken) the engine's controllers refer to, the ILS, limits and weather. While our traffic "+
-			"runs at an airport, this is what its ATC uses.").
-		StringParam("icao", "Airport ICAO code (required).").
+		Description("An airport as the engine works it: runways in use, ATIS, ILS, limits, weather.").
+		StringParam("icao", "Airport ICAO").
 		Required("icao").
 		Build()
 
@@ -1173,12 +1127,8 @@ func rawResult(v json.RawMessage) *mcpadapter.CallToolResult {
 
 func registerWorldTCAS(mcp *mcpadapter.Server, w live.World) {
 	tool := mcpadapter.NewTool("get_tcas").
-		Description("TCAS II for our airborne traffic: each of ours sees every aircraft around it (ours, the user's, other "+
-			"traffic) within 12 NM, gets traffic (TA) and resolution advisories (RA), flies an RA after the crew's reaction "+
-			"time and reports it on the frequency. Returns how many TAs and RAs there are now (ta, ra) and the latest "+
-			"advisories as they happened (events: at, callsign, intruder, advisory TA/RA/clear, aural, rangeNM, dzFt). Each "+
-			"aircraft's advisory now is also on list_our_traffic as tcas.").
-		NumberParam("limit", "At most this many latest events (default 30).").
+		Description("TCAS advisories (TA/RA) of our airborne traffic: counts now and the latest events.").
+		NumberParam("limit", "Default 30").
 		Build()
 
 	mcp.AddTool(tool, func(ctx context.Context, args map[string]any) (*mcpadapter.CallToolResult, error) {

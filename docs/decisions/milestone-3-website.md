@@ -1,5 +1,7 @@
 # Technical Architecture — Milestone 3: Static Documentation Website
 
+> Historic plan (Feb 2026), implemented; differs from the code in places — e.g. the MCP layer is hand-written in `internal/mcpadapter`, not mcp-go. See [CLAUDE.md](../../CLAUDE.md) for the current layout.
+
 **Date:** 2026-02-28
 **Status:** Accepted
 **Branch:** `milestone/3-website`

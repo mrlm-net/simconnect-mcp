@@ -44,8 +44,8 @@ func percent(qty, capacity float64) float64 {
 // RegisterFuelTool registers get_fuel_state: the user aircraft's fuel.
 func RegisterFuelTool(mcp *mcpadapter.Server, b bridge.Bridge) {
 	tool := mcpadapter.NewTool("get_fuel_state").
-		Description("The user aircraft's fuel: total quantity and capacity (US gallons), percent full, and weight (lb and " +
-			"kg), with the center, left main and right main tanks (tanks the aircraft does not have are left out).").
+		Description("The user aircraft's fuel: quantity, capacity (US gal), percent, weight (lb, kg) and the " +
+			"center/left/right tanks.").
 		Build()
 
 	mcp.AddTool(tool, func(ctx context.Context, args map[string]any) (*mcpadapter.CallToolResult, error) {

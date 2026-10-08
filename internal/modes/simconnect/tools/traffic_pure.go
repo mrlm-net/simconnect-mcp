@@ -16,16 +16,13 @@ import (
 
 func registerGenerateSchedule(mcp *mcpadapter.Server) {
 	tool := mcpadapter.NewTool("generate_schedule").
-		Description("Generate a realistic airline schedule for airports: flights with call sign, airline, aircraft type, origin, "+
-			"destination, STD/STA (UTC) and distance, following time-of-day waves and each airline's bases and fleet (17 "+
-			"European airlines, about 80 airports). Deterministic for a seed. Pure computation — nothing is spawned; use it to "+
-			"pick flights for spawn_departure and spawn_arrival.").
-		StringParam("airports", "Airports to schedule, e.g. \"LKPR\" or \"LKPR, EDDM\" (required).").
-		NumberParam("hours", "Hours from start, 1–24 (default 2).").
-		StringParam("start", "Start time, RFC 3339 (default: now, UTC).").
-		NumberParam("density", "Traffic density, 0.1–3 (default 1).").
-		NumberParam("seed", "Random seed (default 1).").
-		NumberParam("limit", "Maximum flights, 1–500 (default 100).").
+		Description("Generate a realistic airline schedule for airports (nothing is spawned).").
+		StringParam("airports", "e.g. \"LKPR, EDDM\"").
+		NumberParam("hours", "1–24 (default 2)").
+		StringParam("start", "RFC 3339 (default now)").
+		NumberParam("density", "0.1–3 (default 1)").
+		NumberParam("seed", "Default 1").
+		NumberParam("limit", "1–500 (default 100)").
 		Required("airports").
 		Build()
 
@@ -81,16 +78,14 @@ func registerGenerateSchedule(mcp *mcpadapter.Server) {
 
 func registerSeparationMinima(mcp *mcpadapter.Server) {
 	tool := mcpadapter.NewTool("separation_minima").
-		Description("Wake turbulence and runway separation for a pair of aircraft types (ICAO designators, e.g. A320, B77W, "+
-			"A388): their wake categories (ICAO and RECAT-EU), the spacing the follower keeps behind the leader on final "+
-			"— by the scheme, and in the given conditions (low visibility, runway surface, reduced separation) — the "+
-			"departure interval behind the leader, and the runway occupancy of each. Pure calculation.").
-		StringParam("leader", "Leading aircraft type (required).").
-		StringParam("follower", "Following aircraft type (required).").
-		StringParam("scheme", "icao or recat (default icao).").
-		NumberParam("visibility_m", "Visibility on final, m (default: good).").
-		StringParam("surface", "Runway surface: dry, wet or contaminated (default dry).").
-		NumberParam("same_route", "1: departures on the same SID (a longer interval); default 0.").
+		Description("Wake categories, final spacing, departure interval and runway occupancy for a leader/follower type "+
+			"pair.").
+		StringParam("leader", "ICAO type").
+		StringParam("follower", "ICAO type").
+		StringParam("scheme", "icao (default) or recat").
+		NumberParam("visibility_m", "m (default good)").
+		StringParam("surface", "dry (default), wet or contaminated").
+		NumberParam("same_route", "1: same SID (default 0)").
 		Build()
 
 	mcp.AddTool(tool, func(ctx context.Context, args map[string]any) (*mcpadapter.CallToolResult, error) {

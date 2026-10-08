@@ -156,7 +156,7 @@ All paginated `list_*` tools return an envelope (`items`, `page`, `page_size`, `
 
 **Go library guides**
 
-The 46 guides of the `github.com/mrlm-net/simconnect` Go library (client, manager, facilities, `pkg/airport`, `pkg/nav`, `pkg/traffic`, `pkg/systems`, `pkg/avionics`, `pkg/addons`, `pkg/camera`) are embedded at the library version the server is built with — currently **v0.29.0**. The `/health` response (docs and both modes) reports it as `library_version`.
+The 46 guides of the `github.com/mrlm-net/simconnect` Go library (client, manager, facilities, `pkg/airport`, `pkg/nav`, `pkg/traffic`, `pkg/systems`, `pkg/avionics`, `pkg/addons`, `pkg/camera`) are embedded at the library version the server is built with — currently **v0.30.0**. The `/health` response (docs and both modes) reports it as `library_version`.
 
 | Tool | Description |
 |------|-------------|
@@ -334,4 +334,4 @@ All development happens on `main`. Browse open issues and submit bug reports or 
 
 ## License
 
-Business Source License 1.1, see [LICENSE](LICENSE), for versions after v0.8.0. Non-commercial use is free: personal and hobby use, the flight-simulation community, education, research and non-profits. Commercial use, such as a paid add-on or product, a paid service or use inside a business, needs a separate licence; [open an issue](https://github.com/mrlm-net/simconnect-mcp/issues) to ask. Each version becomes Apache-2.0 four years after it is published, and versions up to and including v0.8.0 remain under Apache-2.0.
+Business Source License 1.1, see [LICENSE](LICENSE), for versions after v0.8.0. Non-commercial use is free: personal and hobby use, the flight-simulation community, education, research and non-profits. Commercial use, such as a paid add-on or product, a paid service or use inside a business, needs a separate licence: contact [support@mrlm.net](mailto:support@mrlm.net?subject=SimConnect%20MCP%20commercial%20use) and we'll sort out a licence. Each version becomes Apache-2.0 four years after it is published, and versions up to and including v0.8.0 remain under Apache-2.0.

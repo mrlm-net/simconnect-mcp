@@ -4,6 +4,12 @@ All notable changes to SimConnect MCP are documented here. The format follows [K
 
 Full release history with release notes is also available on the [GitHub Releases page](https://github.com/mrlm-net/simconnect-mcp/releases).
 
+## [Unreleased]
+
+### Changed
+
+- Upgraded `github.com/mrlm-net/simconnect` from v0.31.1 to v0.31.3. With it, our traffic rides through the simulator's model-load hitches instead of jumping when the frame clock stalls, and flight plans load only the local airport.
+
 ## [0.14.1] - 2026-10-08
 
 ### Changed

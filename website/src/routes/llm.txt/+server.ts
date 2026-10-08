@@ -40,13 +40,13 @@ SimConnect SDK reference:
 - get_error_code: Fetch an error code by name or integer value
 - search_docs: Full-text search across all corpus types
 
-github.com/mrlm-net/simconnect Go library guides (v0.24.0):
+github.com/mrlm-net/simconnect Go library guides (v0.29.0):
 
 - list_library_guides: List the library guides and their chapters, optionally filtered by section
 - get_library_guide: Read a library guide, or a single chapter of it, as Markdown
 - search_library_docs: Search the library guides chapter by chapter
 
-## MCP Tools — SimConnect Mode (MCP_MODE=simconnect, Windows only, 59 tools)
+## MCP Tools — SimConnect Mode (MCP_MODE=simconnect, Windows only, 61 tools)
 
 - get_simvar_value: Read a single live simulation variable from the running simulator
 - get_simvar_values: Read up to 20 simulation variables in a single call
@@ -87,6 +87,8 @@ User aircraft (its systems through the library's aircraft profiles):
 - set_radio: A COM active or standby frequency, a COM swap, or the squawk
 - set_atc_callsign: The call sign the sim's ATC uses (ATC AIRLINE, ATC FLIGHT NUMBER)
 - list_addons: The installed MSFS packages, Community, Official and streamed
+- get_gsx_state: GSX Pro's state: services, passengers, cargo, doors, fuel, pushback, gate
+- set_lvar: Write an L:var on the user aircraft
 
 AI traffic (the library's traffic engine, pkg/traffic/world; adds and removes AI aircraft in the simulator, at airports loaded around the user aircraft):
 
@@ -94,7 +96,7 @@ AI traffic (the library's traffic engine, pkg/traffic/world; adds and removes AI
 - spawn_departure: Add an AI departure on a stand: stand services, pushback with a tug, taxi, line-up, take-off and SID, on your clearances or the engine's
 - spawn_arrival: Add an AI arrival on its STAR: sequenced, approach, landing, vacating and taxi to a stand; optionally a turnaround
 - list_our_traffic: Our AI aircraft with state, position, frequency, ground vehicles and the clearances they take now
-- atc_clearance: Clear one of ours: pushback, taxi, upto, cross, lineup, takeoff, hold, abort, goaround, standto, manual, remove and more
+- atc_clearance: Clear one of ours: pushback, taxi, upto, cross, lineup, takeoff, hold, abort, goaround, standto, follow, manual, remove and more
 - get_traffic_picture: Every aircraft around the user aircraft or an airport, with phase and airport; the user's and ours marked
 - generate_schedule: Realistic airline schedule for airports (call signs, types, routes, STD/STA); nothing is spawned
 
@@ -122,7 +124,7 @@ Scheduled and real traffic (adds and removes AI aircraft in the simulator):
 
 ## MCP Tools — Both Mode (MCP_MODE=both)
 
-Docs-mode tools always; on Windows, also the SimConnect-mode tools (74 in total) when the simulator is reachable at startup.
+Docs-mode tools always; on Windows, also the SimConnect-mode tools (76 in total) when the simulator is reachable at startup.
 
 ## Documentation
 

@@ -50,6 +50,10 @@ Client options are available via the root `simconnect` package (with `Client` pr
 | `ClientWithAutoDetect()` <br> `engine.WithAutoDetect()` | - | disabled | Enable automatic SimConnect DLL path detection |
 | `ClientWithLogLevelFromString(level)` <br> `engine.WithLogLevelFromString(level)` | `string` | - | Set log level from string ("debug", "info", "warn", "error") |
 
+### WithCallTrace
+
+Keeps the last 1024 calls with their send IDs, so an exception is logged with the call it was raised for (`call="RequestDataOnSimObject(6306, 6306, 0, 1, …)"`: the call and its first arguments, the handle left out), and `Engine.CallFor(sendID)` names it. Each call costs one more `SimConnect_GetLastSentPacketID`; meant for tracking an exception down. With the manager: `manager.WithEngineOptions(engine.WithCallTrace())`.
+
 ## Option Details
 
 ### WithBufferSize
@@ -70,7 +74,7 @@ engine.WithDLLPath("D:/MSFS SDK/SimConnect SDK/lib/SimConnect.dll")
 
 ### WithContext
 
-Provides a context for the engine lifecycle. When the context is cancelled, the engine will gracefully shut down.
+Provides a context for the engine lifecycle. When the context is cancelled, the dispatcher stops and the `Stream()` channel closes; call `Disconnect()` to close the connection.
 
 ```go
 ctx, cancel := context.WithCancel(context.Background())

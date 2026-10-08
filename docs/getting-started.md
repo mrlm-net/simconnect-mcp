@@ -64,7 +64,7 @@ Verify the server is running:
 
 ```bash
 curl http://localhost:8080/health
-# {"docs_loaded":true,"docs_source":"embedded","library_version":"v0.24.0","mode":"docs","msfs_version":"2024","status":"ok",...}
+# {"docs_loaded":true,"docs_source":"embedded","library_version":"v0.29.0","mode":"docs","msfs_version":"2024","status":"ok",...}
 ```
 
 The server listens on port `8080` by default. See [Configuration](/docs/configuration) to change the port or MSFS version used for documentation.

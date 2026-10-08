@@ -4,7 +4,7 @@ go 1.27.1
 
 require (
 	github.com/gin-gonic/gin v1.10.0
-	github.com/mrlm-net/simconnect v0.24.0
+	github.com/mrlm-net/simconnect v0.29.0
 	golang.org/x/net v0.59.0
 )
 

@@ -393,7 +393,7 @@ func registerWorldClearance(mcp *mcpadapter.Server, w live.World) {
 		Description("Give one of our AI aircraft a clearance or instruction (its actions in list_our_traffic list what fits "+
 			"now). Departures: pushback (facing, startup), pushstart, startup, taxi, upto (a taxi node), cross, lineup, "+
 			"lineupbehind, takeoff, hold, abort, entry (an intersection, \"\" full length), rush. Arrivals: land, hold, "+
-			"goaround, taxi, upto, cross, standto (another stand), depart (a turnaround now). Both: manual (on: the caller "+
+			"goaround, taxi, upto, cross, standto (another stand), depart (a turnaround now). Both: follow (behind another of ours on the ground, wherever their ways meet), manual (on: the caller "+
 			"clears it; off: the engine's ATC does), remove (out of the simulator). Any action but remove puts it under "+
 			"manual control.").
 		StringParam("callsign", "Call sign of one of ours (required).").
@@ -402,6 +402,7 @@ func registerWorldClearance(mcp *mcpadapter.Server, w live.World) {
 		StringParam("entry", "entry: the entry taxiway (\"\" full length).").
 		NumberParam("node", "upto: the taxi node to stop at.").
 		StringParam("facing", "pushback: the direction to face after the push, e.g. \"east\".").
+		StringParam("behind", "follow: the call sign of the one of ours to follow, at the same airport.").
 		BoolParam("startup", "pushback: start engines during the push.").
 		BoolParam("on", "manual, rush: on (default true) or off.").
 		Required("callsign", "action").
@@ -438,6 +439,12 @@ func registerWorldClearance(mcp *mcpadapter.Server, w live.World) {
 			if boolArg(args, "startup", false) {
 				q.Set("startup", "1")
 			}
+		case "follow":
+			lead := strings.ToUpper(strArg(args, "behind"))
+			if lead == "" {
+				return mcpadapter.ErrorResult("INVALID_ARGUMENT: follow needs behind, the call sign to follow"), nil
+			}
+			q.Set("tail", lead)
 		case "manual", "rush":
 			q.Set("on", map[bool]string{true: "1", false: "0"}[boolArg(args, "on", true)])
 		}

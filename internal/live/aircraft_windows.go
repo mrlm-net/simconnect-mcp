@@ -17,6 +17,8 @@ import (
 	"github.com/mrlm-net/simconnect/pkg/addons"
 	"github.com/mrlm-net/simconnect/pkg/avionics"
 	"github.com/mrlm-net/simconnect/pkg/engine"
+	"github.com/mrlm-net/simconnect/pkg/gsx"
+	"github.com/mrlm-net/simconnect/pkg/lvars"
 	"github.com/mrlm-net/simconnect/pkg/manager"
 	"github.com/mrlm-net/simconnect/pkg/systems"
 	"github.com/mrlm-net/simconnect/pkg/types"
@@ -33,6 +35,9 @@ const (
 	radiosBase      = aircraftIDBase + 100 // pkg/avionics events and presses
 	controlsBase    = aircraftIDBase + 200 // pkg/systems Controls, a block of 64
 	flightDefBase   = aircraftIDBase + 300 // avionics.SetFlight, 2 definitions
+	gsxDefID        = aircraftIDBase + 5   // pkg/gsx state
+	gsxReqID        = aircraftIDBase + 6   //
+	lvarsBase       = aircraftIDBase + 400 // pkg/lvars, a block of 64
 	aircraftTimeout = 5 * time.Second
 	addonsMaxAge    = 5 * time.Minute // the package scan is a few seconds of disk
 )
@@ -72,6 +77,10 @@ type Aircraft interface {
 	SetSquawk(ctx context.Context, code string) error
 	// SetCallsign sets ATC AIRLINE and ATC FLIGHT NUMBER ("" leaves one).
 	SetCallsign(ctx context.Context, airline, number string) error
+	// GSXState reads GSX Pro's state from its L:vars (all 0 without GSX).
+	GSXState(ctx context.Context) (gsx.State, error)
+	// SetLVar writes an L:var on the user aircraft (a new name creates it).
+	SetLVar(ctx context.Context, name string, value float64) error
 	// Addons lists the installed packages (cached for a few minutes).
 	Addons(refresh bool) (addons.Install, []addons.Package, error)
 }
@@ -101,9 +110,9 @@ type AircraftRuntime struct {
 	sysWait   []chan systems.State
 	// titleDefined: the TITLE definition is registered on this connection.
 	titleDefined bool
-	// flightDefined: SetFlight's ATC AIRLINE and ATC FLIGHT NUMBER
-	// definitions are registered on this connection.
-	flightDefined [2]bool
+	gsx          *gsx.Reader
+	gsxWait      []chan gsx.State
+	lvars        *lvars.Writer
 
 	addonsMu  sync.Mutex
 	install   addons.Install
@@ -147,7 +156,9 @@ func (a *AircraftRuntime) resetLocked() {
 	a.radios = avionics.New(a.mgr, radiosBase)
 	a.key, a.title, a.atcType = "", "", ""
 	a.titleDefined = false
-	a.flightDefined = [2]bool{}
+	avionics.Reset(a.mgr) // SetFlight's definitions went with the old connection
+	a.gsx = gsx.NewReader(a.mgr, gsxDefID, gsxReqID)
+	a.lvars = lvars.NewWriter(a.mgr, lvarsBase, 0)
 }
 
 // Connected implements Aircraft.
@@ -179,6 +190,18 @@ func (a *AircraftRuntime) handle(msg engine.Message) {
 				ch <- st
 			}
 			a.sysWait = nil
+			a.mu.Unlock()
+			return
+		}
+		a.mu.Lock()
+		g := a.gsx
+		a.mu.Unlock()
+		if st, ok := g.Handle(msg); ok {
+			a.mu.Lock()
+			for _, ch := range a.gsxWait {
+				ch <- st
+			}
+			a.gsxWait = nil
 			a.mu.Unlock()
 			return
 		}
@@ -496,16 +519,45 @@ func (a *AircraftRuntime) SetCallsign(ctx context.Context, airline, number strin
 	if err := ctx.Err(); err != nil {
 		return err
 	}
-	// Clearing a definition never made raises an UNRECOGNIZED_ID exception.
-	a.mu.Lock()
-	for i, used := range []bool{airline != "", number != ""} {
-		if used && a.flightDefined[i] {
-			_ = a.mgr.ClearDataDefinition(flightDefBase + uint32(i))
-		}
-		a.flightDefined[i] = a.flightDefined[i] || used
-	}
-	a.mu.Unlock()
 	return avionics.SetFlight(a.mgr, flightDefBase, airline, number)
+}
+
+// GSXState implements Aircraft.
+func (a *AircraftRuntime) GSXState(ctx context.Context) (gsx.State, error) {
+	a.mu.Lock()
+	if !a.connected {
+		a.mu.Unlock()
+		return gsx.State{}, ErrNotConnected
+	}
+	ch := make(chan gsx.State, 1)
+	a.gsxWait = append(a.gsxWait, ch)
+	g := a.gsx
+	a.mu.Unlock()
+	if err := g.Request(types.SIMCONNECT_PERIOD_ONCE); err != nil {
+		return gsx.State{}, fmt.Errorf("request GSX state: %w", err)
+	}
+	select {
+	case st := <-ch:
+		return st, nil
+	case <-time.After(aircraftTimeout):
+		return gsx.State{}, ErrTimeout
+	case <-ctx.Done():
+		return gsx.State{}, ctx.Err()
+	}
+}
+
+// SetLVar implements Aircraft.
+func (a *AircraftRuntime) SetLVar(ctx context.Context, name string, value float64) error {
+	a.mu.Lock()
+	up, w := a.connected, a.lvars
+	a.mu.Unlock()
+	if !up {
+		return ErrNotConnected
+	}
+	if err := ctx.Err(); err != nil {
+		return err
+	}
+	return w.Set(name, value)
 }
 
 // IsInputError reports whether err is the library refusing an argument

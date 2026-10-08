@@ -250,7 +250,7 @@
 				</div>
 				<p class="text-sm leading-relaxed" style="color: var(--color-text-muted);">
 					Query the full SimConnect SDK reference — simulation variables, events, API functions,
-					and data structures — and the 45 guides of the Go library it is built on, from any MCP client.
+					and data structures — and the 46 guides of the Go library it is built on, from any MCP client.
 				</p>
 			</div>
 

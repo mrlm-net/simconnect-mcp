@@ -13,6 +13,7 @@ import (
 	"github.com/mrlm-net/simconnect-mcp/internal/mcpadapter"
 	"github.com/mrlm-net/simconnect/pkg/addons"
 	"github.com/mrlm-net/simconnect/pkg/avionics"
+	"github.com/mrlm-net/simconnect/pkg/gsx"
 	"github.com/mrlm-net/simconnect/pkg/systems"
 )
 
@@ -26,6 +27,8 @@ type fakeAircraft struct {
 	airline  string
 	number   string
 	pkgs     []addons.Package
+	gsxState gsx.State
+	lvars    map[string]float64
 }
 
 func (f *fakeAircraft) Connected() bool { return true }
@@ -172,5 +175,55 @@ func TestLiveAircraftTools(t *testing.T) {
 	got, _ = call("list_addons", nil)
 	if pkgs, _ := got["packages"].([]any); len(pkgs) != 1 {
 		t.Errorf("default Community only: %v", got)
+	}
+}
+
+func (f *fakeAircraft) GSXState(context.Context) (gsx.State, error) { return f.gsxState, nil }
+func (f *fakeAircraft) SetLVar(_ context.Context, name string, v float64) error {
+	f.lvars[name] = v
+	return nil
+}
+
+func TestGSXAndLVarTools(t *testing.T) {
+	fa := &fakeAircraft{lvars: map[string]float64{}, gsxState: gsx.State{Running: true, Boarding: gsx.Performing,
+		Passengers: 150, PassengersBoardingTotal: 42, Gate: "C19", WaitingFor: []string{"exit 1"}}}
+	fa.sys.State.V1Kt, fa.sys.State.VRKt, fa.sys.State.V2Kt, fa.sys.State.SpeedsFrom = 114, 115, 121, "table"
+	gin.SetMode(gin.TestMode)
+	r := gin.New()
+	mcp := mcpadapter.NewServer("test", "1.0.0")
+	RegisterLiveAircraftTools(mcp, fa)
+	mcp.MountStreamableHTTP(r, "/mcp")
+	srv := httptest.NewServer(r)
+	t.Cleanup(srv.Close)
+	call := func(tool string, args map[string]any) (map[string]any, bool) {
+		t.Helper()
+		resp := callToolEvent(t, srv.URL, tool, args)
+		isErr := false
+		if r, ok := resp["result"].(map[string]any); ok {
+			isErr, _ = r["isError"].(bool)
+		}
+		var got map[string]any
+		if json.Unmarshal([]byte(contentTextEvent(t, resp)), &got) != nil {
+			got = map[string]any{"text": contentTextEvent(t, resp)}
+		}
+		return got, isErr
+	}
+
+	got, isErr := call("get_gsx_state", nil)
+	svc, _ := got["services"].(map[string]any)
+	if isErr || got["running"] != true || got["gate"] != "C19" || svc["boarding"] != gsx.Performing.String() {
+		t.Fatalf("gsx: %v", got)
+	}
+
+	if got, isErr := call("set_lvar", map[string]any{"name": "MY_FLAG", "value": 2.0}); isErr || got["name"] != "L:MY_FLAG" || fa.lvars["MY_FLAG"] != 2 {
+		t.Errorf("lvar: %v %v", got, fa.lvars)
+	}
+	if _, isErr := call("set_lvar", map[string]any{"name": "bad name!", "value": 1.0}); !isErr {
+		t.Error("bad L:var name accepted")
+	}
+
+	got, _ = call("get_aircraft_systems", nil)
+	if ts, _ := got["takeoff_speeds"].(map[string]any); ts["vr_kt"] != float64(115) || ts["source"] != "table" {
+		t.Errorf("takeoff speeds: %v", got["takeoff_speeds"])
 	}
 }

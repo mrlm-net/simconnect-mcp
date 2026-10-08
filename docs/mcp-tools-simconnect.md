@@ -1,13 +1,13 @@
 ---
 title: "MCP Tools — SimConnect Mode"
-description: Reference for the 59 live-data, user aircraft, AI traffic, airborne ATC and scheduled traffic MCP tools in SimConnect mode (MCP_MODE=simconnect, Windows only).
+description: Reference for the 61 live-data, user aircraft, AI traffic, airborne ATC and scheduled traffic MCP tools in SimConnect mode (MCP_MODE=simconnect, Windows only).
 order: 2
 section: reference
 ---
 
-All 59 MCP tools listed here are available when the server runs with `MCP_MODE=simconnect` (and, on Windows, with `MCP_MODE=both`, alongside the 15 docs tools — 74 in all). This mode provides live simulator data via the SimConnect SDK, and AI traffic under our control.
+All 61 MCP tools listed here are available when the server runs with `MCP_MODE=simconnect` (and, on Windows, with `MCP_MODE=both`, alongside the 15 docs tools — 76 in all). This mode provides live simulator data via the SimConnect SDK, and AI traffic under our control.
 
-**Both mode**: with `MCP_MODE=both` on Windows, the server registers these 59 tools alongside the 15 [docs-mode tools](/docs/mcp-tools-docs) — 74 tools in total — provided SimConnect opens at startup (10-second timeout). If the simulator cannot be reached, or on non-Windows platforms, both mode serves the 15 docs tools only; `simconnect_ready` in the `/health` response reports which case applies.
+**Both mode**: with `MCP_MODE=both` on Windows, the server registers these 61 tools alongside the 15 [docs-mode tools](/docs/mcp-tools-docs) — 76 tools in total — provided SimConnect opens at startup (10-second timeout). If the simulator cannot be reached, or on non-Windows platforms, both mode serves the 15 docs tools only; `simconnect_ready` in the `/health` response reports which case applies.
 
 **Requirements**: Windows only. Microsoft Flight Simulator 2020 or 2024 must be running with SimConnect enabled before issuing any read or transmit calls. The `get_sim_state` tool is safe to call at any time regardless of connection state.
 
@@ -29,6 +29,8 @@ Tools are called over the Model Context Protocol using JSON-RPC 2.0 with the `to
 | [`set_radio`](#set_radio) | Set a COM frequency, swap a COM, or set the squawk |
 | [`set_atc_callsign`](#set_atc_callsign) | Set the call sign the sim's ATC uses for the user aircraft |
 | [`list_addons`](#list_addons) | The installed MSFS packages: Community, Official and streamed |
+| [`get_gsx_state`](#get_gsx_state) | GSX Pro's services, passengers, cargo, doors, fuel and pushback state |
+| [`set_lvar`](#set_lvar) | Write an L:var on the user aircraft |
 | [`get_nearby_traffic`](#get_nearby_traffic) | List AI and player aircraft within a radius of the user aircraft |
 | [`get_traffic_with_phase`](#get_traffic_with_phase) | Like `get_nearby_traffic` with enriched telemetry and inferred flight phase |
 | [`get_airports_in_range`](#get_airports_in_range) | List airports in the simulator's loaded scenery area sorted by distance |
@@ -448,6 +450,7 @@ The user aircraft's systems, read through its systems profile (the library's `pk
 | `seatbelts` | boolean | When the profile gives the sign |
 | `no_smoking` | number | 0 off, 1 auto, 2 on, when the profile gives the sign |
 | `values` | object | Every value the profile resolved, by name |
+| `takeoff_speeds` | object | `v1_kt`, `vr_kt`, `v2_kt`, their `source` (`fms`: entered in the aircraft; `table`: the type's table; `calc`: from its design speeds), `speed_check_kt`, and `da_ft` / `mda_ft` when known; left out when unknown |
 | `can`, `cannot` | array | Controls and ground services the profile can and cannot operate |
 
 **Example response** (a cold and dark Fenix A319, shortened)
@@ -575,6 +578,46 @@ What is installed in Microsoft Flight Simulator on this machine, with the librar
 
 - `NOT_FOUND`: No MSFS 2024 or 2020 installation found.
 - `SIM_ERROR`: The packages folder could not be read.
+
+---
+
+## get_gsx_state
+
+GSX Pro's state for the user aircraft, read from the L:vars GSX's manual documents (the library's `pkg/gsx`). Without GSX every value is 0 and `running` is false.
+
+**Parameters**: none.
+
+**Returns**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `running` | boolean | GSX is running (its services have a state) |
+| `services` | object | `boarding`, `deboarding`, `catering`, `refueling`, `departure` (pushback), `deice`: `unknown` (before GSX runs), `callable`, `not available`, `bypassed`, `requested`, `performing` or `completed` |
+| `passengers` | object | `to_board`, `boarding` and `boarded_total`, `deboarding` and `deboarded_total`, `max` |
+| `cargo` | object | `loading`, `loaded_pct`, `unloading`, `unloaded_pct` |
+| `waiting_for` | array | The doors GSX waits for you to open or close, e.g. `"exit 1"`, `"cargo 1"` |
+| `fuel` | object | `hose` (hydrant connected), `counter`, `counter_max` |
+| `pushback` | object | `frozen` (the pushback holds the aircraft), `bypass_pin` |
+| `on_board` | object | `pilots`, `crew`, as GSX considers them |
+| `gate` | string | The parking selected in GSX, e.g. `"C19"`; `""` before one is |
+| `deice_fluid` | number | De-icing fluid type asked for, 1–4; 0 none |
+
+**Error codes**: `BRIDGE_DISCONNECTED`, `TIMEOUT`.
+
+---
+
+## set_lvar
+
+Writes an L:var (local variable) on the user aircraft as a number (the library's `pkg/lvars`). It can be an aircraft's own switch or setting, a GSX L:var that add-ons may write, or a new variable of your own; a new name creates it, and every other client can then read it. Read it back with `get_simvar_value` (`name: "L:..."`, `unit: "number"`). What a write does depends on the aircraft: some switches follow their L:var, others only their own events. Up to 64 different names per simulator connection.
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `name` | string | Yes | The L:var, e.g. `"L:MY_FLAG"` or `"MY_FLAG"` |
+| `value` | number | Yes | The value to write |
+
+Returns `name` (with its `L:`), `value` and `set: true`.
+
+**Error codes**: `INVALID_ARGUMENT` (not an L:var name, or no number), `BRIDGE_DISCONNECTED`, `SIM_ERROR` (more than 64 names).
 
 ---
 

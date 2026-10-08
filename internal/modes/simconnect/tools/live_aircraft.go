@@ -7,12 +7,14 @@ import (
 	"errors"
 	"fmt"
 	"math"
+	"regexp"
 	"sort"
 	"strings"
 
 	"github.com/mrlm-net/simconnect-mcp/internal/live"
 	"github.com/mrlm-net/simconnect-mcp/internal/mcpadapter"
 	"github.com/mrlm-net/simconnect/pkg/addons"
+	"github.com/mrlm-net/simconnect/pkg/gsx"
 	"github.com/mrlm-net/simconnect/pkg/systems"
 )
 
@@ -27,6 +29,83 @@ func RegisterLiveAircraftTools(mcp *mcpadapter.Server, ac live.Aircraft) {
 	registerSetRadio(mcp, ac)
 	registerSetATCCallsign(mcp, ac)
 	registerListAddons(mcp, ac)
+	registerGetGSXState(mcp, ac)
+	registerSetLVar(mcp, ac)
+}
+
+// lvarNameRe is an L:var name, with or without its "L:".
+var lvarNameRe = regexp.MustCompile(`^(L:)?[A-Za-z_][A-Za-z0-9_:.]{0,127}$`)
+
+func registerGetGSXState(mcp *mcpadapter.Server, ac live.Aircraft) {
+	tool := mcpadapter.NewTool("get_gsx_state").
+		Description("GSX Pro's state for the user aircraft, from the L:vars its manual documents (the library's pkg/gsx): " +
+			"whether GSX runs; each service's state (boarding, deboarding, catering, refueling, departure/pushback, de-ice: " +
+			"callable, not here, bypassed, requested, performing, completed); passengers to board, boarded and deboarded; " +
+			"cargo progress; the doors GSX waits for; the fuel hose and counter; the pushback freeze and bypass pin; pilots " +
+			"and crew on board; the selected gate; the de-icing fluid. Without GSX every value is 0 and running is false.").
+		Build()
+
+	mcp.AddTool(tool, func(ctx context.Context, args map[string]any) (*mcpadapter.CallToolResult, error) {
+		st, err := ac.GSXState(ctx)
+		if err != nil {
+			return aircraftError("GSX state", err), nil
+		}
+		services := map[string]string{}
+		for name, s := range map[string]gsx.Service{"boarding": st.Boarding, "deboarding": st.Deboarding,
+			"catering": st.Catering, "refueling": st.Refueling, "departure": st.Departure, "deice": st.Deice} {
+			services[name] = s.String()
+		}
+		waiting := st.WaitingFor
+		if waiting == nil {
+			waiting = []string{}
+		}
+		return mcpadapter.JSONResult(map[string]any{
+			"running":  st.Running,
+			"services": services,
+			"passengers": map[string]int{"to_board": st.Passengers, "boarding": st.PassengersBoarding,
+				"boarded_total": st.PassengersBoardingTotal, "deboarding": st.PassengersDeboarding,
+				"deboarded_total": st.PassengersDeboardingTotal, "max": st.MaxPassengers},
+			"cargo": map[string]any{"loading": st.LoadingCargo, "loaded_pct": round(st.CargoLoadedPct, 0),
+				"unloading": st.UnloadingCargo, "unloaded_pct": round(st.CargoUnloadedPct, 0)},
+			"waiting_for": waiting,
+			"fuel":        map[string]any{"hose": st.FuelHose, "counter": round(st.FuelCounter, 1), "counter_max": round(st.FuelCounterMax, 1)},
+			"pushback":    map[string]bool{"frozen": st.Frozen, "bypass_pin": st.BypassPin},
+			"on_board":    map[string]bool{"pilots": st.PilotsOnBoard, "crew": st.CrewOnBoard},
+			"gate":        st.Gate,
+			"deice_fluid": st.DeiceFluid,
+		})
+	})
+}
+
+func registerSetLVar(mcp *mcpadapter.Server, ac live.Aircraft) {
+	tool := mcpadapter.NewTool("set_lvar").
+		Description("Write an L:var (local variable) on the user aircraft as a number (the library's pkg/lvars): an "+
+			"aircraft's own switch or setting (e.g. the Fenix's \"L:S_OH_EXT_LT_STROBE\"), a GSX L:var add-ons may write, or "+
+			"a new variable of your own, which every other client can then read. Read it back with get_simvar_value "+
+			"(name \"L:...\", unit \"number\"). What a write does depends on the aircraft: some switches follow their L:var, "+
+			"others only their own events. Up to 64 different names per simulator connection.").
+		StringParam("name", "The L:var, e.g. \"L:MY_FLAG\" or \"MY_FLAG\" (required).").
+		NumberParam("value", "The value to write (required).").
+		Required("name", "value").
+		Build()
+
+	mcp.AddTool(tool, func(ctx context.Context, args map[string]any) (*mcpadapter.CallToolResult, error) {
+		name := strArg(args, "name")
+		if !lvarNameRe.MatchString(name) {
+			return mcpadapter.ErrorResult("INVALID_ARGUMENT: name must be an L:var name, e.g. \"L:MY_FLAG\""), nil
+		}
+		v, ok := args["value"].(float64)
+		if !ok {
+			return mcpadapter.ErrorResult("INVALID_ARGUMENT: value must be a number"), nil
+		}
+		if err := ac.SetLVar(ctx, name, v); err != nil {
+			return aircraftError("L:var "+name, err), nil
+		}
+		if !strings.HasPrefix(name, "L:") {
+			name = "L:" + name
+		}
+		return mcpadapter.JSONResult(map[string]any{"name": name, "value": v, "set": true})
+	})
 }
 
 // aircraftError turns an Aircraft error into a tool error result.
@@ -130,6 +209,17 @@ func registerGetAircraftSystems(mcp *mcpadapter.Server, ac live.Aircraft) {
 			"values": values,
 			"can":    can,
 			"cannot": cannot,
+		}
+		if st.SpeedsFrom != "" || st.VRKt > 0 {
+			ts := map[string]any{"v1_kt": round(st.V1Kt, 0), "vr_kt": round(st.VRKt, 0), "v2_kt": round(st.V2Kt, 0),
+				"source": st.SpeedsFrom, "speed_check_kt": st.SpeedCheckKt}
+			if st.DAFt > 0 {
+				ts["da_ft"] = round(st.DAFt, 0)
+			}
+			if st.MDAFt > 0 {
+				ts["mda_ft"] = round(st.MDAFt, 0)
+			}
+			out["takeoff_speeds"] = ts
 		}
 		if v, ok := st.Values[systems.Seatbelts]; ok {
 			out["seatbelts"] = v != 0

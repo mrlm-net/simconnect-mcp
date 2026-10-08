@@ -130,7 +130,7 @@ Add the following to your `claude_desktop_config.json` (or equivalent MCP client
 
 ## Available Tools
 
-The server exposes 15 MCP tools in `docs` mode — 12 for the SimConnect SDK reference and 3 for the [`github.com/mrlm-net/simconnect`](https://github.com/mrlm-net/simconnect) Go library guides — and 59 in `simconnect` mode. `both` mode on Windows serves all 74 when SimConnect is reachable at startup, and the 15 docs tools otherwise. See [docs/mcp-tools-docs.md](docs/mcp-tools-docs.md) and [docs/mcp-tools-simconnect.md](docs/mcp-tools-simconnect.md) for full parameter references, request/response examples, and error codes.
+The server exposes 15 MCP tools in `docs` mode — 12 for the SimConnect SDK reference and 3 for the [`github.com/mrlm-net/simconnect`](https://github.com/mrlm-net/simconnect) Go library guides — and 61 in `simconnect` mode. `both` mode on Windows serves all 76 when SimConnect is reachable at startup, and the 15 docs tools otherwise. See [docs/mcp-tools-docs.md](docs/mcp-tools-docs.md) and [docs/mcp-tools-simconnect.md](docs/mcp-tools-simconnect.md) for full parameter references, request/response examples, and error codes.
 
 **SimConnect SDK reference**
 
@@ -156,7 +156,7 @@ All paginated `list_*` tools return an envelope (`items`, `page`, `page_size`, `
 
 **Go library guides**
 
-The 45 guides of the `github.com/mrlm-net/simconnect` Go library (client, manager, facilities, `pkg/airport`, `pkg/nav`, `pkg/traffic`, `pkg/systems`, `pkg/avionics`, `pkg/addons`, `pkg/camera`) are embedded at the library version the server is built with — currently **v0.24.0**. The `/health` response (docs and both modes) reports it as `library_version`.
+The 46 guides of the `github.com/mrlm-net/simconnect` Go library (client, manager, facilities, `pkg/airport`, `pkg/nav`, `pkg/traffic`, `pkg/systems`, `pkg/avionics`, `pkg/addons`, `pkg/camera`) are embedded at the library version the server is built with — currently **v0.29.0**. The `/health` response (docs and both modes) reports it as `library_version`.
 
 | Tool | Description |
 |------|-------------|
@@ -170,7 +170,7 @@ The 45 guides of the `github.com/mrlm-net/simconnect` Go library (client, manage
 
 The server reconnects automatically when the simulator restarts — no manual intervention is required.
 
-`simconnect` mode exposes 59 MCP tools; on Windows, `MCP_MODE=both` serves them together with the 15 docs tools (74 in all). See [docs/mcp-tools-simconnect.md](docs/mcp-tools-simconnect.md) for the full reference.
+`simconnect` mode exposes 61 MCP tools; on Windows, `MCP_MODE=both` serves them together with the 15 docs tools (76 in all). See [docs/mcp-tools-simconnect.md](docs/mcp-tools-simconnect.md) for the full reference.
 
 **Simulation variables**
 
@@ -193,6 +193,8 @@ The server reconnects automatically when the simulator restarts — no manual in
 | `set_radio` | Set a COM active or standby frequency, swap a COM, or set the squawk |
 | `set_atc_callsign` | Set the call sign the sim's ATC uses (ATC AIRLINE and ATC FLIGHT NUMBER) |
 | `list_addons` | The installed MSFS packages: Community, Official and streamed, with streamed airports by ICAO |
+| `get_gsx_state` | GSX Pro's state: each service, passengers, cargo, doors it waits for, fuel hose, pushback freeze, gate |
+| `set_lvar` | Write an L:var on the user aircraft (an aircraft switch, or a variable of your own) |
 
 **Traffic**
 

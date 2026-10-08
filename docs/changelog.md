@@ -7,22 +7,26 @@ section: changelog
 
 All notable changes to SimConnect MCP are documented here.
 
-## [0.12.0] - 2026-10-07
+## [Unreleased]
 
-On simconnect v0.25.0: our traffic gives way to a crossing tail, climbs to its cleared level and shuts down when parked; aircraft can follow one another on the ground; and the website tells you how to use SimConnect MCP commercially.
+On simconnect v0.29.0: GSX Pro's state and L:vars of your own, take-off speeds for the user aircraft, traffic that gives way to a crossing tail, climbs to its cleared level and shuts down when parked, aircraft that follow one another on the ground, no SimConnect exceptions at start-up, and a contact for commercial use.
 
 ### Added
 
-- `atc_clearance` `follow` with `behind`: one of ours stays behind another of ours on the ground wherever their ways meet, told the way ground says it (the library's v0.25).
+- `get_gsx_state`: GSX Pro's state from its documented L:vars (the library's `pkg/gsx`): each service, passengers, cargo, the doors GSX waits for, the fuel hose and counter, the pushback freeze and bypass pin, pilots and crew on board, the gate and the de-icing fluid.
+- `set_lvar`: write an L:var on the user aircraft (the library's `pkg/lvars`), an aircraft's own or a new one other clients can read.
+- `get_aircraft_systems` gives `takeoff_speeds`: V1, VR and V2 from the aircraft's FMS (the Fenix's L:vars), the type's table (A319/A320/A321) or its design speeds, with the source and the speed check.
+- `atc_clearance` `follow` with `behind`: one of ours stays behind another of ours on the ground wherever their ways meet, told the way ground says it.
 - Website: a "Commercial use" section on the home page, before "Support the project", with a contact at support@mrlm.net.
+- Tool counts: docs 15, simconnect 61, both 76
 
 ### Changed
 
-- Upgraded `github.com/mrlm-net/simconnect` from v0.24.0 to v0.25.0. With it:
-  - our traffic gives way to a crossing tail;
-  - departures climb to their cleared level;
-  - arrivals stop their engines once parked, and get one dog-leg, lengthened in place;
-  - an arrival's route is no longer taken from the wrong STAR point when it was asked for before the aircraft's first position.
+- Upgraded `github.com/mrlm-net/simconnect` from v0.24.0 to v0.29.0, with 46 library guides (new: GSX and L:vars). With it:
+  - our traffic gives way to a crossing tail, departures climb to their cleared level, and arrivals stop their engines once parked and get one dog-leg, lengthened in place;
+  - an arrival's route is no longer taken from the wrong STAR point when it was asked for before the aircraft's first position;
+  - the traffic engine loads ILS without SimConnect exceptions, survives a panic in one of its parts, and no longer guesses other traffic VFR from a light type's title.
+- `set_atc_callsign` relies on the library's own definition tracking (`avionics.Reset` on a new connection) instead of clearing the definitions itself.
 
 ## [0.11.0] - 2026-10-07
 

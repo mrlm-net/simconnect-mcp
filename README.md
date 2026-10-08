@@ -130,7 +130,7 @@ Add the following to your `claude_desktop_config.json` (or equivalent MCP client
 
 ## Available Tools
 
-The server exposes 15 MCP tools in `docs` mode — 12 for the SimConnect SDK reference and 3 for the [`github.com/mrlm-net/simconnect`](https://github.com/mrlm-net/simconnect) Go library guides — and 61 in `simconnect` mode. `both` mode on Windows serves all 76 when SimConnect is reachable at startup, and the 15 docs tools otherwise. See [docs/mcp-tools-docs.md](docs/mcp-tools-docs.md) and [docs/mcp-tools-simconnect.md](docs/mcp-tools-simconnect.md) for full parameter references, request/response examples, and error codes.
+The server exposes 15 MCP tools in `docs` mode — 12 for the SimConnect SDK reference and 3 for the [`github.com/mrlm-net/simconnect`](https://github.com/mrlm-net/simconnect) Go library guides — and 63 in `simconnect` mode. `both` mode on Windows serves all 78 when SimConnect is reachable at startup, and the 15 docs tools otherwise. See [docs/mcp-tools-docs.md](docs/mcp-tools-docs.md) and [docs/mcp-tools-simconnect.md](docs/mcp-tools-simconnect.md) for full parameter references, request/response examples, and error codes.
 
 **SimConnect SDK reference**
 
@@ -170,7 +170,7 @@ The 46 guides of the `github.com/mrlm-net/simconnect` Go library (client, manage
 
 The server reconnects automatically when the simulator restarts — no manual intervention is required.
 
-`simconnect` mode exposes 61 MCP tools; on Windows, `MCP_MODE=both` serves them together with the 15 docs tools (76 in all). See [docs/mcp-tools-simconnect.md](docs/mcp-tools-simconnect.md) for the full reference.
+`simconnect` mode exposes 63 MCP tools; on Windows, `MCP_MODE=both` serves them together with the 15 docs tools (78 in all). See [docs/mcp-tools-simconnect.md](docs/mcp-tools-simconnect.md) for the full reference.
 
 **Simulation variables**
 
@@ -281,6 +281,8 @@ A tower per runway clears our line-ups, take-offs and crossings, and sends arriv
 | `get_traffic_status` | The engine's state, settings and last error |
 | `get_traffic_airport_info` | An airport as the engine works it: runways in use, ATIS, ILS, weather |
 | `get_tcas` | TCAS II for our airborne traffic: traffic and resolution advisories now, and the latest as they happened |
+| `get_camera` | The add-on camera (MSFS 2024) now, and its scripted scenes |
+| `set_camera` | Film our traffic (auto), follow or view an aircraft or your own, play a scene, the sim's cameras, or off |
 
 **Scheduled traffic**
 

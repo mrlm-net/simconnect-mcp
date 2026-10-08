@@ -313,6 +313,9 @@ func (t *TrafficWorld) Close() int {
 	if !running {
 		return 0
 	}
+	// The camera back to the simulator first: a held add-on camera would
+	// stay where it was once we are gone.
+	_, _ = t.w.Do("POST", "/api/camera", map[string]any{"mode": "off"})
 	_, _ = t.w.Do("POST", "/api/schedule", map[string]any{"enabled": false})
 	_, _ = t.w.Do("POST", "/api/corridor", map[string]any{"enabled": false})
 	var list []world.ControlView

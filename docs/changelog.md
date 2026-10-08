@@ -9,6 +9,15 @@ All notable changes to SimConnect MCP are documented here. The format follows [K
 
 Full release history with release notes is also available on the [GitHub Releases page](https://github.com/mrlm-net/simconnect-mcp/releases).
 
+## [0.14.0] - 2026-10-08
+
+The add-on camera: film our traffic, follow or view any aircraft including your own, play scripted departure and arrival scenes, and give the camera back.
+
+### Added
+
+- Add-on camera (MSFS 2024) through the traffic engine: `get_camera` (the camera now and the scripted scenes) and `set_camera`. Actions: `auto` films our traffic, `follow` stays on one of ours, `view` holds a chase, cockpit, wing, front, top or tower view (of ours or the user's own aircraft), `scene` plays a scripted film that spawns its cast, `sim` the sim's own cameras, `look` turns the tower camera, and `off` gives the camera back. The server gives it back when it stops.
+- Tool counts: docs 15, simconnect 63, both 78
+
 ## [0.13.1] - 2026-10-08
 
 ### Changed

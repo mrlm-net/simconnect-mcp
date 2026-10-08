@@ -193,3 +193,63 @@ func TestWorldTrafficTools(t *testing.T) {
 		t.Errorf("stop: %v", got)
 	}
 }
+
+func TestWorldCameraTools(t *testing.T) {
+	fw := &fakeWorld{bodies: map[string]any{}, answers: map[string]any{
+		"GET /api/camera":        map[string]any{"mode": "off", "acquired": false},
+		"GET /api/camera/scenes": []map[string]any{{"key": "departure", "name": "Departure"}},
+		"POST /api/camera":       map[string]any{"mode": "view", "acquired": true},
+		"POST /api/camera/scene": map[string]any{"mode": "scene", "acquired": true},
+		"GET /api/control":       []world.ControlView{{ID: 3, Tail: "CSA7", ICAO: "LKPR"}},
+	}}
+	gin.SetMode(gin.TestMode)
+	r := gin.New()
+	mcp := mcpadapter.NewServer("test", "1.0.0")
+	registerWorldCamera(mcp, fw)
+	mcp.MountStreamableHTTP(r, "/mcp")
+	srv := httptest.NewServer(r)
+	t.Cleanup(srv.Close)
+	call := func(tool string, args map[string]any) (map[string]any, bool) {
+		t.Helper()
+		resp := callToolEvent(t, srv.URL, tool, args)
+		isErr := false
+		if r, ok := resp["result"].(map[string]any); ok {
+			isErr, _ = r["isError"].(bool)
+		}
+		var got map[string]any
+		if json.Unmarshal([]byte(contentTextEvent(t, resp)), &got) != nil {
+			got = map[string]any{"text": contentTextEvent(t, resp)}
+		}
+		return got, isErr
+	}
+
+	got, isErr := call("get_camera", nil)
+	if sc, _ := got["scenes"].([]any); isErr || len(sc) != 1 {
+		t.Fatalf("get_camera: %v", got)
+	}
+	if _, isErr := call("set_camera", map[string]any{"action": "view", "view": "chase", "callsign": "me"}); isErr {
+		t.Fatal("view me")
+	}
+	if b, _ := fw.bodies["POST /api/camera"].(map[string]any); b["id"] != -1 || b["view"] != "chase" {
+		t.Errorf("view body %v", b)
+	}
+	if _, isErr := call("set_camera", map[string]any{"action": "follow", "callsign": "csa7"}); isErr {
+		t.Fatal("follow")
+	}
+	if b, _ := fw.bodies["POST /api/camera"].(map[string]any); b["mode"] != "follow" || b["id"] != 3 {
+		t.Errorf("follow body %v", b)
+	}
+	if _, isErr := call("set_camera", map[string]any{"action": "scene", "icao": "lkpr", "scene": "departure"}); isErr ||
+		!fw.called("POST /api/camera/scene?icao=LKPR&name=departure") {
+		t.Errorf("scene: %v", fw.calls)
+	}
+	for _, bad := range []map[string]any{{"action": "spin"}, {"action": "view", "view": "under"},
+		{"action": "view", "view": "tower"}, {"action": "sim"}, {"action": "sim", "sim": "warp"}} {
+		if _, isErr := call("set_camera", bad); !isErr {
+			t.Errorf("accepted %v", bad)
+		}
+	}
+	if _, isErr := call("set_camera", map[string]any{"action": "off"}); isErr {
+		t.Error("off")
+	}
+}

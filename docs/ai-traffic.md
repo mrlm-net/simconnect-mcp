@@ -56,6 +56,10 @@ You can watch them with `get_landing_sequence`, `get_conflicts` and `get_atc_log
 
 **Your own flight.** The engine never controls or calls your aircraft. When your ATC clears you onto a runway, `set_player_clearance` tells the engine, and while you line up, take off or land there, none of its traffic is cleared onto it. Landing, you're put in the landing sequence and the traffic fits around you.
 
+## Filming it
+
+In MSFS 2024 the engine can take the camera. `set_camera` with `auto` lets a director film our traffic, cutting to whoever matters. `follow` stays on one aircraft, and `view` holds a chase, cockpit, wing, front, top or tower view, of ours or of your own aircraft. `scene` plays a scripted film at an airport, spawning its own cast (a departure, an arrival, or both). `off` gives the camera back to the simulator, and the server gives it back when it stops.
+
 ## Things to ask
 
 - "Run the airline schedule at LKPR, at most 8 aircraft at once."
@@ -66,6 +70,7 @@ You can watch them with `get_landing_sequence`, `get_conflicts` and `get_atc_log
 - "Slow down AFR1094 and move it behind KLM1008."
 - "Add an arrival from Munich 20 minutes from now."
 - "I'm cruising at FL360 along this route: put some traffic around me."
+- "Film the traffic at Prague." … "Follow CSA7." … "Give me the camera back."
 - "Stop the schedule and let the aircraft finish their flights." (`stop_schedule`)
 - "Stop the schedule and remove everything now." (`stop_schedule` with `remove: true`)
 
@@ -83,7 +88,7 @@ You can watch them with `get_landing_sequence`, `get_conflicts` and `get_atc_log
 | Real traffic and cruise | [`set_real_traffic`](/docs/mcp-tools-simconnect#set_real_traffic), [`observe_traffic`](/docs/mcp-tools-simconnect#observe_traffic), [`set_traffic_corridor`](/docs/mcp-tools-simconnect#set_traffic_corridor) |
 | Add and clear aircraft by hand | [`spawn_departure`](/docs/mcp-tools-simconnect#spawn_departure), [`spawn_arrival`](/docs/mcp-tools-simconnect#spawn_arrival), [`atc_clearance`](/docs/mcp-tools-simconnect#atc_clearance), [`list_our_traffic`](/docs/mcp-tools-simconnect#list_our_traffic) |
 | Approach and tower | [`get_tcas`](/docs/mcp-tools-simconnect#get_tcas), [`get_landing_sequence`](/docs/mcp-tools-simconnect#get_landing_sequence), [`approach_instruction`](/docs/mcp-tools-simconnect#approach_instruction), [`get_atc_log`](/docs/mcp-tools-simconnect#get_atc_log), [`get_conflicts`](/docs/mcp-tools-simconnect#get_conflicts), [`separation_minima`](/docs/mcp-tools-simconnect#separation_minima), [`set_player_clearance`](/docs/mcp-tools-simconnect#set_player_clearance) |
-| Look around | [`get_traffic_picture`](/docs/mcp-tools-simconnect#get_traffic_picture), [`get_traffic_status`](/docs/mcp-tools-simconnect#get_traffic_status), [`list_aircraft_models`](/docs/mcp-tools-simconnect#list_aircraft_models), [`generate_schedule`](/docs/mcp-tools-simconnect#generate_schedule) |
+| Look around | [`get_camera`](/docs/mcp-tools-simconnect#get_camera), [`set_camera`](/docs/mcp-tools-simconnect#set_camera), [`get_traffic_picture`](/docs/mcp-tools-simconnect#get_traffic_picture), [`get_traffic_status`](/docs/mcp-tools-simconnect#get_traffic_status), [`list_aircraft_models`](/docs/mcp-tools-simconnect#list_aircraft_models), [`generate_schedule`](/docs/mcp-tools-simconnect#generate_schedule) |
 | The airport | [`get_traffic_airport_info`](/docs/mcp-tools-simconnect#get_traffic_airport_info), [`get_active_runway`](/docs/mcp-tools-simconnect#get_active_runway), [`get_atis`](/docs/mcp-tools-simconnect#get_atis), [`plan_taxi_route`](/docs/mcp-tools-simconnect#plan_taxi_route), [`find_stands`](/docs/mcp-tools-simconnect#find_stands), [`get_airport_procedures`](/docs/mcp-tools-simconnect#get_airport_procedures) |
 
 For a worked example, see [Scenario 4 in Examples](/docs/examples).

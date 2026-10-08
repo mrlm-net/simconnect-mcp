@@ -1,13 +1,13 @@
 ---
 title: "MCP Tools — SimConnect Mode"
-description: Reference for the 61 live-data, user aircraft, AI traffic, airborne ATC and scheduled traffic MCP tools in SimConnect mode (MCP_MODE=simconnect, Windows only).
+description: Reference for the 63 live-data, user aircraft, AI traffic, airborne ATC and scheduled traffic MCP tools in SimConnect mode (MCP_MODE=simconnect, Windows only).
 order: 2
 section: reference
 ---
 
-All 61 MCP tools listed here are available when the server runs with `MCP_MODE=simconnect` (and, on Windows, with `MCP_MODE=both`, alongside the 15 docs tools — 76 in all). This mode provides live simulator data via the SimConnect SDK, and AI traffic under our control.
+All 63 MCP tools listed here are available when the server runs with `MCP_MODE=simconnect` (and, on Windows, with `MCP_MODE=both`, alongside the 15 docs tools — 78 in all). This mode provides live simulator data via the SimConnect SDK, and AI traffic under our control.
 
-**Both mode**: with `MCP_MODE=both` on Windows, the server registers these 61 tools alongside the 15 [docs-mode tools](/docs/mcp-tools-docs) — 76 tools in total — provided SimConnect opens at startup (10-second timeout). If the simulator cannot be reached, or on non-Windows platforms, both mode serves the 15 docs tools only; `simconnect_ready` in the `/health` response reports which case applies.
+**Both mode**: with `MCP_MODE=both` on Windows, the server registers these 63 tools alongside the 15 [docs-mode tools](/docs/mcp-tools-docs) — 78 tools in total — provided SimConnect opens at startup (10-second timeout). If the simulator cannot be reached, or on non-Windows platforms, both mode serves the 15 docs tools only; `simconnect_ready` in the `/health` response reports which case applies.
 
 **Requirements**: Windows only. Microsoft Flight Simulator 2020 or 2024 must be running with SimConnect enabled before issuing any read or transmit calls. The `get_sim_state` tool is safe to call at any time regardless of connection state.
 
@@ -78,6 +78,8 @@ Tools are called over the Model Context Protocol using JSON-RPC 2.0 with the `to
 | [`get_traffic_status`](#get_traffic_status) | The traffic engine's state and settings |
 | [`get_traffic_airport_info`](#get_traffic_airport_info) | An airport as the engine works it: runways in use, ATIS, ILS |
 | [`get_tcas`](#get_tcas) | TCAS advisories (TA, RA) of our airborne traffic |
+| [`get_camera`](#get_camera) | The add-on camera now and the scenes it can play |
+| [`set_camera`](#set_camera) | Film our traffic, follow or view an aircraft, play a scene, or give the camera back |
 
 ---
 
@@ -2427,6 +2429,48 @@ TCAS II for our airborne traffic. Each of ours sees every aircraft around it (ou
 | `limit` | number | No | `30` | At most this many latest events |
 
 Returns `ta` and `ra` (how many advisories now) and `events`, each with `at`, `callsign`, `intruder`, `advisory` (`TA`, `RA` or `clear`), `aural`, `rangeNM` and `dzFt`.
+
+---
+
+## get_camera
+
+The add-on camera (MSFS 2024) as the traffic engine drives it, and the scripted scenes it can play.
+
+**Parameters**: none.
+
+**Returns** `camera`, with `mode` (`off`, `auto`, `follow`, `view`, `scene`, `tower`), `subject`, `shot`, `acquired` (the add-on holds the camera), `error`, and `sim` / `simView` when the sim's own camera was last set. It also returns `scenes`: `key`, `name`, `description`, for example `1-departure` (DEMO007 from gate to climb-out), `2-arrival` (a Lufthansa A320 from a 5 NM final to its stand) and `3-mixed`.
+
+---
+
+## set_camera
+
+Drives the add-on camera through the traffic engine. While it holds the camera the user's view is the camera's; `off` gives it back to the simulator, and the server gives it back when it stops.
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `action` | string | Yes | `off`, `auto`, `follow`, `view`, `scene`, `sim` or `look` |
+| `callsign` | string | `follow`; `view` | One of ours; for `view` also `"me"` (the user aircraft, the default) |
+| `view` | string | `view` | `chase`, `cockpit`, `wing`, `front`, `top` or `tower` |
+| `icao` | string | `scene`; `view` `tower` | The airport |
+| `scene` | string | `scene` | A scene key from `get_camera` |
+| `sim` | string | `sim` | The sim's camera: `cockpit`, `chase`, `drone`, `fixed`, `environment`; leave out to step views |
+| `step` | number | `sim` without `sim` | `+1` or `-1`: next or previous view |
+| `yaw`, `tilt`, `fov` | number | `look` | Turn the tower camera: bearing, tilt, field of view, degrees |
+| `swing` | boolean | No | `look`: the tower looks round by itself |
+
+| Action | What the camera does |
+|--------|----------------------|
+| `off` | Back to the simulator, as it was before |
+| `auto` | A director films our traffic, cutting to whoever matters and following the radio |
+| `follow` | Stays on one of ours, choosing its shots |
+| `view` | Holds one view of an aircraft (or of the user's), or the tower's view of an airport |
+| `scene` | Plays a scripted scene at an airport: its cast is spawned and filmed shot by shot |
+| `sim` | The sim's own cameras, giving the add-on camera back |
+| `look` | Turns the tower camera, or lets it swing |
+
+Returns the camera as `get_camera` does.
+
+**Error codes**: `INVALID_ARGUMENT`, `NOT_FOUND` (not one of ours), `NOT_APPLICABLE` (e.g. the aircraft is not in the simulator yet, or no camera on this simulator), `BRIDGE_DISCONNECTED`, `TIMEOUT`.
 
 ---
 

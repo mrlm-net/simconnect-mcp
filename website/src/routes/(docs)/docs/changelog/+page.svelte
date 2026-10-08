@@ -21,8 +21,8 @@
 	path="/docs/changelog"
 />
 
-<article class="flex-1 min-w-0 px-6 py-10">
-	<h1 class="text-3xl font-bold mb-2" style="color: var(--color-text-primary);">Changelog</h1>
+<article class="mx-auto min-w-0 px-6 py-10 sm:px-10 lg:py-14" style="max-width: 52rem;">
+	<h1 class="mb-2 text-3xl font-semibold tracking-tight" style="color: var(--text);">Changelog</h1>
 	<p class="mb-8 text-sm" style="color: var(--color-text-secondary);">
 		All notable changes to SimConnect MCP.
 	</p>
@@ -35,9 +35,9 @@
 				class="px-4 py-2 text-sm font-medium whitespace-nowrap transition-colors border-b-2 -mb-px"
 				style="
 					color: {activeMinor === group.minor
-					? 'var(--color-link)'
+					? 'var(--text)'
 					: 'var(--color-text-secondary)'};
-					border-color: {activeMinor === group.minor ? 'var(--color-link)' : 'transparent'};
+					border-color: {activeMinor === group.minor ? 'var(--text)' : 'transparent'};
 					background: transparent;
 				"
 				aria-selected={activeMinor === group.minor}
@@ -58,7 +58,7 @@
 							v{release.version}
 						</h2>
 						<time
-							class="text-xs font-mono"
+							class="pill mono"
 							style="color: var(--color-text-muted);"
 							datetime={release.date}
 						>

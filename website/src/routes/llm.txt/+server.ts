@@ -40,7 +40,7 @@ SimConnect SDK reference:
 - get_error_code: Fetch an error code by name or integer value
 - search_docs: Full-text search across all corpus types
 
-github.com/mrlm-net/simconnect Go library guides (v0.31.1):
+github.com/mrlm-net/simconnect Go library guides (v0.31.3):
 
 - list_library_guides: List the library guides and their chapters, optionally filtered by section
 - get_library_guide: Read a library guide, or a single chapter of it, as Markdown

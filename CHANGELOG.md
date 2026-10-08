@@ -4,7 +4,9 @@ All notable changes to SimConnect MCP are documented here. The format follows [K
 
 Full release history with release notes is also available on the [GitHub Releases page](https://github.com/mrlm-net/simconnect-mcp/releases).
 
-## [Unreleased]
+## [0.14.0] - 2026-10-08
+
+The add-on camera: film our traffic, follow or view any aircraft including your own, play scripted departure and arrival scenes, and give the camera back.
 
 ### Added
 

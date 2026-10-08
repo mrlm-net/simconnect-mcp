@@ -9,6 +9,16 @@ All notable changes to SimConnect MCP are documented here. The format follows [K
 
 Full release history with release notes is also available on the [GitHub Releases page](https://github.com/mrlm-net/simconnect-mcp/releases).
 
+## [0.13.1] - 2026-10-08
+
+### Changed
+
+- Upgraded `github.com/mrlm-net/simconnect` from v0.30.0 to v0.30.1. With it:
+  - no traffic information to an aircraft taking off or in the last stages of landing (none below 1000 ft above the ground, nor while lining up, departing, landing or rolling out);
+  - a taxiing aircraft held 5 s by one pushing back or waiting for taxi is told to give way to it, once;
+  - a re-route is said only when its taxiways change;
+  - departures are confirmed to spawn cold (engines off from the first frame).
+
 ## [0.13.0] - 2026-10-08
 
 On simconnect v0.30.0: the tower answers check-ins, circuit traffic waits behind whom it follows, and TCAS "clear of conflict" the ICAO way; tool descriptions half the size per connect, and the docs refreshed.

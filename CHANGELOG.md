@@ -4,7 +4,9 @@ All notable changes to SimConnect MCP are documented here. The format follows [K
 
 Full release history with release notes is also available on the [GitHub Releases page](https://github.com/mrlm-net/simconnect-mcp/releases).
 
-## [Unreleased]
+## [0.13.0] - 2026-10-08
+
+On simconnect v0.30.0: the tower answers check-ins, circuit traffic waits behind whom it follows, and TCAS "clear of conflict" the ICAO way; tool descriptions half the size per connect, and the docs refreshed.
 
 ### Changed
 

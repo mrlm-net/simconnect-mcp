@@ -12,9 +12,9 @@ import (
 // RegisterEventTools registers list_events and get_event on s.
 func RegisterEventTools(s *mcpadapter.Server, store corpus.DocStore, liveScrape bool) {
 	listBuilder := mcpadapter.NewTool("list_events").
-		Description("List SimConnect client events. Paginate with page and page_size.").
-		NumberParam("page", "Page number, 1-indexed (default 1)").
-		NumberParam("page_size", "Results per page, max 100 (default 20)")
+		Description("List SimConnect client events; paginated.").
+		NumberParam("page", "Page, 1-based (default 1)").
+		NumberParam("page_size", "Per page, max 100 (default 20)")
 	if liveScrape {
 		listBuilder = listBuilder.BoolParam("confirm_live_scraping", "Set to true to confirm you accept responsibility for live HTTP requests to external documentation sites. Required when DOCS_LIVE_SCRAPE=true.")
 	}
@@ -37,8 +37,8 @@ func RegisterEventTools(s *mcpadapter.Server, store corpus.DocStore, liveScrape 
 	)
 
 	getBuilder := mcpadapter.NewTool("get_event").
-		Description("Get a single SimConnect client event by name (case-insensitive).").
-		StringParam("name", "Event name, e.g. \"BRAKES\"").
+		Description("Get a client event's documentation by name (case-insensitive).").
+		StringParam("name", "e.g. \"BRAKES\"").
 		Required("name")
 	if liveScrape {
 		getBuilder = getBuilder.BoolParam("confirm_live_scraping", "Set to true to confirm you accept responsibility for live HTTP requests to external documentation sites. Required when DOCS_LIVE_SCRAPE=true.")

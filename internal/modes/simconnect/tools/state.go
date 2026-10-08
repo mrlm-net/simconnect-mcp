@@ -17,7 +17,7 @@ import (
 // at any connection state.
 func RegisterStateTools(mcp *mcpadapter.Server, b bridge.Bridge) {
 	tool := mcpadapter.NewTool("get_sim_state").
-		Description("Return a snapshot of the current simulator connection state, flight status, and aircraft position/speed/heading.").
+		Description("Connection state, flight status and the user aircraft's position, speed and heading.").
 		Build()
 
 	mcp.AddTool(tool, func(ctx context.Context, args map[string]any) (*mcpadapter.CallToolResult, error) {

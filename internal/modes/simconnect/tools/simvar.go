@@ -23,9 +23,9 @@ func RegisterSimVarTools(mcp *mcpadapter.Server, b bridge.Bridge) {
 // single live simulation variable from the running simulator by name and unit.
 func registerGetSimVarValue(mcp *mcpadapter.Server, b bridge.Bridge) {
 	tool := mcpadapter.NewTool("get_simvar_value").
-		Description("Read a single live simulation variable from the running simulator.").
-		StringParam("name", "SimVar name, e.g. 'PLANE ALTITUDE'").
-		StringParam("unit", "Unit string, e.g. 'feet'").
+		Description("Read one live simulation variable.").
+		StringParam("name", "e.g. 'PLANE ALTITUDE'").
+		StringParam("unit", "e.g. 'feet'").
 		Required("name", "unit").
 		Build()
 
@@ -68,8 +68,7 @@ func registerGetSimVarValues(mcp *mcpadapter.Server, b bridge.Bridge) {
 	// scalar types, so we register it as "array" and enforce item shape and
 	// the max-20 limit in the handler.
 	tool := mcpadapter.NewTool("get_simvar_values").
-		Description("Read up to 20 live simulation variables in one call. " +
-			"'vars' must be an array of objects each with 'name' (string) and 'unit' (string).").
+		Description("Read up to 20 live simulation variables in one call.").
 		Required("vars").
 		Build()
 
@@ -79,7 +78,7 @@ func registerGetSimVarValues(mcp *mcpadapter.Server, b bridge.Bridge) {
 	// embedded via the exported InputSchema field on the returned Tool.
 	tool.InputSchema.Properties["vars"] = mcpadapter.SchemaProperty{
 		Type:        "array",
-		Description: "List of SimVar name/unit pairs to read (max 20). Each item must have 'name' and 'unit' string fields.",
+		Description: "[{name, unit}], max 20",
 	}
 
 	mcp.AddTool(tool, func(ctx context.Context, args map[string]any) (*mcpadapter.CallToolResult, error) {

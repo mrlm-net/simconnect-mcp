@@ -66,9 +66,7 @@ func weatherJSON(w nav.Weather) weatherOut {
 
 func registerGetWeather(mcp *mcpadapter.Server, src live.Source) {
 	tool := mcpadapter.NewTool("get_weather").
-		Description("Return the weather at the user aircraft: wind (degrees true, knots), visibility, temperature, QNH (hPa and " +
-			"inHg), precipitation, whether the aircraft is in cloud, and icing conditions (visible moisture at or below " +
-			"+10 °C). SimConnect has no gust, ceiling or dewpoint variables.").
+		Description("Weather at the user aircraft: wind, visibility, temperature, QNH, precipitation, cloud, icing.").
 		Build()
 
 	mcp.AddTool(tool, func(ctx context.Context, _ map[string]any) (*mcpadapter.CallToolResult, error) {
@@ -118,12 +116,9 @@ func activeRunway(ctx context.Context, src live.Source, icao string) (*airport.L
 
 func registerGetActiveRunway(mcp *mcpadapter.Server, src live.Source) {
 	tool := mcpadapter.NewTool("get_active_runway").
-		Description("Work out the runways in use at an airport as a tower would: the preferential runway if the wind allows, "+
-			"else the one with the most headwind, within tailwind and crosswind limits (gusts included). Returns the "+
-			"departure and arrival runway, wind components, whether an ILS or visual approach is expected and the best "+
-			"published approach, the transition altitude and level. Uses the weather at the user aircraft, so it is "+
-			"right for the airport the aircraft is at or near.").
-		StringParam("icao", "Airport ICAO code (required).").
+		Description("Runways in use at an airport for the wind at the user aircraft, with wind components, expected "+
+			"approach and transition altitude/level.").
+		StringParam("icao", "Airport ICAO").
 		Required("icao").
 		Build()
 
@@ -155,11 +150,9 @@ func registerGetActiveRunway(mcp *mcpadapter.Server, src live.Source) {
 
 func registerGetATIS(mcp *mcpadapter.Server, src live.Source) {
 	tool := mcpadapter.NewTool("get_atis").
-		Description("Compose the ATIS broadcast of an airport from the simulator's weather and the runway in use: information "+
-			"letter, time, runways, approach, wind, visibility, temperature, QNH, transition level. Returns the text as "+
-			"written and as spoken (phonetic, for text-to-speech). Uses the weather at the user aircraft.").
-		StringParam("icao", "Airport ICAO code (required).").
-		StringParam("letter", "Information letter A–Z (default A).").
+		Description("An airport's ATIS from the sim weather and runway in use, as text and as spoken.").
+		StringParam("icao", "Airport ICAO").
+		StringParam("letter", "Information letter (default A)").
 		Required("icao").
 		Build()
 
@@ -230,12 +223,10 @@ func fixJSON(r nav.NavResult) fixOut {
 
 func registerGetFix(mcp *mcpadapter.Server, src live.Source) {
 	tool := mcpadapter.NewTool("get_fix").
-		Description("Look up an enroute fix in the simulator's navdata: a waypoint, VOR or NDB with its position, frequency "+
-			"(MHz for a VOR, kHz for an NDB), name, and the airways through it (previous fix, airway, next fix). "+
-			"Identifiers repeat between waypoints, VORs and NDBs; without kind all three are tried.").
-		StringParam("ident", "Fix identifier, e.g. \"VOZ\", \"GOLOP\" (required).").
-		StringParam("region", "ICAO region, e.g. \"LK\" (recommended: identifiers repeat worldwide).").
-		StringParam("kind", "W (waypoint), V (VOR) or N (NDB). Default: all.").
+		Description("Look up a waypoint, VOR or NDB with its position, frequency and airways.").
+		StringParam("ident", "e.g. \"VOZ\"").
+		StringParam("region", "ICAO region, e.g. \"LK\"").
+		StringParam("kind", "W, V or N (default all)").
 		Required("ident").
 		Build()
 
@@ -319,14 +310,10 @@ func midpoint(a, b airport.LatLon) (float64, float64) {
 
 func registerFindAirwayRoute(mcp *mcpadapter.Server, src live.Source) {
 	tool := mcpadapter.NewTool("find_airway_route").
-		Description("Find the airway route between two enroute fixes over the simulator's airway network (A*, with a penalty "+
-			"for every change of airway). The network is crawled from the simulator on demand around the two fixes (a few "+
-			"seconds; cached). Returns the ICAO route string (\"VOZ M725 OKF\"), each step with its airway and leg distance, "+
-			"the route and direct distances. When the fixes are not connected or the airways are over max_stretch times the "+
-			"direct distance, the route is direct (DCT).").
-		StringParam("from", "Start fix as IDENT, IDENT.REGION or IDENT.REGION.KIND, e.g. \"VOZ.LK.V\" (required).").
-		StringParam("to", "End fix, same format (required).").
-		NumberParam("max_stretch", "Fly direct when the airways are longer than this times the direct distance (default 1.5; 0 = always airways).").
+		Description("Airway route between two fixes (crawled on demand, cached); direct when none or too long.").
+		StringParam("from", "IDENT[.REGION[.KIND]], e.g. \"VOZ.LK.V\"").
+		StringParam("to", "End fix, same format").
+		NumberParam("max_stretch", "Direct above this × direct distance (default 1.5; 0 always airways)").
 		Required("from", "to").
 		Build()
 
@@ -453,21 +440,18 @@ type planWaypoint struct {
 
 func registerPlanFlight(mcp *mcpadapter.Server, src live.Source) {
 	tool := mcpadapter.NewTool("plan_flight").
-		Description("Plan an IFR flight between two airports from the simulator's navdata: runways in use (weather at the user "+
-			"aircraft for the departure), SID, airways (crawled on demand; direct where they detour), STAR and best "+
-			"approach, semicircular cruise level, vertical profile with TOC/TOD, distance, time and fuel for the aircraft "+
-			"type. Returns the ICAO route and the waypoints; optionally the MSFS .pln file, and load_into_sim=true loads it "+
-			"as the user aircraft's flight plan (changes the simulator's flight plan). Takes up to a minute the first time.").
-		StringParam("departure", "Departure airport ICAO (required).").
-		StringParam("arrival", "Arrival airport ICAO (required).").
-		StringParam("aircraft_type", "ICAO type designator, e.g. \"A20N\", \"B738\", \"B77W\" (default A320: planning speeds, fuel flow).").
-		NumberParam("cruise_fl", "Cruise flight level, e.g. 340 (default: chosen by direction and distance).").
-		StringParam("departure_runway", "Departure runway (default: in use for the weather).").
-		StringParam("arrival_runway", "Arrival runway (default: in use for calm wind, the longest).").
-		BoolParam("airways", "Route over airways (default true); false plans direct between SID and STAR.").
-		NumberParam("alternate_fuel_kg", "Alternate fuel to add, kg (default 0).").
-		BoolParam("include_pln", "Include the .pln file text in the result (default false).").
-		BoolParam("load_into_sim", "Load the plan into the simulator as the user aircraft's flight plan (default false).").
+		Description("Plan an IFR flight: runways, SID, airways, STAR, approach, cruise level, profile, time and fuel. "+
+			"load_into_sim=true sets the sim's flight plan.").
+		StringParam("departure", "Departure ICAO").
+		StringParam("arrival", "Arrival ICAO").
+		StringParam("aircraft_type", "ICAO type (default A320)").
+		NumberParam("cruise_fl", "e.g. 340 (default: chosen)").
+		StringParam("departure_runway", "Default: in use").
+		StringParam("arrival_runway", "Default: in use").
+		BoolParam("airways", "Use airways (default true)").
+		NumberParam("alternate_fuel_kg", "Extra fuel, kg (default 0)").
+		BoolParam("include_pln", "Include the .pln text (default false)").
+		BoolParam("load_into_sim", "Load into the sim (default false)").
 		Required("departure", "arrival").
 		Build()
 

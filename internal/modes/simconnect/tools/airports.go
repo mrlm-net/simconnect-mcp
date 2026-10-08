@@ -26,14 +26,9 @@ func RegisterAirportTools(mcp *mcpadapter.Server, b bridge.Bridge) {
 
 func registerGetAirportsInRange(mcp *mcpadapter.Server, b bridge.Bridge) {
 	tool := mcpadapter.NewTool("get_airports_in_range").
-		Description("Return a list of airports in the simulator's reality bubble (loaded scenery area), "+
-			"sorted by distance from the player aircraft. Each entry includes ICAO code, region, "+
-			"lat/lon, altitude (metres MSL), and distance (km). "+
-			"By default only standard ICAO airports are returned (4 uppercase letters, e.g. EDDM). "+
-			"Set expanded=true to include all entries (private fields, military strips, simulator-only identifiers). "+
-			"Use radius_km to limit results; defaults to 50 km, maximum 500 km.").
-		NumberParam("radius_km", "Maximum distance from player aircraft in kilometres (default 50, max 500).").
-		BoolParam("expanded", "When true, include non-standard identifiers (private fields, simulator-only codes). Default false.").
+		Description("Airports in the reality bubble, nearest the user aircraft first.").
+		NumberParam("radius_km", "km (default 50, max 500)").
+		BoolParam("expanded", "Include non-ICAO identifiers (default false)").
 		Build()
 
 	mcp.AddTool(tool, func(ctx context.Context, args map[string]any) (*mcpadapter.CallToolResult, error) {
@@ -87,8 +82,7 @@ func registerGetAirportsInRange(mcp *mcpadapter.Server, b bridge.Bridge) {
 
 func registerGetNearestAirport(mcp *mcpadapter.Server, b bridge.Bridge) {
 	tool := mcpadapter.NewTool("get_nearest_airport").
-		Description("Return the single closest airport to the player aircraft. " +
-			"Includes ICAO code, region, lat/lon, altitude (metres MSL), and distance (km).").
+		Description("The airport nearest the user aircraft.").
 		Build()
 
 	mcp.AddTool(tool, func(ctx context.Context, args map[string]any) (*mcpadapter.CallToolResult, error) {
@@ -116,16 +110,11 @@ func registerGetNearestAirport(mcp *mcpadapter.Server, b bridge.Bridge) {
 
 func registerGetAirportDetails(mcp *mcpadapter.Server, b bridge.Bridge) {
 	tool := mcpadapter.NewTool("get_airport_details").
-		Description("Return detailed facility data for a specific airport by ICAO code. "+
-			"Default response includes name, lat/lon, altitude (metres MSL), magnetic variation, closed status, "+
-			"runways (heading, length_m, width_m, surface), and ATC frequencies. "+
-			"Set expanded=true to also include parking stands, helipads, instrument approaches, "+
-			"departure procedures (SIDs), and arrival procedures (STARs). "+
-			"Leave region empty (default) for best results — SimConnect's region filter is strict and "+
-			"will silently fail if the region code does not match the simulator's internal value exactly.").
-		StringParam("icao", "ICAO airport code (e.g. \"LPMA\", \"EDDM\").").
-		StringParam("region", "Optional ICAO region code (e.g. \"LP\", \"ED\"). Leave empty to match any region.").
-		BoolParam("expanded", "When true, also include stands, helipads, approaches, SIDs, and STARs. Default false.").
+		Description("An airport's facility data: position, runways, frequencies; expanded adds stands, helipads, "+
+			"approaches, SIDs and STARs.").
+		StringParam("icao", "Airport ICAO").
+		StringParam("region", "ICAO region; best left empty").
+		BoolParam("expanded", "Add stands, helipads and procedures (default false)").
 		Build()
 
 	mcp.AddTool(tool, func(ctx context.Context, args map[string]any) (*mcpadapter.CallToolResult, error) {
@@ -160,16 +149,10 @@ func registerGetAirportDetails(mcp *mcpadapter.Server, b bridge.Bridge) {
 
 func registerGetAirportTaxiways(mcp *mcpadapter.Server, b bridge.Bridge) {
 	tool := mcpadapter.NewTool("get_airport_taxiways").
-		Description("Return the taxiway network graph for a specific airport by ICAO code. "+
-			"The response contains three correlated arrays: names (taxiway letter strings), "+
-			"paths (directed edges — each path references start_node and end_node indices into points, "+
-			"and a name_index into names), and points (graph nodes including hold-short positions). "+
-			"Large airports (EDDM, KJFK) may have 800–1200 paths; use max_paths to limit response size. "+
-			"When truncated, the response includes truncated=true and truncated_to fields. "+
-			"Leave region empty (default) for best results.").
-		StringParam("icao", "ICAO airport code (e.g. \"EDDM\", \"KLAX\").").
-		StringParam("region", "Optional ICAO region code (e.g. \"ED\", \"K6\"). Leave empty to match any region.").
-		NumberParam("max_paths", "Maximum number of paths to return (default 500, range 1–2000). When truncated, response includes truncated=true and truncated_to fields.").
+		Description("An airport's taxiway graph: names, paths (edges) and points (nodes).").
+		StringParam("icao", "Airport ICAO").
+		StringParam("region", "ICAO region; best left empty").
+		NumberParam("max_paths", "1–2000 (default 500)").
 		Build()
 
 	mcp.AddTool(tool, func(ctx context.Context, args map[string]any) (*mcpadapter.CallToolResult, error) {
@@ -230,11 +213,9 @@ func registerGetAirportTaxiways(mcp *mcpadapter.Server, b bridge.Bridge) {
 
 func registerGetTaxiwayNames(mcp *mcpadapter.Server, b bridge.Bridge) {
 	tool := mcpadapter.NewTool("get_taxiway_names").
-		Description("Return only the taxiway letter/name strings for an airport by ICAO code. "+
-			"Lightweight alternative to get_airport_taxiways when only taxiway names are needed. "+
-			"Leave region empty (default) for best results.").
-		StringParam("icao", "ICAO airport code (e.g. \"EDDM\", \"KLAX\").").
-		StringParam("region", "Optional ICAO region code (e.g. \"ED\", \"K6\"). Leave empty to match any region.").
+		Description("An airport's taxiway names only.").
+		StringParam("icao", "Airport ICAO").
+		StringParam("region", "ICAO region; best left empty").
 		Build()
 
 	mcp.AddTool(tool, func(ctx context.Context, args map[string]any) (*mcpadapter.CallToolResult, error) {
@@ -272,13 +253,9 @@ func registerGetTaxiwayNames(mcp *mcpadapter.Server, b bridge.Bridge) {
 
 func registerGetAirportParkings(mcp *mcpadapter.Server, b bridge.Bridge) {
 	tool := mcpadapter.NewTool("get_airport_parkings").
-		Description("Return all parking stands, gates, and ramps at a specific airport by ICAO code. "+
-			"Each entry includes type, name, suffix, number, heading (degrees true), radius (metres), "+
-			"and position offsets (bias_x_m, bias_z_m) from the airport reference point. "+
-			"Returns the full TAXI_PARKING record — more fields than the stands array in get_airport_details. "+
-			"Leave region empty (default) for best results.").
-		StringParam("icao", "ICAO airport code (e.g. \"EDDM\", \"KLAX\").").
-		StringParam("region", "Optional ICAO region code (e.g. \"ED\", \"K6\"). Leave empty to match any region.").
+		Description("An airport's parking stands, gates and ramps (full TAXI_PARKING records).").
+		StringParam("icao", "Airport ICAO").
+		StringParam("region", "ICAO region; best left empty").
 		Build()
 
 	mcp.AddTool(tool, func(ctx context.Context, args map[string]any) (*mcpadapter.CallToolResult, error) {

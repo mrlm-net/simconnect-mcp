@@ -13,13 +13,8 @@ import (
 // RegisterEnrichedTrafficTool registers the get_traffic_with_phase MCP tool.
 func RegisterEnrichedTrafficTool(mcp *mcpadapter.Server, b bridge.Bridge) {
 	tool := mcpadapter.NewTool("get_traffic_with_phase").
-		Description("Return nearby aircraft with enriched telemetry: vertical speed (fpm), " +
-			"actual ground track (vs magnetic heading), inferred flight phase " +
-			"(PARKED/TAXI/CLIMB/CLIMB SHALLOW/LEVEL/DESCENT/APPROACH/FINAL), " +
-			"parking state, runway occupancy, and aircraft category. " +
-			"Uses a single SimConnect round-trip — same latency as get_nearby_traffic. " +
-			"Radius defaults to 25 km if not specified.").
-		NumberParam("radius_meters", "Search radius in metres (default 25000, max 200000).").
+		Description("Nearby aircraft with vertical speed, track, inferred flight phase, parking and runway state.").
+		NumberParam("radius_meters", "Metres (default 25000, max 200000)").
 		Build()
 
 	mcp.AddTool(tool, func(ctx context.Context, args map[string]any) (*mcpadapter.CallToolResult, error) {

@@ -1,5 +1,7 @@
 # Technical Architecture — Milestone 1: SimConnect MCP Documentation Mode
 
+> Historic plan (Feb 2026), implemented; differs from the code in places — e.g. the MCP layer is hand-written in `internal/mcpadapter`, not mcp-go. See [CLAUDE.md](../../CLAUDE.md) for the current layout.
+
 **Date:** 2026-02-22
 **Status:** Approved
 **Branch:** `milestone/1-docs`

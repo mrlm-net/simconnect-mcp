@@ -15,9 +15,9 @@ import (
 // The tool transmits a named simulator input event to the running simulator instance.
 func RegisterEventTools(mcp *mcpadapter.Server, b bridge.Bridge) {
 	tool := mcpadapter.NewTool("transmit_event").
-		Description("Transmit a named simulator input event to the running simulator.").
-		StringParam("name", "SimConnect event name, e.g. 'LANDING_LIGHTS_TOGGLE'").
-		NumberParam("value", "Optional DWORD value for parameterized events (default 0, range 0-4294967295)").
+		Description("Transmit a key event to the simulator.").
+		StringParam("name", "e.g. 'LANDING_LIGHTS_TOGGLE'").
+		NumberParam("value", "DWORD parameter (default 0)").
 		Required("name").
 		Build()
 

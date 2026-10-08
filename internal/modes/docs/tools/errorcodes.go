@@ -13,9 +13,9 @@ import (
 // RegisterErrorCodeTools registers list_error_codes and get_error_code on s.
 func RegisterErrorCodeTools(s *mcpadapter.Server, store corpus.DocStore, liveScrape bool) {
 	listBuilder := mcpadapter.NewTool("list_error_codes").
-		Description("List SimConnect exception/error codes. Paginate with page and page_size.").
-		NumberParam("page", "Page number, 1-indexed (default 1)").
-		NumberParam("page_size", "Results per page, max 100 (default 20)")
+		Description("List SimConnect exception codes; paginated.").
+		NumberParam("page", "Page, 1-based (default 1)").
+		NumberParam("page_size", "Per page, max 100 (default 20)")
 	if liveScrape {
 		listBuilder = listBuilder.BoolParam("confirm_live_scraping", "Set to true to confirm you accept responsibility for live HTTP requests to external documentation sites. Required when DOCS_LIVE_SCRAPE=true.")
 	}
@@ -38,9 +38,9 @@ func RegisterErrorCodeTools(s *mcpadapter.Server, store corpus.DocStore, liveScr
 	)
 
 	getBuilder := mcpadapter.NewTool("get_error_code").
-		Description("Get a SimConnect error code by name (e.g. \"SIMCONNECT_EXCEPTION_NONE\") or integer value (e.g. 0).").
-		StringParam("name", "Error code name (optional if value provided)").
-		NumberParam("value", "Integer error code value (optional if name provided)")
+		Description("Get a SimConnect exception code by name or value.").
+		StringParam("name", "e.g. \"SIMCONNECT_EXCEPTION_NONE\"").
+		NumberParam("value", "Integer value")
 	if liveScrape {
 		getBuilder = getBuilder.BoolParam("confirm_live_scraping", "Set to true to confirm you accept responsibility for live HTTP requests to external documentation sites. Required when DOCS_LIVE_SCRAPE=true.")
 	}

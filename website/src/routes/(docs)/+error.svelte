@@ -24,7 +24,7 @@
 		class="mb-6 inline-flex items-center gap-2 rounded-full border px-3.5 py-1 text-xs font-medium"
 		style="background-color: var(--color-bg-secondary); border-color: var(--color-border); color: var(--color-text-muted);"
 	>
-		<span class="inline-block h-2 w-2 rounded-full" style="background-color: #f85149;"></span>
+		<span class="inline-block h-2 w-2 rounded-full" style="background-color: var(--danger);"></span>
 		HTTP {page.status}
 	</div>
 
@@ -38,7 +38,7 @@
 	{#if is404}
 		<p
 			class="mb-3 font-mono text-sm font-semibold uppercase tracking-widest"
-			style="color: #f85149;"
+			style="color: var(--danger);"
 		>
 			{picked.code}
 		</p>
@@ -58,16 +58,14 @@
 		<a
 			href="{base}/"
 			data-sveltekit-reload
-			class="rounded-md border px-4 py-2 text-sm font-medium transition-colors"
-			style="background-color: var(--color-bg-secondary); border-color: var(--color-border); color: var(--color-text-primary);"
+			class="btn"
 		>
 			← Back to home
 		</a>
 		<a
 			href="{base}/docs/getting-started/"
 			data-sveltekit-reload
-			class="rounded-md px-4 py-2 text-sm font-medium transition-colors"
-			style="background-color: #1f6feb; color: #ffffff;"
+			class="btn btn-primary"
 		>
 			Getting started
 		</a>

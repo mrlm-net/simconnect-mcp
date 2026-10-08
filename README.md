@@ -1,5 +1,9 @@
 # SimConnect MCP
 
+[![Go Reference](https://pkg.go.dev/badge/github.com/mrlm-net/simconnect-mcp.svg)](https://pkg.go.dev/github.com/mrlm-net/simconnect-mcp)
+[![Docs](https://img.shields.io/badge/docs-simconnect--mcp.mrlm.net-3f7773)](https://simconnect-mcp.mrlm.net/)
+[![License: BSL 1.1 · non-commercial](https://img.shields.io/badge/license-BSL%201.1%20%C2%B7%20non--commercial-6c7480)](LICENSE)
+
 SimConnect MCP is a [Model Context Protocol (MCP)](https://modelcontextprotocol.io) server for Microsoft Flight Simulator. AI assistants — Claude, GitHub Copilot, and others — can:
 
 - answer questions about SimVars, events, API functions, data structures and error codes from the SimConnect SDK documentation;

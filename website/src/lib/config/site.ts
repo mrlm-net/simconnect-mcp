@@ -11,5 +11,14 @@ export const siteConfig: SiteConfig = {
         height: 630
     },
     locale: 'en_US',
-    license: 'BUSL-1.1'
+    license: 'BUSL-1.1',
+    licenseLabel: 'BSL 1.1 · non-commercial',
+    since: 2024,
+    glyph: '>_',
+    nav: [
+        { title: 'Docs', href: '/docs/getting-started', match: '/docs' },
+        { title: 'AI Traffic', href: '/docs/ai-traffic' },
+        { title: 'Examples', href: '/docs/examples' },
+        { title: 'Changelog', href: '/docs/changelog' }
+    ]
 };

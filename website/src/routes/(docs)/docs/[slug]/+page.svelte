@@ -28,63 +28,27 @@
 
 <JsonLd schema={jsonLdSchema} />
 
-<div class="flex">
-	<article
-		class="flex-1 min-w-0 px-6 py-10 prose max-w-none"
-		style="color: var(--color-text-primary);"
-	>
+<div class="flex justify-center">
+	<article class="doc prose min-w-0 flex-1 px-6 py-10 sm:px-10 lg:py-14">
+		<p class="eyebrow not-prose mb-3">{data.siteConfig.title} docs</p>
 		<h1>{doc.title}</h1>
 
 		{@html doc.renderedContent}
 
-		<nav class="mt-12 flex justify-between gap-4 border-t pt-6 not-prose text-sm" style="border-color: var(--color-border);">
+		<nav class="not-prose mt-14 grid gap-3 sm:grid-cols-2" aria-label="Previous and next page">
 			<div>
 				{#if data.prev}
-					<a
-						href="{base}/docs/{data.prev.slug}"
-						class="flex items-center gap-2 transition-colors"
-						style="color: var(--color-link);"
-					>
-						<svg
-							xmlns="http://www.w3.org/2000/svg"
-							width="16"
-							height="16"
-							viewBox="0 0 24 24"
-							fill="none"
-							stroke="currentColor"
-							stroke-width="2"
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							aria-hidden="true"
-						>
-							<polyline points="15 18 9 12 15 6" />
-						</svg>
-						<span>{data.prev.title}</span>
+					<a href="{base}/docs/{data.prev.slug}" class="card block px-4 py-3">
+						<span class="eyebrow block">← Previous</span>
+						<span class="text-sm font-medium" style="color: var(--text);">{data.prev.title}</span>
 					</a>
 				{/if}
 			</div>
 			<div>
 				{#if data.next}
-					<a
-						href="{base}/docs/{data.next.slug}"
-						class="flex items-center gap-2 transition-colors"
-						style="color: var(--color-link);"
-					>
-						<span>{data.next.title}</span>
-						<svg
-							xmlns="http://www.w3.org/2000/svg"
-							width="16"
-							height="16"
-							viewBox="0 0 24 24"
-							fill="none"
-							stroke="currentColor"
-							stroke-width="2"
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							aria-hidden="true"
-						>
-							<polyline points="9 18 15 12 9 6" />
-						</svg>
+					<a href="{base}/docs/{data.next.slug}" class="card block px-4 py-3 text-right">
+						<span class="eyebrow block">Next →</span>
+						<span class="text-sm font-medium" style="color: var(--text);">{data.next.title}</span>
 					</a>
 				{/if}
 			</div>
@@ -92,8 +56,14 @@
 	</article>
 
 	{#if doc.headings.length > 0}
-		<aside class="hidden xl:block sticky top-16 h-[calc(100vh-4rem)] overflow-y-auto shrink-0">
+		<aside class="sticky top-16 hidden h-[calc(100vh-4rem)] shrink-0 overflow-y-auto xl:block">
 			<TableOfContents headings={doc.headings} />
 		</aside>
 	{/if}
 </div>
+
+<style>
+	.doc {
+		max-width: 52rem;
+	}
+</style>

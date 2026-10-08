@@ -4,7 +4,7 @@ All notable changes to SimConnect MCP are documented here. The format follows [K
 
 Full release history with release notes is also available on the [GitHub Releases page](https://github.com/mrlm-net/simconnect-mcp/releases).
 
-## [Unreleased]
+## [0.12.0] - 2026-10-08
 
 On simconnect v0.29.0: GSX Pro's state and L:vars of your own, take-off speeds for the user aircraft, traffic that gives way to a crossing tail, climbs to its cleared level and shuts down when parked, aircraft that follow one another on the ground, no SimConnect exceptions at start-up, and a contact for commercial use.
 

@@ -4,6 +4,15 @@ All notable changes to SimConnect MCP are documented here. The format follows [K
 
 Full release history with release notes is also available on the [GitHub Releases page](https://github.com/mrlm-net/simconnect-mcp/releases).
 
+## [0.14.1] - 2026-10-08
+
+### Changed
+
+- Upgraded `github.com/mrlm-net/simconnect` from v0.30.1 to v0.31.1. With it:
+  - departures plan their pushback in the background, so a spawn or clearance no longer waits on it;
+  - aircraft on the ground are placed at their rest pitch, so no more height shake on the stand and while taxiing;
+  - the library guides were reorganised: `guide-traffic` is now `engine-ai-objects`, the engine and manager API guides are merged into their usage guides, and `lvars` and `utilities` are new (still 46 guides).
+
 ## [0.14.0] - 2026-10-08
 
 The add-on camera: film our traffic, follow or view any aircraft including your own, play scripted departure and arrival scenes, and give the camera back.

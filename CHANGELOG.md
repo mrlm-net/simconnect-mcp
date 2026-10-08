@@ -4,7 +4,7 @@ All notable changes to SimConnect MCP are documented here. The format follows [K
 
 Full release history with release notes is also available on the [GitHub Releases page](https://github.com/mrlm-net/simconnect-mcp/releases).
 
-## [Unreleased]
+## [0.13.1] - 2026-10-08
 
 ### Changed
 

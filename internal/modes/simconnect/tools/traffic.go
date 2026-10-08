@@ -13,10 +13,8 @@ import (
 // RegisterTrafficTool registers the get_nearby_traffic MCP tool.
 func RegisterTrafficTool(mcp *mcpadapter.Server, b bridge.Bridge) {
 	tool := mcpadapter.NewTool("get_nearby_traffic").
-		Description("Return a list of aircraft (AI and player) within a given radius of the user aircraft. "+
-			"Each entry includes object ID, title, ATC callsign, airline, position, speed, heading, and on-ground flag. "+
-			"The player aircraft is always included. Radius defaults to 25 km if not specified.").
-		NumberParam("radius_meters", "Search radius in metres (default 25000, max 200000).").
+		Description("Aircraft (AI and the user's) within a radius of the user aircraft.").
+		NumberParam("radius_meters", "Metres (default 25000, max 200000)").
 		Build()
 
 	mcp.AddTool(tool, func(ctx context.Context, args map[string]any) (*mcpadapter.CallToolResult, error) {

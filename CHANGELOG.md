@@ -4,6 +4,27 @@ All notable changes to SimConnect MCP are documented here. The format follows [K
 
 Full release history with release notes is also available on the [GitHub Releases page](https://github.com/mrlm-net/simconnect-mcp/releases).
 
+## [Unreleased]
+
+### Changed
+
+- Tool and parameter descriptions shortened to one concise line each: `tools/list` is about 28 KB instead of 52 KB (≈7k fewer tokens per connect). Names, parameters, required flags and behaviour are unchanged; the detail is in the tool reference docs.
+- `docs/changelog.md` (the website's copy) is generated from `CHANGELOG.md` with `go generate ./tools/changelog/`.
+- README: commercial-use contact is support@mrlm.net, as on the website.
+- The milestone architecture plans moved to `docs/decisions/` with a note that they are historic.
+
+## [Unreleased]
+
+### Changed
+
+- Upgraded `github.com/mrlm-net/simconnect` from v0.29.0 to v0.30.0. With it:
+  - the tower answers check-ins: "continue approach" for an arrival not yet cleared to land, and "report ready for departure" or the departures ahead for one taxiing;
+  - a circuit arrival told to follow traffic waits behind it (orbit or another circuit) instead of turning base in front of it;
+  - "clear of conflict" says the level returned to, the ICAO way, and the controller answers "roger" to it and to "TCAS RA";
+  - an intersection departure requested on a stand left without a push plans its taxi from the stand;
+  - aircraft types are said by name (Dash 8, 737 MAX, A220, PC-12, Citation, Caravan);
+  - the GSX guide is listed under the packages section.
+
 ## [0.12.0] - 2026-10-08
 
 On simconnect v0.29.0: GSX Pro's state and L:vars of your own, take-off speeds for the user aircraft, traffic that gives way to a crossing tail, climbs to its cleared level and shuts down when parked, aircraft that follow one another on the ground, no SimConnect exceptions at start-up, and a contact for commercial use.

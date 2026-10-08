@@ -86,15 +86,11 @@ func summarise(ps []airport.Procedure) []procedureSummary {
 
 func registerGetAirportProcedures(mcp *mcpadapter.Server, src live.Source) {
 	tool := mcpadapter.NewTool("get_airport_procedures").
-		Description("List an airport's SIDs, STARs and instrument approaches from the simulator's navdata, or resolve one into "+
-			"the points it flies. Without name: every procedure (optionally only those of runway) with its runways and "+
-			"transitions. With name: the SID, STAR or approach as points in order — ident, position, ARINC 424 leg type, "+
-			"true course, altitude window (ft) and speed limit, IAF/FAF/MAP — for the runway and transition given. "+
-			"Also returns the magnetic variation. Unknown airports end in NOT_FOUND after about 30 s.").
-		StringParam("icao", "Airport ICAO code, e.g. \"LKPR\" (required).").
-		StringParam("runway", "Runway end, e.g. \"24\" or \"06L\". Filters the list; required to resolve a SID or STAR serving several runways.").
-		StringParam("name", "Procedure to resolve: a SID or STAR name (\"VOZ5M\") or an approach name (\"ILS 24\", \"RNAV 06 Z\").").
-		StringParam("transition", "Enroute transition of a SID/STAR, or the approach transition (IAF) of an approach.").
+		Description("List an airport's SIDs, STARs and approaches, or resolve one (name) into its points.").
+		StringParam("icao", "Airport ICAO").
+		StringParam("runway", "Runway end, e.g. \"24\"").
+		StringParam("name", "Procedure, e.g. \"VOZ5M\", \"ILS 24\"").
+		StringParam("transition", "Enroute or approach transition").
 		Required("icao").
 		Build()
 
@@ -228,21 +224,18 @@ type taxiRoute struct {
 
 func registerPlanTaxiRoute(mcp *mcpadapter.Server, src live.Source) {
 	tool := mcpadapter.NewTool("plan_taxi_route").
-		Description("Plan a taxi route at an airport on the simulator's taxi network, the way ATC would give it: fewer turns, "+
-			"no needless runway crossings, taxiways the aircraft fits. direction=departure: from the parking stand to the "+
-			"holding point of the runway (full length, or at entry). direction=arrival: from a runway exit (exit, or the one "+
-			"reached after rollout_m) to the stand. Returns the taxi instruction, length, taxiways in order, runway "+
-			"crossings, the holding point, and optionally the points. Use get_runway_entries_exits and find_stands for names.").
-		StringParam("icao", "Airport ICAO code (required).").
-		StringParam("parking", "Stand label, e.g. \"C22\", \"S22A\" (required).").
-		StringParam("runway", "Runway end, e.g. \"24\" (required).").
-		StringParam("direction", "\"departure\" (default) or \"arrival\".").
-		StringParam("entry", "Departure: the taxiway to enter the runway by (intersection departure), e.g. \"B\".").
-		StringParam("exit", "Arrival: the taxiway to vacate the runway by, e.g. \"D\".").
-		NumberParam("rollout_m", "Arrival without exit: landing roll in meters before vacating (default 1500).").
-		StringParam("via", "Taxiways to follow in order, e.g. \"F, L\".").
-		NumberParam("wingspan_m", "Aircraft wing span in meters: keeps to taxiways it fits (e.g. 35.8 for an A320, 64.8 for a 777-300ER).").
-		BoolParam("include_points", "Include the route's points (lat/lon). Default false.").
+		Description("Plan an ATC-style taxi route: stand to runway holding point (departure) or runway exit to stand "+
+			"(arrival).").
+		StringParam("icao", "Airport ICAO").
+		StringParam("parking", "Stand label, e.g. \"C22\"").
+		StringParam("runway", "Runway end, e.g. \"24\"").
+		StringParam("direction", "departure (default) or arrival").
+		StringParam("entry", "Departure: entry taxiway").
+		StringParam("exit", "Arrival: exit taxiway").
+		NumberParam("rollout_m", "Arrival without exit: roll, m (default 1500)").
+		StringParam("via", "Taxiways in order, e.g. \"F, L\"").
+		NumberParam("wingspan_m", "Wing span, m").
+		BoolParam("include_points", "Include lat/lon points (default false)").
 		Required("icao", "parking", "runway").
 		Build()
 
@@ -361,11 +354,9 @@ func taxiInstruction(r taxiRoute) string {
 
 func registerGetRunwayEntriesExits(mcp *mcpadapter.Server, src live.Source) {
 	tool := mcpadapter.NewTool("get_runway_entries_exits").
-		Description("List the taxiways onto a runway end for departures (nearest the threshold first, with the runway length "+
-			"remaining ahead) and the exits for landings on it (distance from the threshold, angle, high-speed, side). "+
-			"Names feed plan_taxi_route's entry and exit.").
-		StringParam("icao", "Airport ICAO code (required).").
-		StringParam("runway", "Runway end, e.g. \"24\" (required).").
+		Description("A runway end's entry taxiways (departures) and exits (landings), for plan_taxi_route.").
+		StringParam("icao", "Airport ICAO").
+		StringParam("runway", "Runway end, e.g. \"24\"").
 		Required("icao", "runway").
 		Build()
 
@@ -416,14 +407,12 @@ func registerGetRunwayEntriesExits(mcp *mcpadapter.Server, src live.Source) {
 
 func registerFindStands(mcp *mcpadapter.Server, src live.Source) {
 	tool := mcpadapter.NewTool("find_stands").
-		Description("Find parking stands at an airport that fit an aircraft: stand label, type, size class (small/medium/heavy), "+
-			"radius, heading, the airlines the scenery assigns, and the stands it overlaps (split or alternate stands). "+
-			"Filter by wing span, airline (ICAO code, e.g. \"DLH\"; stands without airlines serve any) and gates only.").
-		StringParam("icao", "Airport ICAO code (required).").
-		NumberParam("wingspan_m", "Aircraft wing span in meters (default 0: any stand).").
-		StringParam("airline", "Airline ICAO code the stand must serve.").
-		BoolParam("gates_only", "Only gates (no ramps). Default false.").
-		NumberParam("limit", "Maximum stands, 1–500 (default 100).").
+		Description("Find an airport's stands that fit a wing span, airline or gates only.").
+		StringParam("icao", "Airport ICAO").
+		NumberParam("wingspan_m", "Wing span, m (default 0: any)").
+		StringParam("airline", "Airline ICAO, e.g. \"DLH\"").
+		BoolParam("gates_only", "Gates only (default false)").
+		NumberParam("limit", "1–500 (default 100)").
 		Required("icao").
 		Build()
 

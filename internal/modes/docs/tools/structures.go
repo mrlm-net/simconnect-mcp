@@ -12,9 +12,9 @@ import (
 // RegisterStructureTools registers list_structures and get_structure on s.
 func RegisterStructureTools(s *mcpadapter.Server, store corpus.DocStore, liveScrape bool) {
 	listBuilder := mcpadapter.NewTool("list_structures").
-		Description("List SimConnect data structures. Paginate with page and page_size.").
-		NumberParam("page", "Page number, 1-indexed (default 1)").
-		NumberParam("page_size", "Results per page, max 100 (default 20)")
+		Description("List SimConnect data structures; paginated.").
+		NumberParam("page", "Page, 1-based (default 1)").
+		NumberParam("page_size", "Per page, max 100 (default 20)")
 	if liveScrape {
 		listBuilder = listBuilder.BoolParam("confirm_live_scraping", "Set to true to confirm you accept responsibility for live HTTP requests to external documentation sites. Required when DOCS_LIVE_SCRAPE=true.")
 	}
@@ -37,8 +37,8 @@ func RegisterStructureTools(s *mcpadapter.Server, store corpus.DocStore, liveScr
 	)
 
 	getBuilder := mcpadapter.NewTool("get_structure").
-		Description("Get a single SimConnect data structure by name (case-insensitive).").
-		StringParam("name", "Structure name, e.g. \"SIMCONNECT_DATA_INITPOSITION\"").
+		Description("Get a data structure's documentation by name (case-insensitive).").
+		StringParam("name", "e.g. \"SIMCONNECT_DATA_INITPOSITION\"").
 		Required("name")
 	if liveScrape {
 		getBuilder = getBuilder.BoolParam("confirm_live_scraping", "Set to true to confirm you accept responsibility for live HTTP requests to external documentation sites. Required when DOCS_LIVE_SCRAPE=true.")

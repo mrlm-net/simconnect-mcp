@@ -14,12 +14,10 @@ import (
 // The tool writes a writable numeric simulation variable to the user aircraft.
 func RegisterSetSimVarTool(mcp *mcpadapter.Server, b bridge.Bridge) {
 	tool := mcpadapter.NewTool("set_simvar_value").
-		Description("Write a numeric simulation variable to the user aircraft. " +
-			"Only writable SimVars (e.g. 'AUTOPILOT ALTITUDE LOCK VAR', 'AUTOPILOT AIRSPEED HOLD VAR') will take effect. " +
-			"Use get_simvar (docs tool) to verify whether a variable is settable.").
-		StringParam("name", "SimVar name, e.g. 'AUTOPILOT ALTITUDE LOCK VAR'").
-		StringParam("unit", "Unit string, e.g. 'feet'").
-		NumberParam("value", "Numeric value to write").
+		Description("Write a numeric, writable SimVar on the user aircraft.").
+		StringParam("name", "e.g. 'AUTOPILOT ALTITUDE LOCK VAR'").
+		StringParam("unit", "e.g. 'feet'").
+		NumberParam("value", "Value to write").
 		Required("name", "unit", "value").
 		Build()
 

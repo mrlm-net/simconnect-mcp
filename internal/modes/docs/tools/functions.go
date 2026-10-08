@@ -12,9 +12,9 @@ import (
 // RegisterFunctionTools registers list_functions and get_function on s.
 func RegisterFunctionTools(s *mcpadapter.Server, store corpus.DocStore, liveScrape bool) {
 	listBuilder := mcpadapter.NewTool("list_functions").
-		Description("List SimConnect API functions. Paginate with page and page_size.").
-		NumberParam("page", "Page number, 1-indexed (default 1)").
-		NumberParam("page_size", "Results per page, max 100 (default 20)")
+		Description("List SimConnect API functions; paginated.").
+		NumberParam("page", "Page, 1-based (default 1)").
+		NumberParam("page_size", "Per page, max 100 (default 20)")
 	if liveScrape {
 		listBuilder = listBuilder.BoolParam("confirm_live_scraping", "Set to true to confirm you accept responsibility for live HTTP requests to external documentation sites. Required when DOCS_LIVE_SCRAPE=true.")
 	}
@@ -37,8 +37,8 @@ func RegisterFunctionTools(s *mcpadapter.Server, store corpus.DocStore, liveScra
 	)
 
 	getBuilder := mcpadapter.NewTool("get_function").
-		Description("Get a single SimConnect API function by name (case-insensitive).").
-		StringParam("name", "Function name, e.g. \"SimConnect_Open\"").
+		Description("Get an API function's documentation by name (case-insensitive).").
+		StringParam("name", "e.g. \"SimConnect_Open\"").
 		Required("name")
 	if liveScrape {
 		getBuilder = getBuilder.BoolParam("confirm_live_scraping", "Set to true to confirm you accept responsibility for live HTTP requests to external documentation sites. Required when DOCS_LIVE_SCRAPE=true.")

@@ -38,11 +38,8 @@ var lvarNameRe = regexp.MustCompile(`^(L:)?[A-Za-z_][A-Za-z0-9_:.]{0,127}$`)
 
 func registerGetGSXState(mcp *mcpadapter.Server, ac live.Aircraft) {
 	tool := mcpadapter.NewTool("get_gsx_state").
-		Description("GSX Pro's state for the user aircraft, from the L:vars its manual documents (the library's pkg/gsx): " +
-			"whether GSX runs; each service's state (boarding, deboarding, catering, refueling, departure/pushback, de-ice: " +
-			"callable, not here, bypassed, requested, performing, completed); passengers to board, boarded and deboarded; " +
-			"cargo progress; the doors GSX waits for; the fuel hose and counter; the pushback freeze and bypass pin; pilots " +
-			"and crew on board; the selected gate; the de-icing fluid. Without GSX every value is 0 and running is false.").
+		Description("GSX Pro's state from its L:vars: services, passengers, cargo, doors, fuel, pushback, crew, gate, " +
+			"de-ice.").
 		Build()
 
 	mcp.AddTool(tool, func(ctx context.Context, args map[string]any) (*mcpadapter.CallToolResult, error) {
@@ -79,13 +76,9 @@ func registerGetGSXState(mcp *mcpadapter.Server, ac live.Aircraft) {
 
 func registerSetLVar(mcp *mcpadapter.Server, ac live.Aircraft) {
 	tool := mcpadapter.NewTool("set_lvar").
-		Description("Write an L:var (local variable) on the user aircraft as a number (the library's pkg/lvars): an "+
-			"aircraft's own switch or setting (e.g. the Fenix's \"L:S_OH_EXT_LT_STROBE\"), a GSX L:var add-ons may write, or "+
-			"a new variable of your own, which every other client can then read. Read it back with get_simvar_value "+
-			"(name \"L:...\", unit \"number\"). What a write does depends on the aircraft: some switches follow their L:var, "+
-			"others only their own events. Up to 64 different names per simulator connection.").
-		StringParam("name", "The L:var, e.g. \"L:MY_FLAG\" or \"MY_FLAG\" (required).").
-		NumberParam("value", "The value to write (required).").
+		Description("Write an L:var on the user aircraft as a number; read back with get_simvar_value (unit \"number\").").
+		StringParam("name", "e.g. \"L:MY_FLAG\"").
+		NumberParam("value", "Value to write").
 		Required("name", "value").
 		Build()
 
@@ -128,12 +121,8 @@ type doorState struct {
 
 func registerGetAircraftSystems(mcp *mcpadapter.Server, ac live.Aircraft) {
 	tool := mcpadapter.NewTool("get_aircraft_systems").
-		Description("The user aircraft's systems, read through its systems profile (the library's pkg/systems: the " +
-			"standard SimVars, a shipped per-model profile on top — the Fenix A320 family reads its own L:vars — and local " +
-			"override files from SIMCONNECT_AIRCRAFT_PROFILES): power (battery, bus volts, avionics, external power), COM " +
-			"radios and frequencies, engines and starters, parking brake, lights, doors by name, transponder state and " +
-			"squawk, flaps and gear, chocks and GPU, cabin signs, the sim's pushback state, the profile in use and its " +
-			"package, every value the profile resolved, and which controls and ground services can be operated.").
+		Description("The user aircraft's systems through its profile: power, radios, engines, brakes, lights, doors, " +
+			"transponder, gear, ground services, take-off speeds, and what can be operated.").
 		Build()
 
 	mcp.AddTool(tool, func(ctx context.Context, args map[string]any) (*mcpadapter.CallToolResult, error) {
@@ -265,14 +254,9 @@ func controlName(name string, doors []string) (string, bool) {
 
 func registerSetAircraftControl(mcp *mcpadapter.Server, ac live.Aircraft) {
 	tool := mcpadapter.NewTool("set_aircraft_control").
-		Description("Operate one of the user aircraft's controls the way its systems profile says (standard key events, "+
-			"or the model's own variables or tablet, e.g. the Fenix's chocks and GPU): a door by its name (\"L1\", \"Door 2\") "+
-			"or door0…; chocks; gpu; parking_brake; seatbelts; ext_power; no_smoking (0 off, 1 auto, 2 on); cabin_call "+
-			"(a press). A toggle is sent only when the state differs. get_aircraft_systems lists the doors and what the "+
-			"aircraft can operate. Returns the control's state read back.").
-		StringParam("control", "The control (required): a door name or door0…, chocks, gpu, parking_brake, seatbelts, "+
-			"ext_power, no_smoking, cabin_call.").
-		StringParam("state", "on/open or off/closed (default on); for no_smoking also auto. Ignored for cabin_call.").
+		Description("Operate a user aircraft control via its profile; returns the state read back.").
+		StringParam("control", "Door name or door0…, chocks, gpu, parking_brake, seatbelts, ext_power, no_smoking, cabin_call").
+		StringParam("state", "on/open, off/closed (default on); no_smoking also auto").
 		Required("control").
 		Build()
 
@@ -325,11 +309,8 @@ func registerSetAircraftControl(mcp *mcpadapter.Server, ac live.Aircraft) {
 
 func registerRequestGroundService(mcp *mcpadapter.Server, ac live.Aircraft) {
 	tool := mcpadapter.NewTool("request_ground_service").
-		Description("Ask for one of the simulator's own ground services for the user aircraft (MSFS key events, or the "+
-			"model's own way where its profile gives one): jetway, stairs, baggage, catering, powerSupply, fuelTruck or "+
-			"pushback. jetway, stairs and pushback toggle: asking again sends them away. The sim decides whether the "+
-			"service can come here (a jetway needs a gate, a fuel truck a parking spot).").
-		StringParam("service", "jetway, stairs, baggage, catering, powerSupply, fuelTruck or pushback (required).").
+		Description("Ask for a sim ground service for the user aircraft; jetway, stairs and pushback toggle.").
+		StringParam("service", "jetway, stairs, baggage, catering, powerSupply, fuelTruck or pushback").
 		Required("service").
 		Build()
 
@@ -353,14 +334,11 @@ func registerRequestGroundService(mcp *mcpadapter.Server, ac live.Aircraft) {
 
 func registerSetRadio(mcp *mcpadapter.Server, ac live.Aircraft) {
 	tool := mcpadapter.NewTool("set_radio").
-		Description("Set the user aircraft's radios (the library's pkg/avionics): a COM radio's active or standby "+
-			"frequency (118.000–136.990 MHz, 8.33 kHz channels too), swap a COM's active and standby (on the Fenix its "+
-			"RMP transfer key), or the transponder code. The aircraft must be powered; a dark radio ignores it. "+
-			"get_aircraft_systems reads the result back.").
-		StringParam("action", "com_active, com_standby, com_swap or squawk (required).").
-		NumberParam("com", "COM radio 1, 2 or 3 (default 1).").
-		NumberParam("frequency_mhz", "Frequency in MHz, e.g. 134.56 (com_active, com_standby).").
-		StringParam("squawk", "Four octal digits, e.g. \"4521\" (squawk).").
+		Description("Set a COM frequency, swap a COM, or set the squawk on the (powered) user aircraft.").
+		StringParam("action", "com_active, com_standby, com_swap or squawk").
+		NumberParam("com", "1–3 (default 1)").
+		NumberParam("frequency_mhz", "MHz, e.g. 134.56").
+		StringParam("squawk", "Four octal digits").
 		Required("action").
 		Build()
 
@@ -397,11 +375,9 @@ func registerSetRadio(mcp *mcpadapter.Server, ac live.Aircraft) {
 
 func registerSetATCCallsign(mcp *mcpadapter.Server, ac live.Aircraft) {
 	tool := mcpadapter.NewTool("set_atc_callsign").
-		Description("Set the call sign the simulator's ATC uses for the user aircraft: ATC AIRLINE (the airline's call "+
-			"sign as said, e.g. \"Speedbird\", up to 63 characters) and ATC FLIGHT NUMBER (up to 7, e.g. \"123\"). "+
-			"Either may be left out to keep it. The registration (ATC ID) is separate and not changed.").
-		StringParam("airline", "The airline's spoken call sign, e.g. \"Czech Air Force\".").
-		StringParam("flight_number", "The flight number, e.g. \"007\".").
+		Description("Set the user aircraft's ATC airline call sign and flight number; omitted ones are kept.").
+		StringParam("airline", "Spoken call sign, e.g. \"Speedbird\"").
+		StringParam("flight_number", "Up to 7, e.g. \"123\"").
 		Build()
 
 	mcp.AddTool(tool, func(ctx context.Context, args map[string]any) (*mcpadapter.CallToolResult, error) {
@@ -428,15 +404,11 @@ func registerSetATCCallsign(mcp *mcpadapter.Server, ac live.Aircraft) {
 
 func registerListAddons(mcp *mcpadapter.Server, ac live.Aircraft) {
 	tool := mcpadapter.NewTool("list_addons").
-		Description("What is installed in Microsoft Flight Simulator on this machine (the library's pkg/addons; files "+
-			"only, no SimConnect needed): the install found (sim, store, packages folder) and its packages — Community, "+
-			"Official and streamed — with title, creator, content type and version. Streamed folders that read as an "+
-			"airport give its ICAO and publisher; a streamed folder shows the sim knows the package, not that it is "+
-			"owned. Filter by source or text; by default only Community packages are listed.").
-		StringParam("source", "Community, Community2024, Official, Streamed or all (default Community).").
-		StringParam("search", "Only packages whose folder, title, creator or ICAO contains this text.").
-		BoolParam("refresh", "Scan the disk again instead of the cached list (kept 5 minutes).").
-		NumberParam("limit", "At most this many packages (default 200).").
+		Description("Installed MSFS packages (Community, Official, Streamed) from disk; no SimConnect needed.").
+		StringParam("source", "Community (default), Community2024, Official, Streamed or all").
+		StringParam("search", "Text in folder, title, creator or ICAO").
+		BoolParam("refresh", "Rescan instead of the 5-min cache").
+		NumberParam("limit", "Default 200").
 		Build()
 
 	mcp.AddTool(tool, func(ctx context.Context, args map[string]any) (*mcpadapter.CallToolResult, error) {

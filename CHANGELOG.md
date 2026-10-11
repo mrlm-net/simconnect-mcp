@@ -4,6 +4,12 @@ All notable changes to SimConnect MCP are documented here. The format follows [K
 
 Full release history with release notes is also available on the [GitHub Releases page](https://github.com/mrlm-net/simconnect-mcp/releases).
 
+## [0.14.4] - 2026-10-11
+
+### Changed
+
+- Website: the home page carries social metadata (Open Graph and Twitter card), so shared links show a title, description and preview image. The preview image was a 1×1 placeholder; it is now the site card.
+
 ## [0.14.3] - 2026-10-11
 
 ### Changed

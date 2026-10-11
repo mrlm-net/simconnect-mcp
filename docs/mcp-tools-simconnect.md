@@ -1,13 +1,13 @@
 ---
 title: "MCP Tools — SimConnect Mode"
-description: Reference for the 63 live-data, user aircraft, AI traffic, airborne ATC and scheduled traffic MCP tools in SimConnect mode (MCP_MODE=simconnect, Windows only).
+description: Reference for the 70 live-data, user aircraft, AI traffic, airborne ATC and scheduled traffic MCP tools in SimConnect mode (MCP_MODE=simconnect, Windows only).
 order: 2
 section: reference
 ---
 
-All 63 MCP tools listed here are available when the server runs with `MCP_MODE=simconnect` (and, on Windows, with `MCP_MODE=both`, alongside the 15 docs tools — 78 in all). This mode provides live simulator data via the SimConnect SDK, and AI traffic under our control.
+All 70 MCP tools listed here are available when the server runs with `MCP_MODE=simconnect` (and, on Windows, with `MCP_MODE=both`, alongside the 15 docs tools — 85 in all). This mode provides live simulator data via the SimConnect SDK, and AI traffic under our control.
 
-**Both mode**: with `MCP_MODE=both` on Windows, the server registers these 63 tools alongside the 15 [docs-mode tools](/docs/mcp-tools-docs) — 78 tools in total — provided SimConnect opens at startup (10-second timeout). If the simulator cannot be reached, or on non-Windows platforms, both mode serves the 15 docs tools only; `simconnect_ready` in the `/health` response reports which case applies.
+**Both mode**: with `MCP_MODE=both` on Windows, the server registers these 70 tools alongside the 15 [docs-mode tools](/docs/mcp-tools-docs) — 85 tools in total — provided SimConnect opens at startup (10-second timeout). If the simulator cannot be reached, or on non-Windows platforms, both mode serves the 15 docs tools only; `simconnect_ready` in the `/health` response reports which case applies.
 
 **Requirements**: Windows only. Microsoft Flight Simulator 2020 or 2024 must be running with SimConnect enabled before issuing any read or transmit calls. The `get_sim_state` tool is safe to call at any time regardless of connection state.
 
@@ -2605,3 +2605,89 @@ It returns:
 
 ---
 
+
+## Screenshot, jetways and models
+
+## screenshot
+
+A picture of the simulator window as it is now. It is drawn even when other windows cover the simulator (PrintWindow, full content), but not when it is minimized. It needs only the simulator on this machine, no SimConnect call. Point the camera first with `set_camera` to see one of ours.
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `max_width` | number | No | Scaled down to this many pixels wide; default 1600, `0` full size |
+| `format` | string | No | `jpeg` (default) or `png` |
+| `quality` | number | No | JPEG quality 1–100, default 85 |
+
+Returns an image item, and a text line with the window and sent sizes.
+
+**Error codes**: `INVALID_ARGUMENT`, `NOT_APPLICABLE` (no simulator window, or minimized).
+
+---
+
+## get_jetways
+
+Jetways for our traffic (library `pkg/jetway`, v0.90): on or off, `available`, and if not, why (the helper package missing). Also each gate's state (`reserved`, `docking`, `docked`, `undocking`, `failed`) by airport and stand, and the door offsets by type set by hand.
+
+**Parameters**: none.
+
+---
+
+## set_jetways
+
+Switches jetways for our traffic on or off; off by default. On, the engine:
+- fills the airport's jetway gates with invisible placeholders;
+- docks a gate's jetway to our parked aircraft;
+- holds a push until the jetway is home.
+
+Off sends every jetway home and removes the helpers. It needs the helper package in the Community folder (the library's `examples/jetway-helpers`, then a simulator restart). See the library's [Jetways](https://github.com/mrlm-net/simconnect/blob/main/docs/traffic-world.md#jetways-572) guide, including what other programs see.
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `on` | boolean | Yes | `true`: dock at gates |
+
+---
+
+## set_jetway_door_offset
+
+Where a type's invisible helper goes from our aircraft so the jetway meets the door. By default the offset comes from both models' doors (their `interactive_point.0`); this overrides it for the type and is kept by the engine.
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `type` | string | Yes | ICAO type, e.g. `B738` |
+| `ahead_m` | number | No | Metres ahead of our aircraft (negative: behind) |
+| `right_m` | number | No | Metres to its right (negative: left) |
+
+---
+
+## get_model_choice
+
+Which simulator models our traffic uses:
+- `rules`: titles it never uses; the shipped ones, plus the engine's local ones;
+- `providers`: the traffic packages by creator, each on or off. Flyable add-on aircraft are off by default.
+
+**Parameters**: none.
+
+---
+
+## set_model_rule
+
+Never use (or use again) a model for our traffic. A title ending in `*` covers every title it starts. Kept by the engine.
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `title` | string | Yes | The model's title, or a prefix with `*` |
+| `never` | boolean | No | `true` (default): never use it; `false`: use it again |
+| `reason` | string | No | Why, kept with the rule |
+
+---
+
+## set_model_provider
+
+Switches a traffic model provider on or off for our traffic.
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `provider` | string | Yes | As `get_model_choice` lists it, e.g. `FSLTL` |
+| `on` | boolean | Yes | `true`: use its models |
+
+---

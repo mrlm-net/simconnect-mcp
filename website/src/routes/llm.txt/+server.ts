@@ -46,7 +46,7 @@ github.com/mrlm-net/simconnect Go library guides (v0.31.3):
 - get_library_guide: Read a library guide, or a single chapter of it, as Markdown
 - search_library_docs: Search the library guides chapter by chapter
 
-## MCP Tools — SimConnect Mode (MCP_MODE=simconnect, Windows only, 63 tools)
+## MCP Tools — SimConnect Mode (MCP_MODE=simconnect, Windows only, 70 tools)
 
 - get_simvar_value: Read a single live simulation variable from the running simulator
 - get_simvar_values: Read up to 20 simulation variables in a single call
@@ -126,7 +126,7 @@ Scheduled and real traffic (adds and removes AI aircraft in the simulator):
 
 ## MCP Tools — Both Mode (MCP_MODE=both)
 
-Docs-mode tools always; on Windows, also the SimConnect-mode tools (78 in total) when the simulator is reachable at startup.
+Docs-mode tools always; on Windows, also the SimConnect-mode tools (85 in total) when the simulator is reachable at startup.
 
 ## Documentation
 

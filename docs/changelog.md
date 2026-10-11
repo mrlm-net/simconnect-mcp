@@ -9,6 +9,28 @@ All notable changes to SimConnect MCP are documented here. The format follows [K
 
 Full release history with release notes is also available on the [GitHub Releases page](https://github.com/mrlm-net/simconnect-mcp/releases).
 
+## [0.15.0] - 2026-10-11
+
+### Added
+
+- `screenshot`: a picture of the simulator window, drawn even when other windows cover it, as JPEG or PNG, scaled to `max_width`. With `set_camera` pointed at an aircraft, an assistant can see what the traffic does.
+- Jetways for our traffic: `get_jetways`, `set_jetways` and `set_jetway_door_offset` (library `pkg/jetway`).
+- Which models our traffic uses: `get_model_choice`, `set_model_rule` (never use a title, or a prefix with `*`) and `set_model_provider`.
+- Tool results can carry an image (`mcpadapter.ImageResult`).
+- Tool counts: docs 15, simconnect 70, both 85.
+
+### Changed
+
+- Upgraded `github.com/mrlm-net/simconnect` from v0.31.3 to v0.90.0, and the bundled library guides with it. The traffic engine gained, among much else:
+  - jetways;
+  - stairs at each model's own door;
+  - model rules and providers;
+  - intersection departures by class;
+  - flown routes that turn in curves;
+  - a ground stop that leaves the runway queue out.
+
+  See the [library changelog](https://github.com/mrlm-net/simconnect/blob/main/CHANGELOG.md).
+
 ## [0.14.4] - 2026-10-11
 
 ### Changed

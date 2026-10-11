@@ -174,7 +174,7 @@ The 46 guides of the `github.com/mrlm-net/simconnect` Go library (client, manage
 
 The server reconnects automatically when the simulator restarts — no manual intervention is required.
 
-`simconnect` mode exposes 63 MCP tools; on Windows, `MCP_MODE=both` serves them together with the 15 docs tools (78 in all). See [docs/mcp-tools-simconnect.md](docs/mcp-tools-simconnect.md) for the full reference.
+`simconnect` mode exposes 70 MCP tools; on Windows, `MCP_MODE=both` serves them together with the 15 docs tools (85 in all). See [docs/mcp-tools-simconnect.md](docs/mcp-tools-simconnect.md) for the full reference.
 
 **Simulation variables**
 

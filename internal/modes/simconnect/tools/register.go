@@ -31,6 +31,7 @@ func RegisterAll(mcp *mcpadapter.Server, b bridge.Bridge) (cleanup func() int) {
 	RegisterEnrichedTrafficTool(mcp, b)
 	RegisterAirportTools(mcp, b)
 	RegisterNavaidTools(mcp, b)
+	RegisterScreenshotTool(mcp)
 
 	if p, ok := b.(interface{ Manager() manager.Manager }); ok && p.Manager() != nil {
 		rt := live.NewRuntime(p.Manager())

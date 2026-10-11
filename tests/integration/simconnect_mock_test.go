@@ -150,6 +150,7 @@ func TestSimconnectToolsList(t *testing.T) {
 		"get_airport_taxiways",
 		"get_taxiway_names",
 		"get_airport_parkings",
+		"screenshot",
 	}
 
 	if len(toolsRaw) != len(want) {

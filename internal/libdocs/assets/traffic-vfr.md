@@ -100,7 +100,7 @@ With `ArrivalRequest.StopAndGo` each touch-and-go is a stop-and-go: it brakes to
 
 ### VFR departures
 
-`Circuit.Departure(exitBearing)` is the way out of the circuit towards an exit point `VFRExitNM` (5 NM) from the field, `VFRExitAboveFt` (1,000 ft) above circuit height. It leaves the circuit by the side the exit is on:
+`Circuit.Departure(exitBearing)` is the way out of the circuit towards an exit point `VFRExitNM` (5 NM) from the field, `VFRDepartAboveFt` (500 ft) above circuit height; arrivals come in over a reporting point `VFRExitAboveFt` (1,500 ft) above it, 1,000 ft apart. It leaves the circuit by the side the exit is on:
 
 - **ahead** (within 45° of the runway heading): straight out from the upwind;
 - **to the circuit's side**: by its crosswind leg;
@@ -142,6 +142,23 @@ The business types' profiles (span, length, take-off distance, wheelbase where p
 Not yet:
 
 - Touch-and-goes from a straight-in or base join fly the circuit afterwards on its own side.
+
+## Through the zone: reports and leaving
+
+For a VFR flight through a controlled aerodrome's zone, the counterpart of `VFRForLanding` and `JoinCircuit`, each with its readback through `Readback`:
+
+| Who | Phrase | Said | Read back |
+|---|---|---|---|
+| Tower | `ReportAt(pos, cs, point)` | "OKABC, report at NOVEMBER" | "Wilco, OKABC" |
+| Tower | `ReportLeavingZone(pos, cs, via)` | "OKABC, report leaving the zone via NOVEMBER" | "Wilco, OKABC" |
+| Pilot | `AtPoint(pos, cs, point, level)` | "OKABC, NOVEMBER, 2500 feet" | (a report) |
+| Pilot | `LeavingZone(pos, cs, via)` | "OKABC, leaving the zone via NOVEMBER" | (a report) |
+| Tower | `FrequencyChangeApproved(pos, cs, squawk)` | "OKABC, frequency change approved, squawk 7000" | "Frequency change approved, squawk 7000, OKABC" |
+| Tower | `ContactFIS(pos, cs, station, freq)` | "OKABC, contact Praha Information 126.1" | "Praha Information 126.1, OKABC" |
+
+An arrival's `ReportAt` comes after its first call (`VFRForLanding`) and before `JoinCircuit`; a departure's `ReportLeavingZone` with or after its departure instructions (`VFRDepartureInstructions`). `PosInformation` is flight information's position.
+
+The points and the information station come from `airport.VFRFor(icao)`: the zone's entry and exit points and route points (`Point(name)`, `EntryNearest(pos)`), and `FIS`/`FISFreq`. Shipped for LKPR (Czech VFR Manual, WEF 01 OCT 26) and LKPD (06 AUG 26), with Praha Information 126.100 (AIP ČR ENR 2.1); a host replaces or adds airports through the dict table `airport.vfr` (merged by ICAO).
 
 ## Jetbridges (#572)
 

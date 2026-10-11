@@ -2,6 +2,7 @@ package mcpadapter
 
 import (
 	"context"
+	"encoding/base64"
 	"encoding/json"
 )
 
@@ -34,6 +35,9 @@ type SchemaProperty struct {
 type Content struct {
 	Type string `json:"type"`
 	Text string `json:"text,omitempty"`
+	// Data and MimeType: an "image" item, base64 data.
+	Data     string `json:"data,omitempty"`
+	MimeType string `json:"mimeType,omitempty"`
 }
 
 // CallToolResult is returned by a tool handler.
@@ -104,6 +108,14 @@ func (b *ToolBuilder) addParam(name, typ, description string) *ToolBuilder {
 // TextResult returns a successful tool result containing plain text.
 func TextResult(text string) *CallToolResult {
 	return &CallToolResult{Content: []Content{{Type: "text", Text: text}}}
+}
+
+// ImageResult returns an image (raw bytes of mimeType) with a caption.
+func ImageResult(data []byte, mimeType, caption string) *CallToolResult {
+	return &CallToolResult{Content: []Content{
+		{Type: "image", Data: base64.StdEncoding.EncodeToString(data), MimeType: mimeType},
+		{Type: "text", Text: caption},
+	}}
 }
 
 // ErrorResult returns a tool result that signals an error to the LLM.

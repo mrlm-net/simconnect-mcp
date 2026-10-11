@@ -72,7 +72,7 @@ A host can time traffic around its own flight (#737, #738): an arrival a few min
 With real-world traffic on, the World flies the aircraft that a feed such as ADS-B observes, instead of the generated timetable (#841). Each aircraft gets everything the World's own traffic gets: stand services, push, taxi, ATC and radio.
 
 - `SetRealTraffic(true, "LKPR")` (`POST /api/realtraffic {"on":true,"icao":"LKPR"}`) turns the generator off and sets the managed airport. Generated flights not yet in the simulator go at once, and those flying finish their flight. `false` brings the generator back. `GET /api/realtraffic` says whether it is on, with the managed airports.
-- `Observe([]traffic.Observed)` (`POST /api/realflights`) takes a feed's snapshot. A sighting is an `id` (the ICAO 24-bit address), `callsign`, `registration`, `type`, `lat`/`lon`, `altFt`, `groundKts`, `trackDeg`, `vsFpm`, `onGround` and `seenAt`, plus optional `kind`, `origin`, `destination` and `departAt`.
+- `Observe([]traffic.Observed)` (`POST /api/realflights`) takes a feed's snapshot. A sighting is an `id` (the ICAO 24-bit address), `callsign`, `registration`, `type`, `lat`/`lon`, `altFt`, `groundKts`, `trackDeg`, `vsFpm`, `onGround` and `seenAt`, plus optional `kind`, `origin`, `destination`, `departAt` and `route` (or `routeText`, the filed route such as "DCT VLM UL86 KEPAD", expanded over the airways known: unknown tokens such as a SID name are passed over and logged).
   - It returns one `ObserveResult` per sighting, with the status `added`, `updated`, `retimed`, `turnaround` or `ignored` (with a reason).
   - The aircraft flies under its call sign, else its registration, else its ID.
   - An unknown origin or destination stays `""` and is shown as unknown, never guessed.
@@ -83,9 +83,9 @@ The kind, when not given, comes from `traffic.ClassifyObserved`:
 | Kind | When (no `kind` given) | What the World does |
 |---|---|---|
 | parked | On the ground within 3 NM of the airport, still | It goes on the free stand within 80 m of where it is seen (else a stand by its type) and waits, with no push and no call to delivery, until a departure is seen for its ID. That departure re-times its push (`traffic.TaxiController.SetPushbackAt`), and only then does the aircraft call delivery. |
-| departure | On the ground at the airport, moving | It goes on a stand the same way and pushes at `departAt` or now. With no destination it flies a SID of the runway and leaves the area. |
-| arrival | Airborne within 150 NM, heading for the airport (within 60°), not climbing away | Its sighting is projected to now along its track (at most 10 min). It appears there, flown by MSFS AI, and joins a STAR of the runway in use at the point that gives the shortest way in, up to the initial approach fix. Approach takes it over at that point, as it takes over an en-route arrival. It is never held back by the landing flow (it is already in the air) and never cancelled by time. |
-| overflight | Anything else airborne | Not flown yet. |
+| departure | On the ground at the airport, moving | It goes on a stand the same way and pushes at `departAt` or now. With no destination it flies a SID of the runway and leaves the area. Given a `route` (#845), it flies its planned SID and then the route, from its first point past the SID, at the route's levels or the planned cruise level. |
+| arrival | Airborne within 150 NM, heading for the airport (within 60°), not climbing away | Its sighting is projected to now along its track (at most 10 min). It appears there, flown by MSFS AI, and joins a STAR of the runway in use at the point that gives the shortest way in, up to the initial approach fix. Given a `route` (points `lat`, `lon`, optional `altFt`: a recorded or planned track, #845), it flies the route and joins the STAR where the route passes within 5 NM of one of its points, again the shortest way in; a route that meets no STAR is left for the direct join. Approach takes it over at that point, as it takes over an en-route arrival. It is never held back by the landing flow (it is already in the air) and never cancelled by time. |
+| overflight | Anything else airborne | Within 100 NM of the centre of the area, it appears where it is now (projected as an arrival is), flown by MSFS AI across the area along its `route` (#845) to the first point out of it, else straight on along its track, and goes once out. |
 
 A sighting is `ignored` when it is on the ground away from the airport, climbing out (over 500 fpm within 30 NM), or a ground station or vehicle (type `TWR`, `GND`, `GRND`, `SVC`, `VEH`). The projection uses its vertical rate for at most a minute.
 
@@ -146,6 +146,21 @@ The World never controls nor calls the user aircraft. A host whose own ATC works
 
 - `Heard(t)`: the host's ATC said `t` on `t.Frequency` at `t.Airport`. The World's traffic waits for the frequency instead of talking over it.
 - `ClearPlayer(world.PlayerClearance{ICAO, Runway, Phase})` (`POST /api/player`), where the phase is `pushback`, `taxi`, `holding_short`, `lineup`, `takeoff`, `landing` or `vacated`. Pushing back, ours on stands near it wait to push; holding short, it takes its place in the departure queue. While the player lines up, takes off or lands on a runway, none of the World's traffic is cleared onto it (line up, take-off, landing, crossing). Landing, the player is in that runway's landing sequence (as `Callsign`, else "Player"), so the traffic fits around it; `Snapshot().Player` is its place (number, the call sign and type it follows, the spacing and both distances to go). `vacated` ends it.
+- `PlayerRunway(world.PlayerQuery{ICAO, Runway, Phase, Callsign, Model})` asks **before** clearing the player onto a runway (`lineup`, `takeoff`, `landing`): the World's tower decides on a copy of that runway's state as it does for its own traffic, so nothing changes by asking. `RunwayAnswer.Free` means clear it now; otherwise `Say` is what to tell it instead ("line up and wait", "hold position", "continue approach", "go around"), `Behind` a conditional line-up's traffic ("the departing Airbus A320"), `Traffic` the reason as said to a pilot ("traffic on the runway", "traffic on a 3 mile final", "landing traffic", "departing traffic"), `Number` its place in the departure queue, `Why` the World's own reason with call signs, `AskAgainIn` when to ask again. Clear the player with `ClearPlayer` right after a free answer; report `holding_short` when it reaches the holding point, so it holds its place in the queue and ours wait their turn behind it.
+- **One World per simulator:** each World runs its own schedule from the same seeded timetable. Running two at once on one simulator (the airport map, the MyCrew app, the MCP server) spawns the same flights twice, with duplicate call signs. Run one, or link the others to it (director/actuator).
+- **Stopping:** when `RunOn`'s context ends, the World removes its aircraft, their vehicles and its en-route flights from the simulator (a host restarting its traffic on the same connection found them frozen); `Options.KeepOnStop` keeps them. `Options.Cache` shares an `airport.Cache` with the host, so one airport is loaded once. Console lines, errors included, go to `Options.Output`.
+- **Over HTTP:** `POST /api/player/runway` (a `PlayerQuery` → `RunwayAnswer`), `GET /api/player/traffic?callsign=&icao=` (→ `[]PlayerTrafficInfo`) and `GET /api/player/circuit?icao=&runway=&lat=&lon=` (→ `{config, leg}`), for a host linked to a director.
+- The player and the World's runways and ground, coordinated (the player's ATC does not know the World's traffic):
+  - **Seen, not only cleared:** the user aircraft on a runway (any speed) or lined up close in on a final (within 4 NM, below 2500 ft AGL) counts for the World's tower whether or not its ATC said so, on that runway and on every runway crossing it. A clearance onto one runway also keeps ours off the runways crossing it.
+  - **Crossing:** `PlayerCrossing` (`crossing`) while it crosses a runway taxiing; `PlayerRunway` answers a crossing too ("hold short", "cross behind" the landing traffic).
+  - **Stale clearances expire:** line-up/take-off once it is airborne off the runway (or after 10 min), landing once it is on the ground off the runway (20 min), crossing once it has been on the runway and is off it (3 min), any other after 30 min. Sending `vacated` is still right.
+  - **Ground:** each second the World reports where the user aircraft goes: moving, its way ahead along its heading (20 s at its speed, at least 60 m); cleared to push or moving backwards, the push corridor behind it. Ours and the service vehicles give way to that, not only to its body.
+  - **Stand:** `PlayerClearance.Stand` (a label) holds that stand for it: none of ours is given it, and an arrival of ours that has not landed yet and holds it is moved to another (one already taxiing in or parked keeps it, logged).
+  - **Air:** a pair with the user aircraft is the tower's only below 1000 ft at the airport (`UserTowerBelowFt`, was 2500 ft for all): above that ours get resolutions against it. `World.PlayerTraffic(callsign, icao)` is the World's traffic its ATC tells it of: ours airborne within 6 NM and 2000 ft, not moving apart, nearest first, each with the clock, distance, direction, type and level and the transmission's text.
+
+## Runway closures
+
+`CloseRunway(icao, runway, closed)` closes a runway (works, a NOTAM; by name "06/24" or an end "24") or opens it again; `ClosedRunways(icao)` lists them (`GET /api/closures?icao=`, `POST /api/closures {icao, runway, closed}`). A closed runway is never chosen for departures or arrivals (`nav.RunwayLimits.Closed`): the runway in use changes at once, also from one held through a wind shift, and the traffic on it changes runway as with a wind change; the ATIS and the player's runway (`DepartureRunway`, the runways in use) follow. With every runway of an airport closed, no new flight starts there until one opens (a schedule attempt fails "all runways closed" and is tried again). On a closed runway the tower clears no line-up, take-off or landing, and ours on a final within 4 NM go around; crossing it stays allowed. With every runway closed, our arrivals in the air are told "all runways at LKPR are closed, expect holding" and hold at their STAR's fix. A runway open again, the sequence releases them as from any hold. Held 20 minutes, each is cleared to the nearest other airport 30 NM or more away ("LKPR remains closed, cleared to LKKV, proceed direct"), sent direct toward it, and removed once 25 NM from the airport.
 
 ## Ground services (v0.20)
 
@@ -155,7 +170,7 @@ Each airport has a fleet of service vehicles. The defaults are sized by its stan
 |---|---|---|---|---|
 | Pushback tug | 1 per 10 stands, at least 2 | GSX tug | Nose gear | Before the push |
 | Fuel truck | 1 per 15 stands, at least 1 | GSX fuel truck or hydrant dispenser | Right wing | While the departure waits |
-| Boarding stairs | 1 per 10 stands, at least 2 | `FSDT_Staircase_*`, else `ASO_Boarding_Stairs` | Front left door, square to the fuselage; backs straight out | Remote stands only (no jetway) |
+| Boarding stairs | 1 per 10 stands, at least 2 | `FSDT_Staircase_*`, else `ASO_Boarding_Stairs` | Front left door, square to the fuselage: the model's own door where known (its `flight_model.cfg`, read from the installed packages on Windows or given with `World.SetModelDoors`), else an estimate from the wheelbase; backs straight out | Remote stands only (no jetway) |
 | GPU | 1 per 10 stands, at least 2 | `FSDT_GPU_TLD_406` or `FSDT_GPU_Hobart_4400`, else `Car Ground Power Unit` | Forward right of the nose gear | Remote stands only |
 | Passenger buses | 2 per set of stairs | `FSDT_Cobus_3000` (ICAO regions E, L, K, C) or `FSDT_neoplan_bus` (O, Z, V, W, U), else `Bus Apron 02` | 15 m left of the axis, outside the stairs, facing the tail: the first 4 m behind the front door, the second 20 m ahead of it | Remote stands, with the stairs only |
 
@@ -178,6 +193,42 @@ Each airport has a fleet of service vehicles. The defaults are sized by its stan
 - **Log:** the traffic log gives each airport's fleet sizes, and logs a departure waiting for one ("waits for a tug at LKPR: all 8 busy").
 - **Library:** `traffic.VehicleFleet` and `traffic.ServiceFleet`; `TaxiRequest.Stairs`, `TaxiRequest.GPU`, `TaxiRequest.Buses` and `TaxiRequest.Deboard` (`traffic.SimObjectBus`, `BusSpot`, `BusesFor`); `ArrivalRequest.FollowMe` with `ArrivalWithServices` (`traffic.SimObjectFollowMe`).
 - **Control API:** `pushInMin` gives a manual departure a push time, so its stand services have a window.
+
+## Jetways (#572)
+
+Off by default: `World.SetJetways(true)` or `POST /api/jetways {"on": true}`; `GET /api/jetways` shows each gate's state. It needs the helper package in the Community folder (`go run ./examples/jetway-helpers`, then a simulator restart).
+
+- **Why a workaround:** our traffic is NonATC, which we drive frame by frame. MSFS 2024 has no way to dock a jetway to such an aircraft: no SimConnect call, event or variable does it, and `TOGGLE_JETWAY` works only for the user aircraft. Probed live, sent to our aircraft and to the jetway, with and without control released. Only aircraft MSFS ATC parks (`AICreateParkedATCAircraft`, `AICreateEnrouteATCAircraft`) get jetways. Developers have asked for jetway control of any aircraft:
+  - [Jetway control for non-default ATC controlled AI aircraft](https://devsupport.flightsimulator.com/t/jetway-control-for-non-default-atc-controlled-ai-aircraft/17529), 2026-03;
+  - earlier, in [Request for additions to Simconnect Facilities API](https://devsupport.flightsimulator.com/t/request-for-additions-to-simconnect-facilities-api/14870).
+
+  Vote there. With such a call, the helpers and their side effects below go away.
+- **How:** MSFS 2024 docks a jetway only to an aircraft in its ATC parking table. Invisible ParkedATC placeholders take the airport's jetway gates; to dock one, its placeholder goes and, 3 s later, an invisible helper of the aircraft's type takes the freed gate under our aircraft, and the jetway docks to it.
+- **Which gates:** the simulator puts no ParkedATC next to an occupied gate, so only about every other jetway gate can be given to a helper (at LKPR 19 of 27; `jetway.Helpers.Dockable`). With jetways on, the stand allocator gives airliners those gates first, before their airline's own gates without one (`StandRequirements.Prefer`); an aircraft on another gate gets no jetway.
+- **One at a time:** a helper is created only once the gates are filled, no other helper is on its way and no jetway is going home; a helper the simulator puts elsewhere (another gate, a ramp) is removed and the dock tried again a minute later.
+- **Boarding:** a departure asks for its push once its jetway has been on 3 minutes (`JetwayBoarding`); ground answers once the jetway is home (at least 25 s after it left), and it is not docked again.
+- **Door fit:** the jetway docks to the helper's own door: its `flight_model.cfg` `interactive_point.0`, which the jetway data reports as `ExitDoorRelativePos`. So each helper is put by our aircraft at our model's jetway door minus the helper's, read from both models' files. Live, the FSLTL A320neo's door is 37.65 ft ahead and its helper's 27.93 ft, so the helper goes 2.96 m ahead.
+  - **Overrides:** `jetway.DoorOffset` items in the dict table `jetway.doorOffsets`, or `POST /api/jetways/offset {"type": "B738", "aheadM": 0.5, "rightM": 0}`, kept in `DataDir/jetway-door-offsets.json`. These win.
+  - **Neither known:** the sim's own place, which was up to 2.6 m off (the hood forward of the door).
+  - **Log:** every placement is logged ("helper 2.66 m ahead … put 0.00 m ahead").
+- **Taken gates:** a dock or a placeholder now and then lands on a gate already docked; the simulator does not always count a docked helper's gate as taken, and a flight plan given after docking sends the jetway home too. Such a gate is cleared and docked again a minute later.
+- **Not:** types with their own airstairs (`traffic.NoJetway`).
+
+### What other programs see
+
+The placeholders and helpers are real simulator aircraft (ParkedATC), invisible only because their model has no parts. With jetways on, at LKPR about 19 of them stand on the jetway gates. Anything that lists or uses the simulator's aircraft sees them:
+
+- **SimConnect clients:** traffic maps, radar and TCAS displays, and other add-ons that enumerate aircraft (Little Navmap, traffic tools, other SimConnect apps) get them like any other aircraft:
+  - title "MyCrew Jetway Helper <TYPE>";
+  - ATC ID "JP…" (placeholder) or "JW…" (helper);
+  - parked on a gate, the helpers right under one of our aircraft.
+
+  A placeholder carries a flight plan to the nearest other airport (the plan that sent its jetway home), so a tool that reads plans may list it as a departure there. It stays parked; none was seen to leave.
+- **Our own World and map:** they leave them out (`jetway.IsHelper` on the title). A host or SDK consumer listing traffic should do the same.
+- **MSFS ATC and its AI traffic:** the gates they hold count as taken; that is how the jetway is kept for our traffic. So MSFS's own AI traffic, and parking assigned by MSFS ATC to the user, go to other stands.
+- **Other traffic add-ons:** those that park on free gates the same way find these gates taken. That is expected, not measured: FSLTL's injector, BeyondATC's traffic.
+- **Ground services and multiplayer:** not measured. GSX and multiplayer sessions may see a parked aircraft on those gates as well.
+- **Turning jetways off:** `SetJetways(false)` removes every placeholder and helper, and so does disconnecting.
 
 ## SimConnect IDs
 
@@ -213,7 +264,36 @@ The actuator sends the departures' tugs and fuel trucks (with their routes) for 
 In multiplayer each player's sim is an actuator; the director (on a server) decides for all of them (#774, #779). Motion stays local: every aircraft and vehicle is moved and injected by the actuator on the player's PC at the sim's frame rate. Only decisions cross the network.
 
 - **On the player's PC, with the host's own connection:** `w.LinkDirector(ctx, "director:7710", token)` before `RunOn`. It dials out (no way in needed), dials again 5 s after the director is lost, and keeps the link across sim reconnects (`RunOn` restarted per connection). `Snapshot().Link` is "dialling", "attached" or "gone". `DialActuator` does the same with a connection of its own (`traffic-actuator -director`).
-- **On the server:** `ListenDirector(ctx, w, ":7710", token)` (`traffic-director -listen :7710`). Its HTTP API wants a token on a public server: `-api-token` to control the traffic, `-view-token` to read it ("auto": a random one, printed), sent as `Authorization: Bearer <token>`; the server itself always has access. The first actuator to dial in is the primary: its replies, events and feed drive the director. Later ones follow: they get the same commands, so each sim creates and moves the same traffic; what they send back is dropped. A follower joining late gets the flights started after it; a model a follower does not have is not created there. When the primary is gone the director starts again with the next one.
+- **On the server:** `ListenDirector(ctx, w, ":7710", token)` (`traffic-director -listen :7710`). Its HTTP API wants a token on a public server: `-api-token` to control the traffic, `-view-token` to read it ("auto": a random one, printed), sent as `Authorization: Bearer <token>`; the server itself always has access. The first actuator to dial in is the primary: its replies, events and feed drive the director. Later ones follow: they get the same commands, so each sim creates and moves the same traffic; what they send back is dropped. A follower joining late flies the flights started after it itself. The flights already going on when it joined are puppets there (#964): the primary records each, five samples a second (`flight.Recorder`), and the director relays them to the followers that joined after that flight began. Each of those creates the aircraft and flies it as recorded (`flight.Ghost`: position, attitude, gear, flaps, spoilers, lights, engines), one second behind the newest sample so it is always between two. The puppet goes when its flight ends on the primary. A model a follower does not have is not created there. Not checked with two sims yet. When the primary is gone the director starts again with the next one.
 - **Radio:** every transmission is relayed to the actuators and reaches their host's `OnTransmission`, so each player's voice speaks it locally.
 - **What the host does on the director, not locally:** in multiplayer the schedule, flights, corridor and player clearances (`SetSchedule`, `AddFlights`, `SetCorridor`, `ClearPlayer`) go to the director's HTTP API. The actuator's own `Snapshot().Aircraft` is empty: the aircraft are listed by the director (`GET /api/control`).
 - **Session tokens and TLS (#792):** on a public server the link carries a player's position and the credential that drives their sim, so it runs over TLS with per-player session tokens. Server: `ListenDirectorWith(ctx, w, ":7710", world.LinkOptions{Verify: world.NewJWKS(jwksURL, iss, aud).LinkVerify, TLS: serverTLS})` (`traffic-director -listen :7710 -jwks <url> -tls-cert <pem> -tls-key <pem>`, optional `-jwks-iss`/`-jwks-aud`). Each greeting's token is verified against the keys published at the JWKS address (RS256/384/512, PS256, ES256/384, EdDSA; exp and nbf with a minute of leeway); the link closes when the token expires. The same tokens open the HTTP API (`-jwks-api control|view|none`, default control). Player: `w.LinkDirectorWith(ctx, "director:7710", world.LinkOptions{TokenFunc: session, TLS: &tls.Config{}})` (an empty config verifies the director with the system roots). `TokenFunc` is called for every greeting, so a link closed on expiry comes back with a fresh token on its own. `traffic-actuator -director host:7710 -tls` (`-tls-ca` for a private CA). The `token` forms stay for a trusted network.
+
+## Holding the traffic for a replay
+
+A replay shows the traffic recorded with the flight (`flight.GhostFleet`), so the World's live traffic must not be there at the same time. `World.Hold(true)` (`POST /api/hold {"on": true}`) stops the schedule and removes every aircraft of ours from the simulator, marking each flight done; flights not yet in the simulator stay in the timetable. `World.Hold(false)` gives the schedule back as it was (on or off), and it fills the scene from its timetable as at any start. The aircraft removed are not brought back where they were: a replay can last any time, and their flights have moved on meanwhile. It returns `HoldResult{Held, Removed}`. Holding again, or letting go when not held, does nothing (#1014).
+
+## Real start: one snapshot placed at the start
+
+`World.Seed(observed, at)` (`POST /api/seed`) places the traffic of one real-world snapshot when a flight loads: the same `traffic.Observed` records as the live feed, taken at `at` (zero: now). Each aircraft becomes a flight of ours from then on, with its real callsign and airline, under our ATC, sequencing and give-way. No feed follows it, and the schedule fills in afterwards.
+
+- **Parked at an airport of ours:** placed on the stand it is at (else one for its type). It departs after a turnaround (40 min, two minutes apart down the list) to its real destination, else on a SID out of the area.
+- **Airborne inbound:** joins the arrival sequence from where it is, as a live real arrival does.
+- **Airborne outbound or overflying:** crosses the area along its route (or its filed `routeText`), else straight on along its track.
+- **Moving on the ground (taxiing):** not placed yet, and said why.
+
+The nearest to an airport of ours come first, up to the room the schedule's `MaxAircraft` leaves. It returns `SeedResult{Placed, Skipped, Results}`, one `ObserveResult` per aircraft (`added`, or `ignored` with the reason), and logs each. The flights are marked `seeded` in `ControlView` (not `real`), so the map can tell them apart from live real traffic.
+
+## Ground vehicles on and off
+
+The World's ground vehicles can be switched off by kind: tugs, fuel trucks, stairs, GPUs, buses and follow-me cars (`traffic.VehicleTug` … `VehicleFollowMe`; all on by default). `World.SetGroundVehicles(map[kind]bool)` (`POST /api/vehicles {"tug": false}`) changes them at any time, `World.GroundVehicles()` (`GET /api/vehicles`) says which are on, and `Options.GroundVehicles` sets them from the start. A kind off means none of it is created from then on, and nobody waits for one:
+
+- **Tugs off:** departures push back on their own along the planned push.
+- **Fuel trucks, stairs, GPUs, buses off:** the turnaround runs without them.
+- **Follow-me cars off:** arrivals go to their stand without one.
+
+Vehicles already at work finish their job and are not replaced. In a director and actuator pair the director decides, so its switches count.
+
+**Model providers.** Our traffic's models come from providers, each on or off: a title's package names it (FSLTL, AIG, GSX, MyCrew, else the package's creator; `traffic.modelProviders` holds the patterns), and a title the simulator lists on no package on disk is MSFS's own. The user's flyable add-ons (FlyByWire, Fenix: `isUserSelectable = 1`) start off, as heavy models; the rest on. `World.ModelProviders()` (`GET /api/models/providers`) lists them per kind with their title counts, `World.SetModelProviders(map[provider]bool)` (`POST /api/models/providers`) switches them. A provider off is passed over for the next choice; where nothing else is there, any is taken and the traffic log says so.
+
+**Models never used** (#1024). Some simulator models do not work as traffic: one that does not show attached, one that looks wrong. The table `traffic.modelRules` lists them by title (`traffic.ModelRuleItem`: title, kind, `never`, reason); our traffic passes them over for the next choice: the next aircraft title (`ModelsFor`), the next bigger tug (`TugTitleFor`), the next stairs, GPU, bus or follow-me car. Shipped: the small Mototok robot tug (it does not show attached; light aircraft get the towbarless Mototok) and MSFS's GPU van. Local rules go over them per model in `DataDir/model-rules.json` (`{"title": …, "never": false}` takes a shipped one back): `World.SetModelRule` (`POST /api/models/rules`) sets one, `World.ModelRules()` (`GET /api/models/rules`) lists those in use, and the map's aircraft card has "Never use" beside its model and each of its vehicles. Models already in use keep going.

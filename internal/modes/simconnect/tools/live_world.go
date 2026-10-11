@@ -57,6 +57,8 @@ func RegisterWorldTrafficTools(mcp *mcpadapter.Server, w live.World) {
 	registerWorldAirportInfo(mcp, w)
 	registerWorldTCAS(mcp, w)
 	registerWorldCamera(mcp, w)
+	registerWorldJetways(mcp, w)
+	registerWorldModelChoice(mcp, w)
 	registerGenerateSchedule(mcp)
 	registerSeparationMinima(mcp)
 }

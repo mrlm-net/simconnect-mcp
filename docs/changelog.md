@@ -9,6 +9,12 @@ All notable changes to SimConnect MCP are documented here. The format follows [K
 
 Full release history with release notes is also available on the [GitHub Releases page](https://github.com/mrlm-net/simconnect-mcp/releases).
 
+## [0.14.3] - 2026-10-11
+
+### Changed
+
+- Website: docs pages use the full width between the sidebar and the table of contents (no 52rem or 65ch cap on the main content), which looked poor on laptop screens.
+
 ## [0.14.2] - 2026-10-08
 
 ### Changed

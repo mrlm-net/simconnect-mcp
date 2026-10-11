@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { base } from '$app/paths';
 	import { siteConfig } from '$lib/config/site.js';
+	import SeoHead from '$lib/components/layout/SeoHead.svelte';
 
 	let copied = $state('');
 
@@ -97,13 +98,7 @@
 	];
 </script>
 
-<svelte:head>
-	<title>SimConnect MCP — Model Context Protocol for Microsoft Flight Simulator</title>
-	<meta
-		name="description"
-		content="Model Context Protocol server for Microsoft Flight Simulator — query SimConnect SDK docs, read live simulator data, and run AI traffic with a tower and approach controller from Claude, Copilot, or any MCP-compatible AI."
-	/>
-</svelte:head>
+<SeoHead {siteConfig} title="SimConnect MCP — Model Context Protocol for Microsoft Flight Simulator" description="Model Context Protocol server for Microsoft Flight Simulator — query SimConnect SDK docs, read live simulator data, and run AI traffic with a tower and approach controller from Claude, Copilot, or any MCP-compatible AI." path="/" />
 
 {#snippet arrow()}
 	<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7" /></svg>

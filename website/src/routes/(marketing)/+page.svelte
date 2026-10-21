@@ -22,8 +22,8 @@
 
 	const modes = [
 		{ name: 'docs', tools: 15, where: 'any OS' },
-		{ name: 'simconnect', tools: 70, where: 'Windows' },
-		{ name: 'both', tools: 85, where: 'docs anywhere, live on Windows' }
+		{ name: 'simconnect', tools: 75, where: 'Windows' },
+		{ name: 'both', tools: 90, where: 'docs anywhere, live on Windows' }
 	];
 
 	// Icon paths: 24×24, stroke 1.75

@@ -46,7 +46,7 @@ github.com/mrlm-net/simconnect Go library guides (v0.31.3):
 - get_library_guide: Read a library guide, or a single chapter of it, as Markdown
 - search_library_docs: Search the library guides chapter by chapter
 
-## MCP Tools — SimConnect Mode (MCP_MODE=simconnect, Windows only, 70 tools)
+## MCP Tools — SimConnect Mode (MCP_MODE=simconnect, Windows only, 75 tools)
 
 - get_simvar_value: Read a single live simulation variable from the running simulator
 - get_simvar_values: Read up to 20 simulation variables in a single call
@@ -113,6 +113,18 @@ Airborne ATC (the engine's tower, landing sequences, separation and radio):
 - get_tcas: TCAS II for our airborne traffic: traffic and resolution advisories now and the latest events
 - get_camera: The add-on camera (MSFS 2024) now and its scripted scenes
 - set_camera: Film our traffic, follow or view an aircraft, play a scene, or give the camera back
+- screenshot: A picture of the simulator window, even when covered, as JPEG or PNG
+- get_jetways: Jetways for our traffic: on or off, each gate's state, door offsets by type
+- set_jetways: Switch jetways for our traffic on or off
+- set_jetway_door_offset: Where a type's jetway helper goes so the jetway meets the door
+- get_model_choice: Which simulator models our traffic uses, by rules and providers
+- set_model_rule: Never use a model title (or a prefix with *) for our traffic
+- set_model_provider: Switch a traffic model provider on or off
+- declare_emergency: One of ours declares an emergency (MAYDAY or PAN PAN, priority, rescue vehicles), or cancels it
+- set_runway_in_use: Make a runway end the runway in use whatever the wind, or give it back to the wind
+- get_staffed_stations: The ATC stations a player works
+- set_staffed_stations: Set the ATC stations a player works; the AI leaves their aircraft to the player
+- preview_clearance: What a clearance to one of ours would say, controller and readback, without giving it
 
 Scheduled and real traffic (adds and removes AI aircraft in the simulator):
 
@@ -126,7 +138,7 @@ Scheduled and real traffic (adds and removes AI aircraft in the simulator):
 
 ## MCP Tools — Both Mode (MCP_MODE=both)
 
-Docs-mode tools always; on Windows, also the SimConnect-mode tools (85 in total) when the simulator is reachable at startup.
+Docs-mode tools always; on Windows, also the SimConnect-mode tools (90 in total) when the simulator is reachable at startup.
 
 ## Documentation
 

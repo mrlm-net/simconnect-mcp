@@ -1,13 +1,13 @@
 ---
 title: "MCP Tools — SimConnect Mode"
-description: Reference for the 70 live-data, user aircraft, AI traffic, airborne ATC and scheduled traffic MCP tools in SimConnect mode (MCP_MODE=simconnect, Windows only).
+description: Reference for the 75 live-data, user aircraft, AI traffic, airborne ATC and scheduled traffic MCP tools in SimConnect mode (MCP_MODE=simconnect, Windows only).
 order: 2
 section: reference
 ---
 
-All 70 MCP tools listed here are available when the server runs with `MCP_MODE=simconnect` (and, on Windows, with `MCP_MODE=both`, alongside the 15 docs tools — 85 in all). This mode provides live simulator data via the SimConnect SDK, and AI traffic under our control.
+All 75 MCP tools listed here are available when the server runs with `MCP_MODE=simconnect` (and, on Windows, with `MCP_MODE=both`, alongside the 15 docs tools — 90 in all). This mode provides live simulator data via the SimConnect SDK, and AI traffic under our control.
 
-**Both mode**: with `MCP_MODE=both` on Windows, the server registers these 70 tools alongside the 15 [docs-mode tools](/docs/mcp-tools-docs) — 85 tools in total — provided SimConnect opens at startup (10-second timeout). If the simulator cannot be reached, or on non-Windows platforms, both mode serves the 15 docs tools only; `simconnect_ready` in the `/health` response reports which case applies.
+**Both mode**: with `MCP_MODE=both` on Windows, the server registers these 75 tools alongside the 15 [docs-mode tools](/docs/mcp-tools-docs) — 90 tools in total — provided SimConnect opens at startup (10-second timeout). If the simulator cannot be reached, or on non-Windows platforms, both mode serves the 15 docs tools only; `simconnect_ready` in the `/health` response reports which case applies.
 
 **Requirements**: Windows only. Microsoft Flight Simulator 2020 or 2024 must be running with SimConnect enabled before issuing any read or transmit calls. The `get_sim_state` tool is safe to call at any time regardless of connection state.
 
@@ -80,6 +80,18 @@ Tools are called over the Model Context Protocol using JSON-RPC 2.0 with the `to
 | [`get_tcas`](#get_tcas) | TCAS advisories (TA, RA) of our airborne traffic |
 | [`get_camera`](#get_camera) | The add-on camera now and the scenes it can play |
 | [`set_camera`](#set_camera) | Film our traffic, follow or view an aircraft, play a scene, or give the camera back |
+| [`screenshot`](#screenshot) | A picture of the simulator window, even when covered, as JPEG or PNG |
+| [`get_jetways`](#get_jetways) | Jetways for our traffic: on or off, each gate's state, door offsets by type |
+| [`set_jetways`](#set_jetways) | Switch jetways for our traffic on or off |
+| [`set_jetway_door_offset`](#set_jetway_door_offset) | Where a type's jetway helper goes so the jetway meets the door |
+| [`get_model_choice`](#get_model_choice) | Which simulator models our traffic uses, by rules and providers |
+| [`set_model_rule`](#set_model_rule) | Never use a model title (or a prefix with *) for our traffic |
+| [`set_model_provider`](#set_model_provider) | Switch a traffic model provider on or off |
+| [`declare_emergency`](#declare_emergency) | One of ours declares an emergency (MAYDAY or PAN PAN, priority, rescue vehicles), or cancels it |
+| [`set_runway_in_use`](#set_runway_in_use) | Make a runway end the runway in use whatever the wind, or give it back to the wind |
+| [`get_staffed_stations`](#get_staffed_stations) | The ATC stations a player works |
+| [`set_staffed_stations`](#set_staffed_stations) | Set the ATC stations a player works; the AI leaves their aircraft to the player |
+| [`preview_clearance`](#preview_clearance) | What a clearance to one of ours would say, controller and readback, without giving it |
 
 ---
 
@@ -2689,5 +2701,60 @@ Switches a traffic model provider on or off for our traffic.
 |------|------|----------|-------------|
 | `provider` | string | Yes | As `get_model_choice` lists it, e.g. `FSLTL` |
 | `on` | boolean | Yes | `true`: use its models |
+
+---
+
+## Emergencies, runway in use and staffed stations
+
+A supervisor's controls over the traffic engine, as an ATC game or a scenario uses them (library `pkg/traffic/world`).
+
+## declare_emergency
+
+One of our aircraft declares an emergency. It squawks 7700, calls MAYDAY or PAN PAN on its frequency, approach answers, and the aircraft gets priority in the landing sequence. The airport's rescue vehicles (fire and rescue, an ambulance for a medical) meet it. With `on: false` the crew cancels the emergency and the priority goes.
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `callsign` | string | Yes | Our aircraft's call sign |
+| `kind` | string | No | `engine-failure` (default), `medical`, `fuel`, `pressurisation`, `fire` or `hydraulic` |
+| `level` | string | No | `mayday` or `panpan`; default by the kind (`medical` is PAN PAN) |
+| `on` | boolean | No | `false` cancels the emergency; default `true` |
+
+---
+
+## set_runway_in_use
+
+Makes a runway end the runway in use at an airport, for departures and arrivals, whatever the wind. An empty `runway` gives the choice back to the wind. The change is planned like any runway change: departures already under way finish on the old runway. Returns the runway end now chosen (`use`).
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `icao` | string | Yes | Airport ICAO |
+| `runway` | string | No | Runway end, e.g. `24`; empty gives it back to the wind |
+
+---
+
+## get_staffed_stations
+
+The ATC stations a player works. On those the engine's ATC gives no clearances: an aircraft on a staffed station is the player's, its crew calling on its own and flying its last clearance.
+
+---
+
+## set_staffed_stations
+
+Sets the stations a player works; the list replaces the one before, and an empty list makes every station automatic again. Aircraft on a station no longer staffed go back to the engine from where they are.
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `stations` | array | Yes | Each `{icao, position, station, mode, autoHandoff}`: a whole `position` (`tower`, `ground`, `approach`, …) or one `station` by name (`Ruzyne Ground North`); several make a band-box. `mode` is `assist` (default), `silent` or `safetynet` |
+
+---
+
+## preview_clearance
+
+What giving one of our aircraft a clearance would say, without giving it: the controller's transmission and the crew's readback, with the same runway, route, wind and traffic as `atc_clearance` would use.
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `callsign` | string | Yes | Our aircraft's call sign |
+| `action` | string | Yes | A clearance from its actions (`list_our_traffic`), e.g. `pushback`, `taxi`, `lineup`, `takeoff`, `land` |
 
 ---

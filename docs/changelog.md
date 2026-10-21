@@ -30,6 +30,7 @@ Full release history with release notes is also available on the [GitHub Release
 
   See the [library changelog](https://github.com/mrlm-net/simconnect/blob/main/CHANGELOG.md).
 - The tool lists in the README, the tools reference overview and llm.txt now include the v0.15.0 tools (screenshot, jetways, model choice).
+- Go 1.27.3 (govulncheck: GO-2026-6809 in crypto/x509).
 
 ## [0.15.0] - 2026-10-11
 

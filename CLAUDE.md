@@ -14,8 +14,8 @@ A Model Context Protocol (MCP) server in Go for Microsoft Flight Simulator 2020 
 | Value | Tools | Platform |
 |-------|-------|----------|
 | `docs` (default) | 15 docs tools | any |
-| `simconnect` | 70 live tools | Windows |
-| `both` | 85 = 15 + 70 | docs anywhere; live tools on Windows when SimConnect opens at start (else docs only) |
+| `simconnect` | 75 live tools | Windows |
+| `both` | 90 = 15 + 75 | docs anywhere; live tools on Windows when SimConnect opens at start (else docs only) |
 
 Env: `DOCS_MSFS_VERSION` (2020/2024, default 2024), `DOCS_OVERRIDE_PATH`, `DOCS_LIVE_SCRAPE`, `SIMCONNECT_APP_NAME`, `SIMCONNECT_AIRCRAFT_PROFILES`, `SIMCONNECT_TRAFFIC_DATA`, `PORT`.
 
@@ -55,7 +55,7 @@ Windows-only code carries `//go:build windows` or a `_windows.go` suffix; the ta
 
 ## Tools
 
-- 85 tools: 70 simconnect + 15 docs, documented in `docs/mcp-tools-simconnect.md` and `docs/mcp-tools-docs.md`. Every tool added, removed or changed updates those docs and the counts (docs front matter and intro, README, website home page, CHANGELOG "Tool counts").
+- 90 tools: 75 simconnect + 15 docs, documented in `docs/mcp-tools-simconnect.md` and `docs/mcp-tools-docs.md`. Every tool added, removed or changed updates those docs and the counts (docs front matter and intro, README, website home page, CHANGELOG "Tool counts").
 - Tool schemas go to the client on every connect: keep a tool description to 1–2 sentences and each parameter to one short line (units, enum values, default). Detail belongs in the docs.
 - Errors are tool results with a code prefix (`INVALID_ARGUMENT:`, `NOT_FOUND:`, `NOT_APPLICABLE:`, `BRIDGE_DISCONNECTED:`, `TIMEOUT:`), not protocol errors.
 

@@ -9,6 +9,29 @@ All notable changes to SimConnect MCP are documented here. The format follows [K
 
 Full release history with release notes is also available on the [GitHub Releases page](https://github.com/mrlm-net/simconnect-mcp/releases).
 
+## [0.16.0] - 2026-10-21
+
+### Added
+
+- `declare_emergency`: one of our aircraft declares an emergency (squawk 7700, MAYDAY or PAN PAN, priority in the sequence, the airport's rescue vehicles), or cancels it.
+- `set_runway_in_use`: make a runway end the runway in use at an airport whatever the wind, or give the choice back to the wind.
+- `get_staffed_stations` and `set_staffed_stations`: the ATC stations a player works; the engine's ATC leaves the aircraft on them to the player.
+- `preview_clearance`: what a clearance to one of ours would say, controller and readback, without giving it.
+- Tool counts: docs 15, simconnect 75, both 90.
+
+### Changed
+
+- Upgraded `github.com/mrlm-net/simconnect` from v0.90.0 to v0.108.9, and the bundled library guides with it. The traffic engine gained, among much else:
+  - emergencies with rescue vehicles, staffed stations, a runway in use set by hand, scenarios and offline weather;
+  - arrivals planned apart where their ways in meet, en route traffic planned clear, runway changes as planned changeovers;
+  - jetways that dock more reliably: departures on a jetway gate wait for the jetways, one helper at a time, helpers sized to the gate;
+  - aircraft on the ground resting on all their wheels, with wheels turning as they taxi;
+  - "hold short of C" on the ground radio, intersection taxi requests with the runway.
+
+  See the [library changelog](https://github.com/mrlm-net/simconnect/blob/main/CHANGELOG.md).
+- The tool lists in the README, the tools reference overview and llm.txt now include the v0.15.0 tools (screenshot, jetways, model choice).
+- Go 1.27.3 (govulncheck: GO-2026-6809 in crypto/x509).
+
 ## [0.15.0] - 2026-10-11
 
 ### Added

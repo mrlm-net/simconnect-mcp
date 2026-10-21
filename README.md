@@ -174,7 +174,7 @@ The 46 guides of the `github.com/mrlm-net/simconnect` Go library (client, manage
 
 The server reconnects automatically when the simulator restarts — no manual intervention is required.
 
-`simconnect` mode exposes 70 MCP tools; on Windows, `MCP_MODE=both` serves them together with the 15 docs tools (85 in all). See [docs/mcp-tools-simconnect.md](docs/mcp-tools-simconnect.md) for the full reference.
+`simconnect` mode exposes 75 MCP tools; on Windows, `MCP_MODE=both` serves them together with the 15 docs tools (90 in all). See [docs/mcp-tools-simconnect.md](docs/mcp-tools-simconnect.md) for the full reference.
 
 **Simulation variables**
 
@@ -287,6 +287,18 @@ A tower per runway clears our line-ups, take-offs and crossings, and sends arriv
 | `get_tcas` | TCAS II for our airborne traffic: traffic and resolution advisories now, and the latest as they happened |
 | `get_camera` | The add-on camera (MSFS 2024) now, and its scripted scenes |
 | `set_camera` | Film our traffic (auto), follow or view an aircraft or your own, play a scene, the sim's cameras, or off |
+| `screenshot` | A picture of the simulator window, even when covered, as JPEG or PNG |
+| `get_jetways` | Jetways for our traffic: on or off, each gate's state, door offsets by type |
+| `set_jetways` | Switch jetways for our traffic on or off |
+| `set_jetway_door_offset` | Where a type's jetway helper goes so the jetway meets the door |
+| `get_model_choice` | Which simulator models our traffic uses, by rules and providers |
+| `set_model_rule` | Never use a model title (or a prefix with *) for our traffic |
+| `set_model_provider` | Switch a traffic model provider on or off |
+| `declare_emergency` | One of ours declares an emergency (MAYDAY or PAN PAN, priority, rescue vehicles), or cancels it |
+| `set_runway_in_use` | Make a runway end the runway in use whatever the wind, or give it back to the wind |
+| `get_staffed_stations` | The ATC stations a player works |
+| `set_staffed_stations` | Set the ATC stations a player works; the AI leaves their aircraft to the player |
+| `preview_clearance` | What a clearance to one of ours would say, controller and readback, without giving it |
 
 **Scheduled traffic**
 

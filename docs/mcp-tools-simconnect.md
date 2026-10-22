@@ -2638,7 +2638,7 @@ Returns an image item, and a text line with the window and sent sizes.
 
 ## get_jetways
 
-Jetways for our traffic (library `pkg/jetway`, v0.90): on or off, `available`, and if not, why (the helper package missing). Also each gate's state (`reserved`, `docking`, `docked`, `undocking`, `failed`) by airport and stand, and the door offsets by type set by hand.
+Jetways for our traffic (library `pkg/jetway`): on or off, `available`, and if not, why (the helper package missing). Also each gate's state (`reserved`, `docking`, `docked`, `undocking`, `failed`) by airport and stand, and the door offsets by type set by hand.
 
 **Parameters**: none.
 

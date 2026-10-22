@@ -30,7 +30,7 @@ go install github.com/mrlm-net/simconnect-mcp/cmd/simconnect-mcp@latest
 
 Requires Go 1.27+. The binary is installed as `simconnect-mcp`.
 
-> **Note:** The `simconnect` mode binary for Windows (CGo/SimConnect SDK) is not available via `go install` due to CGo requirements. Download the Windows release binary instead.
+> **Note:** The server is pure Go (no CGo). `go install` on Windows builds a binary with all three modes; elsewhere it builds the docs mode only, because the SimConnect code compiles for Windows alone. Release binaries are on the [releases page](https://github.com/mrlm-net/simconnect-mcp/releases).
 
 ### Build from source
 
@@ -66,7 +66,7 @@ Or with `go run` from the repository root:
 MCP_MODE=docs go run ./cmd/simconnect-mcp/
 
 # simconnect mode (Windows only)
-MCP_MODE=simconnect go run -tags windows ./cmd/simconnect-mcp/
+MCP_MODE=simconnect go run ./cmd/simconnect-mcp/
 ```
 
 Expected output (Gin startup log):
@@ -84,7 +84,7 @@ Expected output (Gin startup log):
 
 | Variable | Default | Valid values | Description |
 |----------|---------|--------------|-------------|
-| `MCP_MODE` | `docs` | `docs`, `simconnect`, `both` | Operating mode. `simconnect` requires Windows and `-tags windows` build flag. `both` serves the docs tools plus, on Windows with the simulator reachable at startup, the SimConnect tools. |
+| `MCP_MODE` | `docs` | `docs`, `simconnect`, `both` | Operating mode. `simconnect` requires Windows. `both` serves the docs tools plus, on Windows with the simulator reachable at startup, the SimConnect tools. |
 | `PORT` | `8080` | any port number | HTTP listen port. Applies to all modes. |
 | `SIMCONNECT_APP_NAME` | `simconnect-mcp` | any string | App name registered with the SimConnect SDK. Used in `simconnect` and `both` modes. |
 | `SIMCONNECT_AIRCRAFT_PROFILES` | *(none)* | directory path | Local aircraft systems profile overrides (`*.json`) for the user aircraft tools. |
@@ -121,8 +121,7 @@ Add the following to your `claude_desktop_config.json` (or equivalent MCP client
   "mcpServers": {
     "simconnect": {
       "command": "go",
-      "args": ["run", "./cmd/simconnect-mcp/"],
-      "cwd": "/path/to/simconnect-mcp",
+      "args": ["run", "-C", "/path/to/simconnect-mcp", "./cmd/simconnect-mcp/"],
       "env": {
         "MCP_MODE": "docs",
         "DOCS_MSFS_VERSION": "2024"
@@ -134,7 +133,7 @@ Add the following to your `claude_desktop_config.json` (or equivalent MCP client
 
 ## Available Tools
 
-The server exposes 15 MCP tools in `docs` mode — 12 for the SimConnect SDK reference and 3 for the [`github.com/mrlm-net/simconnect`](https://github.com/mrlm-net/simconnect) Go library guides — and 63 in `simconnect` mode. `both` mode on Windows serves all 78 when SimConnect is reachable at startup, and the 15 docs tools otherwise. See [docs/mcp-tools-docs.md](docs/mcp-tools-docs.md) and [docs/mcp-tools-simconnect.md](docs/mcp-tools-simconnect.md) for full parameter references, request/response examples, and error codes.
+In `docs` mode the server exposes the SimConnect SDK reference tools and the [`github.com/mrlm-net/simconnect`](https://github.com/mrlm-net/simconnect) Go library guide tools below; `simconnect` mode exposes the live tools (see [Live SimConnect Mode](#live-simconnect-mode)). `both` mode on Windows serves all of them when SimConnect is reachable at startup, and the docs tools otherwise. See [docs/mcp-tools-docs.md](docs/mcp-tools-docs.md) and [docs/mcp-tools-simconnect.md](docs/mcp-tools-simconnect.md) for full parameter references, request/response examples, and error codes.
 
 **SimConnect SDK reference**
 
@@ -160,7 +159,7 @@ All paginated `list_*` tools return an envelope (`items`, `page`, `page_size`, `
 
 **Go library guides**
 
-The 46 guides of the `github.com/mrlm-net/simconnect` Go library (client, manager, facilities, `pkg/airport`, `pkg/nav`, `pkg/traffic`, `pkg/systems`, `pkg/avionics`, `pkg/addons`, `pkg/camera`) are embedded at the library version the server is built with — currently **v0.31.3**. The `/health` response (docs and both modes) reports it as `library_version`.
+The guides of the `github.com/mrlm-net/simconnect` Go library (client, manager, facilities, `pkg/airport`, `pkg/nav`, `pkg/traffic`, `pkg/systems`, `pkg/avionics`, `pkg/addons`, `pkg/camera` and the rest) are embedded at the library version the server is built with (`internal/libdocs/assets/VERSION`). The `/health` response (docs and both modes) reports it as `library_version`.
 
 | Tool | Description |
 |------|-------------|
@@ -170,7 +169,7 @@ The 46 guides of the `github.com/mrlm-net/simconnect` Go library (client, manage
 
 ## Live SimConnect Mode
 
-`simconnect` mode connects to a running instance of MSFS 2020 or MSFS 2024 via the SimConnect SDK and exposes live simulator data as MCP tools. It is Windows-only and must be built with the `-tags windows` flag.
+`simconnect` mode connects to a running instance of MSFS 2020 or MSFS 2024 via the SimConnect SDK and exposes live simulator data as MCP tools. It is Windows-only: the SimConnect code carries `//go:build windows`, so it is built whenever `GOOS` is `windows`.
 
 The server reconnects automatically when the simulator restarts — no manual intervention is required.
 

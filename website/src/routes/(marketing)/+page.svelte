@@ -3,6 +3,9 @@
 	import { siteConfig } from '$lib/config/site.js';
 	import SeoHead from '$lib/components/layout/SeoHead.svelte';
 
+	let { data } = $props();
+	const facts = data.facts;
+
 	let copied = $state('');
 
 	const installCommand = 'go install github.com/mrlm-net/simconnect-mcp/cmd/simconnect-mcp@latest';
@@ -21,9 +24,9 @@
 	}
 
 	const modes = [
-		{ name: 'docs', tools: 15, where: 'any OS' },
-		{ name: 'simconnect', tools: 75, where: 'Windows' },
-		{ name: 'both', tools: 90, where: 'docs anywhere, live on Windows' }
+		{ name: 'docs', tools: facts.docsTools, where: 'any OS' },
+		{ name: 'simconnect', tools: facts.simconnectTools, where: 'Windows' },
+		{ name: 'both', tools: facts.allTools, where: 'docs anywhere, live on Windows' }
 	];
 
 	// Icon paths: 24×24, stroke 1.75
@@ -31,7 +34,7 @@
 		{
 			title: 'Documentation Mode',
 			icon: '<path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>',
-			body: 'Query the full SimConnect SDK reference — simulation variables, events, API functions, and data structures — and the 46 guides of the Go library it is built on, from any MCP client.'
+			body: `Query the full SimConnect SDK reference — simulation variables, events, API functions, and data structures — and the ${facts.guides} guides of the Go library it is built on, from any MCP client.`
 		},
 		{
 			title: 'Live Simulator Data',
@@ -93,7 +96,7 @@
 	const docs = [
 		{ title: 'Getting Started', href: '/docs/getting-started', body: 'Install the binary and connect to your MCP client in minutes.' },
 		{ title: 'Claude Code Setup', href: '/docs/claude-code', body: 'Add SimConnect MCP to Claude Code for in-editor SDK lookups and live simulator access.' },
-		{ title: 'MCP Tools Reference', href: '/docs/mcp-tools-docs', body: 'All 15 docs-mode MCP tools with parameters, examples, and error codes.' },
+		{ title: 'MCP Tools Reference', href: '/docs/mcp-tools-docs', body: `All ${facts.docsTools} docs-mode MCP tools with parameters, examples, and error codes.` },
 		{ title: 'AI Traffic & ATC', href: '/docs/ai-traffic', body: 'The guide: an airline schedule at your airport, a tower and approach controller, and what to ask.' }
 	];
 </script>

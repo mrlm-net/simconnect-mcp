@@ -64,7 +64,7 @@ Verify the server is running:
 
 ```bash
 curl http://localhost:8080/health
-# {"docs_loaded":true,"docs_source":"embedded","library_version":"v0.31.3","mode":"docs","msfs_version":"2024","status":"ok",...}
+# {"docs_loaded":true,"docs_source":"embedded","library_version":"v0.108.9","mode":"docs","msfs_version":"2024","status":"ok",...}
 ```
 
 The server listens on port `8080` by default. See [Configuration](/docs/configuration) to change the port or MSFS version used for documentation.
@@ -77,10 +77,10 @@ SimConnect mode connects to a running instance of MSFS 2020 or MSFS 2024 and str
 MCP_MODE=simconnect simconnect-mcp
 ```
 
-Or using `go run` with the required build tag:
+Or with `go run` from the repository root:
 
 ```bash
-go run -tags windows ./cmd/simconnect-mcp/
+MCP_MODE=simconnect go run ./cmd/simconnect-mcp/
 ```
 
 Verify the server is running and connected:

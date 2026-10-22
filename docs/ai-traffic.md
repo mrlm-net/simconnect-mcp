@@ -48,13 +48,22 @@ Each airport has a fleet of tugs, fuel trucks, stairs and GPUs sized by its stan
 At each airport it works, the engine runs:
 
 - **A tower per runway**, which clears line-ups, take-offs and runway crossings, and sends an arrival around when the runway won't be free.
-- **A landing sequence per runway end**, which orders the arrivals on the final by wake, keeps at least the minimum spacing (more in low visibility), and has them lose delays with speed, vectors and holds.
+- **A landing sequence per runway end**, which orders the arrivals on the final by wake, keeps at least the minimum spacing (more in low visibility), and has them lose delays with speed and vectors. Holds are kept for emergencies, weather and closures, never for sequencing.
 - **Separation**, with conflicts predicted and resolved for ours, and TCAS II on each of ours (`get_tcas`).
 - **The radio**: every instruction and readback, by position and frequency.
 
 You can watch them with `get_landing_sequence`, `get_conflicts` and `get_atc_log`, and step in with `approach_instruction`. With it you can move an arrival up or down the order, slow it or set its speed, hold it (at its STAR fix or at a point), release it, send it direct, have it join the final at a point, or send it around. `get_traffic_airport_info` shows the runways in use and the ATIS the engine's controllers work with.
 
 **Your own flight.** The engine never controls or calls your aircraft. When your ATC clears you onto a runway, `set_player_clearance` tells the engine, and while you line up, take off or land there, none of its traffic is cleared onto it. Landing, you're put in the landing sequence and the traffic fits around you.
+
+## Running the show
+
+You can also act as the supervisor:
+
+- **Emergencies.** `declare_emergency` has one of ours declare an emergency (`engine-failure`, `medical`, `fuel`, `pressurisation`, `fire` or `hydraulic`, as MAYDAY or PAN PAN). It squawks 7700 and calls approach, gets priority in the landing sequence, and the airport's rescue vehicles meet it. `on: false` cancels it.
+- **The runway in use.** `set_runway_in_use` picks a runway end at an airport whatever the wind; an empty `runway` gives the choice back to the wind. The change is planned like any runway change, so departures already under way finish on the old runway.
+- **Stations you work.** `set_staffed_stations` hands you whole positions (`tower`, `ground`, `approach`, …) or single stations by name; several make a band-box. The engine's ATC gives no clearances on them: aircraft there call you and fly their last clearance until you clear them with `atc_clearance`. `get_staffed_stations` lists them, and an empty list makes everything automatic again.
+- **What a clearance would say.** `preview_clearance` gives the controller's transmission and the crew's readback for a clearance, with the same runway, route, wind and traffic `atc_clearance` would use, without giving it.
 
 ## Filming it
 
@@ -71,6 +80,10 @@ In MSFS 2024 the engine can take the camera. `set_camera` with `auto` lets a dir
 - "Add an arrival from Munich 20 minutes from now."
 - "I'm cruising at FL360 along this route: put some traffic around me."
 - "Film the traffic at Prague." … "Follow CSA7." … "Give me the camera back."
+- "AFR1094 has an engine failure: declare a MAYDAY."
+- "Make 06 the runway in use at Prague." … "Give the runway back to the wind."
+- "I'll work Prague tower; leave ground and approach to the engine."
+- "What would TVS1860's take-off clearance say?"
 - "Stop the schedule and let the aircraft finish their flights." (`stop_schedule`)
 - "Stop the schedule and remove everything now." (`stop_schedule` with `remove: true`)
 
@@ -88,7 +101,8 @@ In MSFS 2024 the engine can take the camera. `set_camera` with `auto` lets a dir
 | Real traffic and cruise | [`set_real_traffic`](/docs/mcp-tools-simconnect#set_real_traffic), [`observe_traffic`](/docs/mcp-tools-simconnect#observe_traffic), [`set_traffic_corridor`](/docs/mcp-tools-simconnect#set_traffic_corridor) |
 | Add and clear aircraft by hand | [`spawn_departure`](/docs/mcp-tools-simconnect#spawn_departure), [`spawn_arrival`](/docs/mcp-tools-simconnect#spawn_arrival), [`atc_clearance`](/docs/mcp-tools-simconnect#atc_clearance), [`list_our_traffic`](/docs/mcp-tools-simconnect#list_our_traffic) |
 | Approach and tower | [`get_tcas`](/docs/mcp-tools-simconnect#get_tcas), [`get_landing_sequence`](/docs/mcp-tools-simconnect#get_landing_sequence), [`approach_instruction`](/docs/mcp-tools-simconnect#approach_instruction), [`get_atc_log`](/docs/mcp-tools-simconnect#get_atc_log), [`get_conflicts`](/docs/mcp-tools-simconnect#get_conflicts), [`separation_minima`](/docs/mcp-tools-simconnect#separation_minima), [`set_player_clearance`](/docs/mcp-tools-simconnect#set_player_clearance) |
+| Supervise | [`declare_emergency`](/docs/mcp-tools-simconnect#declare_emergency), [`set_runway_in_use`](/docs/mcp-tools-simconnect#set_runway_in_use), [`get_staffed_stations`](/docs/mcp-tools-simconnect#get_staffed_stations), [`set_staffed_stations`](/docs/mcp-tools-simconnect#set_staffed_stations), [`preview_clearance`](/docs/mcp-tools-simconnect#preview_clearance) |
 | Look around | [`get_camera`](/docs/mcp-tools-simconnect#get_camera), [`set_camera`](/docs/mcp-tools-simconnect#set_camera), [`get_traffic_picture`](/docs/mcp-tools-simconnect#get_traffic_picture), [`get_traffic_status`](/docs/mcp-tools-simconnect#get_traffic_status), [`list_aircraft_models`](/docs/mcp-tools-simconnect#list_aircraft_models), [`generate_schedule`](/docs/mcp-tools-simconnect#generate_schedule) |
 | The airport | [`get_traffic_airport_info`](/docs/mcp-tools-simconnect#get_traffic_airport_info), [`get_active_runway`](/docs/mcp-tools-simconnect#get_active_runway), [`get_atis`](/docs/mcp-tools-simconnect#get_atis), [`plan_taxi_route`](/docs/mcp-tools-simconnect#plan_taxi_route), [`find_stands`](/docs/mcp-tools-simconnect#find_stands), [`get_airport_procedures`](/docs/mcp-tools-simconnect#get_airport_procedures) |
 
-For a worked example, see [Scenario 4 in Examples](/docs/examples).
+For worked examples, see Scenarios 4 and 5 in [Examples](/docs/examples).

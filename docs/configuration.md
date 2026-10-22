@@ -103,26 +103,20 @@ Run in both mode — docs tools everywhere, plus live SimConnect tools on Window
 MCP_MODE=both simconnect-mcp
 ```
 
-## Build Tags
+## Building for Windows
 
-SimConnect mode requires the `windows` build tag. This tag gates the CGo/FFI bindings to the SimConnect SDK so the package compiles on non-Windows platforms without the SDK present.
+The server is pure Go: the library loads the SimConnect DLL through Go's `syscall` package, with no CGo and no SDK headers. The SimConnect code carries `//go:build windows`, and Go sets that constraint from `GOOS`, so no `-tags` flag is needed.
 
-Build with SimConnect support (Windows only):
-
-```bash
-go build -tags windows ./cmd/simconnect-mcp/
-```
-
-Cross-platform build for docs mode (no build tag required):
+On Windows, a plain build has all three modes:
 
 ```bash
 go build ./cmd/simconnect-mcp/
 ```
 
-When cross-compiling for Windows from another OS, combine the build tag with `GOOS`:
+On another OS the same command builds docs mode only. To build the Windows binary from there, set `GOOS`:
 
 ```bash
-GOOS=windows go build -tags windows ./cmd/simconnect-mcp/
+GOOS=windows go build ./cmd/simconnect-mcp/
 ```
 
-Attempting to run `MCP_MODE=simconnect` with a binary built without the `windows` tag will result in a startup error, preventing accidental use of an unsupported configuration.
+`MCP_MODE=simconnect` on a binary built for another OS stops at startup with `unknown MCP_MODE`, listing the modes that platform has.

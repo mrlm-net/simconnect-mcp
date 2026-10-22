@@ -1,6 +1,6 @@
 ---
 title: Examples
-description: Worked examples showing how to use SimConnect MCP tools in Claude Desktop.
+description: Worked examples showing how to use SimConnect MCP tools in Claude Desktop — live data, user aircraft controls, scheduled traffic and the traffic supervisor tools.
 order: 3
 section: integration
 ---
@@ -247,3 +247,44 @@ ground    Swiss 643, pushback approved, facing north-west
 > "The LKPR schedule is running. Wizz Air 794 to Budapest has just been cleared for take-off on runway 24. Swiss 643 to Geneva is boarding on B14 and will push next. Air France 1094 from Paris is on the approach and has been slowed to 210 knots for spacing."
 
 An illustration of the shapes (field names as the engine returns them, values shortened). `stop_schedule` with `remove: true` takes the schedule's aircraft out of the simulator.
+
+---
+
+## Scenario 5: An Emergency on a Runway You Pick
+
+**User prompt in Claude Desktop**
+
+> "Use runway 06 at Prague for now. Then have AFR1094 declare a MAYDAY with an engine failure, and tell me what its landing clearance will sound like."
+
+**How it works**
+
+Claude makes three calls on the running schedule from Scenario 4:
+
+1. `set_runway_in_use` makes 06 the runway in use at LKPR whatever the wind. The change is planned like any runway change: departures already under way finish on the old runway.
+2. `declare_emergency` has AFR1094 squawk 7700 and call MAYDAY. Approach answers, the aircraft gets priority in the landing sequence, and the airport's rescue vehicles drive out to meet it.
+3. `preview_clearance` returns what the tower's landing clearance and the crew's readback would be, without giving the clearance.
+
+**MCP tool calls**
+
+```json
+{ "jsonrpc": "2.0", "id": 5, "method": "tools/call",
+  "params": { "name": "set_runway_in_use", "arguments": { "icao": "LKPR", "runway": "06" } } }
+```
+
+```json
+{ "jsonrpc": "2.0", "id": 6, "method": "tools/call",
+  "params": { "name": "declare_emergency", "arguments": { "callsign": "AFR1094", "kind": "engine-failure", "level": "mayday" } } }
+```
+
+```json
+{ "jsonrpc": "2.0", "id": 7, "method": "tools/call",
+  "params": { "name": "preview_clearance", "arguments": { "callsign": "AFR1094", "action": "land" } } }
+```
+
+`declare_emergency` answers with `{"callsign": "AFR1094", "kind": "engine-failure", "emergency": true}`. `preview_clearance` answers with `callsign`, `action` and `phrase`, where `phrase.controller` is the tower's transmission and `phrase.readback` the crew's.
+
+Later, `set_runway_in_use` with an empty `runway` gives the choice back to the wind, and `declare_emergency` with `on: false` cancels the emergency.
+
+**Playing the controller yourself**
+
+To work a position yourself instead of the engine, `set_staffed_stations` with `{"stations": [{"icao": "LKPR", "position": "tower"}]}` hands you Prague tower. Aircraft on it call you and wait for your clearances (`atc_clearance`), while ground and approach stay automatic. `{"stations": []}` gives the tower back.

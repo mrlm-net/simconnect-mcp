@@ -84,8 +84,8 @@ Start MSFS 2020 / 2024 before launching Claude Code. The server reconnects autom
 | Scope | Flag | Location | Shared |
 |-------|------|----------|--------|
 | Project | `--scope project` | `.mcp.json` (repo root) | Yes — commit to git |
-| Local | `--scope local` | `.claude/mcp.json` | No — gitignored |
-| User | `--scope user` | `~/.claude/mcp.json` | No — your machine only |
+| Local | `--scope local` | `~/.claude.json` (under this project's path) | No — you, in this project only |
+| User | `--scope user` | `~/.claude.json` | No — you, in every project |
 
 Use **project** scope for SimConnect MCP so every contributor in the repo gets the server without manual setup.
 

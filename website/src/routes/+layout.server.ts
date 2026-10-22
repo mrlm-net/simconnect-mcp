@@ -2,6 +2,7 @@ import type { LayoutServerLoad } from './$types.js';
 import { loadDocIndex } from '$lib/content/pipeline.server.js';
 import { buildNavigation } from '$lib/config/navigation.js';
 import { siteConfig } from '$lib/config/site.js';
+import { loadFacts } from '$lib/content/facts.server.js';
 import { base } from '$app/paths';
 
 export const prerender = true;
@@ -15,5 +16,5 @@ export const load: LayoutServerLoad = () => {
         { title: 'Examples', href: `${base}/docs/examples`, order: 2 },
         { title: 'Changelog', href: `${base}/docs/changelog`, order: 3 }
     ];
-    return { navigation, topLinks, siteConfig };
+    return { navigation, topLinks, siteConfig, facts: loadFacts() };
 };

@@ -14,7 +14,7 @@ export interface ChangelogGroup {
 }
 
 function changelogPath(): string {
-    return path.resolve(process.cwd(), '..', 'docs', 'changelog.md');
+    return path.resolve(process.cwd(), '..', 'CHANGELOG.md');
 }
 
 function escapeHtml(text: string): string {
@@ -39,7 +39,7 @@ function resolveHtmlDirectives(code: string): string {
 }
 
 /**
- * Parse docs/changelog.md into ChangelogGroup[] sorted by minor version
+ * Parse ../CHANGELOG.md into ChangelogGroup[] sorted by minor version
  * descending (latest first). Within each group, releases are sorted by patch
  * version descending.
  */

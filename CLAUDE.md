@@ -35,7 +35,6 @@ internal/corpus/           embedded SimConnect SDK docs corpus (JSON) and its Do
 internal/libdocs/          embedded mrlm-net/simconnect library guides, at the version go.mod requires
 tools/scraper/             scrapes docs.flightsimulator.com into internal/corpus/assets (go generate ./internal/corpus/)
 tools/libdocs/             copies the library guides into internal/libdocs/assets (go generate ./internal/libdocs/)
-tools/changelog/           writes docs/changelog.md from CHANGELOG.md (go generate ./tools/changelog/)
 tests/integration/         docs-mode and mock-bridge end-to-end tests
 docs/                      website docs; docs/decisions/ = ADRs and the historic milestone plans (not on the site)
 ```
@@ -48,14 +47,13 @@ MCP_MODE=docs go run ./cmd/simconnect-mcp/
 MCP_MODE=both go run ./cmd/simconnect-mcp/              # Windows; .mcp.json runs this over stdio
 GOOS=windows go build ./cmd/simconnect-mcp/             # cross-compile
 go generate ./internal/libdocs/                         # after a library bump
-go generate ./tools/changelog/                          # after editing CHANGELOG.md
 ```
 
 Windows-only code carries `//go:build windows` or a `_windows.go` suffix; the tag comes from `GOOS`, never from `-tags`. No `runtime.GOOS` checks in production paths.
 
 ## Tools
 
-- 90 tools: 75 simconnect + 15 docs, documented in `docs/mcp-tools-simconnect.md` and `docs/mcp-tools-docs.md`. Every tool added, removed or changed updates those docs and the counts (docs front matter and intro, README, website home page, CHANGELOG "Tool counts").
+- 90 tools: 75 simconnect + 15 docs, documented in `docs/mcp-tools-simconnect.md` and `docs/mcp-tools-docs.md`. Every tool added, removed or changed updates those docs and the counts (docs front matter and intro, README "Live SimConnect Mode", CHANGELOG "Tool counts"; the website counts them from the code at build time).
 - Tool schemas go to the client on every connect: keep a tool description to 1–2 sentences and each parameter to one short line (units, enum values, default). Detail belongs in the docs.
 - Errors are tool results with a code prefix (`INVALID_ARGUMENT:`, `NOT_FOUND:`, `NOT_APPLICABLE:`, `BRIDGE_DISCONNECTED:`, `TIMEOUT:`), not protocol errors.
 
@@ -73,7 +71,7 @@ Windows-only code carries `//go:build windows` or a `_windows.go` suffix; the ta
 - No third-party dependencies beyond what go.mod has; stdlib or mrlm-net libraries.
 - No global state; pass dependencies explicitly. Unit tests next to the code, integration tests in `tests/`.
 - Branches: `feat/…`, `fix/…`, `chore/simconnect-0.xx` (library bumps), `docs/…`. Squash-merge PRs into `main`.
-- Releases are beta: a patch for fixes, a minor for features. `CHANGELOG.md` is the source of release notes (Keep a Changelog); regenerate `docs/changelog.md` from it, never edit that copy by hand.
+- Releases are beta: a patch for fixes, a minor for features. `CHANGELOG.md` is the source of release notes (Keep a Changelog); the website renders it at /docs/changelog.
 - Licence: BSL 1.1 after v0.8.0; commercial use via support@mrlm.net.
 
 ## Workload Management

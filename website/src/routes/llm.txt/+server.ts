@@ -1,11 +1,13 @@
 import type { RequestHandler } from './$types.js';
 import { loadDocIndex } from '$lib/content/pipeline.server.js';
 import { siteConfig } from '$lib/config/site.js';
+import { loadFacts } from '$lib/content/facts.server.js';
 
 export const prerender = true;
 
 export const GET: RequestHandler = () => {
     const baseUrl = `${siteConfig.url}${siteConfig.basePath}`;
+    const facts = loadFacts();
     const docs = loadDocIndex();
     docs.sort((a, b) => a.order - b.order);
 
@@ -23,7 +25,7 @@ export const GET: RequestHandler = () => {
 - Documentation: ${baseUrl}/docs/
 - Repository: ${siteConfig.repoUrl}
 
-## MCP Tools — Docs Mode (MCP_MODE=docs, 15 tools)
+## MCP Tools — Docs Mode (MCP_MODE=docs, ${facts.docsTools} tools)
 
 SimConnect SDK reference:
 
@@ -40,13 +42,13 @@ SimConnect SDK reference:
 - get_error_code: Fetch an error code by name or integer value
 - search_docs: Full-text search across all corpus types
 
-github.com/mrlm-net/simconnect Go library guides (v0.31.3):
+github.com/mrlm-net/simconnect Go library guides (${facts.libraryVersion}, ${facts.guides} guides):
 
 - list_library_guides: List the library guides and their chapters, optionally filtered by section
 - get_library_guide: Read a library guide, or a single chapter of it, as Markdown
 - search_library_docs: Search the library guides chapter by chapter
 
-## MCP Tools — SimConnect Mode (MCP_MODE=simconnect, Windows only, 75 tools)
+## MCP Tools — SimConnect Mode (MCP_MODE=simconnect, Windows only, ${facts.simconnectTools} tools)
 
 - get_simvar_value: Read a single live simulation variable from the running simulator
 - get_simvar_values: Read up to 20 simulation variables in a single call
@@ -138,7 +140,7 @@ Scheduled and real traffic (adds and removes AI aircraft in the simulator):
 
 ## MCP Tools — Both Mode (MCP_MODE=both)
 
-Docs-mode tools always; on Windows, also the SimConnect-mode tools (90 in total) when the simulator is reachable at startup.
+Docs-mode tools always; on Windows, also the SimConnect-mode tools (${facts.allTools} in total) when the simulator is reachable at startup.
 
 ## Documentation
 

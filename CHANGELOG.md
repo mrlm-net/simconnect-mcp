@@ -4,6 +4,26 @@ All notable changes to SimConnect MCP are documented here. The format follows [K
 
 Full release history with release notes is also available on the [GitHub Releases page](https://github.com/mrlm-net/simconnect-mcp/releases).
 
+## [0.17.0] - 2026-10-22
+
+### Added
+
+- `play_camera_shot`: one camera shot on one of ours, then the camera goes back to the simulator: a move, a glide by number, or a slow glide between two frames picked from stills (`"to": "dolly"` slides along the aircraft); `back`, `fov` and `at` tune or hold it. Returns what plays.
+- `get_camera_glides` and `get_camera_moves`: the glides between picked frames (numbered for `play_camera_shot`) and the moves a shot takes.
+- `capture_camera`: the simulator's own camera read without taking it, placed from the aircraft filmed (offsets as a scene shot's) and on the airport (nearest stand and taxiway, along and beside the runway).
+- `get_vehicle_radio` and `set_vehicle_radio`: the ground vehicles talk on the radio, or keep quiet; a runway crossing still waits for the tower.
+- Tool counts: docs 15, simconnect 81, both 96.
+
+### Changed
+
+- Upgraded `github.com/mrlm-net/simconnect` from v0.108.9 to v0.111.0, and the bundled library guides with it. The traffic engine gained, among much else:
+  - a composition-first camera: shots are slow glides between picked frames, never from behind the tail, and scenes take `from`/`to`;
+  - the departure queue counted per runway entrance, a full-length departure taking the entrance with the shorter line;
+  - scenes that set up the airport, declare emergencies, hold runways and cue arrivals after a departure's pushback;
+  - jetway gates that rest after failed docks, gear held down for models that refuse the mains, and the user aircraft placed on a stand.
+
+  See the [library changelog](https://github.com/mrlm-net/simconnect/blob/main/CHANGELOG.md).
+
 ## [0.16.0] - 2026-10-21
 
 ### Added

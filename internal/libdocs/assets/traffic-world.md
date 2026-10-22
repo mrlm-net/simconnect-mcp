@@ -73,6 +73,7 @@ A transmission (`traffic.Transmission`) has everything a voice needs: the text, 
 
   A clearance given with `Clear` is said on the radio as the automatic controllers' are, readback included (`GET /api/radio`).
 - An arrival's `ControlView.Sequence` is its place in its airport's landing sequence: number, leader, spacing, minimum. It is the same entry `/api/sequence` gives.
+- `PlaceUser(icao, stand)` (`POST /api/user/place`) puts the user aircraft on a stand, where and as an aircraft parks there: a scenario's start. It refuses while the aircraft flies, moves (over 1 kt) or runs an engine, and when one of ours holds the stand or an aircraft is in the way; each refusal is its own error (`ErrUserAirborne`, `ErrUserMoving`, `ErrUserEngines`, `ErrStandOccupied`).
 - `Register(mux)`: serve that API on the host's own server (the airport map does).
 
 ## Flights at a chosen time
@@ -253,7 +254,7 @@ The World uses these definition, request and event IDs on the connection; a host
 
 | IDs | What |
 |---|---|
-| 2000–2021 | user aircraft, traffic scan, model and vehicle lists, sim events, camera state |
+| 2000–2021 | user aircraft (2017: placing it on a stand), traffic scan, model and vehicle lists, sim events, camera state |
 | 7100–7999 | library defaults: airport loader 7100/7200, taxi 7300/7400, arrivals 7500/7600, injector 7700–7999 |
 | 8200–8999 | stand allocators 8200/8300 (+4 per airport), procedures 8400/8500, airway crawl 8600/8610–8625, nav loader 8700/8800, airport list 8900 |
 | 10010–10011 | weather at the user aircraft |
@@ -310,6 +311,19 @@ The World's ground vehicles can be switched off by kind: tugs, fuel trucks, stai
 - **Follow-me cars off:** arrivals go to their stand without one.
 
 Vehicles already at work finish their job and are not replaced. In a director and actuator pair the director decides, so its switches count.
+
+The vehicles talk on the radio: "Ruzyne Ground, Tug 1, request proceed via G". A vehicle calls when it is within 80 m of the taxiway or runway, not as it sets off (`traffic.VehicleAskAheadM`). `World.SetVehicleRadio(false)` (`POST /api/vehicles/radio {"on": false}`) keeps them quiet: a taxiway is theirs without a call, and a runway crossing still waits for the tower in its turn, only nothing is said. `World.VehicleRadio()` (`GET /api/vehicles/radio`) says which.
+
+## Departure queue
+
+Departures stay on their stands while the queue ahead of them is full, as departure management does: the queue at the runway stays short, and the arrivals are not spaced for a long one (`traffic.CheckDepartureQueue`). Two queues are counted apart:
+
+- **Taxiing out:** up to 6 departures between their stands and the runway, from the push to the line at the runway (`DefaultMaxDepartureQueue`).
+- **At the runway:** departures in its line (within 400 m of it), holding short, lining up or rolling. Each runway has its own queue: 3 for each entrance at its end, at least 4 (`DefaultMaxRunwayQueue`, `ManagerOptions.RunwayQueue`). LKPR 24 has two entrances, A and Z, so 6; EDDM's runways have three each, so 9.
+
+An entrance at the runway's end has a holding point of its own and lies within 120 m of the nearest one (`airport.EndEntrances`, `EndEntranceSpanMeters`), which is itself within 300 m of the threshold (`FullLengthMeters`, measured on 262 runway ends at 40 large airports). LKPR 24's A and Z both join the runway 201 m in. Intersections further in (LKPR 24: B, E) are not entrances; departures for them are planned as before.
+
+A full-length departure takes the entrance with the shorter line. Each departure already heading for a holding point counts as 250 m more taxi there (`airport.RouteOptions.HoldShortQueue`), and the radio still says only "runway 24".
 
 **Model providers.** Our traffic's models come from providers, each on or off: a title's package names it (FSLTL, AIG, GSX, MyCrew, else the package's creator; `traffic.modelProviders` holds the patterns), and a title the simulator lists on no package on disk is MSFS's own. The user's flyable add-ons (FlyByWire, Fenix: `isUserSelectable = 1`) start off, as heavy models; the rest on. `World.ModelProviders()` (`GET /api/models/providers`) lists them per kind with their title counts, `World.SetModelProviders(map[provider]bool)` (`POST /api/models/providers`) switches them. A provider off is passed over for the next choice; where nothing else is there, any is taken and the traffic log says so.
 

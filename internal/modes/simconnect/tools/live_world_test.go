@@ -201,6 +201,11 @@ func TestWorldCameraTools(t *testing.T) {
 		"POST /api/camera":       map[string]any{"mode": "view", "acquired": true},
 		"POST /api/camera/scene": map[string]any{"mode": "scene", "acquired": true},
 		"GET /api/control":       []world.ControlView{{ID: 3, Tail: "CSA7", ICAO: "LKPR"}},
+		"GET /api/camera/glides": [][2]string{{"sideDolly_dist1_t50", "dolly"}, {"revealRise_dist2.4_t50", "revealRise_dist1.6_t50"}},
+		"GET /api/camera/moves":  []string{"crane", "topOrbit"},
+		"POST /api/camera/shot":  map[string]string{"playing": "sideDolly, 10 s"},
+		"POST /api/camera/capture": world.CompositionCapture{Name: "stand",
+			Subject: &world.CaptureSubject{Tail: "CSA7"}},
 	}}
 	gin.SetMode(gin.TestMode)
 	r := gin.New()
@@ -251,5 +256,41 @@ func TestWorldCameraTools(t *testing.T) {
 	}
 	if _, isErr := call("set_camera", map[string]any{"action": "off"}); isErr {
 		t.Error("off")
+	}
+
+	got, isErr = call("get_camera_glides", nil)
+	if g, _ := got["glides"].([]any); isErr || len(g) != 2 || g[1].(map[string]any)["glide"] != float64(2) {
+		t.Fatalf("get_camera_glides: %v", got)
+	}
+	if got, isErr := call("get_camera_moves", nil); isErr || len(got["moves"].([]any)) != 2 {
+		t.Fatalf("get_camera_moves: %v", got)
+	}
+	got, isErr = call("play_camera_shot", map[string]any{"icao": "lkpr", "callsign": "csa7", "from": "sideDolly_dist1_t50", "to": "dolly", "at": 0.5})
+	if isErr || got["playing"] == nil {
+		t.Fatalf("play_camera_shot: %v", got)
+	}
+	if b, _ := fw.bodies["POST /api/camera/shot"].(map[string]any); b["tail"] != "CSA7" || b["icao"] != "LKPR" || b["to"] != "dolly" || b["at"] != 0.5 {
+		t.Errorf("shot body %v", b)
+	}
+	if _, isErr := call("play_camera_shot", map[string]any{"icao": "LKPR", "callsign": "CSA7", "glide": 3.0}); isErr {
+		t.Error("glide shot")
+	}
+	if b, _ := fw.bodies["POST /api/camera/shot"].(map[string]any); b["glide"] != 3 || b["at"] != nil {
+		t.Errorf("glide body %v", b)
+	}
+	for _, bad := range []map[string]any{{"icao": "LKPR", "callsign": "CSA7"},
+		{"icao": "LKPR", "callsign": "CSA7", "move": "topOrbit", "glide": 1.0},
+		{"icao": "LKPR", "callsign": "CSA7", "from": "sideDolly_dist1_t50"},
+		{"icao": "LKPR", "callsign": "NOPE", "move": "topOrbit"}} {
+		if _, isErr := call("play_camera_shot", bad); !isErr {
+			t.Errorf("shot accepted %v", bad)
+		}
+	}
+	got, isErr = call("capture_camera", map[string]any{"icao": "lkpr", "name": "stand", "callsign": "csa7"})
+	if s, _ := got["subject"].(map[string]any); isErr || s["tail"] != "CSA7" {
+		t.Fatalf("capture_camera: %v", got)
+	}
+	if b, _ := fw.bodies["POST /api/camera/capture"].(map[string]any); b["tail"] != "CSA7" || b["name"] != "stand" {
+		t.Errorf("capture body %v", b)
 	}
 }

@@ -115,6 +115,10 @@ Airborne ATC (the engine's tower, landing sequences, separation and radio):
 - get_tcas: TCAS II for our airborne traffic: traffic and resolution advisories now and the latest events
 - get_camera: The add-on camera (MSFS 2024) now and its scripted scenes
 - set_camera: Film our traffic, follow or view an aircraft, play a scene, or give the camera back
+- play_camera_shot: One camera shot on one of ours: a move, a glide by number, or a glide between two frames (or a dolly)
+- get_camera_glides: The glides between picked frames, numbered for play_camera_shot
+- get_camera_moves: The moves a camera shot takes
+- capture_camera: The simulator's own camera, placed: offset from the aircraft filmed, nearest stand, taxiway and runway
 - screenshot: A picture of the simulator window, even when covered, as JPEG or PNG
 - get_jetways: Jetways for our traffic: on or off, each gate's state, door offsets by type
 - set_jetways: Switch jetways for our traffic on or off
@@ -127,6 +131,8 @@ Airborne ATC (the engine's tower, landing sequences, separation and radio):
 - get_staffed_stations: The ATC stations a player works
 - set_staffed_stations: Set the ATC stations a player works; the AI leaves their aircraft to the player
 - preview_clearance: What a clearance to one of ours would say, controller and readback, without giving it
+- get_vehicle_radio: Whether the ground vehicles talk on the radio
+- set_vehicle_radio: Turn the ground vehicles' radio on or off; a runway crossing still waits for the tower
 
 Scheduled and real traffic (adds and removes AI aircraft in the simulator):
 

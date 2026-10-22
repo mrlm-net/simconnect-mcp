@@ -869,7 +869,7 @@ An object with the following fields:
 | Field | Type | Description |
 |-------|------|-------------|
 | `library` | string | Always `"github.com/mrlm-net/simconnect"` |
-| `version` | string | Library version the guides were taken from (e.g., `"v0.108.9"`) |
+| `version` | string | Library version the guides were taken from (e.g., `"v0.111.0"`) |
 | `total` | integer | Number of guides returned |
 | `guides` | Guide[] | Guides, ordered by section and position within the section |
 
@@ -909,7 +909,7 @@ Each `Guide` has:
     "content": [
       {
         "type": "text",
-        "text": "{\"library\":\"github.com/mrlm-net/simconnect\",\"version\":\"v0.108.9\",\"total\":1,\"guides\":[{\"slug\":\"airport-layout\",\"title\":\"Airport Layout & Taxi Routing\",\"description\":\"Load an airport's ground layout with pkg/airport and compute taxi routes between stands and runways.\",\"section\":\"airport\",\"chapters\":[\"Loading a layout\",\"The Layout model\",\"Taxi graph and routes\",\"GeoJSON\",\"Procedures: SIDs, STARs, approaches\",\"Airport limits\",\"Which airport an aircraft is at\",\"Seeing it on a map\"]}]}"
+        "text": "{\"library\":\"github.com/mrlm-net/simconnect\",\"version\":\"v0.111.0\",\"total\":1,\"guides\":[{\"slug\":\"airport-layout\",\"title\":\"Airport Layout & Taxi Routing\",\"description\":\"Load an airport's ground layout with pkg/airport and compute taxi routes between stands and runways.\",\"section\":\"airport\",\"chapters\":[\"Loading a layout\",\"The Layout model\",\"Taxi graph and routes\",\"GeoJSON\",\"Procedures: SIDs, STARs, approaches\",\"Airport limits\",\"Which airport an aircraft is at\",\"Seeing it on a map\"]}]}"
       }
     ]
   }

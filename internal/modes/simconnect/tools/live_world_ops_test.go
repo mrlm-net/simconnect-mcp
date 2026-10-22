@@ -21,6 +21,8 @@ func TestWorldOperationTools(t *testing.T) {
 		"GET /api/stations/staffed":      []world.StaffedStation{{ICAO: "LKPR", Position: "tower"}},
 		"PUT /api/stations/staffed":      []world.StaffedStation{{ICAO: "LKPR", Position: "ground"}},
 		"GET /api/control/3/taxi/phrase": world.ClearancePhrase{Controller: traffic.Transmission{Text: "CSA7, taxi to holding point runway 24 via B"}},
+		"GET /api/vehicles/radio":        map[string]bool{"on": true},
+		"POST /api/vehicles/radio":       map[string]bool{"on": false},
 	}}
 	gin.SetMode(gin.TestMode)
 	r := gin.New()
@@ -76,5 +78,18 @@ func TestWorldOperationTools(t *testing.T) {
 	}
 	if fw.called("POST /api/control") {
 		t.Error("preview_clearance must not give the clearance")
+	}
+
+	if got, isErr := call("get_vehicle_radio", nil); isErr || got["on"] != true {
+		t.Fatalf("get_vehicle_radio: %v", got)
+	}
+	if got, isErr := call("set_vehicle_radio", map[string]any{"on": false}); isErr || got["on"] != false {
+		t.Fatalf("set_vehicle_radio: %v", got)
+	}
+	if b, _ := fw.bodies["POST /api/vehicles/radio"].(map[string]any); b["on"] != false {
+		t.Errorf("vehicle radio body: %v", b)
+	}
+	if _, isErr := call("set_vehicle_radio", map[string]any{}); !isErr {
+		t.Error("set_vehicle_radio without on should fail")
 	}
 }

@@ -1,13 +1,13 @@
 ---
 title: "MCP Tools — SimConnect Mode"
-description: Reference for the 75 live-data, user aircraft, AI traffic, airborne ATC and scheduled traffic MCP tools in SimConnect mode (MCP_MODE=simconnect, Windows only).
+description: Reference for the 81 live-data, user aircraft, AI traffic, airborne ATC and scheduled traffic MCP tools in SimConnect mode (MCP_MODE=simconnect, Windows only).
 order: 2
 section: reference
 ---
 
-All 75 MCP tools listed here are available when the server runs with `MCP_MODE=simconnect` (and, on Windows, with `MCP_MODE=both`, alongside the 15 docs tools — 90 in all). This mode provides live simulator data via the SimConnect SDK, and AI traffic under our control.
+All 81 MCP tools listed here are available when the server runs with `MCP_MODE=simconnect` (and, on Windows, with `MCP_MODE=both`, alongside the 15 docs tools — 96 in all). This mode provides live simulator data via the SimConnect SDK, and AI traffic under our control.
 
-**Both mode**: with `MCP_MODE=both` on Windows, the server registers these 75 tools alongside the 15 [docs-mode tools](/docs/mcp-tools-docs) — 90 tools in total — provided SimConnect opens at startup (10-second timeout). If the simulator cannot be reached, or on non-Windows platforms, both mode serves the 15 docs tools only; `simconnect_ready` in the `/health` response reports which case applies.
+**Both mode**: with `MCP_MODE=both` on Windows, the server registers these 81 tools alongside the 15 [docs-mode tools](/docs/mcp-tools-docs) — 96 tools in total — provided SimConnect opens at startup (10-second timeout). If the simulator cannot be reached, or on non-Windows platforms, both mode serves the 15 docs tools only; `simconnect_ready` in the `/health` response reports which case applies.
 
 **Requirements**: Windows only. Microsoft Flight Simulator 2020 or 2024 must be running with SimConnect enabled before issuing any read or transmit calls. The `get_sim_state` tool is safe to call at any time regardless of connection state.
 
@@ -80,6 +80,10 @@ Tools are called over the Model Context Protocol using JSON-RPC 2.0 with the `to
 | [`get_tcas`](#get_tcas) | TCAS advisories (TA, RA) of our airborne traffic |
 | [`get_camera`](#get_camera) | The add-on camera now and the scenes it can play |
 | [`set_camera`](#set_camera) | Film our traffic, follow or view an aircraft, play a scene, or give the camera back |
+| [`play_camera_shot`](#play_camera_shot) | One camera shot on one of ours: a move, a glide by number, or a glide between two frames (or a dolly) |
+| [`get_camera_glides`](#get_camera_glides) | The glides between picked frames, numbered for `play_camera_shot` |
+| [`get_camera_moves`](#get_camera_moves) | The moves a camera shot takes |
+| [`capture_camera`](#capture_camera) | The simulator's own camera, placed: offset from the aircraft filmed, nearest stand, taxiway and runway |
 | [`screenshot`](#screenshot) | A picture of the simulator window, even when covered, as JPEG or PNG |
 | [`get_jetways`](#get_jetways) | Jetways for our traffic: on or off, each gate's state, door offsets by type |
 | [`set_jetways`](#set_jetways) | Switch jetways for our traffic on or off |
@@ -92,6 +96,8 @@ Tools are called over the Model Context Protocol using JSON-RPC 2.0 with the `to
 | [`get_staffed_stations`](#get_staffed_stations) | The ATC stations a player works |
 | [`set_staffed_stations`](#set_staffed_stations) | Set the ATC stations a player works; the AI leaves their aircraft to the player |
 | [`preview_clearance`](#preview_clearance) | What a clearance to one of ours would say, controller and readback, without giving it |
+| [`get_vehicle_radio`](#get_vehicle_radio) | Whether the ground vehicles talk on the radio |
+| [`set_vehicle_radio`](#set_vehicle_radio) | Turn the ground vehicles' radio on or off; a runway crossing still waits for the tower |
 
 ---
 
@@ -2486,6 +2492,65 @@ Returns the camera as `get_camera` does.
 
 ---
 
+## play_camera_shot
+
+Plays one shot on one of our aircraft, then gives the camera back to the simulator (unless another shot came since). Shots are composed first: a frame is a move held still at one distance and moment, named `<move>_dist<back>_t<moment>` (`sideDolly_dist1.6_t50` is the middle of `sideDolly`, 1.6 times farther out). A glide moves slowly from one frame to another, at most 1.2 m/s; `"to": "dolly"` slides camera and aim along the aircraft at about 0.5 m/s, from side frames only. Give one of `move`, `glide`, or `from` with `to`. Not while a scene plays.
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `icao` | string | Yes | The airport |
+| `callsign` | string | Yes | One of ours |
+| `move` | string | One of | A move from `get_camera_moves` |
+| `glide` | number | One of | A glide's number from `get_camera_glides`, from 1 |
+| `from`, `to` | string | One of | Frames to glide between; `to` may be `dolly` |
+| `side` | number | No | A move's side: `+1` right, `-1` left |
+| `sec` | number | No | Length in seconds; a glide defaults to the longest shot (10 s) |
+| `back` | number | No | Distance scale: `1` as written, `2` twice as far |
+| `fov` | number | No | Field of view scale: `1` as written |
+| `at` | number | No | Hold the shot still at this point of it, `0` its start to `1` its end: a frame to look at |
+
+Returns `playing`: the shot's name and length, e.g. `"revealRise_dist2.4_t50 → revealRise_dist1.6_t50, 10 s"`.
+
+**Error codes**: `INVALID_ARGUMENT`, `NOT_FOUND` (not one of ours), `NOT_APPLICABLE` (no such shot, a scene is playing, or no camera on this simulator), `BRIDGE_DISCONNECTED`, `TIMEOUT`.
+
+---
+
+## get_camera_glides
+
+The glides between the picked frames: a dolly along each side frame, one moment on along the same move, one distance step in at the same moment. None from behind the tail. The scene filler and the auto camera play them in turn.
+
+**Parameters**: none.
+
+Returns `glides`, each `{glide, from, to}`; `glide` is the number `play_camera_shot` takes.
+
+---
+
+## get_camera_moves
+
+The moves a shot takes: the drone moves (`revealRise`, `topOrbit`, `sideDolly`, …), `crane` (the opening) and `runwaySide` / `underApproach` (fixed beside the runway).
+
+**Parameters**: none.
+
+Returns `moves`, a list of names.
+
+---
+
+## capture_camera
+
+Reads the simulator's own camera without taking it (`CameraGet`), to compose a shot by hand: put the camera where it looks right, then capture it.
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `icao` | string | Yes | The airport |
+| `name` | string | No | A name kept with the composition |
+| `callsign` | string | No | The aircraft filmed; default: the one of ours the camera aims nearest at, within 2 km |
+
+Returns `name`, `at`, `camera` (`lat`, `lon`, `altM`, `aboveGroundM`, `headingDeg`, `pitchDeg`, `fovDeg`), `subject` (the aircraft filmed: `tail`, `model`, `state`, `stand`, `distanceM`, the camera's `eye` and aimed `target` offsets from it as a scene shot's, `aimMissM`, `lengthM`) and `airport` (`nearestStand`, `nearestTaxiway`, their distances, `runwayEnd`, `alongRunwayM`, `rightOfRunwayM`).
+
+**Error codes**: `INVALID_ARGUMENT`, `NOT_APPLICABLE` (no camera on this simulator, or it did not answer), `BRIDGE_DISCONNECTED`, `TIMEOUT`.
+
+---
+
 ## set_player_clearance
 
 Tells the engine what the user's own ATC cleared the user aircraft to do. The engine never controls or calls the user aircraft. While the user lines up, takes off or lands on a runway, none of our traffic is cleared onto it. Landing, the user is in that runway's landing sequence and our traffic fits around it. `vacated` ends it.
@@ -2756,5 +2821,25 @@ What giving one of our aircraft a clearance would say, without giving it: the co
 |------|------|----------|-------------|
 | `callsign` | string | Yes | Our aircraft's call sign |
 | `action` | string | Yes | A clearance from its actions (`list_our_traffic`), e.g. `pushback`, `taxi`, `lineup`, `takeoff`, `land` |
+
+---
+
+## get_vehicle_radio
+
+Whether the ground vehicles (tugs, fuel trucks, rescue vehicles) talk on the radio.
+
+**Parameters**: none.
+
+Returns `on`.
+
+---
+
+## set_vehicle_radio
+
+Turns the ground vehicles' radio on or off. Off, they keep quiet: a taxiway is theirs without a call, and a runway crossing still waits for the tower in its turn, only nothing is said. Returns `on`.
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `on` | boolean | Yes | `true`: they talk; `false`: quiet |
 
 ---

@@ -7,7 +7,7 @@ import path from 'node:path';
  * the tools each mode registers.
  */
 export interface SiteFacts {
-    libraryVersion: string; // e.g. "v0.108.9"
+    libraryVersion: string; // e.g. "v0.111.0"
     guides: number;
     docsTools: number;
     simconnectTools: number;

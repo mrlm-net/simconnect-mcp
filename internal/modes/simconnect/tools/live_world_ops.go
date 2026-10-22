@@ -14,7 +14,8 @@ import (
 )
 
 // A supervisor's controls over the traffic engine: emergencies, the
-// runway in use, stations a player staffs, and what a clearance would say.
+// runway in use, stations a player staffs, what a clearance would say, and
+// whether the ground vehicles talk.
 
 func registerWorldOperations(mcp *mcpadapter.Server, w live.World) {
 	emergency := mcpadapter.NewTool("declare_emergency").
@@ -133,5 +134,41 @@ func registerWorldOperations(mcp *mcpadapter.Server, w live.World) {
 			return worldError(action+" "+a.Tail, err), nil
 		}
 		return mcpadapter.JSONResult(map[string]any{"callsign": a.Tail, "action": action, "phrase": p})
+	})
+
+	getRadio := mcpadapter.NewTool("get_vehicle_radio").
+		Description("Whether the ground vehicles (tugs, fuel trucks, rescue) talk on the radio.").
+		Build()
+	mcp.AddTool(getRadio, func(ctx context.Context, args map[string]any) (*mcpadapter.CallToolResult, error) {
+		if bad := ensure(ctx, w); bad != nil {
+			return bad, nil
+		}
+		var st struct {
+			On bool `json:"on"`
+		}
+		if err := w.Get("/api/vehicles/radio", &st); err != nil {
+			return worldError("vehicle radio", err), nil
+		}
+		return mcpadapter.JSONResult(map[string]any{"on": st.On})
+	})
+
+	setRadio := mcpadapter.NewTool("set_vehicle_radio").
+		Description("Turn the ground vehicles' radio on or off; off they keep quiet, and a runway crossing still waits for the tower.").
+		BoolParam("on", "true: they talk, false: quiet (required)").
+		Required("on").
+		Build()
+	mcp.AddTool(setRadio, func(ctx context.Context, args map[string]any) (*mcpadapter.CallToolResult, error) {
+		on, ok := args["on"].(bool)
+		if !ok {
+			return mcpadapter.ErrorResult("INVALID_ARGUMENT: on (true or false) is required"), nil
+		}
+		if bad := ensure(ctx, w); bad != nil {
+			return bad, nil
+		}
+		b, err := w.Do("POST", "/api/vehicles/radio", map[string]any{"on": on})
+		if err != nil {
+			return worldError("vehicle radio", err), nil
+		}
+		return rawResult(b), nil
 	})
 }

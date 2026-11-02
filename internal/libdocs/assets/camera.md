@@ -1,7 +1,7 @@
 ---
 title: "Camera"
 description: "The MSFS 2024 add-on camera: bindings, poses, drone moves, a director that plays shots, and scripted scenes on the airport map."
-order: 14
+order: 23
 section: "traffic"
 ---
 
@@ -60,6 +60,39 @@ Each move is a `MoveFunc(object, size, side, duration)`, scaled to the aircraft'
 | Wide | `RevealRise`, `Flyover`, `SpiralDescend`, `LeadChase`, `ParallaxTrack`, `HeroLowPushIn`, `PullBackReveal`, `TopDown`, `TopOrbit`, `SideDolly`, `HeadOnPass`, `ChaseRise` |
 | Detail | `EngineDetail`, `NoseGearDetail`, `MainGearDetail`, `CockpitDetail`, `TailDetail`, `WingtipAlong`, `LightsDetail` |
 
+## Long shots
+
+`MaxShot` (10 s) caps every shot unless it opts out. `camera.Stretch(shot, d)` plays any shot over `d`, up to `MaxStretch` (5 minutes), its move slowed to fit, for a camera that stays with one aircraft through an event. In a scene or a `ShotRequest`, `"long": true` makes `sec` exact (no pacing, no cap).
+
+## Moments
+
+The instants worth a cut, on any aircraft the World sees: `flare`, `touchdown`, `reversers`, `vacated`, `rotate`, `liftoff`, `gearup`. `World.OnMoment(f)` hands each one over as it happens; `GET /api/camera/moments?since=SEQ` gives the last 256 after that number (`seq`, `name`, `tail`, `objectId`, `at`, `user`, `ours`). Scene cues use them as `ROLE:MOMENT`.
+
+Ours say all of them, at the frame they happen. The player's and other traffic's are read off the scan, at its rate, and are only what the simulator shows: `touchdown` and `liftoff` (from `SIM ON GROUND`, 20 ft up before it counts as flown, so a bounce is not a lift-off), `gearup`, and `vacated` (50 m off the line it touched down on). They have no `flare`, `rotate` or `reversers`.
+
+## Spotting director
+
+`World.StartSpotting(SpottingRequest{ICAO: "LKPR"})` or `POST /api/camera/spotting`: the camera watches the airport by itself. It picks an aircraft landing, taking off or taxiing and the nearest fitting spot, stays with it until that is over, and moves on. Landings and take-offs come first and interrupt a taxi, never each other. `GET /api/camera` gives `subject`, `event` and `shot`; mode `off` ends it.
+
+It reads the scan, so it sees ours, other traffic and the player alike. `Kinds` (`ours`, `other`, `player`), `Types` (ICAO designators) and `Events` limit what it may pick. It cuts to a closer spot at most every 10 s, and only one 30% closer. What an aircraft is doing is worked out from where it is and how it moves, not from our controllers: an unusual approach off the runway's line counts as nothing to watch until it lines up.
+
+## Spots
+
+A `camera.Spot` is a camera standing in the world: fixed, or on a straight rail (`RailEnd`, at most `RailSpeed`, 4 m/s by default) going abeam its subject. Its lens (`FovMin`, `FovMax`) is chosen to keep the aircraft at `Share` of the frame's width, the change smoothed. `Spot.Track(object, size, d, feed, clock)` plays it for up to `MaxStretch`.
+
+The aim is a world point from a filter on the subject's samples, which may come only once a second: it runs on with the velocity found between them and takes corrections out slowly, so a long lens does not show a step and a subject flying straight is not lagged. `LockAim` aims at the object itself instead, the simulator keeping it dead centre.
+
+`World.Spots(icao)` (`GET /api/camera/spots?icao=`) lists an airport's spots, generated from its data: `threshold:<end>`, `touchdown:<end>` (on a rail), `approach:<end>`, `holding:<end>` and `apron:<lowest stand>`. A low one keeps clear of the runways, taxiways and stands, and a spot with no clear place is left out. `World.PlaySpot` (`POST /api/camera/spot`) plays one on any aircraft: `id` (-1 the player) or `tail`, with `sec`, `share` and `lock`. In a scene, `"spot": "touchdown:24"` on a shot, or `"touchdown"` for the aircraft's own runway.
+
+`spots.json` in `DataDir` changes them by airport, local winning per value; a name not generated adds a spot:
+
+```json
+{"LKPR": {"touchdown:24": {"up": 12}, "threshold:06": {"off": true},
+          "mine": {"lat": 50.1, "lon": 14.26, "up": 4}}}
+```
+
+Heights are above the runway's elevation, or the airport's off a runway. SimConnect has no call for the ground at a point, and no building data, so where the ground falls or rises under a spot (an approach, most of all) the table sets `up` or `altM`.
+
 ## Director
 
 ```go
@@ -92,6 +125,7 @@ For a shot designer over a recorded flight:
   - **Clock function:** it is called under the Director's lock, so it must not call the Director.
 - **Designed shots:** a `WorldPath` is a shot keyed in the world on the replay's clock.
   - **Keys:** each `WorldKey` has a replay time `T` (from the recording's first sample), the eye (`Lat`, `Lon`, `AltM` above sea level), a heading and pitch, and a field of view. The eye moves on a Catmull-Rom curve through the keys, eased over the whole shot (`Ease`, nil: `Smooth`).
+  - **Shots on a ghost:** `OnObject(length, object, shot)` is a shot on an object only known during the replay. It asks `object()` as it plays, holds the camera while that is 0, and makes the shot again when the object changes, as after a seek. With `flight.GhostFleet`: `Keep(keys...)` the film's subjects, so they are flown whatever the budget, and pass `ObjectOf(key)` as the object (see [flight](flight.md)).
   - **Look at:** `LookAircraft` follows the replayed aircraft, either its live object (`Object`, placed by the simulator in step with what it shows) or, without one, its recorded track (`Track(t)`). `LookPoint` keeps a fixed point in view, and `LookFree` aims by each key's heading and pitch.
   - **Checks:** `Validate` checks the structure (two keys or more, increasing times, a complete look mode). `Long` returns `ErrShotTooLong` past `MaxShot` (10 s) as a warning only: the shot still plays at its full length.
   - **Playing:** `p.Cue()` places it at its first key's time; `NewTimeline(cues...)` and `Director.Follow(timeline, replayTime)` play it, released at `ErrFilmEnded`.
@@ -109,6 +143,8 @@ The camera button in the status strip opens the director:
   - When our camera is released, the simulator's camera is set back to what it was before (live, it otherwise drops into chase).
 - **Simulator camera** gives the camera back to the simulator and sets its own: `CAMERA STATE` cockpit (2), chase (3), drone (4), fixed on plane (5), free (6, environment), written as INT32 like `examples/set-variables`. Measured live in MSFS 2024: the numbering on the 2024 SDK page (drone 8, showcase 7, follow traffic 23) was refused. ◀ ▶ step through the camera's views (`CAMERA VIEW TYPE AND INDEX:1`) from the one it is on. API: `POST /api/camera {"mode":"sim","sim":"drone"}` or `{"mode":"sim","step":1}`.
 - **🎬 Scene** plays a scripted film. A scene spawns its cast, listens to one of them on the radio, and plays **beats**: each waits for its cue, then cuts to its shots. If a beat's shots end before the next cue, more shots of the same aircraft fill the gap.
+
+A host can play a scene it holds: `World.PlayScene(icao, scene)` (`POST /api/camera/scene?icao=` with the scene in the body), validated first, and `World.StopScene()`. `World.OnSceneEvent` hears what it reaches, in order and off the camera's goroutine: `start`, `cue`, `beat`, `shot`, `end`. `GET /api/camera` has the same as `scene`: name, beat, beats, cue and elapsed seconds.
 
 Scenes are JSON files in `-scenes` (default `scenes/`), read on every play, so a scene can be edited and played again without a restart. The built-in scenes come after them; a file with a built-in scene's name wins.
 
@@ -138,9 +174,25 @@ A cue holds once reached, so a beat is not missed when two things happen close t
 | `ROLE:airborne` | The departure has left the ground. |
 | `ROLE:lights:X` | That light has come on: N nav, B beacon, S strobe, T taxi, L landing, O logo, W wing. |
 | `ROLE:height:FEET` | The departure has climbed that high above the runway. |
+| `ROLE:below:FEET` | The arrival has come down that low above the ground. |
+| `ROLE:MOMENT` | That [moment](#moments) has happened since the scene began. ROLE can also be `player` or the call sign of any aircraft outside the cast. |
 | `ROLE:heard` | A call to or from the aircraft has been heard since the last beat. |
 | `ROLE:rescue` | Rescue vehicles have been sent for it (it has priority: an emergency). |
 | `ROLE:rescue:with` | It is down and one of its rescue vehicles is within 80 m. |
+
+### Time of day
+
+`"local": "21:30"` plays the scene at that time of day, local at the user's aircraft, and puts the clock back when it ends. The date stays. The light follows at once and our traffic takes no notice, since it runs on its own clock.
+
+A scene cannot set the simulation rate. MSFS 2024 ignored `SIM_RATE_INCR`, `SIM_RATE_DECR` and `SIM_RATE_SET` from SimConnect in a measured test (no error, the rate stayed 1) and refused writing `SIMULATION RATE`.
+
+### Radio
+
+Scene events of kind `radio` give each transmission: `speaker` (a crew's call sign or the station), `callsign` (who a station talks to), `frequency`, `text`, `atSec` and `durSec`. `atSec` is when it starts, later than the event when it waits for the frequency. `durSec` is the speaking time worked out from the words, not what a voice took. Events of kind `shot` and `beat` give the `subject` on screen.
+
+`lines` is the scene's own radio, to a timetable: `{"atSec": 12, "who": "dep", "text": "..."}`. `who` is a cast role (its crew) or a station's name, given as the controller so that all its lines are one voice; a station needs `frequency` and can name `to`. A line is said word for word at its time and never moves. Traffic on the frequency is kept off it for 15 s before and until it ends, and lines overlapping on one frequency are refused. These times are the scene's clock, as `t:` cues.
+
+`mute` keeps the rest of the radio from the host: traffic goes on talking and acting, and its transmissions still come as `radio` events with `muted`, but `OnTransmission` hears only the lines. A host's voice still chooses what it plays, for example by `SceneFrequency`.
 
 ### The airport, emergencies and actions
 

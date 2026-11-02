@@ -21,7 +21,8 @@ import "github.com/mrlm-net/simconnect/pkg/nav"
 | `FlightPlan` | Runways, SID/STAR/approach, ICAO route, waypoints, cruise level, distance, TOC/TOD, ETE, fuel |
 | `Waypoint` | One point: ident, region, kind, position, airway, phase, constraints, planned altitude, distance |
 | `FlightPlan.PLN()` | The MSFS `.pln` (AceXML) file |
-| `CruiseLevel` | Semicircular-rule cruise level, capped by the type and the distance |
+| `CruiseLevel`, `CruiseLevelRule` | Semicircular-rule cruise level (RVSM, above FL410, north/south countries), capped by the type and the distance |
+| `LevelRule`, `LevelRuleFor` | The cruising levels of an airspace, IFR and VFR |
 | `PerformanceFor` | Planning data of an ICAO type (speeds, rates, fuel flow, taxi fuel) |
 | `FormatLLA` | A position in the `.pln` coordinate format |
 
@@ -75,8 +76,17 @@ fuel kg: taxi 150  trip 1330  contingency 67  alternate 0  reserve 1100  block 2
 
 1. **Runways.** `DepartureRunway` / `ArrivalRunway` when set, else `ActiveRunways` for the airport's weather (`DepWeather`, `ArrWeather`) and limits (`DepLimits`, `ArrLimits`). Without weather the wind is calm, so the longest runway (or the first preferred one) wins.
 2. **Procedures.** Every SID from the departure runway (with each enroute transition) is resolved from the departure end of the runway, and every STAR to the arrival runway is joined to the best approach (`airport.Procedures.BestApproach`: ILS, then RNAV…) through the approach transition that starts where the STAR ends. Plan takes the pair with the shortest path: SID + great circle from the SID's last fix to the STAR's first + STAR and approach. Without STARs, the approach is entered through the transition that fits best, or at its final.
-3. **Enroute.** Between the SID and the STAR the route follows the airway graph (`RouteOrDirect`); when the airways are more than `EnrouteMaxStretch` (1.5) times the direct distance — common around a TMA — it flies direct. An airport without procedures joins the airways at the nearest fix within 50 NM toward the other airport, direct from its runway threshold (or its position without a layout).
-4. **Cruise level.** `CruiseLevel` applies the semicircular rule (RVSM) to the magnetic track between the airports: odd levels (FL350, FL370) on 000–179°, even (FL340, FL360) on 180–359°. It takes the highest such level up to the type's `MaxFL` at which the climb and descent (from the rates and speeds in `Performance`) leave at least 15% of the distance level, and at least 2000 ft above the higher airport. Set `CruiseFL` to force a level.
+3. **Enroute.** Between the SID and the STAR the route follows the airway graph (`RouteOrDirect`); when the airways are more than `EnrouteMaxStretch` (1.5) times the direct distance — common around a TMA — it flies direct. An airport without procedures joins the airways at the nearest fix within 50 NM toward the other airport, direct from its runway threshold (or its position without a layout). With a `Variant` other than 0 the plan picks among the near-equal ways instead of always the shortest: up to 3 entry fixes, exit fixes and airway routes (`AirwayGraph.Routes`, each found again with the segments of the ones before made costlier), each no more than 3% longer than the best choice. The same variant picks the same way every time; the traffic engine passes a hash of the call sign, so one flow spreads over parallel airways.
+4. **Cruise level.** `CruiseLevelRule` applies the cruising levels of the departure country (`LevelRuleFor`) to the magnetic track between the airports (`CruiseLevel` uses the east/west rule):
+   - **Below FL290:** odd thousands on 000–179°, even on 180–359°.
+   - **RVSM, FL290–FL410:** FL290, 310, 330 eastbound; FL300, 320, 340 westbound.
+   - **Above FL410:** 4,000 ft apart, FL410, 450, 490 eastbound and FL430, 470, 510 westbound.
+   - **Without RVSM** (`LevelRule.NoRVSM`): from FL290, FL290, 330, 370 eastbound and FL310, 350, 390 westbound.
+   - **Italy, France, Portugal and Spain:** split north and south, southbound odd. **New Zealand:** southbound even.
+
+   It takes the highest such level up to the type's `MaxFL` at which the climb and descent (from the rates and speeds in `Performance`) leave at least 15% of the distance level, and at least 2000 ft above the higher airport. Set `CruiseFL` to force a level.
+
+   `MaxFL` is the highest level the type is normally planned at, not its certified ceiling. An A320 goes to FL370, a 737-800 to FL380 and the long-haul twins to FL370–FL390. Business jets go higher (FL410–FL450, on the 4,000 ft levels), and turboprops lower (a King Air 350 FL270, an ATR FL230). `LevelRule.Valid(fl, track, vfr)` also gives the VFR levels, the IFR ones plus 500 ft below FL200 (FL35, 55 eastbound), as in the ICAO table of cruising levels.
 5. **Profile.** Every waypoint gets its distance from the start and a planned altitude: a straight climb to the top of climb, level, a straight descent from the top of descent, kept within the waypoint's constraints. `TOC` and `TOD` are inserted as waypoints of kind `PointProfile`.
 6. **Time and fuel.** ETE is the climb, cruise and descent at the type's speeds, without wind. Trip fuel is the cruise fuel flow over that time plus half as much again during the climb; contingency is 5% of it, the final reserve 30 minutes at the cruise flow, the alternate `AlternateFuelKg`, and the block adds taxi fuel.
 
@@ -106,7 +116,7 @@ Runway thresholds, computed points and TOC/TOD are left out: the simulator rebui
 
 - **Header:** title, rules (`FPType`), route type, cruise altitude in feet, departure and destination ID, and `DeparturePosition`.
 - **Procedures:** the SID with its runway (`DepartureFP`, `RunwayNumberFP` and `RunwayDesignatorFP`: "6" becomes "06", "LEFT" becomes "L"), the STAR, and the approach with its runway, read from the waypoints. The MSFS 2024 layout (`AppVersionMajor` 12, e.g. SimBrief's "M24" export) names them in `DepartureDetails`, `ArrivalDetails` and `ApproachDetails` instead; those are read as well, and the waypoints win where both say. The approach's runway is the arrival runway.
-- **Waypoints:** id, type, ident and region, position and altitude (`ParseLLA`), and the airway they are reached by. The MSFS 2024 layout has no `WorldPosition` on its waypoints: their position stays 0,0, and `PLNResolver` looks them up (#679).
+- **Waypoints:** id, type, ident and region, position and altitude (`ParseLLA`), and the airway they are reached by. The MSFS 2024 layout has no `WorldPosition` on its waypoints: their position stays 0,0, and `PLNResolver` looks them up.
 
 `NewPLNResolver(nav.NewNavLoader(client), plan, airportAt)` fills them in: intersections, VORs and NDBs by ident, region and kind through the facility API (a fix in the plan twice asked once), airports with `airportAt` (an `AirportLister.RequestAll` list, loaded layouts; nil leaves them). Call `Start`, feed every message to `Handle`, `Expire` now and then, until `Done`; `Missing` lists what stayed without a position (unknown fixes, user points, airports the lookup did not know). Live, SimBrief's M24 export LKPR–LKPD: BEKVI.LK at 50.0734, 14.7224.
 
@@ -120,7 +130,7 @@ A `.pln` has no alternate airport field, so none is read.
 
 ### Top of descent
 
-`TopOfDescent(PerformanceFor(type), fromFt, toFt, gsKts, extraNM)` is how far before the point where it should be at `toFt` an aircraft starts down from `fromFt` (#693): at its descent rate (`DescentFPM`) and ground speed above FL100, at the 250 kt limit below it (SERA.6001; 14 CFR 91.117), plus about a mile per 10 kt to slow to 250 kt (the pilots' rule of thumb) and `extraNM` (the slow-down to approach speed, a level segment). From FL360 to 4000 ft at 420 kt: about 137 NM with a 5 NM margin (132 without). `Performance.DescentMach` and `DescentIASKts` are the descent speeds, rounded and checked against the EUROCONTROL Aircraft Performance Database (indicative figures); a turboprop has no Mach.
+`TopOfDescent(PerformanceFor(type), fromFt, toFt, gsKts, extraNM)` is how far before the point where it should be at `toFt` an aircraft starts down from `fromFt`: at its descent rate (`DescentFPM`) and ground speed above FL100, at the 250 kt limit below it (SERA.6001; 14 CFR 91.117), plus about a mile per 10 kt to slow to 250 kt (the pilots' rule of thumb) and `extraNM` (the slow-down to approach speed, a level segment). From FL360 to 4000 ft at 420 kt: about 137 NM with a 5 NM margin (132 without). `Performance.DescentMach` and `DescentIASKts` are the descent speeds, rounded and checked against the EUROCONTROL Aircraft Performance Database (indicative figures); a turboprop has no Mach.
 
 ## Limits
 

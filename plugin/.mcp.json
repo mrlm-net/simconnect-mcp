@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "simconnect": {
+      "command": "${CLAUDE_PLUGIN_ROOT}/server/simconnect-mcp.exe",
+      "env": {
+        "MCP_MODE": "${user_config.mode}",
+        "DOCS_MSFS_VERSION": "2024"
+      }
+    }
+  }
+}

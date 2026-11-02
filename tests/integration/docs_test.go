@@ -567,9 +567,9 @@ func TestUnknownRoute(t *testing.T) {
 func TestLibraryDocs(t *testing.T) {
 	srv := newTestServer(t)
 
-	list := contentText(t, callTool(t, srv.URL, "list_library_guides", map[string]any{"section": "airport"}))
+	list := contentText(t, callTool(t, srv.URL, "list_library_guides", map[string]any{"section": "nav"}))
 	if !strings.Contains(list, `"slug":"airport-layout"`) {
-		t.Errorf("list_library_guides(airport) lacks airport-layout: %s", list)
+		t.Errorf("list_library_guides(nav) lacks airport-layout: %s", list)
 	}
 
 	hits := contentText(t, callTool(t, srv.URL, "search_library_docs", map[string]any{"query": "RouteToRunway"}))

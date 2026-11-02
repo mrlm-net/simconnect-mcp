@@ -4,6 +4,17 @@ All notable changes to SimConnect MCP are documented here. The format follows [K
 
 Full release history with release notes is also available on the [GitHub Releases page](https://github.com/mrlm-net/simconnect-mcp/releases).
 
+## [0.18.0] - 2026-11-03
+
+### Added
+
+- A Claude Code plugin, `simconnect`, with the server and the skills `check-sim` and `report-bug`. It installs in one line with no Go, git or GitHub account: see [Claude Code Plugin](claude-code-plugin.md). Every release now carries the plugin zip and its `marketplace.json`.
+- Tool counts: docs 15, simconnect 81, both 96.
+
+### Changed
+
+- Upgraded `github.com/mrlm-net/simconnect` from v0.111.0 to v0.162.0, and the bundled library guides with it. The airport layout guide moved to the `nav` section. No new tools yet for what the library gained. See the [library changelog](https://github.com/mrlm-net/simconnect/blob/main/CHANGELOG.md).
+
 ## [0.17.0] - 2026-10-22
 
 ### Added

@@ -1,7 +1,7 @@
 ---
 title: "Arrivals & Parking"
 description: "Land an AI aircraft, roll out to a runway exit and taxi it to a stand with the pkg/traffic ArrivalController: MSFS AI, hybrid or fully injected."
-order: 3
+order: 6
 section: "traffic"
 ---
 
@@ -161,7 +161,7 @@ Measured live at LKPR runway 24: touchdown 486 m past the threshold at −120 fp
 
 ## STAR and approach
 
-With `InjectApproach` and `Procedure` (e.g. `airport.Procedures.Arrival(runway, entryFix)`: the STAR from its entry fix and the best approach via the transition where the STAR ends) the arrival starts in the terminal area (#315):
+With `InjectApproach` and `Procedure` (e.g. `airport.Procedures.Arrival(runway, entryFix)`: the STAR from its entry fix and the best approach via the transition where the STAR ends) the arrival starts in the terminal area:
 
 ```go
 route, _ := procs.Arrival("06", "GOLOP") // GOLO4T → ILS 06 via KUVIX
@@ -174,7 +174,7 @@ ctl.Start(traffic.ArrivalRequest{Graph: g, Runway: "06", Parking: stand, Model: 
 - At the join point (within `JoinCaptureMeters`, or established on the centreline abeam it) the injected approach takes over from where the aircraft is; the offset between MSFS AI's position and the injected glide path fades out over `JoinBlendSeconds`, so nothing jumps.
 - From there on it is the injected approach below.
 
-**Sequencing and delays.** On its STAR the arrival can be spaced behind the others: an `ApproachSequencer` gives it a landing time and a delay, `AbsorbDelay(delay)` loses the delay by flying slower and a longer downwind or one dog-leg (lengthened in place by a later call while it is still ahead), and `HoldFix` / `EnterHold` / `LeaveHold` send it round a hold for what is left. `DirectTo`, `JoinFinal`, `AssignSpeed`, `Shortcut` and `StopDescent` reshape the rest of the procedure, and `GoAround()` sends an injected arrival on final round the published missed approach or a circuit ([ATC Commands](traffic-commands.md)). All of this is in [Airborne Separation](traffic-separation.md).
+**Sequencing and delays.** On its STAR the arrival can be spaced behind the others: an `ApproachSequencer` gives it a landing time and a delay, `AbsorbDelay(delay)` loses the delay by flying slower and a longer downwind or one dog-leg (lengthened in place by a later call while it is still ahead), and `HoldFix` / `EnterHold` / `LeaveHold` send it round a hold when a controller asks for one (an emergency, the weather, a closure; never for the sequence). `DirectTo`, `JoinFinal`, `AssignSpeed`, `Shortcut` and `StopDescent` reshape the rest of the procedure, and `GoAround()` sends an injected arrival on final round the published missed approach or a circuit ([ATC Commands](traffic-commands.md)). All of this is in [Airborne Separation](traffic-separation.md).
 
 ## Rollout and exit
 
@@ -219,7 +219,7 @@ The sweep tests fly 44 injected arrivals across LKPR stands and runways; all par
 
 ### Stand allocation
 
-`StandAllocator` assigns stands at one airport and tracks who is on them (#292):
+`StandAllocator` assigns stands at one airport and tracks who is on them:
 
 ```go
 stands := traffic.NewStandAllocator(client, g)          // feed stands.Handle(msg); call stands.Scan() every ~10 s
@@ -231,9 +231,10 @@ s, err := stands.Assign(traffic.StandRequirements{
 
 - **Reservations:** `Occupy(stand, owner, halfSpan)` fails with `ErrStandTaken` when someone else holds the stand or an aircraft on an overlapping stand (`Layout.ParkingConflicts`) is in the way: two aircraft clash when their half spans plus `StandWingtipClearanceMeters` (3 m) exceed the distance between the stand centres. `Release`, `ReleaseOwner`.
 - **Detection:** `Scan` requests every aircraft around the airport (AI and the user). One on the ground below `StandDetectKts` within a stand's RADIUS holds that stand, with its real `WING SPAN`. A reservation and a detection on the same stand merge (the owner stays, the object ID and span come from the scan).
-- **Assign:** suitable stands (`Layout.SuitableStands` for the span, optional `Types`), the airline's own stands first, then stands open to every airline; ranked by taxi-in length from the arrival runway's best exit. `ErrNoStand` when none is free. With `OffBlock` (a departure's STD, an arrival's turnaround) a stand within `StandPushNeighbourMeters` (90 m) of a reserved stand whose aircraft is due off within `StandPushConflictWindow` (8 min) ranks as if its taxi-in were up to `StandPushConflictMeters` (600 m) longer, less as the times are further apart; without a runway such stands come last. Neighbours then rarely push at once. `SetOffBlock` updates the time (a turnaround's departure).
+- **Assign:** suitable stands (`Layout.SuitableStands` for the span, optional `Types`), the airline's own stands first, then stands open to every airline; in each, the stands of the flight's stand area before stands in none, and another flight's area only once nothing else is free (`StandAreaFor`, below); ranked by taxi-in length from the arrival runway's best exit. `ErrNoStand` when none is free. With `OffBlock` (a departure's STD, an arrival's turnaround) a stand within `StandPushNeighbourMeters` (90 m) of a reserved stand whose aircraft is due off within `StandPushConflictWindow` (8 min) ranks as if its taxi-in were up to `StandPushConflictMeters` (600 m) longer, less as the times are further apart; without a runway such stands come last. Neighbours then rarely push at once. `SetOffBlock` updates the time (a turnaround's departure).
 - **Taxi routes:** `ReserveRoute(owner, nodes)` returns the owners whose reserved routes share a node (a warning; spacing on the ground is the `GroundPicture`, see [Ground traffic](traffic-taxi.md#ground-traffic)). `ReleaseRoute`.
 - `Occupancy()` is a snapshot for maps and ATC.
+- **Stand areas** (`traffic.standAreas`, a `pkg/dict` table: shipped, replaceable by a local file per area). Most sceneries carry no airline codes on their stands (LKPR none of 89), so an area names which flights take a group of stands: "ICAO PREFIX" (the stands whose label starts with it, the longest prefix winning), `Airlines` (ICAO codes) and/or `Flights` (`schengen`, `non-schengen`: the side of the Schengen border of the flight's other airport, `StandRequirements.Other`, an arrival's origin or a departure's destination; `traffic.Schengen` by ICAO prefix). Shipped: LKPR A and B non-Schengen, C Schengen ([prg.aero](https://www.prg.aero/en/regular-and-charter-flights): Terminal 1, piers A and B, for flights outside the Schengen area; Terminal 2, pier C and gates D, within it). No airline areas are shipped: no source gives one.
 
 ## Lights
 

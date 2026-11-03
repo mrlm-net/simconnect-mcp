@@ -4,6 +4,12 @@ All notable changes to SimConnect MCP are documented here. The format follows [K
 
 Full release history with release notes is also available on the [GitHub Releases page](https://github.com/mrlm-net/simconnect-mcp/releases).
 
+## [0.18.1] - 2026-11-03
+
+### Fixed
+
+- The plugin's install address. Claude Code read the release's `github.com` address as a git repository and refused it, so `marketplace.json` is now also published on the `marketplace` branch and installed from its raw file. See [Claude Code Plugin](claude-code-plugin.md).
+
 ## [0.18.0] - 2026-11-03
 
 ### Added

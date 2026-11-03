@@ -22,7 +22,7 @@ You need Windows 10 or 11 and Microsoft Flight Simulator 2020 or 2024.
 2. Install the plugin:
 
    ```powershell
-   claude plugin install simconnect --marketplace https://github.com/mrlm-net/simconnect-mcp/releases/latest/download/marketplace.json
+   claude plugin install simconnect --marketplace https://raw.githubusercontent.com/mrlm-net/simconnect-mcp/marketplace/marketplace.json
    ```
 
 3. Start the simulator, run `claude`, and type:

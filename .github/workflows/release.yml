@@ -48,5 +48,13 @@ jobs:
           bash plugin/package.sh "$v" "$exe" "$RUNNER_TEMP/plugin" \
             "https://github.com/mrlm-net/simconnect-mcp/releases/download/$GITHUB_REF_NAME"
           gh release upload "$GITHUB_REF_NAME" "$RUNNER_TEMP/plugin/"*
+          # Testers install from this branch's raw file: Claude Code reads any
+          # github.com address, the release's too, as a git repository.
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          blob="$(git hash-object -w "$RUNNER_TEMP/plugin/marketplace.json")"
+          tree="$(printf '100644 blob %s\tmarketplace.json\n' "$blob" | git mktree)"
+          commit="$(git commit-tree "$tree" -m "marketplace.json for $GITHUB_REF_NAME")"
+          git push --force origin "$commit:refs/heads/marketplace"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -37,3 +37,16 @@ jobs:
           args: release --clean --release-notes=${{ runner.temp }}/notes.md
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # The plugin testers install: the zip with the Windows server, and the
+      # marketplace.json that pins it, so neither git nor Go is needed.
+      - name: Claude Code plugin
+        run: |
+          v="${GITHUB_REF_NAME#v}"
+          exe="$(find dist -type f -name simconnect-mcp.exe | head -n 1)"
+          test -n "$exe" || { echo "no Windows binary in dist"; exit 1; }
+          bash plugin/package.sh "$v" "$exe" "$RUNNER_TEMP/plugin" \
+            "https://github.com/mrlm-net/simconnect-mcp/releases/download/$GITHUB_REF_NAME"
+          gh release upload "$GITHUB_REF_NAME" "$RUNNER_TEMP/plugin/"*
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

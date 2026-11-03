@@ -41,7 +41,7 @@ func TestLoadEmbedded(t *testing.T) {
 	if !ok {
 		t.Fatal("airport-layout not found")
 	}
-	if g.Title != "Airport Layout & Taxi Routing" || g.Section != "airport" {
+	if g.Title != "Airport Layout & Taxi Routing" || g.Section != "nav" {
 		t.Errorf("front matter: title %q section %q", g.Title, g.Section)
 	}
 	if _, ok := g.Chapter("Taxi graph"); !ok {

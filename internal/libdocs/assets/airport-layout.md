@@ -1,8 +1,8 @@
 ---
 title: "Airport Layout & Taxi Routing"
 description: "Load an airport's ground layout with pkg/airport and compute taxi routes between stands and runways."
-order: 1
-section: "airport"
+order: 0
+section: "nav"
 ---
 
 # Airport Layout & Taxi Routing
@@ -67,7 +67,7 @@ mgr.OnMessage(func(msg engine.Message) {
 
 | | |
 |---|---|
-| Frequencies | `Layout.Frequencies`: the airport's radio frequencies (kind, MHz, name) and `FrequencyFor(kind)` with ATC's fallbacks (#416). |
+| Frequencies | `Layout.Frequencies`: the airport's radio frequencies (kind, MHz, name) and `FrequencyFor(kind)` with ATC's fallbacks; `Controlled()`, `SelfAnnounceFrequency()` and `ControlledFrequency(kind)` for fields without a tower ([Radio](traffic-radio.md#fields-without-a-tower)). |
 | IDs | 7 facility definition IDs from `DefaultLoaderDefinitionBase` (7100) and 112 request IDs from `DefaultLoaderRequestBase` (7200). Move them with `LoaderWithIDs(defBase, reqBase)` if they clash with your own. |
 | Concurrency | Up to 16 airports in flight at once. `Pending()` lists them. |
 | Timeout | `LoaderWithTimeout` (default 30 s). SimConnect sends **nothing** for an unknown ICAO code, so an unknown airport ends in `ErrTimeout` via `Expire`. |
@@ -91,7 +91,7 @@ for _, hs := range l.HoldShortPoints() {
 }
 ```
 
-Every slice is indexed by SimConnect list index (`TaxiPoints[i].Index == i`), and positions carry both the raw `BiasX`/`BiasZ` offsets and the resolved `LatLon`. Enumerations use the existing `pkg/types` facility enums (`SIMCONNECT_FACILITY_TAXI_PATH_TYPE`, `…_TAXI_POINT_TYPE`, `…_TAXI_PARKING_TYPE`, `…_TAXI_PARKING_NAME`, `…_RUNWAY_DESIGNATOR`).
+Every slice is indexed by SimConnect list index (`TaxiPoints[i].Index == i`), and positions carry both the raw `BiasX`/`BiasZ` offsets and the resolved `LatLon`. Enumerations use the existing `pkg/types` facility enums (`SIMCONNECT_FACILITY_TAXI_PATH_TYPE`, `…_TAXI_POINT_TYPE`, `…_TAXI_PARKING_TYPE`, `…_TAXI_PARKING_NAME`, `…_RUNWAY_DESIGNATOR`). In JSON they are written by name, the constant without its type prefix (`"GATE_HEAVY"`, `"HOLD_SHORT"`, `"PAINTED_LINE"`, `"LEFT"`; a leg type is its ARINC 424 code, `"TF"`), and read by name or by the number older files have; a value without a name stays a number.
 
 Runways expose both ends (`Primary`, `Secondary`) with name, heading and threshold. Thresholds are the ends of the runway surface; displaced thresholds are not applied.
 
@@ -110,7 +110,7 @@ ok := l.Parking[heavy[0]].ServesAirline("DLH")
 
 - **`Parking.Size()`** classes a spot as `StandSmall`, `StandMedium` or `StandHeavy`: by `TYPE` where the scenery names a size (`GATE_SMALL`/`MEDIUM`/`HEAVY`/`EXTRA`, `RAMP_GA_SMALL`/`MEDIUM`/`LARGE`/`EXTRA`; `EXTRA` is heavy), otherwise by `RADIUS` (below 15 m small, below 25 m medium). Fuel and vehicle spots are `StandNone`.
 - **`Layout.SuitableStands(minRadius, types...)`** lists the spots with at least that `RADIUS` and, if given, one of the `TYPE`s; never fuel or vehicle spots. `RADIUS` is half the space the spot offers, so pass half the aircraft span plus a margin.
-- **`Layout.ParkingConflicts(i)`** lists the spots whose `RADIUS` circles overlap spot `i` by more than half a meter: split and alternate stands (LKPR `S22`/`S22A`) and tightly packed gates. At LKPR 20 pairs overlap (two more only touch), at EDDM 4, at LROP 38. Whether two aircraft actually clash depends on their spans; the stand allocator (#292) decides that.
+- **`Layout.ParkingConflicts(i)`** lists the spots whose `RADIUS` circles overlap spot `i` by more than half a meter: split and alternate stands (LKPR `S22`/`S22A`) and tightly packed gates. At LKPR 20 pairs overlap (two more only touch), at EDDM 4, at LROP 38. Whether two aircraft actually clash depends on their spans; the stand allocator decides that.
 - **`Parking.Airlines`** are the airline codes the scenery assigns to the stand (`TAXI_PARKING_AIRLINE` child records; EDDM assigns 10–23 airlines to 119 of its 175 stands, LKPR none). `ServesAirline(code)` is true for a listed code (case-insensitive) and for stands without airlines.
 
 ### Facility data semantics
@@ -163,7 +163,7 @@ Hold-short nodes are associated with the runway whose centreline is nearest (wit
 **Aircraft size.** With `RouteOptions.HalfSpan` (half the wing span, meters) a route keeps to taxiway edges the aircraft fits:
 
 - `Edge.Clearance` is the free half-width beside each taxiway edge: the distance from its centreline to the nearest stand circle (`Parking.Radius`, the space of the largest aircraft the stand takes). An edge fits with `WingtipMargin` (default 3 m) to spare. `OwnStands`, the stands the aircraft leaves or enters, are not obstacles; the stand-based routing functions add theirs.
-- `TaxiwayMaxSpan` limits taxiways by name to a largest span, for published restrictions the scenery does not carry. It defaults to the airport's entry in `KnownTaxiwayMaxSpan` (a first seed of the airport limits, #335): LKPR's apron taxilanes JO and JB are code C (36 m), so a 777 leaves B14 by J while an A320 from C17 takes JB.
+- `TaxiwayMaxSpan` limits taxiways by name to a largest span, for published restrictions the scenery does not carry. It defaults to the airport's entry in `KnownTaxiwayMaxSpan` (a first seed of the airport limits): LKPR's apron taxilanes JO and JB are code C (36 m), so a 777 leaves B14 by J while an A320 from C17 takes JB.
 - When no route fits, the route is found without the size check and marked `Route.Tight`. A [custom route](#custom-routes-via-points-and-taxiways) returns `ErrTooNarrow` instead.
 
 `pkg/traffic` controllers set `HalfSpan` from the aircraft's `MotionProfile`.
@@ -172,7 +172,7 @@ Hold-short nodes are associated with the runway whose centreline is nearest (wit
 
 **Fewer stands.** Between routes of about the same length, the one past fewer stands wins: a second search prices apron taxilanes at `FewerStandsApronPenalty` (4), and its route is taken when it passes fewer stands (`StandsPassed`) and is at most 15 % (`FewerStandsTolerance`, at least 150 m) longer. Not for custom routes.
 
-`RouteToRunway` prefers runway holding points over ILS holds, and among the hold-shorts within `RouteOptions.IntersectionTolerance` (default 300 m) of the one nearest the threshold, picks the shortest route, so aircraft depart from (or near) the full runway length.
+`RouteToRunway` prefers runway holding points over ILS holds (ILS holds first with `RouteOptions.LowVisibility`; each `RunwayEntry` and `RunwayExit` names its `ILSHoldShort` beyond its `HoldShort`, -1 none), and among the hold-shorts within `RouteOptions.IntersectionTolerance` (default 300 m) of the one nearest the threshold, picks the shortest route, so aircraft depart from (or near) the full runway length.
 
 A route never passes *through* a parking stand, and crossing a runway on a taxiway is allowed but reported in `RunwayCrossings`. Errors: `ErrNoTaxiNetwork`, `ErrUnknownParking`, `ErrAmbiguousParking`, `ErrUnknownRunway`, `ErrNoHoldShort`, `ErrNoRoute` (e.g. vehicle-only stands).
 
@@ -196,7 +196,7 @@ Zero selects the default and a negative value disables a cost. `Route.Length` is
 
 ### Custom routes: via points and taxiways
 
-Two `RouteOptions` fields shape the route itself (#340). Every routing function honours them (`Route`, `RouteToRunway`, `RouteToRunwayEntry`, `RouteToRunwayFrom`, `RouteToParking`, `RouteToParkingFrom`, `RouteFromRunway`):
+Two `RouteOptions` fields shape the route itself. Every routing function honours them (`Route`, `RouteToRunway`, `RouteToRunwayEntry`, `RouteToRunwayFrom`, `RouteToParking`, `RouteToParkingFrom`, `RouteFromRunway`):
 
 - `Via []NodeID`: the route passes these nodes in order. Every leg uses the same search and costs, and at a via point the route goes on the way it arrived. It never turns back there, so a via point at a dead end cannot be passed.
 - `Taxiways []string` ("via F, L"): the names must appear in `Route.Taxiways` in this order, matched case-insensitively. Until the last one is joined, other named taxiways cost `OffTaxiwaysFactor` (×10) their length, so they serve only as connectors. After the last one the route goes on freely to its destination.
@@ -266,7 +266,7 @@ for msg := range client.Stream() {
 
 A SID is flown runway transition → `Legs` → enroute transition; a STAR enroute transition → `Legs` → runway transition. Courses are magnetic; `Procedures.MagVar` is the facility's MAGVAR (356 = 4° east, true = magnetic + 4).
 
-`ProcedurePath(legs, start, startAlt, magVar, turnRadius)` turns legs into points for a map: straight between fixes, turns (Dubins, in the charted direction) where the aircraft turns by heading (a charted turn, a course intercept, a course reversal), open legs (to an altitude, DME distance, manual termination) approximated from the climb gradient. `Leg.Constraint()` prints a leg's constraint as charts do (`≥4000`, `FL070`, `≤210KT`).
+`ProcedurePath(legs, start, startAlt, magVar, turnRadius)` turns legs into points for a map: straight between fixes, turns (Dubins, in the charted direction) where the aircraft turns by heading (a charted turn, a course intercept, a course reversal), open legs (to an altitude, manual termination) approximated from the climb gradient; a leg to a DME distance ends where its course reaches that distance from `Leg.Origin`, the recommended navaid (older dumps have none: that far from the leg's start, 20 km at most). `Leg.Constraint()` prints a leg's constraint as charts do (`≥4000`, `FL070`, `≤210KT`).
 
 To fly a procedure rather than draw it, resolve it into `NavPoint`s: one per fix (ident, kind, position, IAF/FAF/MAP, fly-over) plus a computed point where a leg without a fix ends (a climb to an altitude at 5%, a DME distance, an intercept of the next course, or a heading to radar vectors, `Vectors`). Each carries its altitude window in meters (`AltMin`/`AltMax`, 0 = none: AT sets both, at-or-above the minimum, at-or-below the maximum, between `Alt2`–`Alt1`), `SpeedMax` and the true `Course` flown to it; the same fix twice in a row (a STAR ending at the approach's IAF) is merged. `ResolveSID(name, runway, enroute, start, startAlt)`, `ResolveSTAR(name, enroute, runway)`, `ResolveApproach(name, transition)` and `MissedApproach(name)` return `ErrNoProcedure` or `ErrNoTransition` when a name is unknown. For ATC-style assignment, `SIDsFor`, `STARsFor` and `ApproachesFor` list a runway's procedures, `SIDToward(runway, exitFix)` and `STARFrom(runway, entryFix)` pick one by the flight plan's first or last fix, `BestApproach(runway)` prefers ILS, then RNAV, LOC, VOR, NDB, and `Arrival(runway, entryFix)` chains the STAR and the best approach through the transition where the STAR ends:
 
@@ -299,7 +299,7 @@ Not in the simulator's data: STAR altitude constraints at LKPR are empty (the AI
 
 ## Airport limits
 
-`LimitsFor(layout, procedures)` returns the values that belong to the airport rather than to the aircraft (#335), taken from the facility data where it has them and from `KnownLimits` (published values, keyed by ICAO code) otherwise:
+`LimitsFor(layout, procedures)` returns the values that belong to the airport rather than to the aircraft, taken from the facility data where it has them and from `KnownLimits` (published values, keyed by ICAO code) otherwise:
 
 | Field | Source | Default |
 |-------|--------|---------|

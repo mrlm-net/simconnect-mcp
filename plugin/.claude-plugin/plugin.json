@@ -1,0 +1,17 @@
+{
+  "name": "simconnect",
+  "version": "0.0.0-dev",
+  "description": "Talk to Microsoft Flight Simulator from Claude: read the live sim, check it is connected, and write up bug reports. Also the SimConnect SDK docs.",
+  "author": { "name": "mrlm-net" },
+  "homepage": "https://github.com/mrlm-net/simconnect-mcp",
+  "license": "BUSL-1.1",
+  "userConfig": {
+    "mode": {
+      "type": "string",
+      "title": "Mode",
+      "description": "both: docs and the live simulator. docs: documentation only, never touches the simulator.",
+      "options": ["both", "docs"],
+      "default": "both"
+    }
+  }
+}

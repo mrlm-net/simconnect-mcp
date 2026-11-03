@@ -37,6 +37,7 @@ tools/scraper/             scrapes docs.flightsimulator.com into internal/corpus
 tools/libdocs/             copies the library guides into internal/libdocs/assets (go generate ./internal/libdocs/)
 tests/integration/         docs-mode and mock-bridge end-to-end tests
 docs/                      website docs; docs/decisions/ = ADRs and the historic milestone plans (not on the site)
+plugin/                    Claude Code plugin for testers (skills, .mcp.json); package.sh builds its zip and marketplace.json for each release
 ```
 
 ## Commands

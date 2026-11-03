@@ -1,7 +1,7 @@
 ---
 title: "Traffic Smoothness"
 description: "Why our traffic must move without a hitch, how to measure it live and in benchmarks, what made it stutter and the rules that keep it smooth."
-order: 21
+order: 22
 section: "traffic"
 ---
 
@@ -18,6 +18,7 @@ Smooth movement is not negotiable. One frame lasts 16.7 ms at 60 fps, and everyt
 - **`examples/glitch-watch`** traces every aircraft the map drives, every simulator frame. It reports jumps in position, height, pitch, bank or heading, with the frames around each one saved as CSV.
   - Run it during every live test, and read its log before saying the motion is right.
   - A position jump at a steady speed, where the distance per frame stays even over wall time, is the simulator's own frame hitch: everything stutters with it. A jump where one frame carries several frames of distance after a pause is ours.
+- **The jump trace:** a placement farther from the last than its speed explains, or turned more than 3° (45°/s on a long frame), is logged with who placed it. `sim step` on the line is how far the simulator's clock moved the aircraft: a distance it explains came from that clock, one it doesn't is a wrong placement of ours. Tugs and other vehicles have no sim step.
 - **The slow-step log:** the World logs any step of the connection loop over 40 ms (`slowStep`), naming it:
   - `slow: command …(*controlCenter).do.func1 took 181ms`: a command, such as a spawn, ran on the loop;
   - `CSA1991 slow: its frame took 42ms (awaiting pushback)`: one controller's frame.
@@ -50,9 +51,9 @@ BENCHTIME=5x scripts/bench-smoothness.sh
 
 The script writes `docs/images/smoothness/bench.txt` and the charts below (`examples/smoothness-report`). Earlier measurements are in `docs/images/smoothness/history.csv`, one row per step (`chart,label,value,unit`). Add a row when a change moves a number; the newest run is the blue bar.
 
-## What made it stutter (2026-10-12)
+## What made it stutter
 
-Live at LKPR, the moving traffic jumped about once every 5–6 s, about 60 times per 10 minutes. The slow-step log and the profiles found three causes.
+Live at LKPR on 2026-10-12, the moving traffic jumped about once every 5–6 s, about 60 times per 10 minutes. The slow-step log and the profiles found three causes.
 
 1. **The traffic checks every frame.** Each taxiing aircraft checks, every frame, whether anything blocks its way or comes the other way.
    - A waiting aircraft's planned way counted as its whole route to the runway, compared point by point against about 200 samples of the path, each sample found again by walking the path.
@@ -87,5 +88,6 @@ Live at LKPR, the moving traffic jumped about once every 5–6 s, about 60 times
 
 - **A frame's budget:** what a controller does per frame must cost well under 0.5 ms at a busy airport (20 aircraft around). Add a benchmark for anything new that runs per frame.
 - **No planning in a frame:** routes, pushback poses and searches run in the background or before the spawn, never inside a frame. Spawning on the loop is the exception being paid down, so keep it short.
+- **Probes stall the loop:** every aircraft is placed from the one connection loop, so anything that waits on the simulator there holds them all at once: a data request, a facility or jetway list, a probe of a model. Ask for such data as rarely as the feature allows (the jetway list only while something moves at a gate, `pollEvery`), never per frame or per aircraft, and take the answer as a message when it comes rather than waiting for it.
 - **No garbage per frame:** reuse buffers (pool them when shared), grow slices once, and keep maps out of hot loops.
 - **Measure live too:** run glitch-watch and read the slow-step log before calling a change smooth. A benchmark finds the cost; only the simulator shows the jump.

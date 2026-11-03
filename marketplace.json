@@ -1,0 +1,16 @@
+{
+  "name": "simconnect",
+  "owner": { "name": "mrlm-net" },
+  "plugins": [
+    {
+      "name": "simconnect",
+      "description": "Talk to Microsoft Flight Simulator from Claude: read the live sim, check it is connected, and write up bug reports.",
+      "version": "0.18.1",
+      "source": {
+        "source": "archive",
+        "url": "https://github.com/mrlm-net/simconnect-mcp/releases/download/v0.18.1/simconnect-plugin_0.18.1.zip",
+        "sha256": "20f5232cfe08c2887708010021bb098cf92addf7791cf53d913235536c366667"
+      }
+    }
+  ]
+}

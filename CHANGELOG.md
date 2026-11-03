@@ -13,7 +13,7 @@ Full release history with release notes is also available on the [GitHub Release
 
 ### Changed
 
-- Upgraded `github.com/mrlm-net/simconnect` from v0.111.0 to v0.162.0, and the bundled library guides with it. The airport layout guide moved to the `nav` section. No new tools yet for what the library gained. See the [library changelog](https://github.com/mrlm-net/simconnect/blob/main/CHANGELOG.md).
+- Upgraded `github.com/mrlm-net/simconnect` from v0.111.0 to v0.163.0, and the bundled library guides with it. The airport layout guide moved to the `nav` section. No new tools yet for what the library gained. See the [library changelog](https://github.com/mrlm-net/simconnect/blob/main/CHANGELOG.md).
 
 ## [0.17.0] - 2026-10-22
 

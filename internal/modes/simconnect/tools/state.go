@@ -37,6 +37,7 @@ func RegisterStateTools(mcp *mcpadapter.Server, b bridge.Bridge) {
 		return mcpadapter.JSONResult(map[string]any{
 			"connected":              state.Connected,
 			"paused":                 state.Paused,
+			"simulation_rate":        state.SimulationRate,
 			"current_flight":         state.CurrentFlight,
 			"sim_time":               state.SimTime,
 			"simulator_version":      state.SimulatorVersion,

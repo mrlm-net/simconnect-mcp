@@ -60,6 +60,7 @@ type SimVarResult struct {
 type SimState struct {
 	Connected        bool    `json:"connected"`
 	Paused           bool    `json:"paused"`
+	SimulationRate   float64 `json:"simulation_rate"`
 	CurrentFlight    string  `json:"current_flight"`
 	SimTime          float64 `json:"sim_time"`
 	SimulatorVersion string  `json:"simulator_version"`

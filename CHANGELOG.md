@@ -4,6 +4,12 @@ All notable changes to SimConnect MCP are documented here. The format follows [K
 
 Full release history with release notes is also available on the [GitHub Releases page](https://github.com/mrlm-net/simconnect-mcp/releases).
 
+## [0.18.2] - 2026-11-15
+
+### Added
+
+- `get_sim_state` reports `simulation_rate`, the simulator's rate. The traffic engine already follows the rate and pause ([#139](https://github.com/mrlm-net/simconnect-mcp/issues/139)).
+
 ## [0.18.1] - 2026-11-03
 
 ### Fixed

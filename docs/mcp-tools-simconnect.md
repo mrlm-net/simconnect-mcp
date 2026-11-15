@@ -347,6 +347,7 @@ Return a snapshot of current simulator connection state and flight status. This 
 |-------|------|-------------|
 | `connected` | boolean | `true` when the bridge has an active SimConnect session |
 | `paused` | boolean | `true` when the simulator is paused; only present when `connected` is `true` |
+| `simulation_rate` | number | The simulator's rate (1 = real time); the traffic engine follows it and the pause |
 | `current_flight` | string | Path or name of the currently loaded flight file; only present when `connected` is `true` |
 | `sim_time` | number | Simulator absolute time in seconds; only present when `connected` is `true` |
 | `simulator_version` | string | Simulator version string reported by SimConnect; only present when `connected` is `true` |

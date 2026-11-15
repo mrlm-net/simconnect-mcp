@@ -1485,6 +1485,7 @@ func (b *simconnectBridge) GetSimState(ctx context.Context) (SimState, error) {
 	return SimState{
 		Connected:         connected,
 		Paused:            mgrState.Paused,
+		SimulationRate:    mgrState.SimulationRate,
 		CurrentFlight:     flightFile,
 		SimTime:           mgrState.ZuluTime,
 		SimulatorVersion:  simVersion,

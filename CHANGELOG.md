@@ -4,6 +4,12 @@ All notable changes to SimConnect MCP are documented here. The format follows [K
 
 Full release history with release notes is also available on the [GitHub Releases page](https://github.com/mrlm-net/simconnect-mcp/releases).
 
+## [0.19.1] - 2026-11-17
+
+### Changed
+
+- Library github.com/mrlm-net/simconnect v0.171.4 → v0.175.0 (OpenStreetMap towers in the airport data, opt-in one-observer spotting, overflights test bed, opt-in overflight distance tiers); bundled library guides regenerated. No tool changes.
+
 ## [0.19.0] - 2026-11-15
 
 ### Added
